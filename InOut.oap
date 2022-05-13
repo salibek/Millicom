@@ -1,0 +1,48 @@
+\\ Для создания индексного файла сначала надо запустить программу !!!!
+
+ CapsManager.IndexVectCreate=20000
+ CapsManager.IpIcIdOutMk=MainBus.IpIcIdSet
+ CapsManager.IpIcIdOutMk=VariableManager.IpIcIdSet
+ CapsManager.IpIcIdOutMk=ListSyntez.IpIcIdSet
+ MainBus.ModeSet=1
+\\ -------------------------------------- \\
+MainBus.FUTypeCorrectSet=-96 // Корректировка номера типа ФУ для переноса на новую ОА-платформу
+
+NewFU#{Mnemo#"Console" FUType#FUConsNew}
+NewFU#{Mnemo#"InOut" FUType#FUInOutNew}
+NewFU#{Mnemo#"FSM" FUType#FUFSM}
+NewFU#{Mnemo#"Stage1" FUType#FUListNew}
+NewFU#{Mnemo#"Stage2" FUType#FUListNew}
+NewFU#{Mnemo#"Stage3" FUType#FUListNew}
+
+
+MainBus.PartialResetSet \\ Запомнить число созданных ФУ
+MainBus.ModeSet=2
+
+Atr2*-20
+
+FSM.RecieverMKSet=Stage1.FindAnd
+FSM.StageProgAdd=Stage1.FindAnd
+
+FSM.StageProgAdd=Stage1.FindAnd={Console.OutLn="Stege 1"}
+FSM.StageProgAdd=Stage2.FindAnd={Console.OutLn="Stege 2"}
+FSM.StageProgAdd=Stage3.FindAnd={Console.OutLn="Stege 3"}
+
+FSM.VarSet#{Atr#S1(0) Atr2#S2(0)}
+InOut.CannelCreate=16
+InOut.IndSet=0
+InOut.SignalAtrSet=Atr
+InOut.SignalMkSet=Console.LnOut
+//InOut.SignalSet_0=4
+InOut.SensitSet=2
+InOut.SensitOutMk=Console.LnOut
+InOut.IndSet=1
+InOut.SignalAtrSet=Atr2
+//InOut.SignalMkSet=Console.LnOut
+InOut.SignalMkSet=FSM.Send
+InOut.SignalSet_0=3
+InOut.SignalSet_1=2
+//InOut.SignalAtrSet=Atr2
+//InOut.SignalSet_0=7
+
+InOut.SignalOutMk_0=Console.OutLn

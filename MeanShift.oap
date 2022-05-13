@@ -1,0 +1,38 @@
+\\ Для создания индексного файла сначала надо запустить программу !!!!
+
+ CapsManager.IndexVectCreate=20000
+ CapsManager.IpIcIdOutMk=MainBus.IpIcIdSet
+ CapsManager.IpIcIdOutMk=VariableManager.IpIcIdSet
+ CapsManager.IpIcIdOutMk=ListSyntez.IpIcIdSet
+ MainBus.ModeSet=1
+\\ -------------------------------------- \\
+MainBus.FUTypeCorrectSet=-96 // Корректировка номера типа ФУ для переноса на новую ОА-платформу
+
+NewFU={Mnemo="Console" FUType=FUConsNew}
+NewFU={Mnemo="MSM" FUType=FUMeanShiftManager}
+
+MainBus.PartialResetSet \\ Запомнить число созданных ФУ
+MainBus.ModeSet=2
+
+MSM.PointsGen=0=10=0=10=100
+MSM.EpsAllSet=15
+//MSM.PointsOutMk=Console.OutLn
+Console.ArrayBracketStartSet=""
+Console.ArrayBracketFinSet=""
+Console.StdOutFileSet="MeanShiftOut.txt"
+MSM.ArcsOutMk=Console.LnOut
+MSM.ClusterNetSet=0=10=4=0=10=4=4
+//MSM.ClusterSet=10=10=3
+MSM.NVSet=10
+MSM.Start
+MSM.ClusterIDSet=-1
+//Console.OutLn
+//Console.OutLn
+//MSM.ClusterNearestPointOutMk=Console.OutLn
+//MSM.ClusterCenterOutMk=Console.OutLn
+
+Console.Ln
+Console.LnOutLn="Cluster history"
+MSM.MigrationHistoryOutMk=Console.OutLn
+//MSM.NAveragePointCallOutMk=Console.OutLn
+//MSM.NAverageClusterMovesOutMk=Console.OutLn

@@ -1,0 +1,107 @@
+\\ Для создания индексного файла сначала надо запустить программу !!!!
+
+ CapsManager.IndexVectCreate=20000
+ CapsManager.IpIcIdOutMk=MainBus.IpIcIdSet
+ CapsManager.IpIcIdOutMk=VariableManager.IpIcIdSet
+ CapsManager.IpIcIdOutMk=ListSyntez.IpIcIdSet
+ MainBus.ModeSet=1
+\\ -------------------------------------- \\
+MainBus.FUTypeCorrectSet=-96 // Корректировка номера типа ФУ для переноса на новую ОА-платформу
+
+NewFU={Mnemo="Console" FUType=FUConsNew}
+NewFU={Mnemo="MFSM" FUType=FUFSM}
+NewFU={Mnemo="In" FUType=FUInOutNew}
+NewFU={Mnemo="Out" FUType=FUInOutNew}
+NewFU={Mnemo="S0" FUType=FUListNew}
+NewFU={Mnemo="S1" FUType=FUListNew}
+NewFU={Mnemo="S2" FUType=FUListNew}
+NewFU={Mnemo="S3" FUType=FUListNew}
+NewFU={Mnemo="S4" FUType=FUListNew}
+NewFU={Mnemo="S5" FUType=FUListNew}
+
+MainBus.PartialResetSet \\ Запомнить число созданных ФУ
+MainBus.ModeSet=2
+
+MFSM.RecieverMKSet=S0.FindAnd
+
+Tout // Внешняя температура
+Tin //  Внутренняя температура
+
+// Программа для ФУ ввода-вывода
+In.ChannelCreate
+Out.ChannelCreate
+
+In.BorderSet=31
+In.BorderUpProgSet={MFSM.Send={Tin=2}}
+In.BorderDownProgSet={MFSM.Send={Tin=1}}
+
+In.BorderSet=26
+In.BorderUpProgSet={MFSM.Send={Tin=1}}
+In.BorderDownProgSet={MFSM.Send={Tin=0}}
+
+In.BorderSet=20
+In.BorderUpProgSet={MFSM.Send={Tin=0}}
+In.BorderDownProgSet={MFSM.Send={Tin=-1}}
+
+In.BorderSet=15 Out.BorderSet=15
+In.BorderUpProgSet={MFSM.Send={Tin=-1}} Out.BorderUpProgSet={MFSM.Send={Tin=-1}}
+In.BorderDownProgSet={MFSM.Send={Tin=-2}}
+
+Out.BorderSet=31
+Out.BorderUpProgSet={MFSM.Send={Tout=2}}
+Out.BorderDownProgSet={MFSM.Send={Tout=1}}
+
+Out.BorderSet=26
+Out.BorderUpProgSet={MFSM.Send={Tout=1}}
+Out.BorderDownProgSet={MFSM.Send={Tout=0}}
+
+Out.BorderSet=20
+Out.BorderUpProgSet={MFSM.Send={Tout=0}}
+Out.BorderDownProgSet={MFSM.Send={Tout=-1}}
+
+Out.BorderSet=15 Out.BorderSet=15
+Out.BorderUpProgSet={MFSM.Send={Tout=-1}} Out.BorderUpProgSet={MFSM.Send={Tout=-1}}
+Out.BorderDownProgSet={MFSM.Send={Tout=-2}}
+
+MFSM.VarSet={Tin Tout} // Задаем атрибуты сигналов
+MFSM.RecieverMKSet=S0.FindAnd
+S0.Set=
+>{Tin=1 Tout=-2=-1=0 Prog Console.OutLn="F+ C- P-" MFSM.RecieverMKSet=S1.FindAnd}
+>{Tin=-2=-1 Tout=-2=-1 Prog Console.OutLn="F- C- P+" MFSM.RecieverMKSet=S2.FindAnd}
+>{Tin=1=2 Tout=-2=-1=0 Prog Console.OutLn="F- C+ P+" MFSM.RecieverMKSet=S3.FindAnd}
+>{Tin=2 Tout=-2=-1=0=1 Prog Console.OutLn="F+ C+ P-" MFSM.RecieverMKSet=S2.FindAnd}
+>{Tin=-2 Tout=-2 Prog Console.OutLn="F+ C- P+" MFSM.RecieverMKSet=S2.FindAnd}
+>{0=nil MFSM.RecieverMKSet=S0.FindAnd Console.OutLn="F- C- P-"}
+
+S1.Set=
+>{Tin=1 Tout=-2=-1=0}
+>{0=nil Prog MFSM.RecieverMKSet=S0.FindAnd MFSM.TemplOutMK=S0.FindAnd}
+
+S2.Set=
+>{Tin=-2=-1 Tout=-2=-1}
+>{0=nil Prog MFSM.RecieverMKSet=S0.FindAnd MFSM.TemplOutMK=S0.FindAnd}
+
+S3.Set=
+>{Tin=1=2 Tout=-2=-1=0}
+>{0=nil Prog MFSM.RecieverMKSet=S0.FindAnd MFSM.TemplOutMK=S0.FindAnd}
+
+S4.Set=
+>{Tin=2 Tout=-2=-1=0=1}
+>{0=nil Prog MFSM.RecieverMKSet=S0.FindAnd MFSM.TemplOutMK=S0.FindAnd}
+
+S5.Set=
+>{Tin=-2 Tout=-2}
+>{0=nil Prog MFSM.RecieverMKSet=S0.FindAnd MFSM.TemplOutMK=S0.FindAnd}
+
+// Тестовые сигналы
+In.SignalSet_0=20
+Out.SignalSet_0=20
+
+In.SignalSet_0=15
+Out.SignalSet_0=20
+
+In.SignalSet_0=18
+Out.SignalSet_0=25
+
+In.SignalSet_0=21
+Out.SignalSet_0=30

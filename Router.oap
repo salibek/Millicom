@@ -1,0 +1,30 @@
+\\ Для создания индексного файла сначала надо запустить программу !!!!
+
+ CapsManager.IndexVectCreate=20000
+ CapsManager.IpIcIdOutMk=MainBus.IpIcIdSet
+ CapsManager.IpIcIdOutMk=VariableManager.IpIcIdSet
+ CapsManager.IpIcIdOutMk=ListSyntez.IpIcIdSet
+ MainBus.ModeSet=1
+\\ -------------------------------------- \\
+MainBus.FUTypeCorrectSet=-96 // Корректировка номера типа ФУ для переноса на новую ОА-платформу
+
+NewFU={Mnemo="Router" FUType=FURouter}
+NewFU={Mnemo="Console" FUType=FUConsNew}
+NewFU={Mnemo="Console2" FUType=FUConsNew}
+
+MainBus.PartialResetSet \\ Запомнить число созданных ФУ
+MainBus.ModeSet=2
+
+Console2.PrefixSet="FU2 "
+Console.PrefixSet="FU1 "
+
+Router.ChCreate=Console.Reset
+//Router.ReceiverMkSet=FUConsNew.OutLn
+Console.ContextOutMk=Router.ReceiverSet
+
+Router.ChCreate=Console2.Reset
+//Router.ReceiverMkSet=FUConsNew.OutLn
+Console2.ContextOutMk=Router.ReceiverSet
+
+Router.Routing={Console.OutLn="Hellow"}
+Router.Routing={Console2.OutLn="Hellow"}

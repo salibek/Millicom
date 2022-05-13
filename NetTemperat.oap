@@ -1,0 +1,85 @@
+\\ Для создания индексного файла сначала надо запустить программу !!!!
+
+ CapsManager.IndexVectCreate=20000
+ CapsManager.IpIcIdOutMk=MainBus.IpIcIdSet
+ CapsManager.IpIcIdOutMk=VariableManager.IpIcIdSet
+ CapsManager.IpIcIdOutMk=ListSyntez.IpIcIdSet
+ MainBus.ModeSet=1
+\\ -------------------------------------- \\
+MainBus.FUTypeCorrectSet=-96 // Корректировка номера типа ФУ для переноса на новую ОА-платформу
+
+NewFU={Mnemo="NetManager" FUType=FUNetManager}
+NewFU={Mnemo="Eventser" FUType=FUEventserNew}
+NewFU={Mnemo="Scheduler" FUType=FUSchedulerNew}
+NewFU={Mnemo="Console" FUType=FUConsNew}
+NewFU={Mnemo="ALUG" FUType=FUALUG}
+NewFU={Mnemo="ALUMain" FUType=FUALUG}
+NewFU={Mnemo="ALUMax" FUType=FUALUG}
+
+MainBus.PartialResetSet \\ Запомнить число созданных ФУ
+MainBus.ModeSet=2
+
+Eventser.ContextOutMk=Scheduler.EventserSet
+Eventser.TimeOutRefMk=Scheduler.CurrTimeRefSet
+Scheduler.SchedulingTimeSet=0.1
+//Scheduler.SchedulingProgSet={FUSchedulerNew.TimeOutMk=Console.Out Console.Out=" "
+//  FUSchedulerNew.MkQueueOutMk=Console.Out  Console.Out=" " FUSchedulerNew.CoreCountOutMk=Console.OutLn}
+
+Scheduler.NCoresSet=2
+
+//NetManager.NtaySet=5
+NetManager.XSet=10
+NetManager.YSet=20
+NetManager.ASet=0.1
+NetManager.hSet=1
+NetManager.taySet=0.2
+NetManager.CalcTimeSet=2
+NetManager.ReadTimeSet=0.2
+Scheduler.ContextOutMk=NetManager.NetSchedulerSet
+NetManager.NetGen
+NetManager.ConstTSet=0=0=99
+//NetManager.FiringProgSet=9=9={NetManager.Start}
+Console.StdOutFileSet="Out.txt"
+//NetManager.ConstTSet=0=2=99
+//NetManager.ConstTSet=3=3=10
+Scheduler.ContextOutMk=NetManager.SchedulerSet
+ALUMax.MaxProgSet={ALUG.Out=MaxCore(0)}
+NetManager.XSet=230
+NetManager.YSet=115
+ALUMain.RangeProgExec=180=0=1={
+	ALUMax.Set=0
+//	ALUMain.OutMk=NetManager.XSet=NetManager.YSet
+	NetManager.XAdd=2
+	NetManager.YAdd=1
+	NetManager.NetGen
+	NetManager.ConstTSet=0=0=99
+	ALUG.RangeProgExec=81=1={
+		Scheduler.Clear
+		ALUG.OutMk=Scheduler.NCoresSet
+		NetManager.Start=1
+//		ALUG.OutMk=Console.Out
+//		Console.Out=" "
+//		Scheduler.MaxMkQueueOutMk=Console.OutLn
+		Scheduler.MaxMkQueueOutMk=ALUMax.Max
+	}
+	NetManager.XOutMk=Console.Out Console.Out=" "
+	NetManager.YOutMk=Console.Out Console.Out=" "
+	Console.Out=MaxCore Console.Out=" "
+//	Scheduler.MaxMkQueueOutMk=Console.OutLn
+	ALUMax.OutMk=Console.OutLn
+}
+//Console.StdOutFileSet
+//NetManager.RezOutCons
+\*
+Console.OutLn="--------"
+Console.Out="Moleling time: "
+Eventser.TimeOutMk=Console.OutLn
+Console.Out="Parallel factor: "
+Scheduler.ParallelFactorOutMk=Console.OutLn
+Console.Out="Average Mk Queue: "
+Scheduler.AverageMkQueueOutMk=Console.OutLn
+Console.Out="Max Average Mk Queue: "
+Scheduler.MaxAverageMkQueueOutMk=Console.OutLn
+
+Console.OutLn
+*\

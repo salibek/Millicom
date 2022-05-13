@@ -1,0 +1,56 @@
+\\ Для создания индексного файла сначала надо запустить программу !!!!
+
+ CapsManager.IndexVectCreate=20000
+ CapsManager.IpIcIdOutMk=MainBus.IpIcIdSet
+ CapsManager.IpIcIdOutMk=VariableManager.IpIcIdSet
+ CapsManager.IpIcIdOutMk=ListSyntez.IpIcIdSet
+ MainBus.ModeSet=1
+\\ -------------------------------------- \\
+MainBus.FUTypeCorrectSet=-96 // Корректировка номера типа ФУ для переноса на новую ОА-платформу
+
+NewFU={Mnemo="LogCons" FUType=FUConsNew Mnemo="Консоль для вывода соощений компилятора"}
+NewFU={Mnemo="Lex" FUType=FULexNew}
+NewFU={Mnemo="Stack" FUType=FUListNew Hint="Стек приоритетов арифметического графа"}
+NewFU={Mnemo="MnemoTable" FUType=FUListNew Hint="Таблица мнемоник"}
+NewFU={Mnemo="OpPriority" FUType=FUListNew Hint="Таблица приоритетов операций"}
+
+NewFU={Mnemo="StartExpr" FUType=FUListNew Hint="Начальное состояние"}
+NewFU={Mnemo="IniWait" FUType=FUListNew Hint="Ожидание присваивания"}
+NewFU={Mnemo="IniEQ" FUType=FUListNew Hint="После присваивания"}
+
+MainBus.PartialResetSet \\ Запомнить число созданных ФУ
+MainBus.ModeSet=2
+// ---------------------
+
+Sep*-4
+Var
+VarInt
+
+OpPriority.Set=
+>{Sep="%" Sep="+" Sep="-"}
+
+Lex.ReceiverMkSet=StartExpr.FindAnd
+Lex.UnicAtrSet=Mnemo
+Lex.UnicMkSet=MnemoTable.FindAnd
+
+MnemoTable.FailProgSet={Lex.OutMk=MnemoTable.LineCopyAdd Lex.OutMk}
+
+\**\StartExpr.Set=
+>{Mnemo Lex.ReceiverMkSet=IniWait.FindAnd}
+>{VarInt Var}
+>{Sep="("}
+>{Sep="++"}
+>{0 LogCons.OutLn="Error"}
+
+\**\IniWait.Set=
+>{Sep="="  Lex.ReceiverMkSet=IniEQ.FindAnd}
+>{0 LogCons.OutLn="Error"}
+
+\**\IniEQ.Set=
+>{Const ConstInt   MnemoTable.LastCopyAttach={Const="Var"} LogCons.OutLn="End compilation" Lex.ReceiverMkSet=StartExpr.FindAnd }
+>{Mnemo Var Lex.ReceiverMkSet=IniWait.FindAnd}
+>{0 LogCons.OutLn="Error"}
+
+Lex.Lexing="i=1"
+
+MnemoTable.OutMk=LogCons.LnOut

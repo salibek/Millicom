@@ -1,0 +1,156 @@
+\\ Для создания индексного файла сначала надо запустить программу !!!!
+
+ CapsManager.IndexVectCreate=20000
+ CapsManager.IpIcIdOutMk=MainBus.IpIcIdSet
+ CapsManager.IpIcIdOutMk=VariableManager.IpIcIdSet
+ CapsManager.IpIcIdOutMk=ListSyntez.IpIcIdSet
+ MainBus.ModeSet=1
+\\ -------------------------------------- \\
+
+MainBus.FUTypeCorrectSet=-96 // Корректировка номера типа ФУ для переноса на новую ОА-платформу
+
+NewFU#{Mnemo#"Console" FUType#FUConsNew}
+NewFU#{Mnemo#"StrSource" FUType#FUStringsSource}
+NewFU#{Mnemo#"Lex" FUType#FULexNew}
+NewFU#{Mnemo#"MnemoTable" FUType#FUListNew Hint#"Таблица описания переменных"}
+NewFU#{Mnemo#"ICStack" FUType#FUListNew Hint#"Стек указателей на ИП"}
+
+NewFU#{Mnemo#"Root" FUType#FUListNew}
+NewFU#{Mnemo#"Root" FUType#FUListNew}
+
+NewFU#{Mnemo#"AfterVar" FUType#FUListNew}
+NewFU#{Mnemo#"Comment" FUType#FUListNew}
+NewFU#{Mnemo#"Comments" FUType#FUListNew}
+NewFU#{Mnemo#"TypeWait" FUType#FUListNew}
+NewFU#{Mnemo#"AfterType1" FUType#FUListNew}
+NewFU#{Mnemo#"AfterTab" FUType#FUListNew}
+NewFU#{Mnemo#"VarWait" FUType#FUListNew}
+NewFU#{Mnemo#"AfterVarDec1" FUType#FUListNew}
+NewFU#{Mnemo#"AfterType2" FUType#FUListNew}
+NewFU#{Mnemo#"EndVarDef" FUType#FUListNew}
+NewFU#{Mnemo#"FUWait" FUType#FUListNew}
+NewFU#{Mnemo#"AfterFU" FUType#FUListNew}
+NewFU#{Mnemo#"MnemoWait" FUType#FUListNew}
+NewFU#{Mnemo#"BeforeType" FUType#FUListNew}
+NewFU#{Mnemo#"AfterVarDec2" FUType#FUListNew}
+NewFU#{Mnemo#"AfterType3" FUType#FUListNew}
+NewFU#{Mnemo#"AfterSharp" FUType#FUListNew}
+NewFU#{Mnemo#"AfterAtrDec" FUType#FUListNew}
+NewFU#{Mnemo#"AfterType4" FUType#FUListNew}
+NewFU#{Mnemo#"EndOfJob" FUType#FUListNew}
+NewFU#{Mnemo#"NewLine" FUType#FUListNew}
+
+
+MainBus.PartialResetSet \\ Запомнить число созданных ФУ
+MainBus.ModeSet=2
+
+Sep*-4
+FU
+ProgAtr * -10
+Type
+
+Lex.UnicAtrSet#Mnemo
+Lex.UnicMkSet#MnemoTable.FindAnd
+
+MnemoTable.Set#
+>{Mnemo#"Bus" FU#1}
+>{Mnemo#"Console" FU#1}
+
+
+Root.Set#
+>{Sep#"{" ProgAtr ICStack.LineCopyAdd={} Console.LnOut="asdsad" Lex.ReceiverMkSet#Root.FindAnd} \\ Увеличить ICD на 1
+>{FU Lex.ReceiverMkSet#FUWait.FindAnd} \\ Увеличить ICD на 1
+>{Sep#">" ProgAtr Lex.ReceiverMkSet#Root.FindAnd} \\ Присвоить GT=1
+>{Sep#"}" ProgAtr ICStack.LineExcludeMk Lex.ReceiverMkSet#Root.FindAnd} \\ Если ICD>0; уменьшить ICD на 1
+>{Type#t ProgAtr Lex.ReceiverMkSet#TypeWait.FindAnd} \\ Переход если ICD>0; присвоить Type 1; если GT=-1, то ICD-=1 и GT=0; если GT=1, то GT=-1
+>{Mnemo ProgAtr Lex.LastLexemaOutMk=MnemoTable.LineCopyAdd Lex.ReceiverMkSet#MnemoWait.FindAnd} \\ Переход если ICD>0; присвоить Type 0; если GT=-1, то ICD-=1 и GT=0; если GT=1, то GT=-1
+//>{Sep#"%" ProgAtr Lex.ReceiverMkSet#Comment.FindAnd}
+//>{Sep#"/*" ProgAtr Lex.ReceiverMkSet#Comments.FindAnd}
+>{0 ProgAtr Console.LnOut="Error" Lex.ReceiverMkSet#EndOfJob.FindAnd} \\ Состояние ошибки
+
+AfterVar.Set#
+>{Sep#"=" ProgAtr Lex.ReceiverMkSet#AfterAtrDec.FindAnd}
+>{0 ProgAtr Lex.LastLexemaOutMk#Root.FindAnd }
+
+TypeWait.Set#
+>{Sep#"::" ProgAtr Lex.ReceiverMkSet#AfterType1.FindAnd}
+>{0 ProgAtr Console.LnOut="Error" Lex.Stop StrSource.Stop}
+
+AfterType1.Set#
+>{Sep#"  " ProgAtr Lex.ReceiverMkSet#AfterTab.FindAnd}
+>{Mnemo#str ProgAtr Lex.ReceiverMkSet#MnemoWait.FindAnd}
+
+AfterTab.Set#
+>{Mnemo#str ProgAtr Lex.ReceiverMkSet#VarWait.FindAnd}
+>{0 ProgAtr Lex.ReceiverMkSet#VarWait.FindAnd}
+
+VarWait.Set#
+>{Sep#"=" ProgAtr Lex.ReceiverMkSet#AfterVarDec1.FindAnd}
+>{0 ProgAtr Console.LnOut="Error" Lex.Stop StrSource.Stop}
+
+AfterVarDec1.Set#
+>{Type ProgAtr Lex.ReceiverMkSet#AfterType2.FindAnd}
+>{Const ProgAtr Lex.ReceiverMkSet#EndVarDef.FindAnd}
+>{0 ProgAtr Console.LnOut="Error" Lex.Stop StrSource.Stop}
+
+AfterType2.Set#
+>{Sep#"::" ProgAtr Lex.ReceiverMkSet#AfterVarDec1.FindAnd}
+
+EndVarDef.Set#
+>{Sep#"," ProgAtr Lex.ReceiverMkSet#AfterTab.FindAnd}
+>{0 ProgAtr Lex.ReceiverMkSet#NewLine.FindAnd}
+
+NewLine.Set#
+>{Sep#"   " ProgAtr Lex.ReceiverMkSet#AfterTab.FindAnd}
+>{0 ProgAtr Lex.LastLexemaOutMk#Root.FindAnd }
+
+FUWait.Set#
+>{Sep#"." ProgAtr Lex.ReceiverMkSet#AfterFU.FindAnd}
+
+AfterFU.Set#
+>{Mnemo#str ProgAtr Lex.ReceiverMkSet#MnemoWait.FindAnd}
+>{0 ProgAtr Console.LnOut="Error" Lex.Stop StrSource.Stop}
+
+MnemoWait.Set#
+>{Sep#"=" ProgAtr Lex.ReceiverMkSet#AfterVarDec2.FindAnd}
+>{Sep#"#" ProgAtr Lex.ReceiverMkSet#AfterSharp.FindAnd}
+>{Sep#"::" ProgAtr Lex.ReceiverMkSet#BeforeType.FindAnd} \\ Тут помимо перехода по сепаратору еще по Type=0
+>{0 ProgAtr Lex.LastLexemaOutMk#Root.FindAnd} \\ Здесь переход по концу строки
+
+AfterVarDec2.Set#
+>{Type ProgAtr Lex.ReceiverMkSet#AfterType3.FindAnd}
+>{Const ConstInt ProgAtr Lex.LastLexemaOutMk#Root.FindAnd}
+
+BeforeType.Set#
+>{Type#t ProgAtr Lex.ReceiverMkSet#MnemoWait.FindAnd}
+
+AfterType3.Set#
+>{Sep#"::" ProgAtr Lex.ReceiverMkSet#AfterVarDec2.FindAnd}
+>{0 ProgAtr Console.LnOut="Error" Lex.Stop}
+
+AfterSharp.Set#
+>{0 ProgAtr Lex.ReceiverMkSet#AfterAtrDec.FindAnd}
+>{Sep#"{" ProgAtr Lex.LastLexemaOutMk#Root.FindAnd} \\ Увеличить ICD на 1
+>{0 ProgAtr Lex.LastLexemaOutMk#Root.FindAnd} \\ Здесь переход по концу строки и увеличить ICD на 1
+
+AfterAtrDec.Set#
+>{Type#t ProgAtr Lex.ReceiverMkSet#AfterType4.FindAnd} \\ Тут помимо перехода по сепаратору еще по Type=0
+>{Mnemo#str ProgAtr Lex.ReceiverMkSet#AfterVar.FindAnd}
+>{Const#c ProgAtr Lex.LastLexemaOutMk#Root.FindAnd}
+
+AfterType4.Set#
+>{Sep#"::" ProgAtr Lex.ReceiverMkSet#AfterAtrDec.FindAnd} \\ Присвоить Type=1
+>{0 ProgAtr Console.LnOut="Error" Lex.Stop}
+
+Comment.Set#
+>{0 ProgAtr Lex.ReceiverMkSet#Comment.FindAnd}
+>{0 ProgAtr Lex.ReceiverMkSet#Root.FindAnd} \\ Переход по концу строки
+
+Comments.Set#
+>{0 ProgAtr Lex.ReceiverMkSet#Comments.FindAnd}
+>{Sep#"*/" ProgAtr Lex.ReceiverMkSet#Root.FindAnd}
+
+Lex.ReceiverMkSet#Root.FindAnd
+Lex.Lexing#"{"
+
+Root.FindAnd#{Sep#"{"}

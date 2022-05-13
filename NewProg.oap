@@ -1,0 +1,20 @@
+\\ Для создания индексного файла сначала надо запустить программу !!!!
+
+ CapsManager.IndexVectCreate=20000
+ CapsManager.IpIcIdOutMk=MainBus.IpIcIdSet
+ CapsManager.IpIcIdOutMk=VariableManager.IpIcIdSet
+ CapsManager.IpIcIdOutMk=ListSyntez.IpIcIdSet
+ MainBus.ModeSet=1
+\\ -------------------------------------- \\
+
+MainBus.FUTypeCorrectSet=-95 // Корректировка номера типа ФУ для переноса на новую ОА-платформу
+
+NewFU={Mnemo="www2" FUType=FUConsNew}
+NewFU={Mnemo="www3" FUType=FUConsNew}
+
+MainBus.PartialResetSet \\ Запомнить число созданных ФУ
+MainBus.ModeSet=2
+
+www2.LnOut=5
+www3.LnOut="Hello2!"
+www3.LnOut="Hello3!"

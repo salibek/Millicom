@@ -1,0 +1,58 @@
+\\ Для создания индексного файла сначала надо запустить программу !!!!
+
+ CapsManager.IndexVectCreate=20000
+ CapsManager.IpIcIdOutMk=MainBus.IpIcIdSet
+ CapsManager.IpIcIdOutMk=VariableManager.IpIcIdSet
+ CapsManager.IpIcIdOutMk=ListSyntez.IpIcIdSet
+ MainBus.ModeSet=1
+\\ -------------------------------------- \\
+MainBus.FUTypeCorrectSet=-96 // Корректировка номера типа ФУ для переноса на новую ОА-платформу
+
+NewFU={Mnemo="NetManager" FUType=FUNetManager}
+NewFU={Mnemo="Eventser" FUType=FUEventserNew}
+NewFU={Mnemo="Scheduler" FUType=FUSchedulerNew}
+NewFU={Mnemo="Console" FUType=FUConsNew}
+
+MainBus.PartialResetSet \\ Запомнить число созданных ФУ
+MainBus.ModeSet=2
+
+Eventser.ContextOutMk=Scheduler.EventserSet
+Eventser.TimeOutRefMk=Scheduler.CurrTimeRefSet
+Scheduler.SchedulingTimeSet=0.1
+//Scheduler.SchedulingProgSet={FUSchedulerNew.TimeOutMk=Console.Out Console.Out=" "
+//  FUSchedulerNew.MkQueueOutMk=Console.Out  Console.Out=" " FUSchedulerNew.CoreCountOutMk=Console.OutLn}
+
+Scheduler.NCoresSet=2
+
+//NetManager.NtaySet=5
+NetManager.XSet=10
+NetManager.YSet=10
+NetManager.ASet=0.1
+NetManager.hSet=1
+NetManager.taySet=0.2
+Scheduler.ContextOutMk=NetManager.NetSchedulerSet
+NetManager.NetGen
+NetManager.ConstTSet=0=0=99
+//NetManager.FiringProgSet=9=9={NetManager.Start}
+Console.StdOutFileSet="Out.txt"
+//NetManager.ConstTSet=0=2=99
+//NetManager.ConstTSet=3=3=10
+NetManager.CalcTimeSet=1
+NetManager.ReadTimeSet=0.5
+Scheduler.ContextOutMk=NetManager.SchedulerSet
+NetManager.Start=1
+//Console.StdOutFileSet
+//NetManager.RezOutCons
+\*
+Console.OutLn="--------"
+Console.Out="Moleling time: "
+Eventser.TimeOutMk=Console.OutLn
+Console.Out="Parallel factor: "
+Scheduler.ParallelFactorOutMk=Console.OutLn
+Console.Out="Average Mk Queue: "
+Scheduler.AverageMkQueueOutMk=Console.OutLn
+Console.Out="Max Average Mk Queue: "
+Scheduler.MaxAverageMkQueueOutMk=Console.OutLn
+
+Console.OutLn
+*\

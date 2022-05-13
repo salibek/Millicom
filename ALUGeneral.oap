@@ -1,0 +1,42 @@
+\\ Для создания индексного файла сначала надо запустить программу !!!!
+
+ CapsManager.IndexVectCreate=20000
+ CapsManager.IpIcIdOutMk=MainBus.IpIcIdSet
+ CapsManager.IpIcIdOutMk=VariableManager.IpIcIdSet
+ CapsManager.IpIcIdOutMk=ListSyntez.IpIcIdSet
+ MainBus.ModeSet=1
+\\ -------------------------------------- \\
+
+MainBus.FUTypeCorrectSet=-96 // Корректировка номера типа ФУ для переноса на новую ОА-платформу
+
+NewFU={Mnemo="UALU" FUType=FUALUG}
+NewFU={Mnemo="Console" FUType=FUConsNew}
+
+MainBus.PartialResetSet \\ Запомнить число созданных ФУ
+MainBus.ModeSet=2
+
+//UALU.GeneralErrorProgSet={Console.LnOut="Program error !!!"}
+UALU.Prog={
+//UALU.Calc={UALU.Set=2 UALU.Mul={UALU.Set=3 UALU.Mul={UALU.Set=2 UALU.Sum=2}} UALU.OutMk=Console.LnOut}
+//UALU.Set=2 UALU.Mul={UALU.Set=3 UALU.Mul={UALU.Set=2 UALU.Sum=2}} UALU.OutMk=Console.LnOut
+
+  UALU.Nop=i(10)
+  UALU.ProgPost={
+    UALU.Calc={UALU.Set=i UALU.Bigger#0}
+    UALU.YesProg={Console.LnOut="YesProg"}
+    UALU.NoProgBreak={Console.LnOut="NoProg"}
+    UALU.Prog={UALU.OutMkSet=Console.LnOut UALU.Calc={UALU.Dec=i}}
+  }
+
+  Console.LnOut="----"
+  UALU.Set=0
+  UALU.Out=i
+
+  UALU.ProgPost={
+    UALU.Calc={UALU.Set=i UALU.Smaller#10}
+    UALU.YesProg={Console.LnOut="YesProg"}
+    UALU.NoProgBreak={Console.LnOut="NoProg"}
+    UALU.Prog={UALU.OutMkSet=Console.LnOut UALU.Calc={UALU.Inc=i}}
+  }
+
+}

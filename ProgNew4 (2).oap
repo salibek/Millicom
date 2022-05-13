@@ -1,0 +1,55 @@
+\\ Для создания индексного файла сначала надо запустить программу !!!!
+
+ CapsManager.IndexVectCreate=20000
+ CapsManager.IpIcIdOutMk=MainBus.IpIcIdSet
+ CapsManager.IpIcIdOutMk=VariableManager.IpIcIdSet
+ CapsManager.IpIcIdOutMk=ListSyntez.IpIcIdSet
+ MainBus.ModeSet=1
+\\ -------------------------------------- \\
+
+MainBus.FUTypeCorrectSet=-96 // Корректировка номера типа ФУ для переноса на новую ОА-платформу
+
+NewFU={Mnemo="Console" FUType=FUConsNew}
+NewFU={Mnemo="Lex" FUType=FULexNew}
+NewFU={Mnemo="GenStr" FUType=FUStrGenNew}
+NewFU={Mnemo="Stack" FUType=FUListNew Hint="Стек"}
+NewFU={Mnemo="MnemoTable" FUType=FUListNew Hint="Таблица индентификаторов переменных"}
+NewFU={Mnemo="Start" FUType=FUListNew Hint="Стартовое состояние автомата"}
+NewFU={Mnemo="AfterMneno" FUType=FUListNew Hint="Состояние после чтения мнемоники"}
+NewFU={Mnemo="AfterMnemAqv" FUType=FUListNew Hint="Состояние после чтения мнемоники"}
+
+MainBus.PartialResetSet \\ Запомнить число созданных ФУ
+MainBus.ModeSet=2
+
+ProgAtr*-10
+MnemoAtr * -1
+SeperatAtr*-2
+IntAtr*-3
+DoubleAtr*-4
+BoolAtr*-5
+StrAtr*-6
+
+Lex.UnicAtrSet=MnemoAtr
+Lex.UnicMkSet=MnemoTable.FindOr
+//Lex.ReceiverMKSet=Console.OutLn
+Lex.ReceiverMKSet=Start.FindOr
+MnemoTable.MkAtrAdd=Lex.LexemaToReceiver
+MnemoTable.MkAtrAdd=Console.LnOut
+MnemoTable.FailAllProgSet={Lex.LastLexemaOutMk=MnemoTable.LineCopyAdd Lex.LastLexemaToReceiver}
+
+Start.Set=
+>{MnemoAtr ProgAtr Console.LnOut="Mnemo" Lex.ReceiverMKSet=AfterMneno.FindOr}
+
+AfterMneno.Set=
+>{SeperatAtr="=" ProgAtr Console.LnOut="AfterMneno" Lex.ReceiverMKSet=AfterMnemAqv.FindOr}
+
+AfterMnemAqv.Set=
+>{0 ProgAtr Console.LnOut="AfterMnemAqv" Lex.LastLexemaOutMk=MnemoTable.CapsCopyToLastLineCopyAttach}
+
+//MnemoTable.Set=
+//>{-2 Console.LnOut={MnemoAtr="sddf"}}
+//>{Separator Lex.LexemaToReceiver={-2="sddf"}}
+//MnemoTable.FindOr={MnemoAtr}
+Lex.Lexing="Mnemo=10"
+Console.LnOut="---MnemoTable-----"
+MnemoTable.OutMk=Console.LnOut

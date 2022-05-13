@@ -1,0 +1,89 @@
+ \\ Для создания индексного файла сначала надо запустить программу !!!!
+
+ CapsManager.IndexVectCreate=20000
+ CapsManager.IpIcIdOutMk=MainBus.IpIcIdSet
+ CapsManager.IpIcIdOutMk=VariableManager.IpIcIdSet
+ CapsManager.IpIcIdOutMk=ListSyntez.IpIcIdSet
+ MainBus.ModeSet=1
+\\ -------------------------------------- \\
+MainBus.FUTypeCorrectSet=-96 // Корректировка номера типа ФУ для переноса на новую ОА-платформу
+
+NewFU#{Mnemo#"Console" FUType#FUConsNew}
+NewFU#{Mnemo#"Lex" FUType#FULexNew}
+NewFU#{Mnemo#"MnemoTable" FUType#FUListNew Hint#"Таблица описания переменных"}
+NewFU#{Mnemo#"ICStack" FUType#FUListNew Hint#"Стек указателей на ИП"}
+
+NewFU#{Mnemo#"MainProg" FUType#FUListNew Hint#"Переход к разбору программы"}
+NewFU#{Mnemo#"Start" FUType#FUListNew Hint#"Стек указателей на ИП"}
+NewFU#{Mnemo#"MainVar" FUType#FUListNew Hint#"Стек указателей на ИП"}
+NewFU#{Mnemo#"ExprStart" FUType#FUListNew Hint#"Стек указателей на ИП"}
+NewFU#{Mnemo#"MainVar" FUType#FUListNew Hint#"Стек указателей на ИП"}
+NewFU#{Mnemo#"OperatWaitSt" FUType#FUListNew Hint#"Стек указателей на ИП"}
+NewFU#{Mnemo#"Expr" FUType#FUListNew Hint#"Стек указателей на ИП"}
+
+MainBus.PartialResetSet \\ Запомнить число созданных ФУ
+MainBus.ModeSet=2
+
+Sep*-4
+
+MnemoTable.Set#
+>{Mnemo="x" Lex.LexemaReplaceToReceiver={VarPointer=10}}
+>{Mnemo="y" Lex.LexemaReplaceToReceiver={VarPointer=1}}
+>{Mnemo="z" Lex.LexemaReplaceToReceiver={VarPointer=3}}
+>{0 Cons.LnOut="Mnemo is not found"}
+MnemoTable.FailAllProgSet={Console.LnOut="Mnemo not found"
+  Lex.LastLexemaOutMk=MnemoTable.LineCopyAdd MnemoTable.LineLastPush
+  Lex.LastLexemaToReceiver}// Добавить описание мнемоники в таблицу
+
+
+Lex.UnicAtrSet#Mnemo
+Lex.UnicMkSet#MnemoTable.FindOr
+
+Start.Set#
+>{VarPointer Console.LnOut="Start" Start.LoadBackOut#temp ICStack.LastCopyAttach#{FUALUG.OutSet=temp(nil)!} Lex.ReceiverMkSet=MainVar.FindOr}
+>{0 Console.LnOut="Error!" Lex.Stop}
+
+MainVar.Set#
+>{Sep#"++"  Start.LoadBackOut#temp ICStack.LastCopyAttach#{FUALUG.Inc=temp(nil)!} Lex.ReceiverMkSet#Start.FindOr}
+>{Sep#"--"  Start.LoadBackOut#temp ICStack.LastCopyAttach#{FUALUG.Dec=temp(nil)!} Lex.ReceiverMkSet#Start.FindOr}
+>{Sep#"+=" Start.LoadBackOut#temp Start.LoadBackOut#temp2 
+  ICStack.LastCopyAttach#{FUALUG.OutSet=temp(nil)! FUALUG.Set#temp2(nil)! FUALUG.Sum} Lex.ReceiverMkSet#ExprStart.FindOr}
+>{Sep#"*=" Start.LoadBackOut#temp Start.LoadBackOut#temp2 
+  ICStack.LastCopyAttach#{FUALUG.OutSet=temp(nil)! FUALUG.Set#temp2(nil)! FUALUG.Mul} Lex.ReceiverMkSet#ExprStart.FindOr}
+>{Sep#"/=" Start.LoadBackOut#temp Start.LoadBackOut#temp2 
+  ICStack.LastCopyAttach#{FUALUG.OutSet=temp(nil)! FUALUG.Set#temp2(nil)! FUALUG.Div} Lex.ReceiverMkSet#ExprStart.FindOr}
+>{Sep#"//=" Start.LoadBackOut#temp Start.LoadBackOut#temp2 
+  ICStack.LastCopyAttach#{FUALUG.OutSet=temp(nil)! FUALUG.Set#temp2(nil)! FUALUG.Div} Lex.ReceiverMkSet#ExprStart.FindOr}
+>{Sep#"%=" Start.LoadBackOut#temp Start.LoadBackOut#temp2 
+  ICStack.LastCopyAttach#{FUALUG.OutSet=temp(nil)! FUALUG.Set#temp2(nil)! FUALUG.Mod} Lex.ReceiverMkSet#ExprStart.FindOr}
+>{Sep#"=" Lex.ReceiverMkSet#ExprStart.FindOr Console.LnOut="="}
+>{Sep#"," Start.LoadBackOut#temp ICStack.LastCopyAttach#{FUALUG.OutSet=temp(nil)!} Lex.ReceiverMkSet#Start.FindOr}
+>{0 Console.LnOut#"Error MainVar" Lex.Stop}
+
+ExprStart.Set#
+>{Sep#"(" Console.LnOut="(" ICStack.LineCopyAddPrevLoadSet#{FUALUG.Set} Lex.ReceiverMkSet#ExprStart.FindOr}
+>{VarPointer Const ConstInt Console.LnOut="VarConst" Start.LoadBackOut#temp ICStack.LastCopyAttach#{FUALUG.OutSet=temp(nil)!} Lex.ReceiverMkSet#OperatWaitSt.FindOr}
+>{0 Console.LnOut#"Error ExprStart" Lex.Stop}
+
+OperatWaitSt.Set#
+>{Sep#")" ICStack.LastLinePopMK Console.LnOut=")" Lex.ReceiverMkSet#OperatWaitSt.FindOr}
+>{Sep#"=" ExprStart.LoadBackOut#temp ICStack.LastCopyAttach#{FUALUG.OutSet=temp(nil)!}  Lex.ReceiverMkSet#MainVar.FindOr}
+>{Sep#"," ExprStart.LoadBackOut#temp ICStack.LastCopyAttach#{FUALUG.OutSet=temp(nil)!}  Lex.ReceiverMkSet#MainVar.FindOr}
+>{Sep#"+" Console.LnOut#"+" ICStack.LastCopyAttach#{FUALUG.Sum}  Lex.ReceiverMkSet#Expr.FindOr}
+>{Sep#"-" Console.LnOut#"-" ICStack.LastCopyAttach#{FUALUG.Sub}  Lex.ReceiverMkSet#Expr.FindOr}
+>{Sep#"*" Console.LnOut#"*" ICStack.LastCopyAttach#{FUALUG.Mul}  Lex.ReceiverMkSet#Expr.FindOr}
+>{Sep#"/" ICStack.LastCopyAttach#{FUALUG.Div}  Lex.ReceiverMkSet#Expr.FindOr}
+>{Sep#"//" ICStack.LastCopyAttach#{FUALUG.Div}  Lex.ReceiverMkSet#Expr.FindOr}
+>{Sep#"%" ExprStart.LoadBackOut#temp ICStack.LastCopyAttach#{FUALUG.Mod=temp(nil)!}  Lex.ReceiverMkSet#Expr.FindOr}
+>{0 Console.LnOut#"End of AL exprassion" Lex.Stop}
+
+Expr.Set#
+>{ConstInt Const VarPointer Console.LnOut#"Expr !!" Expr.LoadBackOutMk=ICStack.LastLoadSet Lex.ReceiverMkSet=OperatWaitSt.FindOr}
+>{Sep#"(" Console.LnOut#"( Expr" ICStack.LineCopyAddPrevLoadSet#{FUALUG.Set} Lex.ReceiverMkSet=Expr.FindOr}
+>{0 Lex.LastLexemaOutMk#Console.LnOut Console.LnOut#"Error Expr" Lex.Stop}
+
+Lex.ReceiverMkSet#Start.FindOr
+Lex.Lexing#"y=(x+1 )" // Запуск копилятора
+//Lex.Lexing#"y=x+x - z*(y+5)" // Запуск копилятора
+ICStack.Set={}
+ICStack.OutMk=Console.LnOut

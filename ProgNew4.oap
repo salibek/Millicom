@@ -1,0 +1,142 @@
+\\ Для создания индексного файла сначала надо запустить программу !!!!
+
+ CapsManager.IndexVectCreate=20000
+ CapsManager.IpIcIdOutMk=MainBus.IpIcIdSet
+ CapsManager.IpIcIdOutMk=VariableManager.IpIcIdSet
+ CapsManager.IpIcIdOutMk=ListSyntez.IpIcIdSet
+ MainBus.ModeSet=1
+\\ -------------------------------------- \\
+
+MainBus.FUTypeCorrectSet=-96 // Корректировка номера типа ФУ для переноса на новую ОА-платформу
+
+NewFU={Mnemo="Console" FUType=FUConsNew}
+NewFU={Mnemo="Lex" FUType=FULexNew}
+NewFU={Mnemo="GenStr" FUType=FUStrGenNew}
+NewFU={Mnemo="Stack" FUType=FUListNew Hint="Стек"}
+NewFU={Mnemo="MnemoTable" FUType=FUListNew Hint="Таблица индентификаторов переменных"}
+NewFU={Mnemo="Start" FUType=FUListNew Hint="Стартовое состояние автомата"}
+NewFU={Mnemo="AfterMnemo" FUType=FUListNew Hint="Состояние после чтения атребута"}
+NewFU={Mnemo="AfterAtrMnemo" FUType=FUListNew Hint="Состояние после чтения мнемоники"}
+NewFU={Mnemo="AfterVar" FUType=FUListNew Hint="Состояние после чтения переменной"}
+NewFU={Mnemo="AfterLoad" FUType=FUListNew Hint="Состояние после чтения нагрузки ИП"}
+NewFU={Mnemo="AfterMnemoEqv" FUType=FUListNew Hint="Состояние после чтения мнемоники"}
+NewFU={Mnemo="AfterFU" FUType=FUListNew Hint="Состояние после чтения мнемоники ФУ"}
+NewFU={Mnemo="MKWait" FUType=FUListNew Hint="Состояние ожидания мнемоники МК"}
+NewFU={Mnemo="AfterAtr" FUType=FUListNew Hint="Состояние после мнемоники МК"}
+NewFU={Mnemo="MkLoadWait" FUType=FUListNew Hint="Состояние ожидания нагрузки МК"}
+
+MainBus.PartialResetSet \\ Запомнить число созданных ФУ
+MainBus.ModeSet=2
+
+ProgAtr*-10
+MnemoAtr * -1
+SeperatAtr*-2
+IntAtr*-3
+DoubleAtr*-4
+BoolAtr*-5
+StrAtr*-6
+IcAtr*-7
+FUAtr*-8
+MKAtr*-9
+
+IntVar*-13
+DoubleVar*-14
+BoolVar*-15
+StrVar*-16
+IcVar*-17
+
+EndAtr // Конц текста программмы
+
+Lex.StopProgSet={GenStr.Stop}
+
+Lex.UnicAtrSet=MnemoAtr
+Lex.UnicMkSet=MnemoTable.FindOr
+Lex.ReceiverMkSet=Start.FindOr
+MnemoTable.MkModeSet
+MnemoTable.FailAllProgSet={Console.LnOut="Mnemo not found"
+  Lex.LastLexemaOutMk=MnemoTable.LineCopyAdd MnemoTable.LineLastPush
+  Lex.LastLexemaToReceiver}// Добавить описание мнемоники в таблицу
+MnemoTable.Set=
+>{MnemoAtr="FU" Lex.LexemaReplaceToReceiver={FUAtr=1}}
+>{MnemoAtr="MK" Lex.LexemaReplaceToReceiver={MKAtr=1}}
+//>{MnemoAtr="Mnemo" Lex.LexemaReplaceToReceiver={IntVar=10}}
+
+Start.Set=
+>{IntAtr ProgAtr Lex.ReceiverMkSet=AfterVar.FindOr}
+>{IntVar DoubleVar BoolVar StrVar ProgAtr Console.LnOut="Var" Lex.ReceiverMkSet=AfterVar.FindOr 
+    MnemoTable.LinePush MnemoTable.LineIpCut MnemoTable.OutMk=Console.LnOut}
+>{MnemoAtr ProgAtr Console.LnOut="Mnemo" Lex.ReceiverMkSet=AfterMnemo.FindOr}
+>{FUAtr ProgAtr  Lex.ReceiverMkSet=AfterFU.FindOr Console.LnOut="FU"}
+>{SeperatAtr="}" Console.LnOut="«} is expected" Lex.Stop}
+>{SeperatAtr="" Console.LnOut="Program is correct"}
+
+>{0 Console.LnOut="Error" Lex.Stop}
+
+\**\AfterVar.Set=
+>{SeperatAtr="=" ProgAtr Console.LnOut="AfterVar" Lex.ReceiverMkSet=AfterMnemoEqv.FindOr}
+>{0 ProgAtr Console.LnOut="'=' is not found!" Lex.Stop Lex.LastLexemaOutMk=Console.LnOut}
+
+\**\AfterFU.Set=
+>{SeperatAtr="." ProgAtr Lex.ReceiverMkSet=MKWait.FindOr Console.LnOut="MkWait"}
+>{EndAtr Console.LnOut="Program is correct"}
+>{0 Console.LnOut="'.' is not found" Lex.Stop}
+
+\**\MKWait.Set=
+>{IntAtr MKAtr ProgAtr Lex.ReceiverMkSet=AfterAtr.FindOr Console.LnOut="Mk is found!"}
+>{SeperatAtr="" Console.LnOut="Program is correct"}
+>{0 ProgAtr  Console.LnOut="MK is not found" Lex.Stop}
+
+\**\AfterAtr.Set=
+>{EndAtr ProgAtr Lex.ReceiverMkSet=MkLoadWait.FindOr Console.LnOut="MkLoadWait"}
+>{SeperatAtr="" Console.LnOut="Program is correct"}
+
+>{0 ProgAtr Console.LnOut="MK without load" Lex.LastLexemaOutMk=Start.FindOr}
+
+\**\MkLoadWait.Set=
+>{IntAtr DoubleAtr BoolAtr StrAtr IntVar DoubleVar BoolVar StrVar IcVar 
+  ProgAtr  Lex.ReceiverMkSet=AfterLoad.FindOr  Console.LnOut="MK with load"}
+>{SeperatAtr="{" ProgAtr MnemoTable.LineCopyAdd={SeperatAtr="{"} Lex.ReceiverMkSet=Start.FindOr}
+>{EndAtr Console.LnOut="Program is correct"}
+>{0 ProgAtr Console.LnOut="Const or var is not found" Lex.Stop}
+
+\**\AfterMnemo.Set=
+>{SeperatAtr="=" ProgAtr Console.LnOut="AfterMneno" Lex.ReceiverMkSet=AfterMnemoEqv.FindOr}
+>{SeperatAtr="*" ProgAtr Console.LnOut="AfterMneno" Lex.ReceiverMkSet=AfterAtrMnemo.FindOr}
+>{SeperatAtr="{" ProgAtr  Stack.LineCopyAdd={Atr="{"} MnemoTable.LastCopyAttach={IcVar}
+   Lex.ReceiverMkSet=Start.FindOr}
+>{0 Console.LnOut="'=' is not found" Lex.Stop}
+
+\**\AfterAtrMnemo.Set=
+>{ConstInt Lex.LastLexemaAtrSet=MKAtr Lex.LastLexemaOutMk=MnemoTable.LineCopyAdd Lex.ReceiverMkSet=Start.FindOr}
+>{0 Console.LnOut="Integer constant is expected" Lex.Stop}
+
+\**\AfterMnemoEqv.Set=
+>{IntVar DoubleVar BoolVar StrVar}
+>{IntAtr ProgAtr Lex.LastLexemaAtrSet=IntVar}
+>{DoubleAtr ProgAtr Lex.LastLexemaAtrSet=DoubleVar}
+>{BoolAtr ProgAtr Lex.LastLexemaAtrSet=BoolVar}
+>{StrAtr ProgAtr Lex.LastLexemaAtrSet=StrVar}
+
+AfterMnemoEqv.SuccessAfterProgSet={
+  MnemoTable.LinePop
+  MnemoTable.LastCopyAttach={Lex.LexemaReplaceToReceiver}
+  Console.LnOut="AfterMnemoEqv"
+  Lex.LastLexemaVarSet
+  Lex.LastLexemaCopyOutMk=MnemoTable.LineLoadSet
+  Lex.ReceiverMkSet=Start.FindOr
+}
+
+\**\AfterLoad.Set=
+>{SeperatAtr="}" ProgAtr Stack.EmptyProgExec={Console.LnOut="'}' without '{'" Lex.Stop}
+Stack.EmptyProgExec={Stack.LastLineDelMk Lex.ReceiverMkSet=Start.FindOr}
+ Lex.ReceiverMkSet=Start.FindOr}
+>{SeperatAtr Console.LnOut="Program is correct"}
+>{0 ProgAtr Lex.LastLexemaOutMk=Start.FindOr Console.LnOut="asdadsasdasdasdasdas"}
+
+//GenStr.ReceiverMkSet=Lex.Lexing
+//GenStr.FinProgSet={Lex.LexemaToReceiver={EndAtr}}
+//GenStr.Start="Prog.txt"
+Lex.Lexing="Mnemo=10 FU.MK"
+//Lex.LexemaToReceiver={EndAtr}
+Console.LnOut="---MnemoTable-----"
+MnemoTable.OutMk=Console.LnOut

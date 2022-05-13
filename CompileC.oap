@@ -1,0 +1,144 @@
+\\ Для создания индексного файла сначала надо запустить программу !!!!
+
+ CapsManager.IndexVectCreate=20000
+ CapsManager.IpIcIdOutMk=MainBus.IpIcIdSet
+ CapsManager.IpIcIdOutMk=VariableManager.IpIcIdSet
+ CapsManager.IpIcIdOutMk=ListSyntez.IpIcIdSet
+ MainBus.ModeSet=1
+\\ -------------------------------------- \\
+MainBus.FUTypeCorrectSet=-96 // Корректировка номера типа ФУ для переноса на новую ОА-платформу
+
+NewFU={Mnemo="LogCons" FUType=FUConsNew Hint="Консоль для вывода логов"}
+NewFU={Mnemo="Str_Gen" FUType=FUStrGenNew Hint="Генератор строк"}
+NewFU={Mnemo="Stack" FUType=FUListNew Hint="Программный стек для генераци ОА-графа"}
+NewFU={Mnemo="MnemoTable" FUType=FUListNew Hint="Таблица мнемоник"}
+NewFU={Mnemo="Lex" FUType=FULexNew Hint="Устройство лексического разбора"}
+
+NewFU={Mnemo="Root" FUType=FUListNew Hint="Стартовое состояние"}
+NewFU={Mnemo="EqualWait" FUType=FUListNew Hint="Ожидание знака равно"}
+NewFU={Mnemo="EqualAfter" FUType=FUListNew Hint="Ожидание символов после знака равно"}
+NewFU={Mnemo="MnemoLoad" FUType=FUListNew Hint="Загрузка мнемоники"}
+NewFU={Mnemo="AtrLoad" FUType=FUListNew Hint="Загрузка атрибута"}
+NewFU={Mnemo="AtrLoad2" FUType=FUListNew Hint="Загрузка атрибута2"}
+NewFU={Mnemo="MnemoLoad2" FUType=FUListNew Hint="Загрузка мнемоники2"}
+NewFU={Mnemo="MnemoLoad3" FUType=FUListNew Hint="Загрузка мнемоники3"}
+NewFU={Mnemo="EqualWait2" FUType=FUListNew Hint="Ожидание знака равно"}
+NewFU={Mnemo="VarWait" FUType=FUListNew Hint="Ожидание переменной"}
+NewFU={Mnemo="ExprWait" FUType=FUListNew Hint="Ожидание выражения"}
+NewFU={Mnemo="ALEAnalysis" FUType=FUListNew Hint="Анализ выражения"}
+
+NewFU={Mnemo="MnemoAnalysis" FUType=FUListNew Hint="Анализ мнемоники"}
+NewFU={Mnemo="ConstWait" FUType=FUListNew Hint="Ожидание константы"}
+NewFU={Mnemo="ConstWait2" FUType=FUListNew Hint="Ожидание константы2"}
+NewFU={Mnemo="VarIniWait" FUType=FUListNew Hint="Ожидание инициализации переменной"}
+NewFU={Mnemo="VarIniWait2" FUType=FUListNew Hint="Ожидание инициализации переменной2"}
+NewFU={Mnemo="AtrWait" FUType=FUListNew Hint="Ожидание атрибута"}
+NewFU={Mnemo="AtrAfter" FUType=FUListNew Hint="Ожидание символов после атрибута"}
+
+MainBus.PartialResetSet \\ Запомнить число созданных ФУ
+MainBus.ModeSet=2
+
+Sep*-4
+Var*-14
+
+Lex.ReceiverMkSet=Root.FindAnd
+
+\**\Root.Set=
+>{Mk Lex.ReceiverMkSet=EqualWait.FindAnd}
+>{Atr Lex.ReceiverMkSet=EqualWait.FindAnd}
+>{Var Lex.ReceiverMkSet=EqualWait2.FindAnd}
+>{Mnemo Lex.ReceiverMkSet=MnemoAnalysis.FindAnd}
+
+\**\EqualWait.Set=
+>{Sep="=" Lex.ReceiverMkSet=EqualAfter.FindAnd}
+>{Sep="}" Lex.ReceiverMkSet=Root.FindAnd}
+>{0 Lex.ReceiverMkSet=Root.FindAnd}
+
+\**\EqualAfter.Set=
+>{Sep=">" Lex.ReceiverMkSet=EqualAfter.FindAnd}
+>{Const Lex.ReceiverMkSet=ExprWait.FindAnd}
+>{Var Lex.ReceiverMkSet=ExprWait.FindAnd}
+>{Mnemo Lex.ReceiverMkSet=MnemoLoad.FindAnd}
+>{Mk Lex.ReceiverMkSet=Root.FindAnd}
+
+\**\MnemoLoad.Set=
+>{Sep="}" Lex.ReceiverMkSet=Root.FindAnd}
+>{Sep="{" Lex.ReceiverMkSet=Root.FindAnd}
+>{Sep="(" Lex.ReceiverMkSet=AtrLoad.FindAnd}
+>{Sep="#" Lex.ReceiverMkSet=MnemoLoad2.FindAnd}
+>{0 Lex.ReceiverMkSet=Root.FindAnd}
+
+\**\AtrLoad.Set=
+>{Atr Lex.ReceiverMkSet=AtrLoad2.FindAnd}
+
+\**\AtrLoad2.Set=
+>{Sep=")" Lex.ReceiverMkSet=Root.FindAnd}
+
+\**\MnemoLoad2.Set=
+\* >{Type Lex.ReceiverMkSet=MnemoLoad3.FindAnd} *\
+
+\**\MnemoLoad3.Set=
+>{Sep="{" Lex.ReceiverMkSet=Root.FindAnd}
+
+\**\EqualWait2.Set=
+>{Sep="`" Lex.ReceiverMkSet=Root.FindAnd}
+>{Sep="=" Lex.ReceiverMkSet=VarWait.FindAnd}
+
+\**\VarWait.Set=
+>{Const Lex.ReceiverMkSet=ExprWait.FindAnd}
+>{Var Lex.ReceiverMkSet=ExprWait.FindAnd}
+
+\**\ExprWait.Set=
+>{Sep="=" Lex.ReceiverMkSet=VarWait.FindAnd}
+>{Sep="+" Lex.ReceiverMkSet=ALEAnalysis.FindAnd}
+>{Sep="-" Lex.ReceiverMkSet=ALEAnalysis.FindAnd}
+>{Sep="*" Lex.ReceiverMkSet=ALEAnalysis.FindAnd}
+>{Sep="/" Lex.ReceiverMkSet=ALEAnalysis.FindAnd}
+>{Sep="//" Lex.ReceiverMkSet=ALEAnalysis.FindAnd}
+>{Sep="%" Lex.ReceiverMkSet=ALEAnalysis.FindAnd}
+>{Sep="**" Lex.ReceiverMkSet=ALEAnalysis.FindAnd}
+>{Sep=">>" Lex.ReceiverMkSet=ALEAnalysis.FindAnd}
+>{Sep="<<" Lex.ReceiverMkSet=ALEAnalysis.FindAnd}
+>{Sep="&"  Lex.ReceiverMkSet=ALEAnalysis.FindAnd}
+>{Sep="&&" Lex.ReceiverMkSet=ALEAnalysis.FindAnd}
+>{Sep="|"  Lex.ReceiverMkSet=ALEAnalysis.FindAnd}
+>{Sep="||" Lex.ReceiverMkSet=ALEAnalysis.FindAnd}
+>{Sep="^"  Lex.ReceiverMkSet=ALEAnalysis.FindAnd}
+>{Sep="^^" Lex.ReceiverMkSet=ALEAnalysis.FindAnd}
+>{0 Lex.ReceiverMkSet=Root.FindAnd}
+
+\**\ALEAnalysis.Set=
+
+\*                   *\
+
+\**\MnemoAnalysis.Set=
+>{Sep="(" Lex.ReceiverMkSet=AtrWait.FindAnd}
+>{Sep="=" Lex.ReceiverMkSet=VarIniWait.FindAnd}
+>{Sep="#" Lex.ReceiverMkSet=ConstWait.FindAnd}
+>{Sep="*" Lex.ReceiverMkSet=ConstWait2.FindAnd}
+>{0 Lex.ReceiverMkSet=Root.FindAnd}
+
+\**\ConstWait.Set=
+>{Const Lex.ReceiverMkSet=Root.FindAnd}
+
+\**\ConstWait2.Set=
+>{Const Lex.ReceiverMkSet=Root.FindAnd}
+
+\**\VarIniWait.Set=
+>{Const Lex.ReceiverMkSet=Root.FindAnd}
+>{Var Lex.ReceiverMkSet=Root.FindAnd}
+>{Mnemo Lex.ReceiverMkSet=VarIniWait2.FindAnd}
+
+\**\VarIniWait2.Set=
+>{Sep="=" Lex.ReceiverMkSet=VarIniWait.FindAnd}
+
+\**\AtrWait.Set=
+>{Atr Lex.ReceiverMkSet=AtrAfter.FindAnd}
+
+\**\AtrAfter.Set=
+>{Sep=")" Lex.ReceiverMkSet=Root.FindAnd}
+>{0 Lex.ReceiverMkSet=Root.FindAnd}
+
+
+
+Lex.Lexing="d=3 s={Atr=0}"

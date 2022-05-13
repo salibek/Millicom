@@ -1,0 +1,62 @@
+\\ Для создания индексного файла сначала надо запустить программу !!!!
+
+ CapsManager.IndexVectCreate=20000
+ CapsManager.IpIcIdOutMk=MainBus.IpIcIdSet
+ CapsManager.IpIcIdOutMk=VariableManager.IpIcIdSet
+ CapsManager.IpIcIdOutMk=ListSyntez.IpIcIdSet
+ MainBus.ModeSet=1
+\\ -------------------------------------- \\
+MainBus.FUTypeCorrectSet=-96 // Корректировка номера типа ФУ для переноса на новую ОА-платформу
+
+NewFU={Mnemo="NetManager" FUType=FUNetManager}
+NewFU={Mnemo="Eventser" FUType=FUEventserNew}
+NewFU={Mnemo="Scheduler" FUType=FUSchedulerNew}
+NewFU={Mnemo="ConsTime" FUType=FUConsNew}
+NewFU={Mnemo="ConsMk" FUType=FUConsNew}
+NewFU={Mnemo="ALUG" FUType=FUALUG}
+NewFU={Mnemo="ALUCores" FUType=FUALUG}
+NewFU={Mnemo="ALUSize" FUType=FUALUG}
+NewFU={Mnemo="ALUMain" FUType=FUALUG}
+NewFU={Mnemo="ALUMax" FUType=FUALUG}
+
+MainBus.PartialResetSet \\ Запомнить число созданных ФУ
+MainBus.ModeSet=2
+
+Eventser.ContextOutMk=Scheduler.EventserSet
+Eventser.TimeOutRefMk=Scheduler.CurrTimeRefSet
+Scheduler.SchedulingTimeSet=0.1
+//Scheduler.SchedulingProgSet={FUSchedulerNew.TimeOutMk=Console.Out Console.Out=" "
+//  FUSchedulerNew.MkQueueOutMk=Console.Out  Console.Out=" " FUSchedulerNew.CoreCountOutMk=Console.OutLn}
+
+//Scheduler.NCoresSet=2
+
+Scheduler.ContextOutMk=NetManager.SchedulerSet
+Scheduler.ContextOutMk=NetManager.NetSchedulerSet
+
+NetManager.XSet=20
+NetManager.YSet=20
+NetManager.ASet=0.1
+NetManager.hSet=1
+NetManager.taySet=0.2
+NetManager.CalcTimeSet=2
+NetManager.ReadTimeSet=0.2
+ConsMk.StdOutFileSet="OutMk.txt"
+ConsTime.StdOutFileSet="OutTime.txt"
+ALUSize.RangeProgExec=71=20=1={
+	NetManager.XAdd=1 // Прибавить к размерности 2
+	NetManager.YAdd=1
+	NetManager.NetGen
+	NetManager.ConstTSet=0=0=99
+	ALUCores.RangeProgExec=71=2={
+		Scheduler.Clear
+		ALUCores.OutMk=Scheduler.NCoresSet
+		NetManager.Start=1
+		ConsMk.StdOutFileAppend="OutMk.txt"
+		Scheduler.MaxMkQueueOutMk=ConsMk.Out ConsMk.Out=" "
+		ConsTime.StdOutFileAppend="OutTime.txt"
+		Eventser.TimeOutMk=ConsTime.Out ConsTime.Out=" "
+	}
+	ConsTime.OutLn
+	ConsMk.StdOutFileAppend="OutMk.txt"
+	ConsMk.LnOut
+}
