@@ -564,6 +564,7 @@ void List::ProgFU(int MK, LoadPoint Load)
 	case 236: // FindAndSource Поиск И в источнике
 	case 237: // FindAndSourceLastLine Поиск И в источнике в последней строке
 	{
+
 		Stack.back().LineCount = 0; // счетчик совпадений
 		Stack.back().LineNumOld = Stack.back().LineNum;
 		Stack.back().LineNum = 0; // Номер первой совпадающей линии
