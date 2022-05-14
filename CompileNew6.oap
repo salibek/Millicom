@@ -4528,7 +4528,7 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
     Obj={Mk=241 Mnemo="SubRootAdd" Hint="Добавить новый уровень в корневой список и спуститься на него оставить в стеке уровней ссылку на предыдущую ИК"}
     Obj={Mk=242 Mnemo="SubRootCopyAdd" Hint="Добавить на новый уровень в корневой список копию ИК и спуститься на него оставить в стеке уровней ссылку на предыдущую ИК"}
     Obj={Mk=238 Mnemo="ToRoot" Hint="Переход к корневому уровню списка"}
-    Obj={Mk=250 Mnemo="SubUp" Hint="Перейти на уровень выше"}
+    Obj={Mk=250 Mnemo="SubUp" Hint="Перейти на уровень выше (на входе количество уровней наверх, по умолчанию 1)"}
     Obj={Mk=251 Mnemo="SubUpDel" Hint="Перейти на уровень выше и уничтожить текущий уровень"}
     Obj={Mk=252 Mnemo="SubUpDelGraph" Hint="Перейти на уровень выше и уничтожить текущий уровень с подсписками"}
     Obj={Mk=253 Mnemo="SubDeepOut" Hint="Выдать номер текущего уровня"}
@@ -5080,7 +5080,6 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 	 Obj={Mk=1 Mnemo="ChCreate" Hint="Создать новый канал (на входе МК нижняя граница диапазона)"}
 	 Obj={Mk=3 Mnemo="ChClear" Hint="Сбросить настройки каналов"}
 	 Obj={Mk=5 Mnemo="DelayTimeSet" Hint="Установить время передачи МК"}
-	 Obj={Mk=6 Mnemo="MkCounterSet" Hint="Установить значение счетчика МК"}
 	 Obj={Mk=8 Mnemo="ErrRoutingProgset" Hint="Ссылка на программу обработки ошибки 'Не найден маршрут'"}
 	 Obj={Mk=9 Mnemo="ReceiverMkDefaultSet" Hint="Установить значение МК для приемника по умолчанию"}
 	 Obj={Mk=10 Mnemo="ReceiverSet" Hint="Установить адрес ФУ-приемника"}

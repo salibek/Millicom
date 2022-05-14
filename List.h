@@ -2,7 +2,7 @@
 #pragma once
 #include "Consts.h"
 #include "Search.h"
-
+/*
 class ListContext
 {
 public:
@@ -12,12 +12,18 @@ public:
 	int LineCount = 0; //  оличество найденных строк
 	bool StopSearch = false; // ‘лаг прекращени€ поиска в текущей иерархии
 };
-
+*/
 class List : public FU
 {
 public:
 	void ProgFU(int MK, LoadPoint Load) override;
-	vector<ListContext> Stack;
+	vector<IC_type> ListHead;
+
+	ip* LineUk = nullptr; // ”казатель на найленную строку списка
+	int LineNum = -1, LineNumOld = -1; // Ќомер первой совпадающей линии, номер предыдущей совпадающей линии
+	int LineCount = 0; //  оличество найденных строк
+	bool StopSearch = false; // ‘лаг прекращени€ поиска в текущей иерархии
+
 	int MultiLineMode = 0; // 0 - поиск только первого совпадени€, 1 - поиск всех совпадений
 	int MultiLavelSearch = 0; // –ежим поиска на нескольких уровн€х списка
 	// 0 - на текущем уровне, 1 - на всех уровн€х, 2- только в текущей иерархии
@@ -47,4 +53,5 @@ public:
 	List(FU *BusContext, FU *Templ) : FU(BusContext) { ProgFU(0, { 0, nullptr }); Bus = BusContext; Searcher.MainFU = this; };
 	List() : FU() { List(nullptr, nullptr); };
 private:
+	int DeepStartSearch = 0; // —тартовый уровень дл€ пописка
 };

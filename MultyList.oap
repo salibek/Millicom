@@ -19,13 +19,19 @@ Console.AtrMnemoAdd={Atr="Atr" Mk="Mk" -6="SubObj"}
 //List.Set=
 //>{Atr="Atr" Mk="Mk"}
 //>{Atr=0}
+temp
+>{2=2}
+>{3=3}
 
-List.SubRootCopyAdd={0=0}
-List.LineAdd={Atr=1}
-List.MultiListModeSet
+//List.MultiListModeSet
+//List.SubRootCopyAdd={1=0}
+List.LineAdd={Atr=1 Obj=temp!}
 List.SuccessProgSet={FUListNew.LineOutMk=Console.OutLn}
 List.ToRoot
-List.LineAdd={Atr=2}
-List.FindAnd={Atr=2}
+List.LineAdd={Atr=2}	
+List.FindAnd={Atr=1}
+List.SubDown
+List.FindAnd={3=3}
 
+List.ToRoot
 List.OutMk=Console.OutLn
