@@ -46,31 +46,74 @@ void GraphTransf::ProgFU(int MK, LoadPoint Load)
 			LTable->DelLineWithPoint(Load.Point);
 			break;
 	////////////////////////// аккумулятор для конкатенации ИК ////////////////////////////
-		case 45: // AccumSet Установить указатель в аккумулятор
+		case 45: // NavigatorPush Добавить бегунок
 			if (Load.Type >> 1 == DIC) {
 				navigator.CapsPush((IC_type)Load.Point, PBuf);
 			}
 			break;
-		case 46: // AccumPop Удалить указатель из аккумулятора
+		case 46: // NavigatorPop Удалить бегунок
 			if (navigator.size() > 0)
 				navigator.CapsPop();
 			break;
+		case 47: // OpenrandSet Установить операнд
+			Operands.clear();
+			Operands.push_back((IC_type)Load.Point);
+			break;
+		case 48: // OpenrandAdd Добавить операнд
+			Operands.push_back((IC_type)Load.Point);
+			break;
+		case 49: // OperandPop Удалить последний операнд
+			Operands.pop_back();
+			break;
 	////////////////////////// Конкатенация ИК ////////////////////////////
-		case 50: // Concat Конкатенировать ИК
-		case 51: // ConcatCopy Конкатенировать копию ИК
-			if (Load.Type >> 1 == DIC){
-				for (auto i = ((IC_type)Load.Point)->begin()._Ptr; i != ((IC_type)Load.Point)->end()._Ptr; i++) {
-					navigator.CurrentPos()->Ic->push_back(*i);
-				}
+		case 50: // ConcatFormIPToIP Конкатенировать ИК из нагрузки (на входе 2 ИП для того, чтобы найти ИП в приемниек и в источнике)
+		case 51: // MoveFormIPToIP Конкатенировать ИК из нагрузки и удалить нагрузку ИП (на входе 2 ИП для того, чтобы найти ИП в приемниек и в источнике)
+		case 52: // ConcatFormIPDelIP Конкатенировать ИК из нагрузки и удалить ИП (на входе 2 ИП для того, чтобы найти ИП в приемниек и в источнике)
+		{
+			if (!Load.isIC() || ICLen(Load.Point) < 2 || Operands.size() < 2) break;
+			vector<void*>* Op2 = LTable->GetLine(Operands.back());
+			vector<void*>* Op1 = LTable->GetLine(*(Operands.end()-2));
+			if (Op1 == nullptr || Op2 == nullptr) break;
+			auto ip1 = IPSearch(*(Op1->begin() + 1), *(((IC_type)Load.Point)->begin()));
+			if (ip1 == ((IC_type)*(Op1->begin() + 1))->end() ) break;
+			for (auto i = Op2->begin() + 1; i != Op2->end(); i++)
+			{
+				auto ip2 = IPSearch(*i, *(((IC_type)Load.Point)->begin() + 1));
+				if (ip2 == ((IC_type) * (Op2->begin() + 1))->end()) continue;
+				if (ICLen(Load.Point) == 2)
+					ICCopyConcat(ip1->Load.Point, ip2->Load.Point);
+				else
+					IPAdd(ip1->Load, { (((IC_type)Load.Point)->begin() +2)->atr , ICCopy(ip2->Load) });
+				if (MK == 51 || MK==52) ICDel(ip2->Load); // Удаление исходной ИК
+				if (MK == 52)
+					((IC_type) * (Op2->begin() + 1))->erase(ip2);
 			}
-			if(MK==50) delete (IC_type)Load.Point;
+			break;
+		}
+
+		case 54: // ConcatCopy Конкатенировать копию ИК с первым операндом
+			if (Load.isIC() && Operands.size())
+			{
+				vector<void*>* Op2 = LTable->GetLine(Load.Point);
+				vector<void*>* Op1 = LTable->GetLine(Operands.back());
+				if (Op1 == nullptr || Op2 == nullptr) break;
+				for(auto i=Op1->begin()+1; i!=Op1->end();i++)
+					for (auto j = Op2->begin() + 1; j != Op2->end(); j++)
+						ICCopyConcat((IC_type)*i, (IC_type)*j);
+				//			if (Load.Type >> 1 == DIC){
+				//				for (auto i = ((IC_type)Load.Point)->begin()._Ptr; i != ((IC_type)Load.Point)->end()._Ptr; i++) {
+				//					navigator.CurrentPos()->Ic->push_back(*i);
+				//				}
+				//			}
+				//if (MK == 50) delete (IC_type)Load.Point;
+			}
 			break;
 		case 55: // ConcatOfAccum Конкатенировать ИК
 		case 56: // ConcatCopyOfAccum Конкатенировать копию ИК
 			if (Load.Type >> 1 == DIC)
-				copy(Accum.back()->begin(), Accum.back()->end(), inserter(*Accum.back(), ((IC_type)Load.Point)->end()));
-			if (MK == 55) { delete Accum.back(); Accum.pop_back();}
-			for (auto i = Accum.begin()._Ptr; i < Accum.end()._Ptr; i++) {
+				copy(Operands.back()->begin(), Operands.back()->end(), inserter(*Operands.back(), ((IC_type)Load.Point)->end()));
+			if (MK == 55) { delete Operands.back(); Operands.pop_back();}
+			for (auto i = Operands.begin()._Ptr; i < Operands.end()._Ptr; i++) {
 				cout << i << endl;
 			}
 			break;
@@ -122,12 +165,32 @@ void GraphTransf::ProgFU(int MK, LoadPoint Load)
 			}
 			break;
 	////////////////////////// Удаление ////////////////////////////
-		case 70: // DelIp  удаление Одиночной ИП (если в буфере для удаления присутствуют адреса ИП, эти ИП тоже удаляются)
+		case 70: // DelIp  удаление Одиночной ИП (Ранее в операнд необходимо установить ссылку на ИК, где удаляется ИП)
 		{
+			if (!Operands.size() || !(Load.isIC() || Load.isIP())) break;
+			vector<void*>* Op1 = LTable->GetLine(Operands.back());
+			vector<void*>* Op2 = LTable->GetLine(Load.Point);
+			if (Op1 == nullptr || Op2 == nullptr) break;
+			for (auto i = Op1->begin() + 1; i != Op1->end(); i++)
+				for(auto j=(*(IC_type) *i).begin(); j != (*(IC_type) *i).end(); j++)
+					if((void*)j._Ptr==*(Op2->begin()+1))
+					{
+						(*(IC_type)*i).erase(j);
+						break;
+					}
+			/*
 			vector<void*>* row = LTable->GetRow(Load.Point);
 			if (row != nullptr && row->size() > 1) {
+				ip* IP;
+				if (Load.isIP())
+					IP = (ip*)Load.Point;
+				else if (Load.isIC())
+					IP = ((IC_type)Load.Point)->begin()._Ptr;
+				else
+					return;
+
 				for (auto i = ((IC_type)row->at(1))->begin(); i != ((IC_type)row->at(1))->end(); i++)
-					if (IPCmp((ip*)i._Ptr, (ip*)Load.Point)) {
+					if (IPCmp((ip*)i._Ptr, IP)) {
 						delIC.IC = new vector<ip*>();
 						delIC.IC->push_back((ip*)i._Ptr);
 						((IC_type)row->at(1))->erase(i);
@@ -145,8 +208,9 @@ void GraphTransf::ProgFU(int MK, LoadPoint Load)
 						}
 					}
 				}
-				navigator.currentPos->erase(navigator.currentPos->begin() + i);
+			navigator.currentPos->erase(navigator.currentPos->begin() + i);
 			}
+			*/
 			break;
 		}
 		case 71: // DelIpAdd Добавить ИП для пакетного удаления

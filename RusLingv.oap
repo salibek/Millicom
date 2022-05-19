@@ -1,0 +1,65 @@
+\\ Для создания индексного файла сначала надо запустить программу !!!!
+
+ CapsManager.IndexVectCreate=20000
+ CapsManager.IpIcIdOutMk=MainBus.IpIcIdSet
+ CapsManager.IpIcIdOutMk=VariableManager.IpIcIdSet
+ CapsManager.IpIcIdOutMk=ListSyntez.IpIcIdSet
+ MainBus.ModeSet=1
+\\ -------------------------------------- \\
+MainBus.FUTypeCorrectSet=-96 // Корректировка номера типа ФУ для переноса на новую ОА-платформу
+
+NewFU={Mnemo="Console" FUType=FUConsNew}
+NewFU={Mnemo="Graph" FUType=FUGraphTransf}
+
+MainBus.PartialResetSet \\ Запомнить число созданных ФУ
+MainBus.ModeSet=2
+
+POS
+SemProp
+Stage // Состояние
+
+NOUN#1
+VERB#2
+
+Voc{
+Obj=a1{POS=NOUN SemProp=aa1{Atr=4}}
+c1[Obj=a2{POS=VERB SemProp=aa2{Atr=3}}
+}
+
+VocTempl{
+Obj=b1{POS=NOUN SemProp=bb1{Atr=4}}
+d1[Obj=b2{POS=VERB SemProp=bb2{Atr=3}}
+}
+
+// Заполнение таблицы соответствия адресов
+Graph.AddLine=VocTempl
+Graph.AddToLastLine=Voc
+
+Graph.AddLine=dl
+Graph.AddToLastLine=c1
+
+Graph.AddLine=b1
+Graph.AddToLastLine=a1
+
+Graph.AddLine=b2
+Graph.AddToLastLine=a2
+
+Graph.AddLine=bb1
+Graph.AddToLastLine=aa1
+
+Graph.AddLine=bb2
+Graph.AddToLastLine=aa2
+// ------------------------
+
+Graph.OpenrandSet=b1
+Graph.OpenrandAdd=b2
+Graph.ConcatFromIPDelIP={SemProp SemProp Stage }
+
+//Graph.ConcatCopy=bb2
+//Graph.OpenrandSet=b2
+Graph.OpenrandSet=VocTempl
+Graph.DelIp=d1
+
+Console.AtrMnemoAdd={Atr="Atr" Mk="Mk" -6="Obj" POS="POS" SemProp="SemProp" Stage="Stage"}
+Console.OutLn=Voc
+

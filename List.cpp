@@ -343,7 +343,7 @@ void List::ProgFU(int MK, LoadPoint Load)
 		if (Load.Point == nullptr)
 			ListHead.back()->push_back({ LineAtr, TIC, new vector<ip> });
 		else
-			ListHead.back()->push_back({ LineAtr, TIC, ICCopy(Load) });
+			ListHead.back()->push_back({ LineAtr, TIC, ICCopy(Load).Point });
 		if (ListHead.back()->size() > 1 && ListHead.back()->back().Load.Point!=nullptr && ListHead.back()->back().Load.Type>>1==DIC)
 			((IC_type)ListHead.back()->at(ListHead.back()->size() - 2).Load.Point)->back().Load = ListHead.back()->back().Load;
 		if (MK == 159)
@@ -360,7 +360,7 @@ void List::ProgFU(int MK, LoadPoint Load)
 	case 161: // LineCopyAdd Добавить копию строки
 		if (ListHead.back() == nullptr) ListHead.back() = new vector<ip>;
 		if (Load.Point != nullptr)
-			ListHead.back()->push_back({ LineAtr, TIC, ICCopy(Load) });
+			ListHead.back()->push_back({ LineAtr, TIC, ICCopy(Load).Point });
 		break;
 //	case 163: //  LineCopyAddPrevLoadSet Добавить линию в список и поместить ссылку на нее в нагрузку последней ИП последней строки
 //	 	if (ListHead.back() == nullptr) ListHead.back() = new vector<ip>;
@@ -509,7 +509,7 @@ void List::ProgFU(int MK, LoadPoint Load)
 				else
 				{
 					t->back().Load.Type = Load.Type;
-					t->back().Load.Point = ICCopy(Load);
+					t->back().Load.Point = ICCopy(Load).Point;
 				}
 				break;
 			case 189:

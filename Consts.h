@@ -64,6 +64,7 @@ public:
 	bool isDigit(int type = -1) { int t = type < 0 ? Type : type;  return t >> 1 == Dint || t >> 1 == Dchar || t >> 1 == Dfloat || t >> 1 == Ddouble; }; // 
 	bool isDigitBool(int type=-1) { int t = type < 0 ? Type : type; return t >> 1 == Dint || t >> 1 == Dchar || t >> 1 == Dfloat || t >> 1 == Ddouble || t >> 1 == Dbool; }; // Число или булеан?
 	bool isIC(); // Определить указывает ли ссылка на ИК
+	bool isIP(); // Определить указывает ли ссылка на ИП
 	bool IpTest() { return (Type >> 1 == DIP || Type >> 1 == DIC); } // Является ли нагрузка ИП?
 	bool IsConvert(unsigned int T) {}; // Тест на возможность конвертации значения из Point в определенный тип
 	bool IsProg() { return Point!=nullptr && Type >> 1 == DIC; }; // Определение может ли быть нагрузка программой
@@ -110,7 +111,6 @@ public:
 //		if (Type >> 1 == DIC) return { DIP,((IC_type)Point)->begin()._Ptr};
 //		return { 0,nullptr };
 	};
-
 };
 
 // struct TAtrMnemo
@@ -146,6 +146,14 @@ public:
 			Load.Copy(((vector<ip>*)LP.Point)->begin()->Load);
 		}
 	};
+
+	ip copy() // Копирование ИП
+	{
+		ip* ip_new = new ip;
+		ip_new->copy(*this);
+		return *ip_new;
+	};
+
 	ip* Сlone()
 	{
 		ip* ip_new = new ip;
@@ -226,15 +234,23 @@ private:
 
 //void GraphDel(void* Uk, LocatTable* Table = nullptr); // Удаление ОА-графа
 void ICDel(void* Uk);// Удаление ИК
+void ICDel(LoadPoint &Uk);// Удаление ИК
 
-void* ICCopy(LoadPoint uk);// Копирование ИК
+LoadPoint ICCopy(LoadPoint uk);// Копирование ИК
+void ICCopyConcat(void* uk, void* uk2); // Конкатенация двух ИК
+int ICLen(void* uk); // Определитель длины ИК
 
 //void ProgExec(void *Uk, FU* Bus, vector<ip>::iterator *Start=nullptr); // Исполнение программы из ИК
 
 bool LoadCmp(LoadPoint x, LoadPoint y); // Сравнение двух нагрузок ИП
 bool IPCmp(ip* x, ip* y); // Сравнение двух  ИП
+vector<ip>::iterator IPSearch(void* ic, ip IP); // Поиск ИП в ИК (возвращается указатель на персую найденную ИП
+vector<ip>::iterator IPSearch(void* ic, LoadPoint IP); // Поиск ИП в ИК (возвращается указатель на персую найденную ИП
 void AtrProgExec(vector<ip>* Prog, int Atr, FU* Bus=nullptr, bool AfterContinue = false); // Найти в ИК ИП с атрибутом Atr и выполнить программу либо по адр. в нагрузке, либо после найденной ИП
 //void AddOrReplIPAtr(vector<ip>* UK, ip* IP); // 
 ip* AtrFind(void* IC, int Atr); // Поиск в ИК ИП с заданным атрибутом. На выходе указатель на ИП или NULLL
 bool AtrSearch(void* uk, int Atr); // Поиск атриубута в ИК
 int AtrCounter(void* uk, int Atr); // Подсчет количества ИП с заданнным атриубутом в ИК
+
+void IPAdd(void* IC, ip IP); // Добавить ИП в конец ИК
+void IPAdd(LoadPoint IC, ip IP); // Добавить ИП в конец ИК

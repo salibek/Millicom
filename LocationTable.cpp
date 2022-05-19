@@ -7,6 +7,14 @@ LocatTable::LocatTable() {  // конструктор класса, вызывается при создании объек
 	Table = new vector<vector<void*>>();
 }
 
+vector<void*>* LocatTable::GetLine(void* Point) // Выдать ссылку на линию списка, где обнаружилось совпадение
+{
+	for (auto i = Table->begin(); i != Table->end(); i++)
+		if (*i->begin() == Point)
+			return i._Ptr;
+	return nullptr;
+}
+
 vector<void*>* LocatTable::GetRow(void* Point)
 {
 	for (auto i = Table->begin(); i != Table->end(); i++) {

@@ -4533,7 +4533,7 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
     Obj={Mk=252 Mnemo="SubUpDelGraph" Hint="Перейти на уровень выше и уничтожить текущий уровень с подсписками"}
     Obj={Mk=253 Mnemo="SubDeepOut" Hint="Выдать номер текущего уровня"}
     Obj={Mk=254 Mnemo="SubDeepOutMk" Hint="Выдать МК с номером текущего уровня"}
-    Obj={Mk=255 Mnemo="SubDown" Hint="Перейти на уровень ниже (по умолчанию переход осуществляется на текущую найденную строку"}
+    Obj={Mk=255 Mnemo="SubDown" Hint="SubDown Перейти на уровень ниже (переход осуществляется на текущей найденной строке) в нагрузке атрибут указателя на подсписок (по умолчанию атрибут строки). Если в нагрузке IC, то переход текущего списка на этот указатель"}
   }
   Obj={Mk=1 Mnemo="Set" Hint="Установить указатель на список"}
   Obj={Mk=2 Mnemo="Out" Hint="Выдать ссылку на список"}
@@ -4593,17 +4593,23 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
   Obj={Mk=18 Mnemo="Index" Hint="Получить индекс указателя"}
   Obj={Mk=19 Mnemo="DelLastLine" Hint="Удалить последнюю линию"}
   Obj={Mk=20 Mnemo="DelLineWithPoint" Hint="Удалить линию с адресом"}
-  Obj={Mk=45 Mnemo="AccumSet" Hint="Установить указатель в аккумулятор"}
-  Obj={Mk=46 Mnemo="AccumPop" Hint="Удалить указатель из аккумулятора"}
-  Obj={Mk=50 Mnemo="Concat" Hint="Конкатенировать ИК"}
-  Obj={Mk=51 Mnemo="ConcatCopy" Hint="Конкатенировать и копировать ИК"}
+  Obj={Mk=45 Mnemo="NavigatorPush" Hint="Добавить бегунок"}
+  Obj={Mk=46 Mnemo="NavigatorPop" Hint="Удалить бегунок"}
+  Obj={Mk=47 Mnemo="OpenrandSet" Hint="Установить операнд"}
+  Obj={Mk=48 Mnemo="OpenrandAdd" Hint="Добавить операнд"}
+  Obj={Mk=49 Mnemo="OperandPop" Hint="Удалить последний операнд"}
+
+  Obj={Mk=50 Mnemo="ConcatFormIPToIP" Hint="Конкатенировать ИК из нагрузки (на входе 2 ИП для того, чтобы найти ИП в приемниек и в источнике)"}
+  Obj={Mk=51 Mnemo="MoveFromIPToIP" Hint="Конкатенировать ИК из нагрузки и удалить нагрузку ИП (на входе 2 ИП для того, чтобы найти ИП в приемниек и в источнике)"}
+  Obj={Mk=52 Mnemo="ConcatFromIPDelIP" Hint="Конкатенировать ИК из нагрузки и удалить ИП (на входе 2 ИП для того, чтобы найти ИП в приемниек и в источнике)"}
+  Obj={Mk=54 Mnemo="ConcatCopy" Hint="Конкатенировать и копировать ИК"}
   Obj={Mk=55 Mnemo="ConcatOfAccum" Hint="Конкатенировать ИК с исп. аккумулятора"}
   Obj={Mk=56 Mnemo="ConcatCopyOfAccum" Hint="Конкатенировать копию ИК с исп. аккумулятора"}
   Obj={Mk=60 Mnemo="SetPointToBuffer" Hint="Установить адрес ИП в буфер"}
   Obj={Mk=66 Mnemo="SetLoad" Hint="Записать в нагрузку"}
   Obj={Mk=67 Mnemo="SetAttr" Hint="Записать в атрибут"}
   Obj={Mk=68 Mnemo="SetPoint" Hint="Записать по указателю в нагрузке"}
-  Obj={Mk=70 Mnemo="DeleteSingle" Hint="Одиночное удаление"}
+  Obj={Mk=70 Mnemo="DelIp" Hint="Одиночное удаление"}
   Obj={Mk=71 Mnemo="DeleteMultiple" Hint="Пакетное удаление"}
   Obj={Mk=75 Mnemo="InsertBefore" Hint="Вставить ИП до бегунка"}
   Obj={Mk=76 Mnemo="InsertAfter" Hint="Вставить ИП после бегунка"}

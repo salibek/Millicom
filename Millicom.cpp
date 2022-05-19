@@ -20,12 +20,20 @@ int main()
 	LoadPoint LP = LoadPoint();
 	BusFU Bus;
 
-//	Threader ALU;
 //	int t = 10;
-/*
 
+		/*
+	Console Cons; // Консоль
 	ALU* alu=new ALU(&Cons);
-	double x = 10;
+	int MK = 2;
+	string STR = "NetTemperat.ind";
+	string out;
+	alu->ProgFU(26, { Cstring,&STR });
+	alu->ProgFU(2, { Cint,&MK });
+	alu->ProgFU(1, { Cstring,&out });
+	cout << out << endl;
+
+		double x = 10;
 	int Mk = 2; // МК вывода для консоли
 	alu->ProgFU(26, { Tdouble,&x }); //MK Set
 	x = 5;
@@ -74,8 +82,8 @@ int main()
 //	string STR = "NetTemperat2.ind";
 //	string STR = "CompileC.ind";
 //	string STR = "OAGraphOut.ind";
-	string STR = "MultyList.ind";
-//	string STR = "Router.ind";
+//	string STR = "MultyList.ind";
+	string STR = "RusVoc.ind";
 	Bus.ProgFU(10, {Cstring, &STR});
 
 //	string STR5 = "Bag5.txt"; // 5 предметов

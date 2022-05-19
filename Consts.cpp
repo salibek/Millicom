@@ -7,11 +7,18 @@
 
 using namespace std;
 
-bool LoadPoint::isIC() 
+bool LoadPoint::isIC() // Определить указывает ли ссылка на ИК
 {
 	set<unsigned int> IC_Types = {DIC}; // Множевство типов ИК и ОА-графов
 	return IC_Types.count(Type>>1);
 }
+
+bool LoadPoint::isIP() // Определить указывает ли ссылка на ИП
+{
+	set<unsigned int> IP_Types = { DIP }; // Множевство типов ИК и ОА-графов
+	return IP_Types.count(Type >> 1);
+}
+
 
 string LoadPoint::ToStr(string define) // Перевод в bool
 {
@@ -372,7 +379,7 @@ LoadPoint LoadPoint::Clone() // Вернуть клонированную нагрузку
 	case Dchar: return { Type,new char(*(char*)Point) };
 	case Dbool: return { Type,new bool(*(bool*)Point) };
 	case DPPoint: return { Type,new (void*)(*(void**)Point) };
-	case DIC: return { Type, ICCopy(*this) };
+	case DIC: return { Type, ICCopy(*this).Point };
 	case DIP: //return { Type, (*(ip*)Point).Сlone() };
 	{
 		vector<ip>* t = new vector<ip>;
@@ -396,7 +403,7 @@ void* LoadPoint::VarClone() // Вернуть ссылку на клонированное значение из нагру
 	case Dbool: return new bool(*(bool*)Point);
 	case DPPoint: return new (void*)(*(void**)Point);
 	case DIP: {IC_type t = new vector<ip>; t->push_back(*(ip*)Point); return t; }
-	case DIC: return ICCopy(*this);
+	case DIC: return ICCopy(*this).Point;
 	}
 }
 
@@ -450,7 +457,7 @@ void LoadPoint::Copy(LoadPoint LP)
 	case CIP: // ???
 		break;
 	case CIC:
-		Point = ICCopy(LP);
+		Point = ICCopy(LP).Point;
 		break;
 	}
 }
@@ -1108,13 +1115,20 @@ void ICDel(void* Uk) // Удаление ИК
 	delete (IC_type)Uk;
 }
 
-void* ICCopy(LoadPoint uk) // Копирование ИК
+void ICDel(LoadPoint &Uk)// Удаление ИК
+{
+	if (!Uk.isIC()) return;
+	ICDel(Uk.Point);
+	Uk = { 0,nullptr };
+}
+
+LoadPoint ICCopy(LoadPoint uk) // Копирование ИК
 {
 	IC_type CapsNew = new vector<ip>;
 	if (uk.Type >> 1 == DIP) // Если передается ИП
 	{
 		CapsNew->push_back(*(*(ip*)uk.Point).Сlone());
-		return CapsNew;
+		return { uk.Type, CapsNew };
 	}
 	IC_type Uk = (IC_type)uk.Point;
 	CapsNew->resize(((IC_type)Uk)->size());
@@ -1123,7 +1137,7 @@ void* ICCopy(LoadPoint uk) // Копирование ИК
 		j->atr = i->atr;
 		j->Load.Copy(i->Load);
 	}
-	return CapsNew;
+	return { uk.Type, CapsNew };
 }
 
 void* GraphCopy(void* Uk, LocatTable* Table = nullptr) // Копирование ОА-графа
@@ -1167,9 +1181,48 @@ ip* AtrFind(void* IC, int Atr) // Поиск в ИК ИП с заданным атрутом
 
 bool isIPinIC(void* iP, void* iC) //проверка, что ИП входит в ИК
 {
-	for (auto i = ((IC_type)iC)->begin()._Ptr; i != ((IC_type)iC)->end()._Ptr; i++) {
-		if (IPCmp(i, ((ip*)iP)))
+	for (auto i = ((IC_type)iC)->begin(); i != ((IC_type)iC)->end(); i++) {
+		if (IPCmp(i._Ptr, ((ip*)iP)))
 			return true;
 	}
 	return false;
+}
+
+void ICCopyConcat(void* uk, void* uk2) // Конкатенация двух ИК
+{
+	//copy( ((IC_type)uk2)->begin(), ((IC_type)uk2)->end(), inserter(*((IC_type)uk), ((IC_type)uk)->end()));
+	for (auto& i : *(IC_type)uk2)
+		((IC_type)uk)->push_back(i.copy());
+}
+
+int ICLen(void* uk) // Определитель длины ИК
+{
+	return (((IC_type)uk)->size());
+}
+
+vector<ip>::iterator IPSearch(void* ic, ip IP) // Поиск ИП в ИК (возвращается указатель на персую найденную ИП
+{
+	for (auto i = ((IC_type)ic)->begin(); i != ((IC_type)ic)->end(); i++)
+		if (IPCmp(i._Ptr, &IP))
+			return i;
+	return ((IC_type)ic)->end();
+}
+
+vector<ip>::iterator IPSearch(void* ic, LoadPoint IP) // Поиск ИП в ИК (возвращается указатель на персую найденную ИП
+{
+	if (IP.isIP())
+		return IPSearch(ic, *((ip*)IP.Point));
+	else if(IP.isIC())
+		return IPSearch(ic, *((IC_type)IP.Point)->begin());
+	return ((IC_type)ic)->end();
+}
+void IPAdd(void* IC, ip IP) // Добавить ИП в конец ИК
+{
+	((vector<ip>*)IC)->push_back(IP.copy());
+}
+
+void IPAdd(LoadPoint IC, ip IP) // Добавить ИП в конец ИК
+{
+	if (!IC.isIC())return;
+	IPAdd(IC.Point, IP);
 }

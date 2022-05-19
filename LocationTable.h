@@ -20,7 +20,7 @@ public:
 	void Clear(); // Сброс указателя таблицы соотвествия адресов
 	void TableClear(); // Очистка таблицы соотвествия адресов
 	vector<void*>* GetRow(void* Point);
-
+	vector<void*>* GetLine(void* Point); // Выдать ссылку на линию списка, где обнаружилось совпадение
 	bool Empty(); // Проверка на пустоту таблицы
 	int LineCount(); // Возвращает количество линий в таблице
 	void DelLastLine(int Count=1); // Удаляет Count последних строк таблицы 

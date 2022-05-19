@@ -7,12 +7,12 @@
 class GraphTransf : public FU
 {
 private:
-	LocatTable *LTable; // Таблица преобразования адресов
-	deletedIC delIC; //буфер удаленной ИП
+	LocatTable *LTable=nullptr; // Таблица преобразования адресов
+	deletedIC delIC = { nullptr, nullptr }; //буфер удаленной ИП
 	Search Searcher;  //поисковик
-	Navigator navigator; //бегунок
+	Navigator navigator = {nullptr}; //бегунок
 	void ProgFU(int MK, LoadPoint Load) override;
-	vector<vector<ip>*> Accum; // Аккумулятор для операций (первый операнд)
+	vector<IC_type> Operands; // Аккумулятор для операций (первый операнд)
 public:
 	GraphTransf(FU *BusContext, FU *Templ) : FU(BusContext) { 
 		Bus = BusContext; 

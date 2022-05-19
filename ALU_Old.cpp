@@ -94,12 +94,9 @@ void ALU::ProgFU(int MK, LoadPoint Load)
 		ProgExec(Load);
 		//if (Stack.size() == 1)
 		accum = Stack.back().accum; // Записать в выходной аккумулятор
-		accumType = Stack.back().accumType; // Записать в выходной аккумулятор
-		accumStr = Stack.back().accumStr; // Записать в выходной аккумулятор
-		accumPoint = Stack.back().accumPoint; // Записать в выходной аккумулятор
 		for (auto i : Stack.back().MkOut) // Выполнить все МК
 			MkExec(i, { Cdouble,  &Stack.back().accum}); // Сделать преобразование типов попозже
-		for (auto i : Stack.back().OutAdr) // Записать результат во все выходные переменные
+		for (auto i : Stack.back().OutAdr) // Выполнить все МК
 			i.Write(Stack.back().accum);
 	}
 	else
@@ -122,26 +119,19 @@ void ALU::ProgFU(int MK, LoadPoint Load)
 			Accum = { Cdouble,&accum };
 			break;
 		case 2: // OutMk Выдать МК со значением аккумулятора
-			if(Stack.back().accumType>>1==Dstring)
-				MkExec(Load, { Stack.back().accumType,&Stack.back().accumStr }, Bus, true);
-			else
-				MkExec(Load, { Cdouble,&Stack.back().accum }, Bus, true);
+			MkExec(Load, { Cdouble,&Stack.back().accum }, Bus, true);
 			break;
 		case 1: // Out Выдать значение аккумулятора
-			if(accumType>>1 ==Dstring)
-			Load.Write(Stack.back().accumStr);
-			else
-				Load.Write(Stack.back().accum);
+			Load.Write(Stack.back().accum);
 			break;
 		case 3: // Push Сделать еще один уровень аккумулятора
 			Stack.push_back({});
 			Stack.back().AccumPopBlock = true;
 			break;
 		case 5: //AccumAdrOut Выдать адрес выходного аккумулятора
-			Load.Write((void*)&Accum);
+			Load.Write(Accum);
 			break;
 		case 6: //AccumAdrOutMk Выдать МК с адресом выходного аккумулятора
-			MkExec(MK, { Cdouble,(void*)&Accum });
 			break;
 		case 10: // OutMkAdd Добавить адрес для выдачи результата вычисления
 			Stack.back().MkOut.push_back(Load.ToInt());
@@ -288,10 +278,8 @@ void ALU::ProgFU(int MK, LoadPoint Load)
 			break;
 		case E_MK::XOR_BIT:
 			XOR_BIT(Load);
-			break;
 		case E_MK::Compar3Way:
 			Compar3Way(Load);
-			break;
 		default:
 			CommonMk(MK, Load);
 			break;
@@ -311,31 +299,7 @@ void	ALU::calc(int MK, LoadPoint Load)
 
 void ALU::XOR_BIT(LoadPoint Load)
 {
-	
-		
-	
-		if (Load.Point == nullptr) {
-			//	((Threader*)Parent)->ProgExec(((Threader*)Parent)->NoOperandErrProg); // Запуск подпрограммы ошибки "Нет операнда"
-			return;
-		}
-		else if (Load.isDigitBool() && Load.isDigitBool(Stack.back().accumType))
-		{
-
-			Stack.back().accum = static_cast<int>(Stack.back().accum) ^ Load.ToInt();
-			if (Stack.back().accumType >> 1 == Dbool && Load.Type >> 1 == Dbool)
-				Stack.back().accumType = Cint;
-			else
-				Stack.back().accumType = max(Stack.back().accumType, Load.Type);
-		}
-
-		else {
-			//((Threader*)Parent)->ProgExec(((Threader*)Parent)->UncompatableTypesErrProg);
-			return;
-		}
-	
-	
-
-	/*switch (Stack.back().accumType >> 1)
+	switch (Stack.back().accumType >> 1)
 	{
 	case Dint :
 	{
@@ -351,7 +315,7 @@ void ALU::XOR_BIT(LoadPoint Load)
 		Stack.back().accum=t;
 		break;
 	}
-	}*/
+	}
 }
 
 void ALU::inc(LoadPoint Load)
@@ -422,14 +386,17 @@ void	ALU::mult(LoadPoint Load)
 	}
 	
 	if (Stack.back().accumType >> 1 == Dstring) {
-		string k, l;
-		l = Load.ToStr();
-		for( int i=0;i< l.size(); i++)
+		string k;
+		for( int i=0;i< Load.ToInt();i++)
 		k += Stack.back().accumStr;
 
 		Stack.back().accumStr = k;
 	}
-	else if (Load.isDigitBool() && Load.isDigitBool(Stack.back().accumType))
+	//	else
+		//	((Threader*)Parent)->ProgExec(((Threader*)Parent)->UncompatableTypesErrProg);
+		return;
+	
+		if (Load.isDigitBool() && Load.isDigitBool(Stack.back().accumType))
 	{
 		Stack.back().accum *= Load.ToDouble();
 		if (Stack.back().accumType >> 1 == Dbool && Load.Type >> 1 == Dbool)
@@ -528,7 +495,7 @@ void	ALU::div_int(LoadPoint Load)
 	
 	else if (Load.isDigitBool() && Load.isDigitBool(Stack.back().accumType))
 	{
-		Stack.back().accum = Stack.back().accum;
+		Stack.back().accum += Load.ToDouble();
 		if (Stack.back().accumType >> 1 == Dbool && Load.Type >> 1 == Dbool)
 			Stack.back().accumType = Cint;
 		else
@@ -645,11 +612,15 @@ void		ALU::set(LoadPoint Load) // Установить значение в ак�
 	if (Load.Point == nullptr) {
 		Stack.back().accumType = Cint;
 		Stack.back().accum = 0;
+//		((Threader*)Parent)->ProgExec(((Threader*)Parent)->NoOperandErrProg); // Запуск подпрограммы ошибки "Нет операнда"
+		return;
 	}
-	else if (Load.Type >> 1 == Dstring)
+
+	if (Load.Type >> 1 == Dstring)
 	{
 		Stack.back().accumType = Load.Type;
 		Stack.back().accumStr = Load.ToStr();
+		return;
 	}
 	else if (Load.isDigitBool())
 	{
@@ -658,13 +629,7 @@ void		ALU::set(LoadPoint Load) // Установить значение в ак�
 	}
 	else {
 		//((Threader*)Parent)->ProgExec(((Threader*)Parent)->UncompatableTypesErrProg);
-		//return;
-	}
-	if (Stack.size() == 1) // Переписать в выходной аккумулятор
-	{
-		accumType = Stack.back().accumType;
-		accum = Stack.back().accum;
-		accumPoint = Stack.back().accumPoint;
+		return;
 	}
 }
 
@@ -713,20 +678,25 @@ bool		ALU::getLogic(LoadPoint Load) // ����������� ���
 void	ALU::fu_max(LoadPoint Load)
 {
 	if (Load.Point == nullptr) {
-		//((Threader*)Parent)->ProgExec(((Threader*)Parent)->NoOperandErrProg); // Запуск подпрограммы ошибки "Нет операнда"
+	//	((Threader*)Parent)->ProgExec(((Threader*)Parent)->NoOperandErrProg); // Запуск подпрограммы ошибки "Нет операнда"
 		return;
 	}
 
 	if (Load.isDigitBool() && Load.isDigitBool(Stack.back().accumType))
 	{
-		Stack.back().accum =max(Stack.back().accum, Load.ToDouble());
+		if (Stack.back().accum < Load.ToDouble()) {
+			Stack.back().accum = 0;
+		}
+		else {
+			Stack.back().accum = 1;
+		}
 		if (Stack.back().accumType >> 1 == Dbool && Load.Type >> 1 == Dbool)
 			Stack.back().accumType = Cint;
 		else
 			Stack.back().accumType = max(Stack.back().accumType, Load.Type);
 	}
 	else {
-		//	((Threader*)Parent)->ProgExec(((Threader*)Parent)->UncompatableTypesErrProg);
+	//	((Threader*)Parent)->ProgExec(((Threader*)Parent)->UncompatableTypesErrProg);
 		return;
 	}
 	/*
@@ -798,20 +768,25 @@ void	ALU::fu_max(LoadPoint Load)
 void	ALU::fu_min(LoadPoint Load)
 {
 	if (Load.Point == nullptr) {
-		//((Threader*)Parent)->ProgExec(((Threader*)Parent)->NoOperandErrProg); // Запуск подпрограммы ошибки "Нет операнда"
+	//	((Threader*)Parent)->ProgExec(((Threader*)Parent)->NoOperandErrProg); // Запуск подпрограммы ошибки "Нет операнда"
 		return;
 	}
 
 	if (Load.isDigitBool() && Load.isDigitBool(Stack.back().accumType))
 	{
-		Stack.back().accum = min(Stack.back().accum, Load.ToDouble());
+		if (Stack.back().accum < Load.ToDouble()) {
+			Stack.back().accum = 1;
+		}
+		else {
+			Stack.back().accum = 0;
+		}
 		if (Stack.back().accumType >> 1 == Dbool && Load.Type >> 1 == Dbool)
 			Stack.back().accumType = Cint;
 		else
 			Stack.back().accumType = max(Stack.back().accumType, Load.Type);
 	}
 	else {
-		//	((Threader*)Parent)->ProgExec(((Threader*)Parent)->UncompatableTypesErrProg);
+		//((Threader*)Parent)->ProgExec(((Threader*)Parent)->UncompatableTypesErrProg);
 		return;
 	}
 	
@@ -1391,11 +1366,8 @@ void		ALU::fu_xor(LoadPoint Load)
 		return;
 	}
 	else if (Load.isDigitBool() && Load.isDigitBool(Stack.back().accumType))
-	{ 
-		if ((Load.ToDouble() != 0 && Stack.back().accum == 0)|| (Load.ToDouble() == 0 && Stack.back().accum != 0))
-			Stack.back().accum = 1;
-		else
-			Stack.back().accum = 0;
+	{
+		Stack.back().accum += Load.ToDouble();
 		if (Stack.back().accumType >> 1 == Dbool && Load.Type >> 1 == Dbool)
 			Stack.back().accumType = Cint;
 		else
