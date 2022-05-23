@@ -35,7 +35,7 @@ d1[Obj=b2{POS=VERB SemProp=bb2{Atr=3}}
 Graph.AddLine=VocTempl
 Graph.AddToLastLine=Voc
 
-Graph.AddLine=dl
+Graph.AddLine=d1
 Graph.AddToLastLine=c1
 
 Graph.AddLine=b1
@@ -50,6 +50,9 @@ Graph.AddToLastLine=aa1
 Graph.AddLine=bb2
 Graph.AddToLastLine=aa2
 // ------------------------
+Console.AtrMnemoAdd={Atr="Atr" Mk="Mk" -6="Obj" POS="POS" SemProp="SemProp" Stage="Stage"}
+Console.OutLn=Voc
+Console.Ln
 
 Graph.OpenrandSet=b1
 Graph.OpenrandAdd=b2
@@ -60,6 +63,5 @@ Graph.ConcatFromIPDelIP={SemProp SemProp Stage }
 Graph.OpenrandSet=VocTempl
 Graph.DelIp=d1
 
-Console.AtrMnemoAdd={Atr="Atr" Mk="Mk" -6="Obj" POS="POS" SemProp="SemProp" Stage="Stage"}
 Console.OutLn=Voc
 

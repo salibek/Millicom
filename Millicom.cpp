@@ -40,7 +40,6 @@ int main()
 	alu->ProgFU(33, { Tdouble,&x });// Тестируемая МК
 	alu->ProgFU(2, { Cint,&Mk }); // Вывод результата
 
-
 	Console Cons; // Консоль
 	Lex *Lexica=new Lex((FU*) & Cons); // ФУ лексического разбора
 	Lexica->Bus = &Cons;
@@ -61,7 +60,6 @@ int main()
 
 //	string STR = "NetTemperat.ind";
 //	ALU.ProgFU(26, { Cstring,&STR });
-
 	
 //	string STR = "MeanShift.txt";
 //	string STR = "MeanShift.ind";

@@ -20,6 +20,7 @@ public:
 	AutomatManager() : FU() { Bus = nullptr; };
 };
 
+
 class border
 {
 public:

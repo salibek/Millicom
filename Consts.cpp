@@ -780,6 +780,8 @@ void FU::CommonMk(int Mk, LoadPoint Load)
 		MkExec(Load,Accum);
 		break;
 	case CalcMk: // 927 Calc вычислить АЛВ
+	case 929: // CalcContinue Вычислить АЛВ и продолжеть выполнение программы, если результат true
+	case 930: // CalcBreak Вычислить АЛВ и продолжеть выполнение программы, если результат false
 		if (Alu == nullptr)
 		{
 			Alu = new ALU(this->Bus);
@@ -789,6 +791,8 @@ void FU::CommonMk(int Mk, LoadPoint Load)
 		}
 		((FU*)Alu)->ProgFU(ProgExecMk,Load);
 		break;
+		if (Mk == 929 && Accum.ToBool() || Mk == 930 && !Accum.ToBool())
+			ProgStop = 1; // Выход из программы
 	case 989: // ProgStop Остановка программы (несли нагрузка nil, то присваивается true)
 		ProgStop = Load.ToInt(1);
 		break;

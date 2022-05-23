@@ -31,6 +31,7 @@ void AutomatManager::ProgFU(int MK, LoadPoint Load)
 		StageOutProg.clear();
 		StageProgMk = -1;
 		break;
+
 	case 3: // RecieverMKSet
 		if (Load.Point == nullptr || Load.Type >> 1 != Dint)
 			ReceiverMk = -1;
