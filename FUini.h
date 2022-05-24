@@ -25,3 +25,4 @@ FU* CellularAutomatIni(FU* BusContext, FU* TEmpl);
 FU* CellularAutomatManagerIni(FU* BusContext, FU* TEmpl);
 FU* CounterIni(FU* BusContext, FU* TEmpl);
 FU* RouterIni(FU* BusContext, FU* TEmpl);
+FU* RouterSegmentIni(FU* BusContext, FU* TEmpl);

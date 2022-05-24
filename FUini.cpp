@@ -21,6 +21,7 @@
 #include "CellularAutomat.h"
 #include "Counter.h"
 #include "Router.h"
+#include "RouterSegment.h"
 
 using namespace std;
 
@@ -127,4 +128,9 @@ FU* CounterIni(FU* BusContext, FU* TEmpl)
 FU* RouterIni(FU* BusContext, FU* TEmpl)
 {
 	return (FU*) new Router(BusContext, TEmpl);
+}
+
+FU* RouterSegmentIni(FU* BusContext, FU* TEmpl)
+{
+	return (FU*) new RouterSegment(BusContext, TEmpl);
 }

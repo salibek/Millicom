@@ -24,7 +24,7 @@ void Router::ProgFU(int MK, LoadPoint Load)
 						else
 							((FU*)i->Receiver)->ProgFU(i->ReceiverMk, Load); // Переслать приёмнику
 						MKCount++;
-						break;						
+						break;
 					}
 				}
 				else if (Load.Type >> 1 == DIC)
