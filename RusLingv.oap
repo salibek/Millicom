@@ -64,4 +64,42 @@ Graph.OpenrandSet=VocTempl
 Graph.DelIp=d1
 
 Console.OutLn=Voc
+Console.Ln
+
+ADJECTIVE#3
+ADVERBDEGREE#4
+
+a1! a2! aa1! aa2! c1!
+b1! b2! bb1! bb2! d1!
+
+Voc2{
+Obj=a1{POS=ADVERBDEGREE SemProp=aa1{Atr=4}}
+c1[Obj=a2{POS=ADJECTIVESemProp=aa2{Atr=3}}
+}
+
+VocTempl2{
+Obj=b1{POS=ADVERBDEGREE SemProp=bb1{Atr=4}}
+d1[Obj=b2{POS=ADJECTIVESemProp=bb2{Atr=4}}
+}
+
+Graph.AddLine=VocTempl
+Graph.AddToLastLine=Voc
+
+Graph.AddLine=d1
+Graph.AddToLastLine=c1
+
+Graph.AddLine=b1
+Graph.AddToLastLine=a1
+
+Graph.AddLine=b2
+Graph.AddToLastLine=a2
+
+Graph.AddLine=bb1
+Graph.AddToLastLine=aa1
+
+Graph.AddLine=bb2
+Graph.AddToLastLine=aa2
+//-----------------------
+Console.OutLn=Voc
+Console.Ln
 

@@ -41,6 +41,9 @@ MainBus.ModeSet=2
 Sep*-4
 Var*-14
 
+
+MainBus.ServiceProgExec={StrGen.Start="CompCMnemoList.oap"} // Подключение модуля с описанием МК
+//MnemoTable.Set=MkMnemoList
 Lex.ReceiverMkSet=Root.FindAnd
 
 \**\Root.Set=

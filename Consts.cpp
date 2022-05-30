@@ -712,6 +712,9 @@ void FU::CommonMk(int Mk, LoadPoint Load)
 {
 	switch (Mk)
 	{
+	case 902: // ActiveSet Установить активность ФУ (true по умолчанию)
+		Active = Load.ToBool(true);
+		break;
 	case ProgMk: // 958 Prog Вызов подпрограммы
 	case ProgCycleMk: //959 CycleProg Вызов цикла
 	case ProgPostCycleMk: //960 PostCycleProg Вызов пост цикла

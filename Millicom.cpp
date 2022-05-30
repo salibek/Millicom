@@ -81,8 +81,10 @@ int main()
 //	string STR = "CompileC.ind";
 //	string STR = "OAGraphOut.ind";
 //	string STR = "MultyList.ind";
-	string STR = "RusVoc.ind";
-	Bus.ProgFU(10, {Cstring, &STR});
+//	string STR = "RusVoc.ind";
+	string STR = "LexTest.ind"; // Имя запускного файла
+
+	Bus.ProgFU(10, {Cstring, &STR}); //Запуск индексного файла
 
 //	string STR5 = "Bag5.txt"; // 5 предметов
 //	string STR6 = "Bag6.txt"; // 6 предметов
