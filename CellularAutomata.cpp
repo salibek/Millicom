@@ -252,13 +252,17 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load)
 			PlyCurrent = (PlyCurrent + 1) % Neighbours.size();
 		}
 		break;
+
 	case 1:   //In_1_Set Принять значение от 1-го соседа
 	case 101: //In_1_Out Выдать значение, полученное от 1-го соседа
 	case 201: //In_1_OutMk Выдать МК соз значением, полученным от 1-го соседа
+
 	case 301: //NeighbourMk_1_Set Установить МК для 1-го соседа
+
 	case 401: //Parametr_1_Set Установить 1-й параметр
 	case 501: //Parametr_1_Out Выдать 1-й параметр
 	case 601: //Parametr_1_OutMk Выдать  МК с 1-м параметром
+
 	case 2:   //In_2_Set Принять значение от 2-го соседа
 	case 102: //In_2_Out Выдать значение, полученное от 2-го соседа
 	case 202: //In_2_OutMk Выдать МК соз значением, полученным от 2-го соседа
@@ -266,6 +270,7 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load)
 	case 402: //Parametr_2_Set Установить 2-й параметр
 	case 502: //Parametr_2_Out Выдать 2-м параметром
 	case 602: //Parametr_2_OutMk Выдать  МК с 1-й параметр
+
 	case 3:   //In3_Set Принять значение от 3-го соседа
 	case 103: //In3_Out Выдать значение, полученное от 3-го соседа
 	case 203: //In3_OutMk Выдать МК соз значением, полученным от 3-го соседа
@@ -273,6 +278,7 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load)
 	case 403: //Parametr_2_Set Установить 3-й параметр
 	case 503: //Parametr_2_Out Выдать 3-й параметр
 	case 603: //Parametr_2_OutMk Выдать МК с 3-м параметром
+
 	case 4:   //In4_Set Принять значение от 4-го соседа
 	case 104: //In4_Out Выдать значение, полученное от 4-го соседа
 	case 204: //In4_OutMk Выдать МК соз значением, полученным от 4-го соседа
@@ -280,6 +286,7 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load)
 	case 404: //Parametr_3_Set Установить 4-й параметр
 	case 504: //Parametr_3_Out Выдать 4-й параметр
 	case 604: //Parametr_3_OutMk Выдать  МК с 4-м параметром
+
 	case 5:   //In5_Set Принять значение от 5-го соседа
 	case 105: //In5_Out Выдать значение, полученное от 5-го соседа
 	case 205: //In5_OutMk Выдать МК соз значением, полученным от 5-го соседа
@@ -287,6 +294,7 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load)
 	case 405: //Parametr_4_Set Установить 5-й параметр
 	case 505: //Parametr_4_Out Выдать 5-й параметр
 	case 605: //Parametr_4_OutMk Выдать  МК с 5-й параметр
+
 	case 6:   //In6_Set Принять значение от 6-го соседа
 	case 106: //In6_Out Выдать значение, полученное от 6-го соседа
 	case 206: //In6_OutMk Выдать МК соз значением, полученным от 6-го соседа
@@ -294,6 +302,7 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load)
 	case 406: //Parametr_5_Set Установить 6-й параметр
 	case 506: //Parametr_5_Out Выдать 6-й параметр
 	case 606: //Parametr_5_OutMk Выдать  МК с 6-й параметр
+
 	case 7:   //In7_Set Принять значение от 7-го соседа
 	case 107: //In7_Out Выдать значение, полученное от 7-го соседа
 	case 207: //In7_OutMk Выдать МК соз значением, полученным от 7-го соседа
@@ -301,6 +310,7 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load)
 	case 407: //Parametr_6_Set Установить 7-й параметр
 	case 507: //Parametr_6_Out Выдать 7-й параметр
 	case 607: //Parametr_6_OutMk Выдать  МК с 7-й параметр
+
 	case 8:   //In8_Set Принять значение от 8-го соседа
 	case 108: //In8_Out Выдать значение, полученное от 8-го соседа
 	case 208: //In8_OutMk Выдать МК соз значением, полученным от 8-го соседа
@@ -308,6 +318,7 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load)
 	case 408: //Parametr_7_Set Установить 8-й параметр
 	case 508: //Parametr_7_Out Выдать 8-й параметр
 	case 608: //Parametr_7_OutMk Выдать  МК с 8-й параметр
+
 	case 9:   //In9_Set Принять значение от 9-го соседа
 	case 109: //In9_Out Выдать значение, полученное от 9-го соседа
 	case 209: //In9_OutMk Выдать МК соз значением, полученным от 9-го соседа
@@ -315,6 +326,7 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load)
 	case 409: //Parametr_8_Set Установить 9-й параметр
 	case 509: //Parametr_8_Out Выдать 9-й параметр
 	case 609: //Parametr_8_OutMk Выдать  МК с 9-й параметр
+
 	case 10:  //In10_Set Принять значение от 10-го соседа
 	case 110: //In10_Out Выдать значение, полученное от 10-го соседа
 	case 210: //In10_OutMk Выдать МК соз значением, полученным от 10-го соседа
@@ -322,6 +334,7 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load)
 	case 410: //Parametr_9_Set Установить 10-й параметр
 	case 510: //Parametr_9_Out Выдать 10-й параметр
 	case 610: //Parametr_9_OutMk Выдать   МК с 10-й параметр
+
 	case 11:  //In11_Set Принять значение от 11-го соседа
 	case 111: //In11_Out Выдать значение, полученное от 11-го соседа
 	case 211: //In11_OutMk Выдать МК соз значением, полученным от 11-го соседа
@@ -329,6 +342,7 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load)
 	case 411: //Parametr_10_Set Установить 11-й параметр
 	case 511: //Parametr_10_Out Выдать 11-й параметр
 	case 611: //Parametr_10_OutMk Выдать  МК 11-й параметр
+
 	case 12:  //In12_Set Принять значение от 12-го соседа
 	case 112: //In12_Out Выдать значение, полученное от 12-го соседа
 	case 212: //In12_OutMk Выдать МК соз значением, полученным от 12-го соседа
@@ -336,6 +350,7 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load)
 	case 412: //Parametr_11_Set Установить 12-й параметр
 	case 512: //Parametr_11_Out Выдать 12-й параметр
 	case 612: //Parametr_11_OutMk Выдать  МК 12-й параметр
+
 	case 13:  //In13_Set Принять значение от 13-го соседа
 	case 113: //In13_Out Выдать значение, полученное от 13-го соседа
 	case 213: //In13_OutMk Выдать МК соз значением, полученным от 13-го соседа
@@ -343,6 +358,7 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load)
 	case 413: //Parametr_12_Set Установить 13-й параметр
 	case 513: //Parametr_12_Out Выдать 13-й параметр
 	case 613: //Parametr_12_OutMk Выдать  МК 13-й параметр
+
 	case 14:  //In14_Set Принять значение от 14-го соседа
 	case 114: //In14_Out Выдать значение, полученное от 14-го соседа
 	case 214: //In14_OutMk Выдать МК соз значением, полученным от 14-го соседа
@@ -350,6 +366,7 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load)
 	case 414: //Parametr_13_Set Установить 14-й параметр
 	case 514: //Parametr_13_Out Выдать 14-й параметр
 	case 614: //Parametr_13_OutMk Выдать МК 14-й параметр
+
 	case 15:  //In15_Set Принять значение от 15-го соседа
 	case 115: //In15_Out Выдать значение, полученное от 15-го соседа
 	case 215: //In15_OutMk Выдать МК соз значением, полученным от 15-го соседа
@@ -357,6 +374,7 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load)
 	case 415: //Parametr_14_Set Установить 15-й параметр
 	case 515: //Parametr_14_Out Выдать 15-й параметр
 	case 615: //Parametr_14_OutMk Выдать МК 15-й параметр
+
 	case 16:  //In16_Set Принять значение от 16-го соседа
 	case 116: //In16_Out Выдать значение, 16-му соседу
 	case 216: //In16_OutMk Выдать МК соз значением, полученным от 16-го соседа
