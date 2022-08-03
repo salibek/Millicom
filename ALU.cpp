@@ -440,9 +440,6 @@ void ALU::ProgFU(int MK, LoadPoint Load)
 			else
 				ProgFU(E_MK::PUSH, (Stack.end() - 2)->accumVect.at(Load.ToInt())); // Добавить значение из элемента вектора
 			break;
-		case 279: // ValByInd Поместить в аккумулятор значение из вектора по индексу из нагрузки
-			ProgFU(E_MK::SET, Stack.back().accumVect.at(Load.ToInt()));
-			break;
 		case 280: // VectCreat Создать новый вектор
 			emptyvect();
 			break;
@@ -470,8 +467,8 @@ void ALU::ProgFU(int MK, LoadPoint Load)
 			vector<LoadPoint> Rez;
 			if (Load.isDigitBool()) // Одна операция ко всем элементам вектора
 			{
-				LoadVect_type v1 = &Stack.back().accumVect; // Запомнить ссылку на исходный вектор
 				Stack.push_back({}); // Создать дополнительные аккумулятор
+				LoadVect_type v1 = &(Stack.end()-2)->accumVect; // Запомнить ссылку на исходный вектор
 				for (auto& i : *v1)
 				{
 					if (!i.isDigitBool())
@@ -482,7 +479,7 @@ void ALU::ProgFU(int MK, LoadPoint Load)
 						break;
 					}
 					ProgFU(E_MK::SET, i);
-					ProgFU(MK - 200, Load);
+					ProgFU(MK - 300, Load);
 					Rez.push_back({ Stack.back().accumType,MakeLoadFromDouble(Stack.back().accum,Stack.back().accumType | 1) }); // Запись константы
 
 				}
@@ -490,7 +487,8 @@ void ALU::ProgFU(int MK, LoadPoint Load)
 				Stack.back().accumVect = Rez;
 				break;
 			}
-			if (Load.IsVector() && Stack.back().accumType >> 1 == Dint && Load.ToInt()>=0) // Мультиплексия вектора
+
+			if (Load.IsVector() && LoadPoint::isInt(Stack.back().accumType) && Load.ToInt()>=0) // Мультиплексия вектора
 			{
 				int N = *(int*)Load.Point;
 				for (int i = 0; i < N; i++)
@@ -499,6 +497,7 @@ void ALU::ProgFU(int MK, LoadPoint Load)
 				Stack.back().accumVect = Rez;
 				break;
 			}
+
 			if (Load.IsVector() && Stack.back().accumType >> 1 == Dint && Load.ToInt() >= 0)
 			if (!Load.IsVector() || !(Load.IsVector() && Stack.back().accumType >> 1 == DLoadVect))
 			{
@@ -506,14 +505,14 @@ void ALU::ProgFU(int MK, LoadPoint Load)
 				ProgExec(VectErrProg); // Программа отработки ошибки векторных операций
 				break;
 			}
-			LoadVect_type v1 = &Stack.back().accumVect;
 			Stack.push_back({}); // Создать дополнительные аккумулятор
+			LoadVect_type v1 = &(Stack.end()-2)->accumVect;
 
 			for (auto i = v1->begin(), j = ((LoadVect_type)Load.Point)->begin(); // выполнение векторных операций
 				i != v1->end() && j != ((LoadVect_type)Load.Point)->end(); i++, j++)
 			{
 				ProgFU(E_MK::SET, *i);
-				ProgFU(MK - 200, *j);
+				ProgFU(MK - 300, *j);
 				Rez.push_back({ Stack.back().accumType,MakeLoadFromDouble(Stack.back().accum,Stack.back().accumType | 1)}); // Запись константы
 			}
 
@@ -522,9 +521,9 @@ void ALU::ProgFU(int MK, LoadPoint Load)
 			break;
 		}
 		// Однопернадные векторные операции
-		case 334: // inc
+		case 334: // IncVect
 			break;
-		case 335: // dec
+		case 335: // DecVect
 			break;
 
 		default:

@@ -1326,7 +1326,7 @@ void IPAdd(LoadPoint IC, ip IP) // Добавить ИП в конец ИК
 
 void* MakeLoadFromDouble(double x, unsigned int Type) // Создать нагрузку из типа double
 {
-	if (Type >= 0) // Задак тип
+	if (Type > 0) // Задан тип
 	{
 		LoadPoint P = { Type, nullptr };
 		if (!P.isDigitBool()) return nullptr;

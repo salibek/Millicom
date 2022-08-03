@@ -20,7 +20,7 @@ ALUNew.Append=4
 ALUNew.Append=5
 ALUNew.Append=6
 //ALUNew.Sum=1
-ALUNew.OutMk=Console.LnOut
+//ALUNew.OutMk=Console.LnOut
 ALUNew.OutMk=ALUNew2.Set
 ALUNew.VectCreat
 ALUNew.Append=1
@@ -28,6 +28,6 @@ ALUNew.Append=2
 ALUNew.Append=3
 ALUNew.OutMk=Console.LnOut
 ALUNew2.OutMk=Console.LnOut
-ALUNew.DivVect=10
-//ALUNew2.OutMk=ALUNew.SumVect
+//ALUNew.DivVect=10
+ALUNew2.OutMk=ALUNew.DivVect
 ALUNew.OutMk=Console.LnOut
