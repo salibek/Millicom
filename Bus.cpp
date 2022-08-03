@@ -30,7 +30,6 @@ void BusFU::ProgFU(int MK, LoadPoint Load)
 		{
 		case 0: // Сброс
 			break;
-
 		case 1: // MakeFU Создать ФУ
 			FUs.push_back(FUTypes[*(int *)Load.Point - FUTypeCorrect](this, FUTempl));
 			break;

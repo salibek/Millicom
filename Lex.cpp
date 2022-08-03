@@ -37,8 +37,22 @@
 			Receiver = Bus;
 			ErrProg = nullptr;
 			break;
-		case 5: //ReceiverMKSet
+		case 5: //ReceiverMKSet Установить МК для приемника лексем 
 			if (Load.Type >> 1 == Dint) ReceiverMK = Load.ToInt(); break;
+		case 6: // FinMkAdd Добавить финальную МК
+			FinMk.insert(Load.ToInt());
+			break;
+		case 7: // FinMkClear Очистить список фитальных МК
+			FinMk.clear();
+			break;
+		case 8: // FinMkProgExec Выполнить программу, если лексер в финальном состоянии
+			if (FinMk.count(ReceiverMK))
+				ProgExec(Load);
+			break; 
+		case 9: // NoFinMkProgExec Выполнить программу, если лексер не в финальном состоянии
+			if (!FinMk.count(ReceiverMK))
+				ProgExec(Load);
+			break;
 		case 10: //ErrProgSet
 			if (Load.IsProg())
 				ErrProg = Load.Point;
@@ -80,6 +94,25 @@
 			LexBuf[0].atr=SeperatAtr;// Установить атрибут сеирататора для для начального псевдосимвола
 			ib = 0;
 			ProgLevel = 0; // Уровень счетчик программный скобок
+			break;
+		case 21: // SepSet Установить разделить
+			Seps.insert(Load.ToStr());
+			break;
+		case 22: // SepErase Удалить разделитель из списка разделителей
+			Seps.erase(Load.ToStr());
+			break;
+		case 23: // SepClear Очистить список разделителей
+			Seps.clear();
+			break;
+		case 24: // FalseAdd Добавить мнемонику лжи
+			FalseConst.insert(Load.ToStr());
+			break;
+		case 25: // TrueAdd Добавить мнемонику правды
+			TrueConst.insert(Load.ToStr());
+			break;
+		case 19: // TrueFalseClear Очистить списки мнемоник правды и лжи
+			FalseConst.clear();
+			TrueConst.clear();
 			break;
 		case 26: // NoUnucToReseiver Выдать лексему, не учитывая уникальных атрибутов (при нулевой нагрузке выдается текущая лексема)
 			if (Load.Point == nullptr)
@@ -225,7 +258,7 @@
 		{
 //			ProgExec((IC_type)StartProg,Bus);
 			string FigureBuf;
-			string str = Load.ToStr();
+			string str = Load.ToStr()+" ";
 			str += EOL; // Дабавить символы конца строки
 			S = 0; // --- установка начального состояния автомата
 			if (Load.Type >> 1 == Dstring && Load.ToStr() == "")
@@ -424,7 +457,7 @@
 						*ft = atof(FigureBuf.c_str()); //запись лексемы в переменную
 						ib = (ib + 1) % SizeBuf; //увеличение текущего адреса буфера выходных лексем на 1
 						LexBuf[ib].Load.Clear(); //удаление нагрузки ИП
-						LexBuf[ib] = { ConstAtr, Tdouble, ft }; //добавление лексемы в буфер выходных лексем в виде ИП {атрибут, тип, указатель}
+						LexBuf[ib] = { DoubleAtr, Tdouble, ft }; //добавление лексемы в буфер выходных лексем в виде ИП {атрибут, тип, указатель}
 						LexOut();
 						S = 0; //переход в состояние 0
 						break;
@@ -442,16 +475,18 @@
 							bool* t = new bool(true);
 							ib = (ib + 1) % SizeBuf; //увеличение текущего адреса буфера выходных лексем на 1
 							LexBuf[ib].Load.Clear(); //удаление нагрузки ИП
-							LexBuf[ib] = { ConstAtr, Tbool, t };  //добавление лексемы в буфер выходных лексем в виде ИП {атрибут, тип, указатель}
+							LexBuf[ib] = { BoolAtr, Tbool, t };  //добавление лексемы в буфер выходных лексем в виде ИП {атрибут, тип, указатель}
+							LexOut();
 							S = 0;
 							break;
 						}
-						if (find(FalseConst.begin(), TrueConst.end(), FigureBuf) != FalseConst.end())
+						if (find(FalseConst.begin(), FalseConst.end(), FigureBuf) != FalseConst.end())
 						{
 							bool* t = new bool(false);
 							ib = (ib + 1) % SizeBuf; //увеличение текущего адреса буфера выходных лексем на 1
 							LexBuf[ib].Load.Clear(); //удаление нагрузки ИП
-							LexBuf[ib] = { ConstAtr, Tbool, t };  //добавление лексемы в буфер выходных лексем в виде ИП {атрибут, тип, указатель}
+							LexBuf[ib] = { BoolAtr, Tbool, t };  //добавление лексемы в буфер выходных лексем в виде ИП {атрибут, тип, указатель}
+							LexOut();
 							S = 0;
 							break;
 						}

@@ -492,7 +492,8 @@ CommonMkList{
 		Obj={Mnemo="AccumOutMk" Mk=925 Hint="Выдать МК со значением аккумулятора"}
 		Obj={Mnemo="Calc" Mk=927 Hint="Вычислить АЛВ"}
 		Obj={Mnemo="ALUSet" Mk=928 Hint="Установить ссылку на АЛУ"}
-
+		Obj={Mnemo="CalcContinue" Mk=929 Hint="Вычислить АЛВ и продолжеть выполнение программы, если результат true"}
+		Obj={Mnemo="CalcBreak" Mk=930 Hint="Вычислить АЛВ и продолжеть выполнение программы, если результат false"}
 	}
 
 	Obj={Mnemo="Prog execution" Comment Hint="Запуск миллипрограмм"
@@ -4343,6 +4344,11 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 {
   Obj={Mnemo="ReceiverMkSet" Mk=5 Hint="Установить МК для приемника лексем"}
 
+  Obj={Mnemo="FinMkAdd" Mk=6 Hint="Добавить финальную МК"}
+  Obj={Mnemo="FinMkClear" Mk=7 Hint="Очистить список фитальных МК"}
+  Obj={Mnemo="FinMkProgExec" Mk=8 Hint="Выполнить программу, если лексер в финальном состоянии"}
+  Obj={Mnemo="NoFinMkProgExec" Mk=9 Hint="Выполнить программу, если лексер не в финальном состоянии"}
+
   Obj={Mnemo="ErrProgSet" Mk=10 Hint="Установить на программу-обработчик ошибки"}
   Obj={Mnemo="TabErrProgSet" Mk=11 Hint="Установить на программу-обработчик ошибки табуляции"}
   Obj={Mnemo="StartProgSet" Mk=12 Hint="Установить программу, запускаемую перед началом компиляции"}
@@ -4354,6 +4360,13 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
   Obj={Mnemo="UnicFuSet" Mk=17 Hint="Установить контекст для уникального атрибута"}
   Obj={Mnemo="UnicReset" Mk=18 Hint="Сбросить список уникальных атрибутов"}
   Obj={Mnemo="LexBufSizeSet" Mk=20 Hint="Установить размер буфера лексем"}
+
+  Obj={Mnemo="SepAdd" Mk=21 Hint="Добавить разделить"}
+  Obj={Mnemo="SepErase" Mk=22 Hint="Удалить разделитель из списка разделителей"}
+  Obj={Mnemo="SepClear" Mk=23 Hint="Очистить список разделителей"}
+  Obj={Mnemo="FalseAdd" Mk=24 Hint="Добавить мнемонику лжи"}
+  Obj={Mnemo="TrueAdd" Mk=25 Hint="Добавить мнемонику правды"}
+  Obj={Mnemo="TrueFalseClear" Mk=19 Hint="Очистить списки мнемоник правды и лжи"}
 
   Obj={Mnemo="ReplaceToReceiver" Mk=28 Hint="Выдать лексему из нагрузка МК получателю, заменив тукущую лексему в буфере"}
   Obj={Mnemo="ReplaceCopyToReceiver" Mk=29 Hint="Выдать копию лексемы из нагрузки МК получателю, заменив тукущую лексему в буфере"}
@@ -4599,7 +4612,7 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
   Obj={Mk=48 Mnemo="OpenrandAdd" Hint="Добавить операнд"}
   Obj={Mk=49 Mnemo="OperandPop" Hint="Удалить последний операнд"}
 
-  Obj={Mk=50 Mnemo="ConcatFormIPToIP" Hint="Конкатенировать ИК из нагрузки (на входе 2 ИП для того, чтобы найти ИП в приемниек и в источнике)"}
+  Obj={Mk=50 Mnemo="ConcatFromIPToIP" Hint="Конкатенировать ИК из нагрузки (на входе 2 ИП для того, чтобы найти ИП в приемниек и в источнике)"}
   Obj={Mk=51 Mnemo="MoveFromIPToIP" Hint="Конкатенировать ИК из нагрузки и удалить нагрузку ИП (на входе 2 ИП для того, чтобы найти ИП в приемниек и в источнике)"}
   Obj={Mk=52 Mnemo="ConcatFromIPDelIP" Hint="Конкатенировать ИК из нагрузки и удалить ИП (на входе 2 ИП для того, чтобы найти ИП в приемниек и в источнике)"}
   Obj={Mk=54 Mnemo="ConcatCopy" Hint="Конкатенировать и копировать ИК"}
@@ -5032,6 +5045,19 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
   	Obj={Mk=41 Mnemo="Asin" Hint=""}
   	Obj={Mk=52 Mnemo="Random" Hint=""}
   }
+  Obj={Mnemo="Vector" Hint="Операции с векторами" Comment
+  	Obj={Mk=180 Mnemo="VectCreat" Hint="Создать новый вектор"}
+  	Obj={Mk=185 Mnemo="Append" Hint="Добавить элемент в вектор"}
+  	Obj={Mk=187 Mnemo="VectClear" Hint="Очистить вектор"}
+
+  	Obj={Mk=230 Mnemo="SumVect" Hint="Поэлементное векторное +"}
+  	Obj={Mk=231 Mnemo="SubVect" Hint="Поэлементное векторное -"}
+  	Obj={Mk=233 Mnemo="MulVect" Hint="Поэлементное векторное *"}
+  	Obj={Mk=232 Mnemo="DivVect" Hint="Поэлементное векторное /"}
+
+  	Obj={Mk=234 Mnemo="IncVect" Hint="Поэлементный векторный инкремент"}
+  	Obj={Mk=235 Mnemo="DecVect" Hint="Поэлементный векторный декримент"}
+	}
       Obj=CommonMkList
    }
 
@@ -5040,30 +5066,40 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 	{
 	 Obj={Mk=700 Mnemo="N_NeighbourSet" Hint="Установить количество соседей"}
 	 Obj={Mk=701 Mnemo="N_PlySet" Hint="Установить количество слоев для расчета"}
-	 Obj={Mnemo="Pareveters" Hint="Работа с параметрами автомата" Comment
-		 Obj={Mnemo="Set" Hint="Работа с параметрами автомата" Comment
-			Obj={Mk=401 Mnemo="Parametr_1_Set" Hint="Установить 1-й параметр"}
-		
-	//		Obj={Mk=0 Mnemo="" Hint=""}
-		}
-		 Obj={Mnemo="Out" Hint="Работа с параметрами автомата" Comment
-			Obj={Mk=401 Mnemo="Parametr_1_Out" Hint="Выдать 1-й параметр"}
-		
-	//		Obj={Mk=0 Mnemo="" Hint=""}
-		}
-		 Obj={Mnemo="OutMk" Hint="Работа с параметрами автомата" Comment
-			Obj={Mk=401 Mnemo="Parametr_1_OutMk" Hint="Выдать  МК с 1-м параметром"}
-		
-	//		Obj={Mk=0 Mnemo="" Hint=""}
-		}
-	 }
+
+	 Obj={Mnemo="Set" Hint="Приём данных от соседей" Comment
+	 	Obj={Mk=1 Mnemo="In_1_Set" Hint="Принять значение от 1-го соседа"}
+	 	Obj={Mk=2 Mnemo="In_2_Set" Hint="Принять значение от 2-го соседа"}
+
+	}
+	Obj={Mnemo="Out" Hint="Выдача данных от соседей" Comment
+	 	Obj={Mk=101 Mnemo="In_1_Out" Hint="Выдать значение, полученное от 1-го соседа"}
+	 	Obj={Mk=102 Mnemo="In_2_Out" Hint="Выдать значение, полученное от 2-го соседа"}
+	}
+	Obj={Mnemo="OutMk" Hint="Выдача МК с данными для соседей" Comment
+	 	Obj={Mk=201 Mnemo="In_1_Out" Hint="Выдать значение, полученное от 1-го соседа"}
+	 	Obj={Mk=202 Mnemo="In_2_Out" Hint="Выдать значение, полученное от 2-го соседа"}
+	}
 	 Obj={Mnemo="NeighbourMk" Hint="Работа с параметрами автомата" Comment
-		Obj={Mk=301 Mnemo="NeighbourMk_1_Set" Hint="Установить МК для 1-го соседа"}
+	 	Obj={Mk=301 Mnemo="NeighbourMk_1_Set" Hint="Выдать значение, полученное от 1-го соседа"}
+	 	Obj={Mk=302 Mnemo="NeighbourMk_1_Set" Hint="Выдать значение, полученное от 2-го соседа"}
+		
 	 }
+	 Obj={Mnemo="Set" Hint="Установка параметра" Comment
+	 	Obj={Mk=401 Mnemo="Parametr_1_Set" Hint="Установить 1-й параметр"}
+	 	Obj={Mk=402 Mnemo="Parametr_2_Set" Hint="Установить 2-й параметр"}
+
+	}
+	Obj={Mnemo="Out" Hint="Выдача параметра" Comment
+	 	Obj={Mk=501 Mnemo="Parametr_1_Set" Hint="Выдать 1-й параметр"}
+	 	Obj={Mk=502 Mnemo="Parametr_2_Set" Hint="Выдать 2-й параметр"}
+	}
+	Obj={Mnemo="OutMk" Hint="Выдача МК с параметром" Comment
+	 	Obj={Mk=601 Mnemo="Parametr_1_Set" Hint="Выдать МК с 1-м параметром"}
+	 	Obj={Mk=602 Mnemo="Parametr_2_Set" Hint="Установить со 2-м параметром"}
+	}
+
 	 Obj={Mnemo="Result" Hint="Выдача результатов расчета" Comment
-		Obj={Mk=0 Mnemo="" Hint=""}
-	 }
-	 Obj={Mnemo="Input data" Hint="Обработка входящей информации от соседей" Comment
 		Obj={Mk=0 Mnemo="" Hint=""}
 	 }
 
@@ -5103,6 +5139,15 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
       Obj=CommonMkList
 	}
 
+// RouterSegment Маршрутизатор
+     FuTypeIndexes.CellSet=117 FuTypeMkTrees.CellSet=
+	{
+      Obj={Mk=3 Mnemo="ChClear" Hint="Очистить список каналов"}
+      Obj={Mk=5 Mnemo="ChInSet" Hint="Установить входной канал"}
+      Obj={Mk=6 Mnemo="ChOutSet" Hint="Установить выходной канал"}
+      Obj={Mk=7 Mnemo="ChOutAdd" Hint="Добавить выход для текущего канала"}
+	 Obj=CommonMkList
+	}
   FuTypeMkTrees.CellSet=nil
 }
 
@@ -6505,6 +6550,11 @@ Bus={FuTypeMkList.RowSet=FUBus; FuTypeMkList.CellPop=temp
      FuTypeMkList.CellPop=temp FuTypeMkTrees.CellPop=temp2
  	MnemoServiceTable.LineAdd={Mnemo="FURouter" TreeParentLevelAtr=1 MkList=temp(nil)! MkTree=temp2(nil)!
  	FUType=116 FUTypeDef=116 Hint="Маршрутизатор милликоманд"}
+
+     FuTypeMkList.CellPop=temp FuTypeMkTrees.CellPop=temp2
+ 	MnemoServiceTable.LineAdd={Mnemo="FURouterSegment" TreeParentLevelAtr=1 MkList=temp(nil)! MkTree=temp2(nil)!
+ 	FUType=117 FUTypeDef=117 Hint="Сегментный маршрутизатор (маршрутизация непосредставенно черзе ФУ)"}
+
 }
 FuTypeMkList.IndexModeSet=1
 FuTypeMkTrees.IndexModeSet=1

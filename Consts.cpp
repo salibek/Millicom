@@ -99,35 +99,57 @@ float LoadPoint::ToFloat(float define) {// Перевод в integer
 	}
 };
 // Запись в нагрузку ИП
-void LoadPoint::Write(vector<double> x) // Копирование вектора
+int LoadPoint::Write(vector<double> x) // Копирование вектора
 {
+	if (Point == nullptr)
+		return 1;
 	if (Type == CdoubleArray)
 		*(vector<double>*)Point = x;
+	else
+		return 0;
 }
-void LoadPoint::Write(vector<float> x) // Копирование вектора
+int LoadPoint::Write(vector<float> x) // Копирование вектора
 {
+	if (Point == nullptr)
+		return 1;
 	if (Type == CdoubleArray)
 		*(vector<float>*)Point = x;
+	else
+		return 0;
 }
-void LoadPoint::Write(vector<bool> x) // Копирование вектора
+int LoadPoint::Write(vector<bool> x) // Копирование вектора
 {
+	if (Point == nullptr)
+		return 1;
 	if (Type == CdoubleArray)
 		*(vector<bool>*)Point = x;
+	else
+		return 0;
 }
-void LoadPoint::Write(vector<char> x) // Копирование вектора
+int LoadPoint::Write(vector<char> x) // Копирование вектора
 {
+	if (Point == nullptr)
+		return 1;
 	if (Type == CdoubleArray)
 		*(vector<char>*)Point = x;
+	else
+		return 0;
 }
-void LoadPoint::Write(vector<int> x) // Копирование вектора
+int  LoadPoint::Write(vector<int> x) // Копирование вектора
 {
+	if (Point == nullptr)
+		return 1;
 	if (Type == CdoubleArray)
 		*(vector<int>*)Point = x;
+	else
+		return 0;
 }
 // -----
 
 int LoadPoint::WriteFromLoad(LoadPoint Load) // Записать величину из нагрузки
 {
+	if (Point == nullptr)
+		return 1;
 	switch (Type)
 	{
 	case Tdouble:
@@ -159,6 +181,8 @@ int LoadPoint::WriteFromLoad(LoadPoint Load) // Записать величину из нагрузки
 
 int LoadPoint::Write(size_t x)
 {
+	if (Point == nullptr)
+		return 1;
 	switch (Type)
 	{
 	case Tdouble:
@@ -184,6 +208,8 @@ int LoadPoint::Write(size_t x)
 
 int LoadPoint::Write(int x)
 {
+	if (Point == nullptr)
+		return 1;
 	switch (Type)
 	{
 	case Tdouble:
@@ -212,6 +238,8 @@ int LoadPoint::Write(int x)
 
 int LoadPoint::Write(double x)
 {
+	if (Point == nullptr)
+		return 1;
 	switch (Type)
 	{
 	case Tdouble:
@@ -237,6 +265,8 @@ int LoadPoint::Write(double x)
 
 int LoadPoint::Write(float x)
 {
+	if (Point == nullptr)
+		return 1;
 	switch (Type)
 	{
 	case Tdouble:
@@ -262,6 +292,8 @@ int LoadPoint::Write(float x)
 
 int LoadPoint::Write(bool x)
 {
+	if (Point == nullptr)
+		return 1;
 	switch (Type)
 	{
 	case Tdouble:
@@ -287,6 +319,8 @@ int LoadPoint::Write(bool x)
 
 int LoadPoint::Write(char x)
 {
+	if (Point == nullptr)
+		return 1;
 	switch (Type)
 	{
 	case Tdouble:
@@ -312,6 +346,8 @@ int LoadPoint::Write(char x)
 
 int LoadPoint::Write(string x)
 {
+	if (Point == nullptr)
+		return 1;
 	switch (Type)
 	{
 	case Tstring:
@@ -325,6 +361,8 @@ int LoadPoint::Write(string x)
 
 int LoadPoint::Write(LoadPoint x) // Записать величино из нагрузки
 {
+	if (Point == nullptr)
+		return 1;
 	switch (Type)
 	{
 	case TLoad:
@@ -368,8 +406,51 @@ int LoadPoint::Write(LoadPoint x) // Записать величино из нагрузки
 	return 0;
 }
 
+int LoadPoint::Write(vector<LoadPoint> x)
+{
+	if (Point == nullptr || !IsVector())
+		return 1;
+	*(LoadVect_type)Point = x;
+	return 0;
+}
+
+unsigned int  LoadPoint::TypeMinimize(double x) // Минимизировать тип, т.е. было целое число - возвращается int и т.д.
+{
+	if (x == int(x) and abs(x) < 2147483647)
+		return Tint;
+	else if (x == 1 || x == 0)
+		return Tbool;
+	else
+		return Tdouble;
+
+}
+
+LoadPoint LoadPoint::TypeMinimizeOut(double x, bool var) // Минимизировать тип (возвращается LoadPoint), т.е. было целое число - возвращается int и т.д.
+{
+	if (x == int(x) and abs(x) < 2147483647)
+	{
+		int* t = new int;
+		return { (var ? Tint : Cint), t };
+	}
+	else if(x==1 || x==0)
+	{
+		bool* t = new bool;
+		return { (var ? Tbool : Cbool), t };
+	}
+	else
+	{
+		double* t = new double;
+		return { (var? Tdouble:  Cdouble), t };
+	}
+}
+
 LoadPoint LoadPoint::Clone() // Вернуть клонированную нагрузку
 {
+	if (Point == nullptr)
+		return { 0,nullptr };
+	if (Type % 2 == 0) // Если переменная, то возвращаем указатель
+		return *this;
+	
 	switch (Type >> 1)
 	{
 	case Dstring: return { Type, new string(*(string*)Point) };
@@ -387,12 +468,20 @@ LoadPoint LoadPoint::Clone() // Вернуть клонированную нагрузку
 		//		((ip*)Point)->Load.Clone();
 		return { Type, t };
 	}
+	case DLoadVect: // Копирование вектора нагрузок
+	{
+		vector<LoadPoint> t;
+		for (auto& i : *(vector<LoadPoint>*)Point)
+			t.push_back(i.Clone());
+	}
 	default: return *this;
 	}
 }
 
 void* LoadPoint::VarClone() // Вернуть ссылку на клонированное значение из нагрузки
 {
+	if (Point == nullptr)
+		return nullptr;
 	switch (Type >> 1)
 	{
 	case Dstring: return new string(*(string*)Point);
@@ -414,12 +503,13 @@ void LoadPoint::VarDel() // Удаление нагрузки ИП
 	switch (Type >> 1)
 	{
 	case Dstring: delete (string*)Point; break;
-//	case Dint: delete (int*)Point; break;
+	case Dint: delete (int*)Point; break;
 	case Dfloat: delete (float*)Point; break;
-//	case Ddouble: delete (double*)Point; break;
+	case Ddouble: delete (double*)Point; break;
 	case Dchar: delete (char*)Point; break;
 	case Dbool: delete (bool*)Point; break;
 	case DPPoint: delete (void**)Point; break;
+	case DLoadVect: ((vector<LoadPoint>*)Point)->resize(0); delete ((vector<LoadPoint>*)Point); break;
 		//	case DIP: return (*(ip*)Point).сlone();
 		//	case DIC: return Point = ICCopy(*this);
 	}
@@ -683,8 +773,8 @@ void LoadPoint::print(map<int, string > AtrMnemo, string offset, string Sep, str
 		}
 		break;
 	}
-	case TLoadArray:
-	case CLoadArray: // Вектор нагрузок
+	case TLoadVect:
+	case CLoadVect: // Вектор нагрузок
 	{
 		cout << ArrayBracketStart;
 		int c = 1;
@@ -1233,3 +1323,66 @@ void IPAdd(LoadPoint IC, ip IP) // Добавить ИП в конец ИК
 	if (!IC.isIC())return;
 	IPAdd(IC.Point, IP);
 }
+
+void* MakeLoadFromDouble(double x, unsigned int Type) // Создать нагрузку из типа double
+{
+	if (Type >= 0) // Задак тип
+	{
+		LoadPoint P = { Type, nullptr };
+		if (!P.isDigitBool()) return nullptr;
+	}
+	else // Автоматическое определерние типа
+	{
+		if (x == 0 || x == 1)
+			Type = Tbool;
+		else if (x == int(x))
+			Type = Tint;
+		else
+			Type = Tdouble;
+	}
+
+	switch (Type>>1)
+	{
+	case Dbool:
+		return new bool((bool)x);
+		break;
+	case Dint:
+		return new int((int)x);
+		break;
+	case Dfloat:
+		return new float((float)x);
+		break;
+	case Ddouble:
+		return new double((double)x);
+		break;
+	}
+};
+
+/*
+function <LoadPoint(LoadPoint, LoadPoint) > Add = [](LoadPoint x, LoadPoint y)->LoadPoint // Сложение
+{
+	if (x.IsStrChar() && y.IsStrChar()) // Две строки
+		return {Tstring,new string(x.ToStr()+y.ToStr())};
+
+	if(!(x.isDigitBool() && y.isDigitBool())) // Два числа
+		return { 0, nullptr }; // Не числа
+	double t = x.ToDouble() + y.ToDouble();
+	switch (max(x.Type,y.Type)>>1)
+	{
+	case Dbool:
+		return { Tbool,(void*)new bool((bool)t) };
+		break;
+	case Dint:
+		return { Tint,(void*)new int((int)t) };
+		break;
+	case Dfloat:
+		return { Tfloat,(void*)new float((float)t) };
+		break;
+	case Ddouble:
+		return { Tdouble,(void*)new double(t)};
+		break;
+	}
+	return { 0,nullptr };
+};
+*/
+

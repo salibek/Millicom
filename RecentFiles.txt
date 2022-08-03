@@ -1,17 +1,17 @@
 16 1
+C:\Users\salib\YandexDisk\MillicomNew\Millicom\ALU_test.oap 
+C:\Users\salib\YandexDisk\Millicom\CompLab.oap 
+C:\Users\salib\YandexDisk\MillicomNew\Millicom\ALE.oap 
+C:\Users\salib\YandexDisk\MillicomNew\Millicom\LexTest.oap 
+C:\Users\salib\YandexDisk\MillicomNew\Millicom\RusLingv.oap 
+C:\Users\salib\YandexDisk\MillicomNew\Millicom\CompileC.oap 
+C:\Users\salib\YandexDisk\Millicom\ModuleTest.oap 
+C:\Users\salib\YandexDisk\MillicomNew\Millicom\ModuleTest2.oap 
 C:\Users\salib\YandexDisk\MillicomNew\Millicom\MultyList.oap 
 C:\Users\salib\YandexDisk\MillicomNew\Millicom\Router.oap 
 C:\Users\salib\YandexDisk\MillicomNew\Millicom\OAGraphOut.oap 
-C:\Users\salib\YandexDisk\MillicomNew\Millicom\CompileC.oap 
 C:\Users\salib\YandexDisk\MillicomNew\Millicom\ProgTest.oap 
 C:\Users\salib\YandexDisk\MillicomNew\Millicom\MeanShift.oap 
 C:\Users\salib\YandexDisk\Методическая работа\Дипломы 2022\ОА-компилятор\CompileC.oap 
 C:\Users\salib\YandexDisk\MillicomNew\Millicom\ALE3.oap 
 C:\Users\User\YandexDisk\MillicomNew\Millicom\MeanShift.oap 
-C:\Users\salib\YandexDisk\MillicomNew\Millicom\ALE2.oap 
-C:\Users\salib\YandexDisk\MillicomNew\Millicom\Bag.oap 
-C:\Users\salib\YandexDisk\MillicomNew\Millicom\Gauss.oap 
-C:\Users\User\YandexDisk\MillicomNew\Millicom\Bag.oap 
-C:\Users\salib\YandexDisk\MillicomNew\Millicom\NetTemperat3.oap 
-C:\Users\salib\YandexDisk\MillicomNew\Millicom\NetTemperat2.oap 
-C:\Users\User\YandexDisk\MillicomNew\Millicom\ALE2.oap 

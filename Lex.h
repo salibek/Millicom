@@ -13,6 +13,7 @@ struct MkFu
 class Lex : public FU {
 private:
 	void LexOut(bool Copy=false, int MK = -1);
+	set<int> FinMk; // Множество индексов МК для потребителя, характерных для финального состояния
 	string ABC_templ = "_QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm"; // Алфавит символов
 	string Digit_templ = "0123456789"; // --- Алфавит чисел
 	string Digit_seps_templ = "."; // --- Алфавит разделителей чисел
@@ -23,8 +24,8 @@ private:
 	set<string> Seps;
 	IC_type StartProg = nullptr, StopProg = nullptr, FinProg = nullptr; // Программы, выполняемые при запуске процесса лексического анализа
 	string EOL = "\n"; // Символы окончания строки
-	vector<string> TrueConst = { "true","Ture" }; // Константы true
-	vector<string> FalseConst = { "false","False" }; // Константы false
+	set<string> TrueConst = { "true","True" }; // Константы true
+	set<string> FalseConst = { "false","False" }; // Константы false
 	int ProgLevel = 0; // Уровень скобочной конструкции
 	char ProgBracket = '{', ProgFinBracket = '}'; // Символы программных скобкок
 	void* TabErrProg = nullptr; // программа обработки ошибки табуляции

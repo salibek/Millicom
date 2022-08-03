@@ -77,6 +77,26 @@ void Console::ProgFU(int MK, LoadPoint Load)
 	case 41: // AtrMnemoClear Очистить мнемоники атрибутов
 		AtrMnemo.clear();
 		break;
+
+	case 44: // TrueValSet
+		TrueVar.clear();
+		if(Load.Point!=nullptr)
+			TrueVar.push_back(Load.ToStr());
+		break;
+	case 45: // TrueValAdd
+		if (Load.Point != nullptr)
+			TrueVar.push_back(Load.ToStr());
+		break;
+	case 46: // TrueValSet
+		FalseVar.clear();
+		if (Load.Point != nullptr)
+			FalseVar.push_back(Load.ToStr());
+		break;
+	case 47: // TrueValAdd
+		if (Load.Point != nullptr)
+			FalseVar.push_back(Load.ToStr());
+		break;
+
 	case 50: //VectIn ввод вектора 
 		break;
 	case 55: //MatrIn ввод матрицы	
@@ -89,16 +109,6 @@ void Console::ProgFU(int MK, LoadPoint Load)
 		VarBuf.push_back(Load);
 		break;
 	case 62: //VarAdd Добавить адрес переменной для записи результата ввода
-		VarBuf.push_back(Load);
-		break;
-	case 70: //VarClear Очистить буфер адресов для результата ввода
-		VarBuf.clear();
-		break;
-	case 71: //VarSet Записать адрес переменной для записи результата ввода
-		VarBuf.clear();
-		VarBuf.push_back(Load);
-		break;
-	case 72: //VarAdd Добавить адрес переменной для записи результата ввода
 		VarBuf.push_back(Load);
 		break;
 	case 80: //VarOut – выдать адрес переменной (если в буфере несколько переменных, то выдается адрес самой последней добавленной переменной)
@@ -114,12 +124,51 @@ void Console::ProgFU(int MK, LoadPoint Load)
 //			for(auto i: VarBuf) // Запись всех переменных
 //				Load.Write(i);
 	case 85: // VarOutMk
-		MkExec(Load, VarBuf.back());
+		MkExec(Load, VarBuf[0]);
 		break;
-	case 200: // NoVarToOutProgSet Установить подрограмму реакции на ошибку "Нет переменной для вывода"
+	case 90: // Input Ввод данных
+	{
+		string inStr;
+		getline(cin, inStr);
+		if (Load.isBool()) // Булев тип
+		{
+			// Проверка формата
+			// Сообщерние об ошибке
+			bool t=0;
+			// Преобразование текста в переменную
+			Load.Write(t); // Запись резульатата распознания введенной строки
+		}
+		else if (Load.isInt()) // Целый тип
+		{
+
+		}
+		else if (Load.isFloatDouble()) // Дробный тип
+		{
+		}
+		else if (Load.IsChar())   //
+		{
+		}
+		else if (Load.IsStr())    //
+		{
+		}
+		else if (Load.IsVector()) //
+		{
+		}
+		else
+			ProgExec(WrongFormatProg); // Сообщение о неправильном формате данных
+		break;
+	}
+	case 92: // InputMk Вввод данных и выдача Мк с ними (тип введенных данных определяется автоматически)
+		// Автоматическое распознание типа
+	{
+		int t = 0;
+		MkExec(Load, { Cint, &t });
+		break;
+	}
+	case 200: // NoVarToOutProgSet Установить подрограмму реакции на ошибку "Нет переменной для ввода"
 		NoVarToOutProg = Load.Point;
 		break;
-	case 201: // WrongFormatProgSet Установить подрограмму реакции на ошибку "Неправильный формат"
+	case 201: // WrongFormatProgSet Установить подрограмму реакции на ошибку "Неправильный формат входных данных"
 		WrongFormatProg = Load.Point;
 		break;
 	default:
