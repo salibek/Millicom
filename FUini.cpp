@@ -19,7 +19,7 @@
 #include "Bag.h"
 #include "Gauss.h"
 #include "CellularAutomat.h"
-#include "Counter.h"
+#include "IntAlu.h"
 #include "Router.h"
 #include "RouterSegment.h"
 
@@ -120,9 +120,9 @@ FU* CellularAutomatManagerIni(FU* BusContext, FU* TEmpl)
 	return (FU*) new CellularAutomatManager(BusContext, TEmpl);
 }
 
-FU* CounterIni(FU* BusContext, FU* TEmpl)
+FU* IntAluIni(FU* BusContext, FU* TEmpl)
 {
-	return (FU*) new Counter(BusContext, TEmpl);
+	return (FU*) new IntAlu(BusContext, TEmpl);
 }
 
 FU* RouterIni(FU* BusContext, FU* TEmpl)

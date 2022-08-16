@@ -24,7 +24,7 @@ private:
 class Gauss : public FU {
 public:
 	void ProgFU(int MK, LoadPoint Load) override;
-	Gauss(FU* BusContext, FU* Templ) : FU(BusContext) { Bus = BusContext; };
+	Gauss(FU* BusContext, FU* Templ) : FU(BusContext) { Bus = BusContext; FUtype = 16; };
 	Gauss() : FU() { Bus = nullptr; };
 	int Size = 10; // Размерность матрицы
 	double Max = 10, Min = 10;// Максимальная и минимальная значения коээфициентов и свободных членов

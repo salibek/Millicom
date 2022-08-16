@@ -28,7 +28,9 @@ public:
 	void ProgFU(int MK, LoadPoint Load) override;
 	Router(FU* BusContext, FU* Templ)
 	{
-		Bus = BusContext; ProgFU(0, { 0, nullptr });
+		Bus = BusContext; 
+		FUtype = 20;
+		ProgFU(0, { 0, nullptr });
 	};
 
 };

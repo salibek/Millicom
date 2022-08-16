@@ -61,7 +61,7 @@ public:
 	vector <vector<MeanShiftPoint*>> VXY; // ”казатели на точки, упор€доченные по координате X и Y и т.д.
 											//  аждое изменение - это отдельна€ лини€ в векторе
 	void ProgFU(int MK, LoadPoint Load) override;
-	MeanShift(FU* BusContext, FU* Templ) : FU(BusContext) { ProbMaxMin = { {0,1},{0,1} }; eps = { 15,15 }; eps.resize(2);  Bus = BusContext; };
+	MeanShift(FU* BusContext, FU* Templ) : FU(BusContext) { FUtype = 14; ProbMaxMin = { {0,1},{0,1} }; eps = { 15,15 }; eps.resize(2);  Bus = BusContext; };
 	MeanShift() : FU() { ProbMaxMin = { {0,1},{0,1} }; eps = { 16,16 }; Bus = nullptr; };
 private:
 	int NDim = 2; //  оличество изменений в фазовом пространстве

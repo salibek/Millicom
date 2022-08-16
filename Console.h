@@ -27,7 +27,7 @@ private:
 	void* WrongVectFormatProg = nullptr; // Подрограммы реакции на ошибку "Неправильный формат"
 public:
 	void ProgFU(int MK, LoadPoint Load) override;
-	Console(FU *BusContext, FU *Templ) : FU(BusContext) { Bus = BusContext; };
+	Console(FU* BusContext, FU* Templ) : FU(BusContext) { Bus = BusContext; FUtype = 1; };
 	Console() : FU() { Bus = nullptr; };
 private:
 };

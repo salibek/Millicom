@@ -12,8 +12,8 @@ bool Search::null_check()// Проверка на нуль (false, если всё в порядке)
 		return false;
 	else
 	{
-		IPTemplPoint = nullptr;
-		IPPoint = nullptr;
+		IPTemplRezPoint = nullptr;
+		IPRezPoint = nullptr;
 		Rez = false;
 		return true;
 	}
@@ -40,13 +40,13 @@ bool Search::FindIPObj(LoadPoint Templ, LoadPoint obj, bool XOR) // Поиск, если 
 		if(IPCmp((ip*)Templ.Point, (ip*)obj.Point))
 		{
 			Rez = true;
-			IPTemplPoint = (ip*)Templ.Point;
-			IPPoint = (ip*)obj.Point;
+			IPTemplRezPoint = (ip*)Templ.Point;
+			IPRezPoint = (ip*)obj.Point;
 			return true;
 		}
 		else
 		{
-			Rez = false; IPTemplPoint = nullptr; IPPoint = nullptr;
+			Rez = false; IPTemplRezPoint = nullptr; IPRezPoint = nullptr;
 			MainFU->ProgExec(FailProg);
 			return false;
 		}
@@ -66,15 +66,15 @@ bool Search::FindIPObj(LoadPoint Templ, LoadPoint obj, bool XOR) // Поиск, если 
 	}
 	if (i == ((IC_type)Templ.Point)->end() || i->atr == Prog_atr || Count==2)
 	{
-		Rez = false; IPTemplPoint = nullptr; IPPoint = nullptr;
+		Rez = false; IPTemplRezPoint = nullptr; IPRezPoint = nullptr;
 		MainFU->ProgExec(FailProg);
 		return false;
 	}
 	else
 	{
 		Rez = true;
-		IPTemplPoint = i._Ptr;
-		IPPoint = (ip*)obj.Point;
+		IPTemplRezPoint = i._Ptr;
+		IPRezPoint = (ip*)obj.Point;
 		return true;
 	}
 }
@@ -84,8 +84,8 @@ bool Search::FindOr(LoadPoint obj)
 	if (null_check()) return false;
 	// Поиск одно ИП
 	Rez = false;
-	IPTemplPoint = nullptr;
-	IPPoint = nullptr;
+	IPTemplRezPoint = nullptr;
+	IPRezPoint = nullptr;
 	if (Obj.Type >> 1 == DIP)
 		if (!FindIPObj(Template, Obj))
 			return false;
@@ -107,8 +107,8 @@ bool Search::FindOr(LoadPoint obj)
 			if (MkAtr.count(j->atr)) continue;
 			if (IPCmp(i._Ptr, j._Ptr))
 			{
-				IPTemplPoint = i._Ptr;
-				IPPoint = j._Ptr;
+				IPTemplRezPoint = i._Ptr;
+				IPRezPoint = j._Ptr;
 				break;
 			}
 
@@ -118,7 +118,7 @@ bool Search::FindOr(LoadPoint obj)
 	}
 	if (i == ((IC_type)Template.Point)->end() || i->atr == Prog_atr)
 	{
-		Rez = false; IPTemplPoint = nullptr; IPPoint = nullptr;
+		Rez = false; IPTemplRezPoint = nullptr; IPRezPoint = nullptr;
 		MainFU->ProgExec(FailProg);
 		return false;
 	}
@@ -163,8 +163,8 @@ bool Search::FindXor(LoadPoint obj)
 			if (IPCmp(i._Ptr, j._Ptr))
 			{
 				Count++;
-				IPTemplPoint = i._Ptr;
-				IPPoint = j._Ptr;
+				IPTemplRezPoint = i._Ptr;
+				IPRezPoint = j._Ptr;
 			}
 		}
 	}
@@ -180,8 +180,8 @@ bool Search::FindXor(LoadPoint obj)
 	else
 	{
 		Rez = false;
-		IPTemplPoint = nullptr;
-		IPPoint = nullptr;
+		IPTemplRezPoint = nullptr;
+		IPRezPoint = nullptr;
 		MainFU->ProgExec(FailProg);
 		return false;
 	}
@@ -191,8 +191,8 @@ bool Search::FindAnd(LoadPoint obj) // Поиск
 {
 	Obj = obj;
 	if (null_check()) return false;
-	IPTemplPoint = nullptr;
-	IPPoint = nullptr;
+	IPTemplRezPoint = nullptr;
+	IPRezPoint = nullptr;
 	Rez = false;
 	int IP_NumOld = IP_Num; // Запомнить старый номер найденной ИП
 
@@ -217,10 +217,10 @@ bool Search::FindAnd(LoadPoint obj) // Поиск
 		auto j = ((IC_type)Template.Point)->begin();
 		for (; j != ((IC_type)Template.Point)->end() && (!IPCmp(i._Ptr,j._Ptr) || (MkAtr.count(j->atr))); j++);
 		if (j == ((IC_type)Template.Point)->end()) break;
-		if (IPTemplPoint==nullptr)
+		if (IPTemplRezPoint ==nullptr)
 		{
-			IPTemplPoint = j._Ptr;
-			IPPoint = i._Ptr;
+			IPTemplRezPoint = j._Ptr;
+			IPRezPoint = i._Ptr;
 		}
 	}
 	if (i==((vector<ip>*)(Obj.Point))->end())
@@ -235,8 +235,8 @@ bool Search::FindAnd(LoadPoint obj) // Поиск
 	else
 	{
 		Rez = false;
-		IPTemplPoint = nullptr;
-		IPPoint = nullptr;
+		IPTemplRezPoint = nullptr;
+		IPRezPoint = nullptr;
 		MainFU->ProgExec(FailProg);
 		return false;
 	}
@@ -247,8 +247,8 @@ bool Search::FindAndSource(LoadPoint obj) // Поиск
 	Obj = obj;
 	Rez = false;
 	if (null_check()) return false;
-	IPTemplPoint = nullptr;
-	IPPoint = nullptr;
+	IPTemplRezPoint = nullptr;
+	IPRezPoint = nullptr;
 
 	if (Template.Type >> 1 == DIP && obj.Type >> 1 == DIP)
 		if (!FindIPObj(Template, Obj))
@@ -267,7 +267,7 @@ bool Search::FindAndSource(LoadPoint obj) // Поиск
 			return false;
 		else
 		{
-			swap(IPTemplPoint,IPPoint);
+			swap(IPTemplRezPoint,IPRezPoint);
 			MainFU->ProgExec(SuccessProg, 0, MainFU->Bus);
 			AtrProgExec((IC_type)Template.Point, Prog_atr, MainFU->Bus, true);
 			MkAtrExec();
@@ -282,15 +282,15 @@ bool Search::FindAndSource(LoadPoint obj) // Поиск
 		if (i == ((IC_type)Template.Point)->end())
 		{
 			Rez = true;
-			IPTemplPoint = (ip*)Template.Point;
-			IPPoint = (ip*)obj.Point;
+			IPTemplRezPoint = (ip*)Template.Point;
+			IPRezPoint = (ip*)obj.Point;
 			return true;
 		}
 		else
 		{
 			Rez = false;
-			IPTemplPoint = nullptr;
-			IPPoint = nullptr;
+			IPTemplRezPoint = nullptr;
+			IPRezPoint = nullptr;
 			return false;
 		}
 		
@@ -304,10 +304,10 @@ bool Search::FindAndSource(LoadPoint obj) // Поиск
 		auto j = ((vector<ip>*)(Obj.Point))->begin();
 		for (; j != ((vector<ip>*)(Obj.Point))->end() && (!IPCmp(i._Ptr, j._Ptr) || (MkAtr.count(j->atr))); j++);
 		if (j == ((vector<ip>*)(Obj.Point))->end()) break;
-		if (IPTemplPoint == nullptr)
+		if (IPTemplRezPoint == nullptr)
 		{
-			IPTemplPoint = i._Ptr;
-			IPPoint = j._Ptr;
+			IPTemplRezPoint = i._Ptr;
+			IPRezPoint = j._Ptr;
 		}
 	}
 	if (i != ((IC_type)Template.Point)->end())
@@ -322,8 +322,8 @@ bool Search::FindAndSource(LoadPoint obj) // Поиск
 	else
 	{
 		Rez = false;
-		IPTemplPoint = nullptr;
-		IPPoint = nullptr;
+		IPTemplRezPoint = nullptr;
+		IPRezPoint = nullptr;
 		MainFU->ProgExec(FailProg);
 		return false;
 	}
@@ -338,7 +338,7 @@ void Search::Clear()
 	Rez = false;
 	SuccessProg = nullptr;  FailProg = nullptr;
 	SuccessAfterProg = nullptr;  FailAfterProg = nullptr;
-	IPTemplPoint = nullptr;  IPPoint = nullptr;
+	IPTemplRezPoint = nullptr;  IPRezPoint = nullptr;
 	IP_Num = -1; IPTempl_Num = -1;
 	BiggerProg = nullptr; EqProg = nullptr;  SmallerProg = nullptr;
 	Prog_atr = ProgAtr;

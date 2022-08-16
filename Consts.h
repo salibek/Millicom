@@ -41,7 +41,7 @@ const int FUBus = 0, FUCons = 1, FUStrGen = 2, FULex = 3, FUList = 4, FUFind = 5
 //const vector<int> w_type = { 10, 30, 40, 50, 60, 70, 20 };
 
 // Общие атрибуты
-const int ProgAtr = -100, Atr = -60, SubObj = -6;
+const int ProgAtr = -100, Atr = -60, SubObj = -6, GotoAtr=-99;
 const int ListLine = -80, ListSub = -90; // Атрибуты линии списка и подсписка
 // Общие МК
 const int ProgMk=958, ProgCycleMk = 959, ProgPostCycleMk = 960;
@@ -71,10 +71,13 @@ public:
 	static bool isBool(int type) { return type >> 1 == Dbool; }; // Число или булеан?
 	static bool isBool(LoadPoint Load) { return Load.Type >> 1 == Dbool; }; // Число или булеан?
 	bool isInt() { return Type >> 1 == Dint; }; // булеан?
-	static bool isInt(int type) { return type >> 1 == Dint; }; // Число или булеан?
-	static bool isInt(LoadPoint Load) { return Load.Type >> 1 == Dint; }; // Число или булеан?
+	static bool isInt(int type) { return type >> 1 == Dint; }; // Целое число?
+	static bool isInt(LoadPoint Load) { return Load.Type >> 1 == Dint; }; // Целове число?
+	bool isIntBool() { return Type >> 1 == Dint || Type >> 1 == Dbool; }; // булеан или целое число?
+	static bool isIntBool(int type) { return type >> 1 == Dint || type >> 1 == Dbool; }; // Число или булеан?
+	static bool isIntBool(LoadPoint Load) { return Load.Type >> 1 == Dint || Load.Type>>1==Dbool; }; // Число или булеан?
 	bool isFloatDouble() { return Type >> 1 == Ddouble || Type >> 1 == Dfloat; }; // булеан?
-	static bool isisFloatDoubleInt(int type) { return type >> 1 == Ddouble || type >> 1 == Dfloat; }; // Число или булеан?
+	static bool isFloatDoubleInt(int type) { return type >> 1 == Ddouble || type >> 1 == Dfloat; }; // Число или булеан?
 	static bool isFloatDouble(LoadPoint Load) { return Load.Type >> 1 == Ddouble || Load.Type >> 1 == Dfloat; }; // Число или булеан?
 	bool isIC(); // Определить указывает ли ссылка на ИК
 	bool isIP(); // Определить указывает ли ссылка на ИП
@@ -187,11 +190,12 @@ public:
 		}
 	};
 
-	ip copy() // Копирование ИП
+	ip Copy() // Копирование ИП
 	{
-		ip* ip_new = new ip;
-		ip_new->copy(*this);
-		return *ip_new;
+//		ip ip_new;
+//		ip_new.copy(*this);
+//		return ip_new;
+		return { atr,Load.Clone() };
 	};
 
 	ip* Сlone()

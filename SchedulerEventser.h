@@ -15,6 +15,7 @@ public:
 	Eventser(FU* BusContext, FU* Templ)
 	{
 		Bus = BusContext;
+		FUtype = 13;
 		ProgFU(0, { 0,nullptr });
 	};
 	Eventser() {};
@@ -41,6 +42,7 @@ public:
 		Scheduler(FU* BusContext, FU* Templ)
 	{
 		Bus = BusContext;
+		FUtype = 12;
 		ProgFU(0, { 0,nullptr });
 	};
 };

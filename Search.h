@@ -18,7 +18,7 @@ public:
 	bool Rez=false; // Результат поиска
 	vector<ip> *SuccessProg = nullptr, *FailProg = nullptr; // Указатели на программы по успеху и неуспеху поиска
 	vector<ip> *SuccessAfterProg = nullptr, *FailAfterProg = nullptr; // Указатели на программы по успеху и неуспеху поиска, выполняющиеся после обработки программы линии
-	ip *IPTemplPoint = nullptr, *IPPoint = nullptr; // Указатели на найденные ИП в шаблоне и в ИК
+	ip *IPTemplRezPoint = nullptr, *IPRezPoint = nullptr; // Указатели на найденные ИП в шаблоне и в ИК
 	int IP_Num = -1, IPTempl_Num=-1; // Номер первой найденной ИП и ИП в шаблоне
 	vector<ip>* BiggerProg = nullptr, *EqProg = nullptr, * SmallerProg = nullptr; // Указатели на программы по запуску подпрограммы по номеру найденной ИП в шаблоне
 	int Prog_atr = ProgAtr; // Атрибут программы, выполняющейся при успешном поиске (<0 атрибут не учитывается)

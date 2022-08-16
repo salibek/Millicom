@@ -29,9 +29,14 @@ void BusFU::ProgFU(int MK, LoadPoint Load)
 		switch (MK%FUMkRange)
 		{
 		case 0: // Сброс
+	//		for (int i = 2; i < FUs.size(); i++)
+		//		delete FUs[i];
+		//	FUs.clear();
+		//	FUs.push_back(this);
+		//	FUs.push_back(this); // Первой ФУ - это сам Bus
 			break;
 		case 1: // MakeFU Создать ФУ
-			FUs.push_back(FUTypes[*(int *)Load.Point - FUTypeCorrect](this, FUTempl));
+			FUs.push_back(FUTypes[Load.ToInt() - FUTypeCorrect](this, FUTempl));
 			break;
 		case 5: // ProgExec Выполнить программу из ИК
 			ProgExec((vector<ip>*)Load.Point);
@@ -48,6 +53,40 @@ void BusFU::ProgFU(int MK, LoadPoint Load)
 			int t= FUs.size();
 			MkExec(Load, {Cint,&t});
 		}
+		case 22: // LastFuContextOut 
+			Load.Write(FUs.back());
+			break;
+		case 23: // LastFuContextOutMk Выдать МК с контекстом последнего созданного ФУ
+			MkExec(Load, {TFU, FUs.back()});
+			break;
+		case 25: // LastFUNameSet Установить имя последнего созданного ФУ
+			if (FUs.size() > 1)
+				FUs.back()->FUName = Load.ToStr();
+			break;
+		case 40: // LastFUMkRangeOut Выдать начало МК-диапазона последнего ФУ
+			Load.Write(FUMkRange*(FUs.size() - 1));
+			break;
+		case 41: // LastFUMkRangeOutMk Выдать МК с началом МК-диапазона последнего ФУ 
+			{
+				int t = FUMkRange * (FUs.size() - 1);
+				MkExec(Load, { Cint, &t });
+			}
+			break;
+		case 100: // MkExec Выполнить одму МК (в нагрузке ссылка на ИП)
+
+			if (Load.Point!=nullptr && Load.isIP())
+				ProgFU(((ip*)Load.Point)->atr, ((ip*)Load.Point)->Load);
+			break;
+		case 105: //InterpretatorModeSet Установить режим интерпретатора
+			InterpretatorMode = Load.ToBool(true);
+			break;
+		case 106: // InterpretatorProgExec Выполнить программу, если режим интерпретатора
+			if (InterpretatorMode)
+				ProgExec(Load);
+			break;
+		case 107: // CompilyatorProgExec Выполнить программу, если режим компилятора
+			if (!InterpretatorMode)
+				ProgExec(Load);
 			break;
 		case 155:// FUTypeCorrectSet Установить коррекцию номера типа ФУ (для переноса ОА-программы на другую ОА-платформу)
 			FUTypeCorrect = *(int *)Load.Point;

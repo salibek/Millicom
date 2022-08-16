@@ -20,7 +20,7 @@ class RouterSegment : FU // Сегментный роутер
 	double AverageMKQueue = 0; // Средняя длина очереди
 	double CurrentTime = 0; // Текущее время моделирования
 public:
-	RouterSegment(void* parent, FU* Templ = nullptr) { Bus = (FU*)parent; ProgFU(0, { 0, nullptr }); };
+	RouterSegment(void* parent, FU* Templ = nullptr) { FUtype = 21; Bus = (FU*)parent; ProgFU(0, { 0, nullptr }); };
 	void ProgFU(int MK, LoadPoint Load) override;
 	void Routing(int MK, LoadPoint Load, int ChInd);
 };

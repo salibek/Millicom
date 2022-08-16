@@ -37,7 +37,7 @@ public:
 	vector<LoadPoint> OutAdr; // вектор адресов для записи результатов
 
 	vector<ALUContext> Stack = {};
-	ALU(void* parent, FU* Templ = nullptr) { Bus = (FU*)parent; Parent = parent; ProgFU(0, { 0, nullptr }); };
+	ALU(void* parent, FU* Templ = nullptr) { Bus = (FU*)parent; Parent = parent; FUtype = 17; ProgFU(0, { 0, nullptr }); };
 	void ProgFU(int MK, LoadPoint Load) override;
 	void* Parent = nullptr;
 	void		add(LoadPoint load);

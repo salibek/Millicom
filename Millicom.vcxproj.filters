@@ -93,7 +93,7 @@
     <ClCompile Include="CellularAutomata.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="Counter.cpp">
+    <ClCompile Include="IntAlu.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="Gateway.cpp">
@@ -188,7 +188,7 @@
     <ClInclude Include="CellularAutomat.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="Counter.h">
+    <ClInclude Include="IntAlu.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="Gateway.h">

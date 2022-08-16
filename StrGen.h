@@ -21,6 +21,6 @@ private:
 	string finStr = ""; // Строка, выдаваемая при окончании геренации строк
 public:
 	void ProgFU(int MK, LoadPoint Load) override;
-	StrGenContext(FU *BusContext, FU *Templ) : FU(BusContext) { ProgFU(0, { 0, nullptr }); Bus = BusContext;};
+	StrGenContext(FU* BusContext, FU* Templ) : FU(BusContext) { ProgFU(0, { 0, nullptr }); Bus = BusContext; FUtype = 2; };
 	StrGenContext(): FU() { StrGenContext(nullptr, nullptr); };
 };

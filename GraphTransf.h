@@ -14,7 +14,8 @@ private:
 	void ProgFU(int MK, LoadPoint Load) override;
 	vector<IC_type> Operands; // Аккумулятор для операций (первый операнд)
 public:
-	GraphTransf(FU *BusContext, FU *Templ) : FU(BusContext) { 
+	GraphTransf(FU *BusContext, FU *Templ) : FU(BusContext) {
+		FUtype = 6;
 		Bus = BusContext; 
 		LTable = new LocatTable(); 
 		navigator.currentPos = new vector<Position>(); 

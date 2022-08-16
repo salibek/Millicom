@@ -17,7 +17,7 @@ class List : public FU
 {
 public:
 	void ProgFU(int MK, LoadPoint Load) override;
-	vector<IC_type> ListHead;
+	vector<IC_type> ListHead; // Ссылка на голову списка (вектор, т.к. список может быть многоуровневым)
 
 	ip* LineUk = nullptr; // Указатель на найленную строку списка
 	int LineNum = -1, LineNumOld = -1; // Номер первой совпадающей линии, номер предыдущей совпадающей линии
@@ -50,7 +50,7 @@ public:
 	void* SuссessLineProg = nullptr, * SuссessProg = nullptr;
 	vector<ip> *DefProg = nullptr;
 
-	List(FU *BusContext, FU *Templ) : FU(BusContext) { ProgFU(0, { 0, nullptr }); Bus = BusContext; Searcher.MainFU = this; };
+	List(FU* BusContext, FU* Templ) : FU(BusContext) { ProgFU(0, { 0, nullptr }); Bus = BusContext; Searcher.MainFU = this; FUtype = 5; };
 	List() : FU() { List(nullptr, nullptr); };
 private:
 	int DeepStartSearch = 0; // Стартовый уровень для пописка

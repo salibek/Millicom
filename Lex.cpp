@@ -11,7 +11,7 @@
 		if (uk!= UnicAtr.end())
 		{
 			if (uk->second.Fu != nullptr && uk->second.Mk!= 0)
-				if(Copy)
+				if(!Copy)
 					uk->second.Fu->ProgFU(uk->second.Mk, { TIP, &LexBuf[ib] });
 				else
 					uk->second.Fu->ProgFU(uk->second.Mk, { TIP, LexBuf[ib].Сlone() });
@@ -36,6 +36,8 @@
 			ReceiverMK = 0;
 			Receiver = Bus;
 			ErrProg = nullptr;
+			StopProg = nullptr;
+			TabErrProg = nullptr;
 			break;
 		case 5: //ReceiverMKSet Установить МК для приемника лексем 
 			if (Load.Type >> 1 == Dint) ReceiverMK = Load.ToInt(); break;
@@ -71,15 +73,16 @@
 			FinProg = (IC_type)Load.Point;
 			break;
 		case 15:// UnicAtrSet Установить уникальный атрибут
-			UnicAtr[*(int*)Load.Point] = { 0,Bus };
+			LastUnicAtr = Load.ToInt();
+			UnicAtr[LastUnicAtr] = {0,Bus};
 			break;
 		case 16:// UnicMkSet Установить МК для уникального атрибута
-			if(UnicAtr.size())
-				(--UnicAtr.end())->second.Mk= *(int*)Load.Point;
+			if (UnicAtr.size())
+				UnicAtr[LastUnicAtr].Mk = Load.ToInt();
 			break;
 		case 17:// UnicFuSet Установить контекст для уникального атрибута
 			if (UnicAtr.size())
-				(--UnicAtr.end())->second.Fu = (FU*)Load.Point;
+				UnicAtr[LastUnicAtr].Fu = (FU*)Load.Point;
 			break;
 		case 18:// UnicReset Сбросить список уникальных атрибутов
 			UnicAtr.clear();
@@ -234,11 +237,17 @@
 			LexBuf[(ib - 1 + SizeBuf) % SizeBuf].Load.Type--;
 			break;
 
-		case 70: // CendToReceiver Переслать лексему из нагрузки получателю
-			MkExec(ReceiverMK, Load);
+		case 70: // CendToReceiver Переслать лексему из нагрузки получателю (если в нагрузке nil, то посылается текущая лексема)
+			if (Load.Point == nullptr)
+				LexOut();
+			else
+				MkExec(ReceiverMK, Load);
 			break;
-		case 71: // CendCopyToReceiver Переслать копию лексемы из нагрузки получателю
-			MkExec(ReceiverMK, Load.Clone());
+		case 71: // CendCopyToReceiver Переслать копию лексемы из нагрузки получателю (если в нагрузке nil, то посылается текущая лексема)
+			if (Load.Point == nullptr)
+				LexOut(true);
+			else
+				MkExec(ReceiverMK, Load.Copy());
 			break;
 
 		case 98: // LexReset Сбросить настройки лексического анализа
@@ -249,7 +258,7 @@
 			break;
 		case 99: // Stop Остановить лексический анализ (Эту МК необходимо выполнить при перезапуске лексичекого анализа)
 			Work = false;
-			ProgExec((IC_type)StopProg,0, Bus,nullptr); // выполнить программу по останову лексического анализа
+			ProgExec(StopProg); // выполнить программу по останову лексического анализа
 			S = 0;
 			LexBuf[0].atr = SeperatAtr;
 			ProgLevel = 0; // Счетчик табуляций
@@ -429,7 +438,7 @@
 						*tint = atoi(FigureBuf.c_str()); //запись лексемы в переменную
 						ib = (ib + 1) % SizeBuf; //увеличение текущего адреса буфера выходных лексем на 1
 						LexBuf[ib].Load.Clear(); //удаление нагрузки ИП
-						LexBuf[ib] = { IntAtr,Tint , tint }; //добавление лексемы в буфер выходных лексем в виде ИП {атрибут, тип, указатель}
+						LexBuf[ib] = { IntAtr,Cint , tint }; //добавление лексемы в буфер выходных лексем в виде ИП {атрибут, тип, указатель}
 						LexOut();
 						S = 0; //переход в состояние 0
 						break;
@@ -773,6 +782,7 @@
 */
 	Lex::Lex(FU *BusContext, FU *Templ) 
 	{
+		FUtype = 3;
 		Bus = BusContext;
 		Receiver = BusContext;
 		copy(ABC_templ.begin(), ABC_templ.end(), inserter(ABC, ABC.end()));

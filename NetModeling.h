@@ -30,7 +30,7 @@ class NetManager: public FU // Менеджер сетевых расчетов
 {
 public:
 	void ProgFU(int MK, LoadPoint Load) override;
-	NetManager(FU* BusContext, FU* Templ) : FU(BusContext) { Bus = BusContext; ProgFU(0, { 0,nullptr }); };
+	NetManager(FU* BusContext, FU* Templ) : FU(BusContext) { Bus = BusContext; FUtype = 11; ProgFU(0, { 0,nullptr }); };
 	NetManager() : FU() { Bus = nullptr; };
 private:
 	double ManageTime = 0; // Время работы менеджера вычислительной сетки

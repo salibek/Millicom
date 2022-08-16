@@ -26,7 +26,7 @@ private:
 	double delta = 0, Z=0, Y=0;
 public:
 	void ProgFU(int MK, LoadPoint Load) override;
-	Neuro(FU* BusContext, FU* Templ) : FU(BusContext) { Bus = BusContext; ProgFU(0, { 0,nullptr }); };
+	Neuro(FU* BusContext, FU* Templ) : FU(BusContext) { Bus = BusContext; FUtype = 10; ProgFU(0, { 0,nullptr }); };
 	Neuro() : FU() { Bus = nullptr; };
 private:
 };

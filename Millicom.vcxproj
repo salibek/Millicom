@@ -147,7 +147,7 @@
     <ClCompile Include="ALU.cpp" />
     <ClCompile Include="CellularAutomata.cpp" />
     <ClCompile Include="ConfineSimple.cpp" />
-    <ClCompile Include="Counter.cpp" />
+    <ClCompile Include="IntAlu.cpp" />
     <ClCompile Include="Bag.cpp" />
     <ClCompile Include="Bus.cpp" />
     <ClCompile Include="Console.cpp" />
@@ -179,7 +179,7 @@
     <ClInclude Include="ALU.h" />
     <ClInclude Include="CellularAutomat.h" />
     <ClInclude Include="ConfineSimple.h" />
-    <ClInclude Include="Counter.h" />
+    <ClInclude Include="IntAlu.h" />
     <ClInclude Include="Bag.h" />
     <ClInclude Include="Bus.h" />
     <ClInclude Include="Console.h" />

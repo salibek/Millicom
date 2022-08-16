@@ -16,7 +16,7 @@ private:
 	int StageProgMk = -1; // МК для установки программы для состояния
 public:
 	void ProgFU(int MK, LoadPoint Load) override;
-	AutomatManager(FU* BusContext, FU* Templ) : FU(BusContext) { Bus = BusContext; ProgFU(0, { 0,0 }); };
+	AutomatManager(FU* BusContext, FU* Templ) : FU(BusContext) { Bus = BusContext; FUtype = 9; ProgFU(0, { 0,0 }); };
 	AutomatManager() : FU() { Bus = nullptr; };
 };
 
@@ -68,6 +68,6 @@ private:
 public:
 //	int CurrentCh = -1; // Номер текущего канала (т.е. канала, на который пришли данные)
 	void ProgFU(int MK, LoadPoint Load) override;
-	InOut(FU* BusContext, FU* Templ) : FU(BusContext) { Bus = BusContext; ProgFU(0, { 0,0 }); };
+	InOut(FU* BusContext, FU* Templ) : FU(BusContext) { Bus = BusContext; FUtype = 8; ProgFU(0, { 0,0 }); };
 	InOut() : FU() { Bus = nullptr; };
 };

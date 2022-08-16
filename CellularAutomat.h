@@ -8,7 +8,7 @@ class CellularAutomat : public FU {
 //private:
 public:
 	void ProgFU(int MK, LoadPoint Load) override;
-	CellularAutomat(FU* BusContext, FU* Templ) : FU(BusContext) { Bus = BusContext; };
+	CellularAutomat(FU* BusContext, FU* Templ) : FU(BusContext) { FUtype = 18; Bus = BusContext; };
 	CellularAutomat() : FU() { Bus = nullptr; };
 	void* Manager = nullptr;// Ссылка на менеджера
 	vector<CellularAutomat*> Neighbours;//Ссылки на соседей
@@ -40,7 +40,7 @@ class CellularAutomatManager : public FU {
 public:
 	void ProgFU(int MK, LoadPoint Load) override;
 	int NetType = 0;// Тип автоматной сетки 0 - не задано, 1- квадратная, 2 - треугольная, 3 гексагональная
-	CellularAutomatManager(FU* BusContext, FU* Templ) : FU(BusContext) { Bus = BusContext; };
+	CellularAutomatManager(FU* BusContext, FU* Templ) : FU(BusContext) { FUtype = 19; Bus = BusContext; };
 	CellularAutomatManager() : FU() { Bus = nullptr; };
 	vector<CellularAutomat> Net; //вектор сеточных автоматов
 	vector<int> Dim; // Размерность поля автоматов (количество ФУ для каждого измерения)

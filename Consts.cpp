@@ -857,7 +857,7 @@ void FU::CommonMk(int Mk, LoadPoint Load)
 	case 921: // AccumPointerOutMk Выдать МК со ссылкой на аккумулятор
 		MkExec(Load,Accum);
 		break;
-	case 922: // AccumSet Установить значение аккумулятора
+	case 931: // AccumSet Установить значение аккумулятора
 		if (Accum.Point = nullptr)
 		{
 			Accum = { Cdouble,new double };
@@ -907,8 +907,11 @@ void FU::CommonMk(int Mk, LoadPoint Load)
 	case 924: // PrеfixProgSet
 		PrefixProg = (IC_type)Load.Point;
 		break;
-	case 926: // PostfixProgSet
+	case 922: // PostfixProgSet
 		PostfixProg = (IC_type)Load.Point;
+		break;
+	case 926: // BusSet
+		Bus = (FU*)Load.Point;
 		break;
 	case ProgExecMk: // ProgExec Выполнить программу (если в нагрузке null, То выполнить из регистра Prog
 		if (Load.Point == nullptr)
@@ -958,7 +961,7 @@ void FU::CommonMk(int Mk, LoadPoint Load)
 // CycleType тип цикла: 0 - без цикла, 1 - цикл, 2 - цикл с постусловием
 void FU::ProgExec(void* UK, unsigned int CycleMode, FU* ProgBus, vector<ip>::iterator* Start) // Исполнение программы из ИК
 {
-	if (UK==nullptr)return;
+	if (UK==nullptr) return;
 	vector<ip>* Uk = (IC_type)UK;
 	if (ProgBus == nullptr) ProgBus = Bus;
 	bool RepeatF = false; // Флаг циклического повторения программы в ИК
@@ -970,6 +973,11 @@ void FU::ProgExec(void* UK, unsigned int CycleMode, FU* ProgBus, vector<ip>::ite
 		CycleStop = 0; // Счетчик выходов из циклов (если отрицательная величина, то Продолжение цикла)
 		for (auto i = Start == nullptr ? Uk->begin() : *Start; i != Uk->end(); i++)
 		{
+			if (i->atr == GotoAtr) // Переход на другую ИК
+			{
+				ProgExec(i->Load, CycleMode, ProgBus, Start);
+				return;
+			}
 			if (i->atr >= FUMkRange)
 				ProgBus->ProgFU(i->atr, i->Load); // Если диапазон МК не принадлежит ФУ (выдаем на Bus)
 			else // МК для данного ФУ
@@ -1077,7 +1085,7 @@ void FU::ProgExec(void* UK, unsigned int CycleMode, FU* ProgBus, vector<ip>::ite
 // Запуск программы по указателю из нарузки ИП
 void FU::ProgExec(LoadPoint Uk, unsigned int CycleMode, FU* Bus, vector<ip>::iterator* Start) // Исполнение программы из ИК
 {
-	if (Uk.Type >> 1 == DIC)
+	if (Uk.isIC())
 		ProgExec(Uk.Point, CycleMode, Bus, Start);
 }
 
@@ -1289,7 +1297,7 @@ void ICCopyConcat(void* uk, void* uk2) // Конкатенация двух ИК
 {
 	//copy( ((IC_type)uk2)->begin(), ((IC_type)uk2)->end(), inserter(*((IC_type)uk), ((IC_type)uk)->end()));
 	for (auto& i : *(IC_type)uk2)
-		((IC_type)uk)->push_back(i.copy());
+		((IC_type)uk)->push_back(i.Copy());
 }
 
 int ICLen(void* uk) // Определитель длины ИК
@@ -1315,7 +1323,7 @@ vector<ip>::iterator IPSearch(void* ic, LoadPoint IP) // Поиск ИП в ИК (возвраща
 }
 void IPAdd(void* IC, ip IP) // Добавить ИП в конец ИК
 {
-	((vector<ip>*)IC)->push_back(IP.copy());
+	((vector<ip>*)IC)->push_back(IP.Copy());
 }
 
 void IPAdd(LoadPoint IC, ip IP) // Добавить ИП в конец ИК

@@ -29,6 +29,7 @@ private:
 	int ProgLevel = 0; // Уровень скобочной конструкции
 	char ProgBracket = '{', ProgFinBracket = '}'; // Символы программных скобкок
 	void* TabErrProg = nullptr; // программа обработки ошибки табуляции
+	void* ErrProg = nullptr; // Программа, запускаемая при ошибке
 public:
 	void ProgFU(int MK, LoadPoint Load);
 	Lex(FU *BusContext=nullptr, FU *Templ=nullptr);
@@ -37,11 +38,12 @@ public:
 	int ReceiverMK = 0;
 	int S = 0; // Номер состояния распознающего автомата
 	bool Work = true; // Флаг рабочего режима лексера
-	int MnemoAtr = -2, SeperatAtr=-4, IntAtr=-10, DoubleAtr=-3, BoolAtr=-5, StrAtr=-6, ConstAtr=-13;
+//	int MnemoAtr = -2, SeperatAtr = -4, IntAtr = -10, DoubleAtr = -3, BoolAtr = -5, StrAtr = -6, ConstAtr = -13;
+	int MnemoAtr = -2, SeperatAtr = -4, IntAtr = -13, DoubleAtr = -13, BoolAtr = -13, StrAtr = -13, ConstAtr = -13;
 	int ib = 0, SizeBuf = 5; // Текущая позиция выходной ИП выходной лексемы и размер буфера
 	ip *LexBuf; // Буфер выходных лексем
-	void *ErrProg=nullptr; // Программа, запускаемая при ошибке
 	map<int,MkFu> UnicAtr; // Список специфических атрибутов, по которым идет обработки другими ФУ
+	int LastUnicAtr = 0; // Последний уникальный атрибут (чтобы можно было потом добавить к нему МК и адрес ФУ)
 	// Буфер описаний лексем {"dsfsdf",-3,"dfsdfs",""}
 //	void Debug(char i, int S, string FigureBuf); // --- для отладки, позже удалить
 };

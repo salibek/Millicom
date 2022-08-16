@@ -5,7 +5,8 @@
  CapsManager.IpIcIdOutMk=VariableManager.IpIcIdSet
  CapsManager.IpIcIdOutMk=ListSyntez.IpIcIdSet
  MainBus.ModeSet=1
-\\ -------------------------------------- \\
+\\ -------------------------------------- \\ 
+
 MainBus.FUTypeCorrectSet=-96 // Корректировка номера типа ФУ для переноса на новую ОА-платформу
 
 NewFU={Mnemo="ALUNew" FUType=FUALUNew}
@@ -30,4 +31,4 @@ ALUNew.OutMk=Console.LnOut
 ALUNew2.OutMk=Console.LnOut
 //ALUNew.DivVect=10
 ALUNew2.OutMk=ALUNew.DivVect
-ALUNew.OutMk=Console.LnOut
+//ALUNew.OutMk=Console.LnOut

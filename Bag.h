@@ -27,7 +27,7 @@ public:
 class Bag : public FU {
 public:
 	void ProgFU(int MK, LoadPoint Load) override;
-	Bag(FU* BusContext, FU* Templ) : FU(BusContext) { Bus = BusContext; };
+	Bag(FU* BusContext, FU* Templ) : FU(BusContext) { Bus = BusContext; FUtype = 15; };
 	Bag() : FU() { Bus = nullptr; };
 private:
 	vector< vector<BagPoint> > Field;

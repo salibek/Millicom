@@ -23,6 +23,6 @@ FU* GaussIni(FU* BusContext, FU* TEmpl);
 FU* BagIni(FU* BusContext, FU* TEmpl);
 FU* CellularAutomatIni(FU* BusContext, FU* TEmpl);
 FU* CellularAutomatManagerIni(FU* BusContext, FU* TEmpl);
-FU* CounterIni(FU* BusContext, FU* TEmpl);
+FU* IntAluIni(FU* BusContext, FU* TEmpl);
 FU* RouterIni(FU* BusContext, FU* TEmpl);
 FU* RouterSegmentIni(FU* BusContext, FU* TEmpl);

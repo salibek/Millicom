@@ -178,6 +178,10 @@ void ALU::ProgFU(int MK, LoadPoint Load)
 		case 13: // OutAdrClear Очислить буфер адресов для записи выходного результата
 			Stack.back().OutAdr.clear();
 			break;
+		case 14:// OutAdrSet Очислить буфер адресов для записи выходного результата и установить адрес
+			Stack.back().OutAdr.clear();
+			Stack.back().OutAdr.push_back(Load);
+			break;
 			// Операции с аккумулятором
 		case 15: // Push Добавить новый аккумулятор (аналог Set, только сначала создается новый аккумулятор)
 			Stack.push_back({});
