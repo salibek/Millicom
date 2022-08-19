@@ -28,7 +28,16 @@ void List::ProgFU(int MK, LoadPoint Load)
 			*(void**)Load.Point = ListHead.back();
 		break;
 	case 3:// OutMk Выдать МК со ссылкой на список
-		MkExec(Load, { TIC,(void*)ListHead.back() });
+		if (!ListHead.size())
+			MkExec(Load, { 0,nullptr });
+		else
+			MkExec(Load, { TIC,(void*)ListHead.back() });
+		break;
+	case 4: // RootOutMk Выдать МК с указателем на корневой список
+		if(!ListHead.size())
+			MkExec(Load, { 0,nullptr });
+		else
+			MkExec(Load, { TIC,(void*)*ListHead.begin() });
 		break;
 	case 5:	// MultiLineModeSet
 		MultiLineMode = Load.ToInt(1);
@@ -448,6 +457,7 @@ void List::ProgFU(int MK, LoadPoint Load)
 		{
 			ListHead.back() = new vector<ip>;
 			ListHead.back()->push_back({ LineAtr,{ TIC,new vector<ip>} });
+
 		}
 		if (!ListHead.back()->size())
 			ListHead.back()->push_back( {LineAtr, TIC, new vector<ip> }); // Добавить пустую строку в список
@@ -734,8 +744,11 @@ void List::ProgFU(int MK, LoadPoint Load)
 	case 248: // PushTiedLineOACopy Добавить копию ОА-графа на новый уровень списка и спуститься на него оставить в стеке уровней ссылку на нов. список
 		ListHead.push_back(nullptr);
 		if (Load.isIC())
-			if (MK == 240 || MK==243 || MK==246)
+			if (MK == 240 || MK == 243 || MK == 246)
+			{
+				ListHead.back() = new vector<ip>;
 				ListHead.back()->push_back({ LineAtr, Load });
+			}
 			else if (MK == 241 || MK == 244 || MK == 247)
 			{
 				ListHead.back() = new vector<ip>;
@@ -752,7 +765,8 @@ void List::ProgFU(int MK, LoadPoint Load)
 					((IC_type)((*(ListHead.end() - 2))->back().Load.Point))->back().Load = { TIC, ListHead.back() };
 				else
 				{
-					ListHead.back()->push_back({ LineAtr,TIC, new vector<ip> });
+					if(!ListHead.back()->size())
+						ListHead.back()->push_back({ LineAtr,TIC, new vector<ip> });
 					((IC_type)((*(ListHead.end() - 2))->back().Load.Point))->back().Load = ListHead.back()->back().Load;
 				}
 		}

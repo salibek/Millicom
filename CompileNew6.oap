@@ -4599,6 +4599,7 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
   Obj={Mk=1 Mnemo="Set" Hint="Установить указатель на список"}
   Obj={Mk=2 Mnemo="Out" Hint="Выдать ссылку на список"}
   Obj={Mk=3 Mnemo="OutMk" Hint="Выдать МК со ссылкой на список"}
+  Obj={Mk=4 Mnemo="RootOutMk" Hint="Выдать МК со ссылкой на корневой список"}
   Obj={Mk=5 Mnemo="MultiLineModeSet" Hint="Установить режим многострочного поиска (0 - обычный режим, 1 - мнострочный)"}
   Obj={Mk=6 Mnemo="MultiListModeSet" Hint="Установить режим многоуровневого списка для поиска (true по умолчанию)"}
   Obj={Mk=7 Mnemo="MkModeSet" Hint="Режим выполнения всех МК в ИК-шаблоне (МК-ой считается любой атрибут, индекс которого больше 0). При пустой нагрузке режим устанавливается"}

@@ -27,8 +27,6 @@ NewFU={Mnemo="EqualAfter" FUType=FUListNew Hint="Ожидание символов после знака р
 NewFU={Mnemo="ListAfter" FUType=FUListNew Hint="Ожидание символов после знаков начала новой линии"}
 NewFU={Mnemo="ListAfterMnemo" FUType=FUListNew Hint="Ожидание символов после знаков начала новой линии за объявлением мнемоники"}
 NewFU={Mnemo="MnemoLoad" FUType=FUListNew Hint="Загрузка мнемоники"}
-//NewFU={Mnemo="AtrLoad" FUType=FUListNew Hint="Загрузка атрибута"}
-//NewFU={Mnemo="AtrLoad2" FUType=FUListNew Hint="Загрузка атрибута2"}
 NewFU={Mnemo="MnemoLoad2" FUType=FUListNew Hint="Загрузка мнемоники2"}
 NewFU={Mnemo="MnemoLoad3" FUType=FUListNew Hint="Загрузка мнемоники3"}
 NewFU={Mnemo="EqualWait2" FUType=FUListNew Hint="Ожидание знака равно"}
@@ -122,10 +120,8 @@ Lex.ReceiverMkSet=Root.FindAnd
 
 ListCheckProg // Программа проверки списка
 {
-  Console.OutLn="List check1"
   Stack.FindAndLast={Sep=">"}
-  CreateNewFU.SuссessExec={Stack.PopMk}
-  Console.OutLn="List check2"
+  Stack.SuссessExec={Stack.PopMk Console.OutLn="List check!!!"}
 }
 
 \**\Root.Set=
@@ -176,16 +172,21 @@ Console.OutLn="Mk"
 Stack.OutMk=Console.OutLn
 Console.OutLn="======"
   Stack.LastPopMk
+//  Stack.FindAndLast={Sep=">"}
+//  Stack.SuссessExec={OAList.PopMk} // Подняться на уровень, если была линия списка
   Stack.FindAndLast={MkExec}
   Stack.SuссessExec={Console.OutLn="MkExecSuссess" Stack.LastPopMk OAList.OutMk=Console.OutLn Console.OutLn=")))))" OAList.LastIpPopMk=Main_Bus.MkExec}
+Console.OutLn="--Stack--"
 Stack.OutMk=Console.OutLn
+Console.OutLn="--OAList--"
+OAList.OutMk=Console.OutLn
 }
 >{Sep=">" Lex.ReceiverMkSet=ListAfter.FindAnd
-  Stack.FailExec={Console.OutLn="Undeclared list" Lex.Stop ProgStopAll}
   Stack.FindAndLast={Sep=">"}
+  Stack.FailExec={Console.OutLn="Undeclareted list" Stack.OutMk=Console.OutLn Lex.Stop ProgStopAll}
   OAList.LineCopyAdd={LineAtr}
 }
->{0 Console.OutLn="Error1" Lex.Stop FUListNew.ReceivedOutMk=Console.OutLn}
+>{0 Console.OutLn="Error" Lex.Stop FUListNew.ReceivedOutMk=Console.OutLn}
 
 \**\FUAfter.Set=
 >{Sep="." Lex.ReceiverMkSet=MkWait.FindOr
@@ -208,7 +209,7 @@ Console.OutLn="'.Mk'"
 
 \**\MkWait2.Set=
 >{MkForFU FUListNew.ReceivedLoadOutMk=MkCalc.Add
-  MkCalc.OutMk=OAList.LastAtrSet
+  MkCalc.OutMk=OAList.LastLoadSet
   Lex.ReceiverMkSet=Root.FindAnd
 }
 >{0 Console.OutLn=" MK is not found" Lex.Stop Str_Gen.Stop}
@@ -229,7 +230,7 @@ Console.OutLn="Sep {"
 >{Sep="*" Lex.ReceiverMkSet=ConstWait2.FindAnd}
 >{Sep=">" Lex.ReceiverMkSet=ListAfter.FindAnd
   OAList.PushCopy={LineAtr} Stack.LineAdd={Sep=">"}
-  MnemoTable.LineCopyAdd={IC} OAList.OutMk=MnemoTable.LastLoadSet}
+  MnemoTable.LineCopyAdd={LineAtr} OAList.OutMk=MnemoTable.LastLoadSet}
 >{0 Lex.ReceiverMkSet=Root.FindAnd
   MnemoTable.LineCopyAddPrevLoadSet={Atr}
   MnemoTable.LastCopyAttach={Lex.CendToReceiver}
@@ -269,7 +270,7 @@ Lex.Stop Str_Gen.Stop}
 Lex.Stop Str_Gen.Stop}
 
 \**\EqualWait.Set=
->{Sep="=" Lex.ReceiverMkSet=EqualAfter.FindAnd}
+>{Sep="=" Console.OutLn="=" Lex.ReceiverMkSet=EqualAfter.FindAnd}
 >{Sep="}" 
   Root.FindAnd={Sep="}"} // Перейти в корневое состояние для проверки на '}'
 }
@@ -278,6 +279,10 @@ Lex.Stop Str_Gen.Stop}
 }
 
 \**\EqualAfter.Set=
+>{FU
+  Lex.ReceiverMkSet=FUAfter2.FindAnd
+ Console.OutLn="FU2"
+  FUListNew.ReceivedLoadOutMk=MkCalc.Set}
 >{Const Var Mk
   Lex.ReceiverMkSet=Root.FindAnd
   FUListNew.ReceivedLoadOutMk=OAList.LastLoadSet}
@@ -289,7 +294,8 @@ Lex.Stop Str_Gen.Stop}
   Console.OutLn="={"
   OAList.OutMk=Console.OutLn
   Console.OutLn="`````````"
-  OAList.PushTiedLineCopy// Спуститься на уровень ниже в ОА-графе
+OAList.OutMk=Console.OutLn
+  OAList.PushTiedLineCopy // Спуститься на уровень ниже в ОА-графе
   Stack.LineAdd={Sep="{"}
   Stack.OutMk=Console.OutLn
   Console.OutLn="`````````"
@@ -298,9 +304,10 @@ Lex.Stop Str_Gen.Stop}
 Console.OutLn="ICLoad"
   FUListNew.ReceivedLoadOutMk=OAList.LastLoadSet}
 >{Sep=">" Lex.ReceiverMkSet=ListAfter.FindAnd
-Console.OutLn="=>"
-  OAList.OutMk=Console.OutLn
-  OAList.PushTiedCopy
+  OAList.PushTiedLineCopy={LineAtr}
+  Stack.Push={Sep=">"}
+Console.OutLn="= >"
+//  OAList.OutMk=Console.OutLn
 }
 
 >{0 Lex.Stop Str_Gen.Stop Console.LnOut="ERR EqualAfter"}
@@ -310,7 +317,7 @@ Console.OutLn="=>"
   Root.FindAnd={Sep="}"} // Перейти в корневое состояние для проверки на '}'
 }
 >{Sep="{" Lex.ReceiverMkSet=Root.FindAnd
-  OAList.PushTiedCopy
+  OAList.PushTiedLineCopy // Спуститься на уровень ниже в ОА-графе
   MnemoTable.LineCopyAddPrevLoadSet={IC} 
   OAList.LastOutMk=MnemoTable.LastLoadSet
   MnemoTable.LastPopMk
@@ -343,8 +350,14 @@ Console.OutLn="=Name{"
 
 \**\ListAfter.Set=
 >{Sep="{" Lex.ReceiverMkSet=Root.FindAnd
- Stack.LineAdd={Sep=">"}
+  Stack.LineAdd={Sep="{"}
+Console.OutLn="ListBefore"
+//  OAList.PushTiedLineCopy={LineAtr} // Спуститься на уровень ниже в ОА-графе, создать метку первой линии списка
+ // OAList.PopMk
+OAList.OutMk=Console.OutLn
+  OAList.PushTiedLineCopy // Спуститься на уровень ниже в ОА-графе к будущей линии списка
 Console.OutLn="ListAfter"
+OAList.RootOutMk=Console.OutLn
   }
 >{Const Atr Var Lex.ReceiverMkSet=Root.FindAnd
   FUListNew.LoadOutMk=OAList.LastLoadSet}
@@ -377,13 +390,14 @@ Console.OutLn="ListAfter"
 >{}
 \*                   *\
 
-//Lex.Lexing="NewFU={FUType=FUCons Name=""Cons"" Hint=""Консоль""} Cons.OutLn=""Hello!!! I am the programm!!!"" "
+//Lex.Lexing="NewFU={FUType=FUCons Name=""Cons"" Hint=""Консоль""} Cons.Out=""Hello!!! I am the programm!!!"" Cons.OutLn="" End"" "
 //Lex.Lexing="Bus.MakeFU=Caps{Cons.Ln=1}"
-Lex.Lexing="NewFU={FUType=FUCons Name=""Cons"" Hint=""Консоль""} Cons.OutLn=>{Cons.Ln=1}"
-Console.OutLn="*****************"
+//Lex.Lexing="NewFU={FUType=FUCons Name=""Cons"" Hint=""Консоль""}  Cons.OutLn= >{Cons.Ln=1}  >{Cons.Ln=1} Cons.OutLn=""End"" "
+Lex.Lexing="NewFU={FUType=FUCons Name=""Cons"" Hint=""Консоль""}  Cons.OutLn= >{Cons.Ln=1}  >{Cons.Ln=1} "
+Console.OutLn="***************** OAList"
 //MnemoTable.OutMk=Console.OutLn
 OAList.OutMk=Console.OutLn
-Console.OutLn="-----------------"
+Console.OutLn="-----------------Stack:"
 Stack.OutMk=Console.OutLn
 Console.OutLn="---- Programm out ----"
-OAList.LastOutMk=Main_Bus.ProgExec
+//OAList.LastOutMk=Main_Bus.ProgExec
