@@ -4528,6 +4528,8 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
     Obj={Mk=196 Mnemo="LineLoadCopySet" Hint="Добавить ссылку на копию ИК в указатель текущей ИК текущей строки"}
     Obj={Mk=189 Mnemo="LastAtrSet" Hint="Установить атрибут последний ИК последней строки"}
     Obj={Mk=199 Mnemo="LineAtrSet" Hint="Установить атрибут последний ИК текущей строки"}
+    Obj={Mk=190 Mnemo="LastLoadIcEmptySet" Hint="Добавить ссылку в указатель последний ИК последней строки"}
+    Obj={Mk=191 Mnemo="LineLoadIcEmptySet" Hint="Установить ссылку на пустую ИК в нагрузке последней ИП текущей строки"}
   }
   
   Obj={Mnemo="Line Mark" Hint="Работа с атрибутом линии" Comment
@@ -4599,7 +4601,7 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
   Obj={Mk=1 Mnemo="Set" Hint="Установить указатель на список"}
   Obj={Mk=2 Mnemo="Out" Hint="Выдать ссылку на список"}
   Obj={Mk=3 Mnemo="OutMk" Hint="Выдать МК со ссылкой на список"}
-  Obj={Mk=4 Mnemo="RootOutMk" Hint="Выдать МК со ссылкой на корневой список"}
+  Obj={Mk=4 Mnemo="RootOutMk" Hint="Выдать МК со ссылкой на ключевой список"}
   Obj={Mk=5 Mnemo="MultiLineModeSet" Hint="Установить режим многострочного поиска (0 - обычный режим, 1 - мнострочный)"}
   Obj={Mk=6 Mnemo="MultiListModeSet" Hint="Установить режим многоуровневого списка для поиска (true по умолчанию)"}
   Obj={Mk=7 Mnemo="MkModeSet" Hint="Режим выполнения всех МК в ИК-шаблоне (МК-ой считается любой атрибут, индекс которого больше 0). При пустой нагрузке режим устанавливается"}
@@ -4627,7 +4629,7 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
   Obj={Mk=22 Mnemo="SubAtrDef" Hint="Установить атрибут подсписка по умолчанию"}
   Obj={Mk=25 Mnemo="ReceivedOut" Hint="Выдать входной объект для поиска"}
 
-  Obj={Mk=23 Mnemo="SuссessExec" Hint="Выполнить программу, если перед этим был удачный поиск"}
+  Obj={Mk=23 Mnemo="SuccessExec" Hint="Выполнить программу, если перед этим был удачный поиск"}
   Obj={Mk=24 Mnemo="FailExec" Hint="Выполнить программу, если перед этим был удачный поиск"}
 
   Obj={Mk=30 Mnemo="ReceivedOutMk" Hint="Выдать МК со входным объектом для поиска"}

@@ -518,9 +518,9 @@ void LoadPoint::VarDel() // Удаление нагрузки ИП
 
 LoadPoint LoadPoint::Copy()
 {
-	if (!this->isIC())
-		return { 0,nullptr };
-	IC_type t=new vector<ip>;
+//	if (!this->isIC())
+//		return { 0,nullptr };
+//	IC_type t=new vector<ip>;
 	
 	LoadPoint LP;
 	LP.Copy(*this);
@@ -1230,6 +1230,8 @@ void ICDel(LoadPoint &Uk)// Удаление ИК
 LoadPoint ICCopy(LoadPoint uk) // Копирование ИК
 {
 	IC_type CapsNew = new vector<ip>;
+//	if (uk.Point = nullptr)
+//		return {TIC, CapsNew};
 	if (uk.Type >> 1 == DIP) // Если передается ИП
 	{
 		CapsNew->push_back(*(*(ip*)uk.Point).Сlone());

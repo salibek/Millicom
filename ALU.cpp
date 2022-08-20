@@ -432,7 +432,7 @@ void ALU::ProgFU(int MK, LoadPoint Load)
 			(Stack.end() - 2)->Ind = Load.ToInt();
 			break;
 		case 277: // VectValSet Установить в аккумулятор значение вектора из нагрузки по индексу в аккумуляторе
-		case 278: // VectValPush Положить значение вектора из пред аккумулятора по индексу текущего аккумулятора (если Load=nil, то вектор из предыдущего аккумулятора
+		case 278: // VectValPush Положить значение вектора из пред. аккумулятора по индексу текущего аккумулятора (если Load=nil, то вектор из предыдущего аккумулятора
 			if (!Load.IsVector() || !LoadPoint::isDigitBool(Stack.back().accumType))
 			{
 				ProgExec(ErrProg); // Программа отработки ошибки

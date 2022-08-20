@@ -369,19 +369,24 @@ void List::ProgFU(int MK, LoadPoint Load)
 	case 147: // LastIpOutMk Выдать ссылку на последнюю ИП текущей линии
 		MkExec(Load, { CIP,&((IC_type)ListHead.back()->back().Load.Point)->back() });
 		break;
-	case 163: // LastCopyAddPrevLoadSet
+	case 163: // LineCopyAddPrevLoadSet
 	case 159: // LastCopyAddPrevLoadSetLoadMov Добавить копию линии перенести нагрузку в на новую строку и добавить в нагрзуку предыдущей строки ссылку на новую строку 
 	{
 		LoadPoint t = { 0, nullptr };
-		if (ListHead.back() != nullptr && ListHead.back()->size() && ListHead.back()->back().Load.Type >> 1 == DIC)\
+		if (ListHead.back() != nullptr && ListHead.back()->size() && ListHead.back()->back().Load.Type >> 1 == DIC)
 			t = ((IC_type)ListHead.back()->back().Load.Point)->back().Load;
-		if (ListHead.back() == nullptr) ListHead.back() = new vector<ip>;
+		if (ListHead.back() == nullptr) 
+			ListHead.back() = new vector<ip>;
 		if (Load.Point == nullptr)
 			ListHead.back()->push_back({ LineAtr, TIC, new vector<ip> });
 		else
 			ListHead.back()->push_back({ LineAtr, TIC, ICCopy(Load).Point });
 		if (ListHead.back()->size() > 1 && ListHead.back()->back().Load.Point != nullptr && ListHead.back()->back().Load.Type >> 1 == DIC)
 			((IC_type)ListHead.back()->at(ListHead.back()->size() - 2).Load.Point)->back().Load = ListHead.back()->back().Load;
+		else if (ListHead.back()->size() == 1) // Добавление в пустой список
+		{
+			ListHead.back()->insert(ListHead.back()->begin(), {LineAtr, ListHead.back()->back().Load});
+		}
 		if (MK == 159)
 			((IC_type)ListHead.back()->back().Load.Point)->back().Load = t;
 		break;
@@ -567,6 +572,14 @@ void List::ProgFU(int MK, LoadPoint Load)
 			ListHead.back()->back().Load.Type >> 1 != DIC || !((IC_type)ListHead.back()->back().Load.Point)->size())
 			break;
 		((IC_type)ListHead.back()->back().Load.Point)->back().Load.VarTypeSet(Load.ToBool(true));
+		break;
+	case 190: // LastLoadIcEmptySet Установить ссылку на пустую ИК в нагрузке последней ИП последней строки
+		if (ListHead.back() != nullptr && !ListHead.size() && ((IC_type)ListHead.back()->back().Load.isIC()))
+			((IC_type)ListHead.back()->back().Load.Point)->back().Load = { TIC, new vector<ip> };
+		break;
+	case 191: // LineLoadIcEmptySet Установить ссылку на пустую ИК в нагрузке последней ИП текущей строки
+		if (LineUk != nullptr && ((IC_type)LineUk->Load.isIC()))
+			((IC_type)LineUk->Load.Point)->back().Load = {TIC, new vector<ip>};
 		break;
 	case 200: // LineToLast Установить текущую строку на последнюю строку
 		if (ListHead.back() != nullptr && ListHead.back()->size() > 0 && ListHead.back()->back().Load.Point != nullptr && ListHead.back()->back().Load.Type >> 1 == DIC)

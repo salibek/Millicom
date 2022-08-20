@@ -26,7 +26,6 @@ NewFU={Mnemo="EqualWait" FUType=FUListNew Hint="Ожидание знака равно"}
 NewFU={Mnemo="EqualAfter" FUType=FUListNew Hint="Ожидание символов после знака равно"}
 NewFU={Mnemo="ListAfter" FUType=FUListNew Hint="Ожидание символов после знаков начала новой линии"}
 NewFU={Mnemo="ListAfterMnemo" FUType=FUListNew Hint="Ожидание символов после знаков начала новой линии за объявлением мнемоники"}
-NewFU={Mnemo="ListContinue" FUType=FUListNew Hint="Продолжение заполнения списка"}
 NewFU={Mnemo="MnemoLoad" FUType=FUListNew Hint="Загрузка мнемоники"}
 NewFU={Mnemo="MnemoLoad2" FUType=FUListNew Hint="Загрузка мнемоники2"}
 NewFU={Mnemo="MnemoLoad3" FUType=FUListNew Hint="Загрузка мнемоники3"}
@@ -122,7 +121,7 @@ Lex.ReceiverMkSet=Root.FindAnd
 ListCheckProg // Программа проверки списка
 {
   Stack.FindAndLast={Sep=">"}
-  Stack.SuccessExec={Stack.LastPopMk OAList.PopMk Console.OutLn="List check > success!!!"}
+  Stack.SuccessExec={Stack.PopMk OAList.PopMk Console.OutLn="List check > success!!!"}
 }
 
 \**\Root.Set=
@@ -140,7 +139,7 @@ Console.OutLn="Mk"
  Console.OutLn="Mk"}
 >{Atr Lex.ReceiverMkSet=EqualWait.FindAnd
   Prog=ListCheckProg
-  OAList.OneLineExec={Lex.Stop Console.OutLn="Attribute on first lavel of OA graph" ProgStopAll
+  OAList.OneDeepExec={Lex.Stop Console.OutLn="Attribute on first lavel of OA graph" ProgStopAll
   OAList.OutMk=Console.OutLn
   }
   OAList.LastCopyAttach
@@ -148,7 +147,7 @@ Console.OutLn="Mk"
   }
 >{Mnemo Lex.ReceiverMkSet=MnemoAnalysis.FindAnd
   Prog=ListCheckProg
-  OAList.MoreOneLineExec={Lex.Stop Str_Gen.Stop Console.LnOut="Mnemonics on not first lavel of OA graph" ProgStopAll}
+  OAList.MoreOneLineExec={Lex.Stop Str_Gen.Stop Console.LnOut="Mnemonics on first lavel of OA graph" ProgStopAll}
   FUListNew.ReceivedOutMk=MnemoTable.LineCopyAdd
   MnemoTable.LastCopyAttach={Lex.CendToReceiver}
   Console.OutLn="Mnemo1"}
@@ -164,25 +163,20 @@ Console.OutLn="Mk"
   FUListNew.ReceivedLoadOutMk=OAList.LastLoadSet
 }
 >{Sep="}" Lex.ReceiverMkSet=Root.FindAnd
-  OAList.OneDeepExec={
-    OAList.OneLineExec={Console.OutLn="Wrong '}' on first level of OA-graph" Lex.Stop ProgStopAll}
-  }
+  OAList.OneDeepExec={Console.OutLn="Wrong '}' on first level of OA-graph" Lex.Stop ProgStopAll}
   Stack.FindAndLast={Sep="{"}
   Stack.FailExec={Console.OutLn="'}' without '{'" Lex.Stop 
   Stack.OutMk=Console.OutLn
   ProgStopAll}
   Console.OutLn="}"
-  OAList.LastPopMk
-  Stack.LastPopMk
+  OAList.PopMk
 Stack.OutMk=Console.OutLn
-Console.OutLn="---OAList---"
-OAList.RootOutMk=Console.OutLn
-
 Console.OutLn="======"
+  Stack.LastPopMk
 //  Stack.FindAndLast={Sep=">"}
 //  Stack.SuссessExec={OAList.PopMk} // Подняться на уровень, если была линия списка
   Stack.FindAndLast={MkExec}
-  Stack.SuccessExec={Console.OutLn="MkExecSuссess" Stack.LastPopMk Console.OutLn="MkExec" OAList.LastIpPopMk=Main_Bus.MkExec}
+  Stack.SuccessExec={Console.OutLn="MkExecSuссess" Stack.LastPopMk OAList.OutMk=Console.OutLn Console.OutLn=")))))" OAList.LastIpPopMk=Main_Bus.MkExec}
 Console.OutLn="--Stack--"
 Stack.OutMk=Console.OutLn
 Console.OutLn="--OAList--"
@@ -224,20 +218,20 @@ Console.OutLn="'.Mk'"
 \**\MnemoAnalysis.Set=
 >{Sep="{" Lex.ReceiverMkSet=Root.FindAnd
   OAList.MoreOneLineExec={Console.OutLn="IC inisialization on no first level of programm" Lex.Stop}
-//  OAList.Push
-//  OAList.PushCopy={LineAtr}
+  OAList.Push
   OAList.LineCopyAdd
-  MnemoTable.LastCopyAttach={IC}
+  MnemoTable.LineCopyAddPrevLoadSet={IC}
   OAList.LastOutMk=MnemoTable.LastLoadSet
+  MnemoTable.LastPopMk
   Stack.LineCopyAdd={Sep="{"}
-Console.OutLn="MnemoAnalysis {"
+Console.OutLn="Sep {"
 }
 >{Sep="=" Lex.ReceiverMkSet=VarIniWait.FindAnd}
 >{Sep="#" Lex.ReceiverMkSet=ConstWait.FindAnd}
 >{Sep="*" Lex.ReceiverMkSet=ConstWait2.FindAnd}
 >{Sep=">" Lex.ReceiverMkSet=ListAfter.FindAnd
-  OAList.Push Stack.LineAdd={Sep=">"}
-  OAList.OutMk=MnemoTable.LastLoadSet}
+  OAList.PushCopy={LineAtr} Stack.LineAdd={Sep=">"}
+  MnemoTable.LineCopyAdd={LineAtr} OAList.OutMk=MnemoTable.LastLoadSet}
 >{0 Lex.ReceiverMkSet=Root.FindAnd
   MnemoTable.LineCopyAddPrevLoadSet={Atr}
   MnemoTable.LastCopyAttach={Lex.CendToReceiver}
@@ -301,11 +295,8 @@ Lex.Stop Str_Gen.Stop}
   Console.OutLn="={"
   OAList.OutMk=Console.OutLn
   Console.OutLn="`````````"
-  OAList.LineCopyAddPrevLoadSet // Установить пустую строку
-
-
-  OAList.OutMk=Console.OutLn
-//  OAList.PushTiedLineCopy // Спуститься на уровень ниже в ОА-графе
+OAList.OutMk=Console.OutLn
+  OAList.PushTiedLineCopy // Спуститься на уровень ниже в ОА-графе
   Stack.LineAdd={Sep="{"}
   Stack.OutMk=Console.OutLn
   Console.OutLn="`````````"
@@ -314,12 +305,9 @@ Lex.Stop Str_Gen.Stop}
 Console.OutLn="ICLoad"
   FUListNew.ReceivedLoadOutMk=OAList.LastLoadSet}
 >{Sep=">" Lex.ReceiverMkSet=ListAfter.FindAnd
-  OAList.PushTied
-  Stack.LineAdd={Sep=">"}
+  OAList.PushTiedLineCopy={LineAtr}
+  Stack.Push={Sep=">"}
 Console.OutLn="= >"
-OAList.RootOutMk=Console.OutLn
-Console.OutLn="= >"
-
 //  OAList.OutMk=Console.OutLn
 }
 
@@ -364,14 +352,10 @@ Console.OutLn="=Name{"
 \**\ListAfter.Set=
 >{Sep="{" Lex.ReceiverMkSet=Root.FindAnd
   Stack.LineAdd={Sep="{"}
-Console.OutLn="ListBefore >{"
-
+Console.OutLn="ListBefore"
 OAList.OutMk=Console.OutLn
-//OAList.LineCopyAddPrevLoadSet // Установить пустую строку
-//  OAList.LastLoadIcEmptySet // Установить ссылку в нагрузке линии списка на пустую ИК
-OAList.FullExec={OAList.LineCopyAdd}
-OAList.EmptyExec={OAList.LineCopyAddPrevLoadSet}
-Console.OutLn="ListAfter >{"
+  OAList.PushTiedLineCopy // Спуститься на уровень ниже в ОА-графе к будущей линии списка
+Console.OutLn="ListAfter"
 OAList.RootOutMk=Console.OutLn
   }
 >{Const Atr Var Lex.ReceiverMkSet=Root.FindAnd
@@ -405,18 +389,18 @@ OAList.RootOutMk=Console.OutLn
 >{}
 \*                   *\
 
+Stack.FindAndLast={Sep=">"}
+Stack.SuccessExec={OAList.PopMk Stack.PopMk}
+
 //Lex.Lexing="NewFU={FUType=FUCons Name=""Cons"" Hint=""Консоль""} Cons.Out=""Hello!!! I am the programm!!!"" Cons.OutLn="" End"" "
 //Lex.Lexing="Bus.MakeFU=Caps{Cons.Ln=1}"
 //Lex.Lexing="NewFU={FUType=FUCons Name=""Cons"" Hint=""Консоль""}  Cons.OutLn= >{Cons.Ln=1}  >{Cons.Ln=1} Cons.OutLn=""End"" "
 Lex.Lexing="NewFU={FUType=FUCons Name=""Cons"" Hint=""Консоль""}  Cons.OutLn= >{Cons.Ln=1}  >{Cons.Ln=11} "
 //Lex.Lexing="NewFU={FUType=FUCons Name=""Cons"" Hint=""Консоль""}  Cons.OutLn= >{Cons.Ln=1}  "
-Stack.FindAndLast={Sep=">"}
-Stack.SuccessExec={OAList.PopMk Stack.PopMk Console.OutLn="> out"}
-
 Console.OutLn="***************** OAList"
 //MnemoTable.OutMk=Console.OutLn
 OAList.OutMk=Console.OutLn
 Console.OutLn="-----------------Stack:"
 Stack.OutMk=Console.OutLn
 Console.OutLn="---- Programm out ----"
-OAList.LastOutMk=Main_Bus.ProgExec
+//OAList.LastOutMk=Main_Bus.ProgExec
