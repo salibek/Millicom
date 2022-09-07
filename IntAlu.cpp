@@ -5,7 +5,7 @@ void IntAlu::ProgFU(int MK, LoadPoint Load)
 	switch (MK)
 	{
 	case 0:// Reset
-		AccumUk = &Accum;
+		//AccumUk = &Accum;
 		Accum = 0;
 		AutoInc = 0;
 		Compare = 0;
@@ -102,7 +102,11 @@ void IntAlu::ProgFU(int MK, LoadPoint Load)
 	case 75: // LessEQProgSet
 		LessEQProg = Load.Point;
 		break;
-
+	case 80: // StackEmptyExec Выполнить, если в стеке ничего нет
+	case 81: // StackFullExec Выполнить, если стек непустой
+		if (MK == 80 && Stack.size() || MK == 81 && !Stack.size())
+			ProgExec(Load);
+		break;
 	case 130: // Inc
 		++ *AccumUk;
 		break;
@@ -144,7 +148,7 @@ void IntAlu::ProgFU(int MK, LoadPoint Load)
 		break;
 	}
 
-	if (MK <= 130 || (MK == 8 || MK == 9) && AutoInc != 0) // Отработка программ сравнения значений
+	if (MK >= 130 || (MK == 8 || MK == 9) && AutoInc != 0) // Отработка программ сравнения значений
 	{
 		if (*AccumUk == *CompareUk) ProgExec(EQProg);
 		if (*AccumUk != *CompareUk) ProgExec(NEQProg);

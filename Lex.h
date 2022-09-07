@@ -34,8 +34,8 @@ public:
 	void ProgFU(int MK, LoadPoint Load);
 	Lex(FU *BusContext=nullptr, FU *Templ=nullptr);
 	Lex() ;
-	FU *Receiver = nullptr;
-	int ReceiverMK = 0;
+	vector<FU*> Receiver = { nullptr }; // Стек указаталей не ФУ-приемники
+	vector<int> ReceiverMK = { 0 }; // Стек МК для приемников
 	int S = 0; // Номер состояния распознающего автомата
 	bool Work = true; // Флаг рабочего режима лексера
 //	int MnemoAtr = -2, SeperatAtr = -4, IntAtr = -10, DoubleAtr = -3, BoolAtr = -5, StrAtr = -6, ConstAtr = -13;

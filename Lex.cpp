@@ -7,7 +7,7 @@
 	void Lex::LexOut(bool Copy,int MK) // Выдача лексемы потребителю
 	{
 		auto uk = UnicAtr.find(LexBuf[ib].atr);
-		if (MK < 0)MK = ReceiverMK;
+		if (MK < 0)MK = ReceiverMK.back();
 		if (uk!= UnicAtr.end())
 		{
 			if (uk->second.Fu != nullptr && uk->second.Mk!= 0)
@@ -17,11 +17,11 @@
 					uk->second.Fu->ProgFU(uk->second.Mk, { TIP, LexBuf[ib].Сlone() });
 		}
 		else
-			if (Receiver != nullptr)
+			if (Receiver.back() != nullptr)
 				if (Copy)
-					Receiver->ProgFU(MK, { TIP, LexBuf[ib].Сlone() });
+					Receiver.back()->ProgFU(MK, { TIP, LexBuf[ib].Сlone() });
 				else
-					Receiver->ProgFU(MK, { TIP, &LexBuf[ib] });
+					Receiver.back()->ProgFU(MK, { TIP, &LexBuf[ib] });
 	}
 
 	void Lex::ProgFU(int MK, LoadPoint Load)
@@ -33,14 +33,38 @@
 			S = 0; // Номер состояния распознающего автомата
 				   //		FigureBuf = "";
 			UnicAtr.clear();
-			ReceiverMK = 0;
-			Receiver = Bus;
+			ReceiverMK.back() = 0;
+			Receiver.back() = Bus;
 			ErrProg = nullptr;
 			StopProg = nullptr;
 			TabErrProg = nullptr;
 			break;
+		case 2: // ReceiverMkPush Положить адрес приёмника лексемы в стек
+			Receiver.push_back(Receiver.back());
+			ReceiverMK.push_back(Load.ToInt());
+			break;
+		case 3: // ReceiverMkPop Вытолкнуть адрес премника из стека и записать его
+			Load.Write(ReceiverMK.back());
+			if (ReceiverMK.size())
+			{
+				ReceiverMK.pop_back();
+				Receiver.pop_back();
+			}
+			break;
+		case 4: // ReceiverMkPopMk Вытолкнуть адрес премника из стека и выдать МК с ним
+		{
+			int t;
+			t= ReceiverMK.back();
+			MkExec(Load, { Cint,&t });
+			if (ReceiverMK.size())
+			{
+				ReceiverMK.pop_back();
+				Receiver.pop_back();
+			}
+		}
+			break;
 		case 5: //ReceiverMKSet Установить МК для приемника лексем 
-			if (Load.Type >> 1 == Dint) ReceiverMK = Load.ToInt(); break;
+			if (Load.Type >> 1 == Dint) ReceiverMK.back() = Load.ToInt(); break;
 		case 6: // FinMkAdd Добавить финальную МК
 			FinMk.insert(Load.ToInt());
 			break;
@@ -48,11 +72,11 @@
 			FinMk.clear();
 			break;
 		case 8: // FinMkProgExec Выполнить программу, если лексер в финальном состоянии
-			if (FinMk.count(ReceiverMK))
+			if (FinMk.count(ReceiverMK.back()))
 				ProgExec(Load);
 			break; 
 		case 9: // NoFinMkProgExec Выполнить программу, если лексер не в финальном состоянии
-			if (!FinMk.count(ReceiverMK))
+			if (!FinMk.count(ReceiverMK.back()))
 				ProgExec(Load);
 			break;
 		case 10: //ErrProgSet
@@ -119,13 +143,13 @@
 			break;
 		case 26: // NoUnucToReseiver Выдать лексему, не учитывая уникальных атрибутов (при нулевой нагрузке выдается текущая лексема)
 			if (Load.Point == nullptr)
-				MkExec(ReceiverMK, LexBuf[ib].Load, Receiver);
+				MkExec(ReceiverMK.back(), LexBuf[ib].Load, Receiver.back());
 			else
 			{
 				ib = (ib + 1) % SizeBuf;
 				LexBuf[ib].Load.Clear(); // Удаляем нагрузку ИП
 				LexBuf[ib].copy(Load);
-				MkExec(Load, LexBuf[ib].Load, Receiver);
+				MkExec(Load, LexBuf[ib].Load, Receiver.back());
 			}
 			break;
 		case 27: //Replace Заменить тукущую лексему в буфере
@@ -142,35 +166,21 @@
 			LexBuf[ib].copy(Load);
 			if(MK!=27)LexOut(MK==31);
 			break;
-//		case 32: //LastLexemaToReceiver Выдать последнюю лексему получателю
-//		case 33: //LastLexemaCopyToReceiver Выдать последнюю лексему получателю
-//			if (Receiver != nullptr)
-//				if (MK==33)
-//					Receiver->ProgFU(ReceiverMK, { TIP, LexBuf[ib].сlone() });
-//				else
-//					Receiver->ProgFU(ReceiverMK, { TIP, &LexBuf[ib] });
-//	//		LexOut(MK==33);
-//			break;
 		case 35: //OutMk Выдать MK c последней лексемой (если nil в нагрузке, то выдается на Receiver)
 			if (Load.Point == nullptr)
 			{
 				//LexOut(false);
-				Receiver->ProgFU(ReceiverMK, { TIP, &LexBuf[ib] });
+				Receiver.back()->ProgFU(ReceiverMK.back(), { TIP, &LexBuf[ib] });
 			}
 			else
-
-//			if (Load.Type >> 1 == Dint)
-//				LexOut(false,Load.ToInt())
 				if(Load.Type>>1==Dint)
-					Receiver->ProgFU(Load.ToInt(), { TIP, &LexBuf[ib] });
-		//	else if(Load.Point==0)
-
+					Receiver.back()->ProgFU(Load.ToInt(), { TIP, &LexBuf[ib] });
 			break;
 		case 36: // CopyOutMk Выдать МК с копией последней лексемы (если nil в нагрузке, то выдается на Receiver)
 			if (Load.Point!=nullptr) 
-				Receiver->ProgFU(*(int*)Load.Point, { TIP, LexBuf[ib].Сlone() });
+				Receiver.back()->ProgFU(*(int*)Load.Point, { TIP, LexBuf[ib].Сlone() });
 			else
-				Receiver->ProgFU(ReceiverMK, { TIP, LexBuf[ib].Сlone() });
+				Receiver.back()->ProgFU(ReceiverMK.back(), { TIP, LexBuf[ib].Сlone() });
 			break;
 		case 37: // LoadOut Выдать нагрузку текущей лексемы
 			Load.Write(LexBuf[ib].Load);
@@ -190,25 +200,19 @@
 		case 42: // AtrOutMk Выдать МК с атрибутом текущей лексемы
 			MkExec(Load, { Cint, &LexBuf[ib].atr });
 			break;
-			//		case 40: //PrevToReseiver Выдать предыдущую лексему получателю
-//			if (Receiver != nullptr && Load.Type >> 1 == Dint) 
-//				Receiver->ProgFU(*(int*)Load.Point, { TIP, &LexBuf[(ib-1+ SizeBuf)% SizeBuf] });
-//			break;
-//		case 41: //PrevCopyToReseiver Выдать копию предыдущей лексемы получателю
-//			if (Receiver != nullptr && Load.Type >> 1 == Dint) 
-//				Receiver->ProgFU(*(int*)Load.Point, { TIP, LexBuf[(ib - 1 + SizeBuf) % SizeBuf].сlone() });
-//			break;
 		case 45: //PrevOutMk Выдать МК с предыдущей лексемой (если нагрузка nil, то выдается на Receiver)
+		case 46: //PrevPrevOutMk Выдать МК с предпредыдущей лексемой (если нагрузка nil, то выдается на Receiver)
 			if (Load.Point==nullptr)
-				Receiver->ProgFU(ReceiverMK, { TIP, &LexBuf[(ib - 1 + SizeBuf) % SizeBuf] });
+				Receiver.back()->ProgFU(ReceiverMK.back(), { TIP, &LexBuf[(ib - MK + 44) % SizeBuf] });
 			else
-				Receiver->ProgFU(*(int*)Load.Point, { TIP, &LexBuf[(ib - 1 + SizeBuf) % SizeBuf] });
+				Receiver.back()->ProgFU(Load.ToInt(), {TIP, &LexBuf[(ib - MK + 44) % SizeBuf]});
 			break;
-		case 46: //PrevCopyOutMk Выдать МК с копией предыдущей лексемы (если нагрузка nil, то выдается на Receiver)
+		case 47: //PrevCopyOutMk Выдать МК с копией предыдущей лексемы (если нагрузка nil, то выдается на Receiver)
+		case 48: //PrevPrevCopyOutMk Выдать МК с копией предпредыдущей лексемы (если нагрузка nil, то выдается на Receiver)
 			if (Load.Point == nullptr)
-				Receiver->ProgFU(ReceiverMK, { TIP, LexBuf[(ib - 1 + SizeBuf) % SizeBuf].Сlone() });
+				Receiver.back()->ProgFU(ReceiverMK.back(), { TIP, LexBuf[(ib - MK + 46) % SizeBuf].Сlone() });
 			else	
-				Receiver->ProgFU(*(int*)Load.Point, { TIP, LexBuf[(ib - 1 + SizeBuf) % SizeBuf].Сlone() });
+				Receiver.back()->ProgFU(Load.ToInt(), {TIP, LexBuf[(ib - MK + 46) % SizeBuf].Сlone()});
 			break;
 		case 50: // AtrSet Установить атрибут последней лексемы
 			LexBuf[ib].atr=Load.ToInt();
@@ -241,13 +245,13 @@
 			if (Load.Point == nullptr)
 				LexOut();
 			else
-				MkExec(ReceiverMK, Load);
+				MkExec(ReceiverMK.back(), Load);
 			break;
 		case 71: // CendCopyToReceiver Переслать копию лексемы из нагрузки получателю (если в нагрузке nil, то посылается текущая лексема)
 			if (Load.Point == nullptr)
 				LexOut(true);
 			else
-				MkExec(ReceiverMK, Load.Copy());
+				MkExec(ReceiverMK.back(), Load.Copy());
 			break;
 
 		case 98: // LexReset Сбросить настройки лексического анализа
@@ -265,7 +269,6 @@
 			break;
 		case 100: // Lexing
 		{
-//			ProgExec((IC_type)StartProg,Bus);
 			string FigureBuf;
 			string str = Load.ToStr()+" ";
 			str += EOL; // Дабавить символы конца строки
@@ -274,10 +277,9 @@
 			{
 				ib = (ib + 1) % SizeBuf;
 				LexBuf[ib].Load.Clear(); // Удаляем нагрузку ИП
-				LexBuf[ib] = { StrAtr,Tstring , new string("") };
+				LexBuf[ib] = { StrAtr, Cstring, new string("") };
 				LexOut();
 			}
-//			str += " "; // Добавление мнимого конечного элемента
 			Work = true;
 			int tabCounter = 0;
 			while (str[tabCounter] == '\t')
@@ -289,13 +291,13 @@
 					ProgExec(ErrProg); // Общая ошибка лексического анализа
 				break;
 			}
-			for (int i = ProgLevel - tabCounter; i > 0; i--) // Выдать закрывающеся програмные скобкк
+			for (int i = ProgLevel - tabCounter; i > 0; i--) // Выдать закрывающеся програмные скобки
 			{
 				ib = (ib + 1) % SizeBuf;
 				LexBuf[ib].Load.Clear(); // Удаляем нагрузку ИП
 				string t;
 				t += ProgFinBracket;
-				LexBuf[ib] = { SeperatAtr,Tstring , &t };
+				LexBuf[ib] = { SeperatAtr,Cstring , &t };
 				LexOut();
 			}
 			ProgLevel = tabCounter; // Запомнить текущий программный уровень
@@ -370,7 +372,7 @@
 						else if(SepUk != Seps.end())
 							*tstr = *SepUk;
 
-						LexBuf[ib] = { SeperatAtr,Tstring , tstr };
+						LexBuf[ib] = { SeperatAtr,Cstring , tstr };
 						LexOut();
 						break;
 					}
@@ -484,7 +486,7 @@
 							bool* t = new bool(true);
 							ib = (ib + 1) % SizeBuf; //увеличение текущего адреса буфера выходных лексем на 1
 							LexBuf[ib].Load.Clear(); //удаление нагрузки ИП
-							LexBuf[ib] = { BoolAtr, Tbool, t };  //добавление лексемы в буфер выходных лексем в виде ИП {атрибут, тип, указатель}
+							LexBuf[ib] = { BoolAtr, Cbool, t };  //добавление лексемы в буфер выходных лексем в виде ИП {атрибут, тип, указатель}
 							LexOut();
 							S = 0;
 							break;
@@ -494,7 +496,7 @@
 							bool* t = new bool(false);
 							ib = (ib + 1) % SizeBuf; //увеличение текущего адреса буфера выходных лексем на 1
 							LexBuf[ib].Load.Clear(); //удаление нагрузки ИП
-							LexBuf[ib] = { BoolAtr, Tbool, t };  //добавление лексемы в буфер выходных лексем в виде ИП {атрибут, тип, указатель}
+							LexBuf[ib] = { BoolAtr, Cbool, t };  //добавление лексемы в буфер выходных лексем в виде ИП {атрибут, тип, указатель}
 							LexOut();
 							S = 0;
 							break;
@@ -503,7 +505,7 @@
 						*st = FigureBuf; //запись лексемы в переменную
 						ib = (ib + 1) % SizeBuf; //увеличение текущего адреса буфера выходных лексем на 1
 						LexBuf[ib].Load.Clear(); //удаление нагрузки ИП
-						LexBuf[ib] = { MnemoAtr, Tstring, st };  //добавление лексемы в буфер выходных лексем в виде ИП {атрибут, тип, указатель}
+						LexBuf[ib] = { MnemoAtr, Cstring, st };  //добавление лексемы в буфер выходных лексем в виде ИП {атрибут, тип, указатель}
 						LexOut();
 						S = 0; //переход в состояние 0
 						break;
@@ -695,7 +697,7 @@
 						*sep = FigureBuf; //запись лексемы в переменную
 						ib = (ib + 1) % SizeBuf; //увеличение текущего адреса буфера выходных лексем на 1
 						LexBuf[ib].Load.Clear(); //удаление нагрузки ИП
-						LexBuf[ib] = { SeperatAtr, Tstring, sep };  //добавление лексемы в буфер выходных лексем в виде ИП {атрибут, тип, указатель}
+						LexBuf[ib] = { SeperatAtr, Cstring, sep };  //добавление лексемы в буфер выходных лексем в виде ИП {атрибут, тип, указатель}
 						LexOut();
 						S = 0; //переход в состояние 0
 						break;
@@ -784,7 +786,7 @@
 	{
 		FUtype = 3;
 		Bus = BusContext;
-		Receiver = BusContext;
+		Receiver.back() = BusContext;
 		copy(ABC_templ.begin(), ABC_templ.end(), inserter(ABC, ABC.end()));
 		copy(Digit_templ.begin(), Digit_templ.end(), inserter(Digit, Digit.end())); // --- Добавление в множество чисел
 		copy(Digit_seps_templ.begin(), Digit_seps_templ.end(), inserter(DigitSeps, DigitSeps.end())); // --- Добавление в множество разделителей дробных и целых частей чисел

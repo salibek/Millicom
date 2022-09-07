@@ -47,20 +47,6 @@ NewFU={Mnemo="ConstWait2" FUType=FUListNew Hint="Ожидание константы2"}
 NewFU={Mnemo="VarIniWait" FUType=FUListNew Hint="Ожидание инициализации переменной"}
 NewFU={Mnemo="VarIniWait2" FUType=FUListNew Hint="Ожидание инициализации переменной2"}
 
-NewFU={Mnemo="VectWait" FUType=FUListNew Hint="Ожидание элемента вектора"}
-NewFU={Mnemo="VectNext" FUType=FUListNew Hint="Ожидание возможного следующего элемента вектора"}
-
-NewFU={Mnemo="ALEStart" FUType=FUListNew Hint="Начальное состояние"}
-NewFU={Mnemo="End" FUType=FUListNew Hint="Конечное состояние"}
-NewFU={Mnemo="VarAfter" FUType=FUListNew Hint="Ожидание символа после переменной"}
-NewFU={Mnemo="VectAfter" FUType=FUListNew Hint="Ожидание символа после вектора"}
-NewFU={Mnemo="VectAfter2" FUType=FUListNew Hint="Ожидание символа после вектора 2"}
-NewFU={Mnemo="EgAleWait" FUType=FUListNew Hint="Перечисление переменных"}
-NewFU={Mnemo="EgAleWait2" FUType=FUListNew Hint="Перечисление переменных 2"}
-NewFU={Mnemo="EgAleAfter" FUType=FUListNew Hint="Ожидание символа после перечисления переменных"}
-NewFU={Mnemo="FuncAfter" FUType=FUListNew Hint="Ожидание функции"}
-NewFU={Mnemo="OperatWait" FUType=FUListNew Hint="Ожидание оператора"}
-
 
 MainBus.PartialResetSet \\ Запомнить число созданных ФУ
 MainBus.ModeSet=2
@@ -77,7 +63,6 @@ IC*-102 // Мк для ФУ
 FUTemplate*-303
 MkExec*-304 // МК для последующего выполнения
 BackVar*-305 // Переменная для обратной записи
-Vect*-306 // Вектор нагрузок
 LineAtr*-6 // Метка линии списка
 
 // FU*-100
@@ -298,13 +283,6 @@ Console.OutLn="Atr MnemoAnalysis"}
   MnemoTable.LastLoadConstVarTypeSet=0
   MnemoTable.LastPopMk}
 >{Mnemo Lex.ReceiverMkSet=VarIniWait2.FindAnd}
->{Vect Lex.ReceiverMkSet=Root.FindAnd
-FUListNew.ReceivedOutMk=MnemoTable.LastAttach}
->{Sep="[" Lex.ReceiverMkSet=VectWait.FindAnd
-  ALUG.VectCreat
-  MnemoTable.LastAttach={Vect}
-  ALUG.OutMk=MnemoTable.LastLoadSet
-}
 >{0 Console.OutLn="Variable inisialization error"
 Lex.Stop Str_Gen.Stop}
 
@@ -403,6 +381,12 @@ Console.OutLn="=Name{"
   MnemoTable.LineCopyAddPrevLoadSet={BackVar}
   OAList.LastLoadRefOutMk=MnemoTable.LastLoadSet}
 
+\**\MnemoLoad2.Set
+\* >{Type Lex.ReceiverMkSet=MnemoLoad3.FindAnd} *\
+
+\**\MnemoLoad3.Set=
+>{Sep="{" Lex.ReceiverMkSet=Root.FindAnd}
+
 \**\EqualWait2.Set=
 >{Sep="=" Sep="<<" Lex.ReceiverMkSet=VarWait.FindAnd}
 >{0 Console.OutLn="Wrong expresson" Lex.Stop}
@@ -445,100 +429,28 @@ ListAfterMnemo.Set=
 }
 >{0 Console.OutLn="Wrong mnemonics description" Lex.Stop}
 
-\**\VectWait.Set=
->{Const Var Lex.ReceiverMkSet=VectNext.FindAnd
-    FUListNew.ReceivedLoadOutMk ALUG.Append}
->{Sep="]" Lex.ReceiverMkSet=Root.FindAnd}
->{0 Console.OutLn="Wrong vector description" Lex.Stop}
+\**\ExprWait.Set=
+>{Sep="=" Sep="<<" Lex.ReceiverMkSet=VarWait.FindAnd}
+>{Sep="+" Lex.ReceiverMkSet=ALEAnalysis.FindAnd}
+>{Sep="-" Lex.ReceiverMkSet=ALEAnalysis.FindAnd}
+>{Sep="*" Lex.ReceiverMkSet=ALEAnalysis.FindAnd}
+>{Sep="/" Lex.ReceiverMkSet=ALEAnalysis.FindAnd}
+>{Sep="//" Lex.ReceiverMkSet=ALEAnalysis.FindAnd}
+>{Sep="%" Lex.ReceiverMkSet=ALEAnalysis.FindAnd}
+>{Sep="**" Lex.ReceiverMkSet=ALEAnalysis.FindAnd}
+>{Sep=">>" Lex.ReceiverMkSet=ALEAnalysis.FindAnd}
+>{Sep="<<" Lex.ReceiverMkSet=ALEAnalysis.FindAnd}
+>{Sep="&"  Lex.ReceiverMkSet=ALEAnalysis.FindAnd}
+>{Sep="&&" Lex.ReceiverMkSet=ALEAnalysis.FindAnd}
+>{Sep="|"  Lex.ReceiverMkSet=ALEAnalysis.FindAnd}
+>{Sep="||" Lex.ReceiverMkSet=ALEAnalysis.FindAnd}
+>{Sep="^"  Lex.ReceiverMkSet=ALEAnalysis.FindAnd}
+>{Sep="^^" Lex.ReceiverMkSet=ALEAnalysis.FindAnd}
+>{0 Lex.ReceiverMkSet=Root.FindAnd}
 
-\**\VectNext.Set=
->{Sep="]" Lex.ReceiverMkSet=Root.FindAnd}
-
-// ---- ALE ----
-
-\**\ALEStart.Set=
->{Var Lex.ReceiverMkSet=VarAfter.FindAnd}
->{Mk Lex.ReceiverMkSet=EgAleWait2.FindAnd}
-\*>{Vect Lex.ReceiverMkSet=VectAfter.FindAnd}*\
-
-\**\VarAfter.Set=
->{Sep="," Lex.ReceiverMkSet=EgAleWait.FindAnd}
->{Sep="=" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
->{Sep="+=" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
->{Sep="-=" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
->{Sep="++" Lex.ReceiverMkSet=End.FindAnd}
->{Sep="--" Lex.ReceiverMkSet=End.FindAnd}
-
-\**\VectAfter.Set=
->{Sep="[" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
->{Sep="++" Lex.ReceiverMkSet=End.FindAnd}
->{Sep="--" Lex.ReceiverMkSet=End.FindAnd}
-
-\**\VectAfter2.Set=
->{Sep="[" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
->{Sep="=" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
->{Sep="+" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
->{Sep="-" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
->{Sep="*" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
->{Sep="/" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
->{Sep="//" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
->{Sep="%" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
->{Sep="**" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
->{Sep=">>" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
->{Sep="<<" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
->{Sep="&"  Lex.ReceiverMkSet=EgAleAfter.FindAnd}
->{Sep="&&" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
->{Sep="|"  Lex.ReceiverMkSet=EgAleAfter.FindAnd}
->{Sep="||" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
->{Sep="^"  Lex.ReceiverMkSet=EgAleAfter.FindAnd}
->{Sep="^^" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
-
-\**\EgAleWait.Set=
->{Mk Lex.ReceiverMkSet=EgAleWait2.FindAnd}
->{Var Lex.ReceiverMkSet=EgAleWait2.FindAnd}
->{0 Lex.Stop}
-
-\**\EgAleWait2.Set=
->{Sep="," Lex.ReceiverMkSet=EgAleWait.FindAnd}
->{Sep="=" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
->{0 Lex.Stop}
-
-\**\EgAleAfter.Set=
-\*>{Vect Lex.ReceiverMkSet=VectAfter2.FindAnd}\*
->{Var Lex.ReceiverMkSet=OperatWait.FindAnd} 
->{Const Lex.ReceiverMkSet=OperatWait.FindAnd}
->{Sep="(" Lex.ReceiverMkSet=EgAleAfter.FindAnd} 
->{0 Lex.Stop}
-
-\**\FuncAfter.Set=
->{Sep="(" Lex.ReceiverMkSet=EgAleAfter.FindAnd} 
->{Var Lex.ReceiverMkSet=OperatWait.FindAnd} 
->{Const Lex.ReceiverMkSet=OperatWait.FindAnd}
->{Vect Lex.ReceiverMkSet=OperatWait.FindAnd}\*
->{0 Lex.Stop}
-
-\**\OperatWait.Set=
->{Sep=")" Lex.ReceiverMkSet=OperatWait.FindAnd} 
->{Sep="]" Lex.ReceiverMkSet=OperatWait.FindAnd}
->{Sep=":" Lex.ReceiverMkSet=OperatWait.FindAnd} 
->{Sep="," Lex.ReceiverMkSet=OperatWait.FindAnd} 
->{Sep="=" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
->{Sep="+" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
->{Sep="-" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
->{Sep="*" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
->{Sep="/" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
->{Sep="//" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
->{Sep="%" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
->{Sep="**" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
->{Sep=">>" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
->{Sep="<<" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
->{Sep="&"  Lex.ReceiverMkSet=EgAleAfter.FindAnd}
->{Sep="&&" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
->{Sep="|"  Lex.ReceiverMkSet=EgAleAfter.FindAnd}
->{Sep="||" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
->{Sep="^"  Lex.ReceiverMkSet=EgAleAfter.FindAnd}
->{Sep="^^" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
->{0 Lex.ReceiverMkSet=End.FindAnd}
+\**\ALEAnalysis.Set=
+>{}
+\*                   *\
 
 //Lex.Lexing="NewFU={FUType=FUCons Name=""Cons"" Hint=""Консоль""} Cons.Out=""Hello!!! I am the programm!!!"" Cons.OutLn="" End"" "
 //Lex.Lexing="Bus.MakeFU=Caps{Cons.Ln=1}"
@@ -550,9 +462,7 @@ ListAfterMnemo.Set=
 //Lex.Lexing="NewFU={FUType=FUCons Name=""Cons"" Hint=""Консоль""}  Cons.OutLn= >{Cons.Ln=1}  >{Cons.Ln=1} Cons.OutLn=""End"" "
 //Lex.Lexing="NewFU={FUType=FUCons Name=""Cons"" Hint=""Консоль""}  Cons.OutLn= >{Cons.Ln=1}  >{Cons.Ln=11} "
 //Lex.Lexing="NewFU={FUType=FUCons Name=""Cons"" Hint=""Консоль""}  Cons.OutLn= >{Cons.Ln=1}  "
-//Lex.Lexing="NewFU={FUType=FUCons Name=""Cons"" Hint=""Консоль""}  Cons.OutLn=Cons.OutLn=Cons.OutLn"
-Lex.Lexing="a=10 b=""str"""
-
+Lex.Lexing="NewFU={FUType=FUCons Name=""Cons"" Hint=""Консоль""}  Cons.OutLn=Cons.OutLn=Cons.OutLn"
 
 Lex.CendToReceiver={Sep=""} // Конечный символ после трансляции всего кода программы
 
@@ -561,7 +471,8 @@ Stack.SuccessExec={OAList.PopMk Stack.LastPopMk Console.OutLn="> out"}
 
 Console.OutLn="***************** MnemoList"
 
-MnemoTable.OutMk=Console.OutLn
+
+//MnemoTable.OutMk=Console.OutLn
 Console.OutLn="***************** OAList"
 
 OAList.OutMk=Console.OutLn
