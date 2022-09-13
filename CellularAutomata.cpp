@@ -33,23 +33,23 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load)
 		CalcProg = nullptr; ReceiveProg = nullptr; IndFuOffcet = 0; FUInd = 0;
 		break;
 	case 700: // N_NeighbourSet Установить количество соседей
-		Neighbours.resize(Load.ToInt());
-		NeighboursMk.resize(Load.ToInt());
+		Neighbours.resize(Load.toInt());
+		NeighboursMk.resize(Load.toInt());
 		if (!Plys.size())
 		{
 			for (auto& i : Plys)
-				i.resize(Load.ToInt());
+				i.resize(Load.toInt());
 		}
 		break;
 	case 701: // N_PlySet Установить количество слоев для расчета
-		Plys.resize(Load.ToInt());
-		Rez.resize(Load.ToInt());
+		Plys.resize(Load.toInt());
+		Rez.resize(Load.toInt());
 		if (!Neighbours.size())
 			for (auto& i : Plys)
 				i.resize(Neighbours.size());
 		break;
 	case 705: //RezSet  Установить результат вычислений (если PlyInd<0, выдается значение результат расчета текущего слоя)
-		Rez[PlyInd < 0 ? Rez.size() - 1 : PlyInd] = Load.ToDouble();
+		Rez[PlyInd < 0 ? Rez.size() - 1 : PlyInd] = Load.toDouble();
 		break;
 	case 706: //RezOut Выдать результат вычислений (если PlyInd<0, выдается значение результат расчета текущего слоя)
 		Load.Write(Rez[PlyInd < 0 ? Rez.size() - 1 : PlyInd]);
@@ -61,13 +61,13 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load)
 		break;
 	}
 	case 708: // PlyIndSet Установить индекс слоя для расчета
-		PlyInd = Load.ToInt(-1);
+		PlyInd = Load.toInt(-1);
 		break;
 	case 710: //­	IndFuOffcetSet Смещение индекса ФУ (индекс домножается на эту величину и к нему прибавляется индекс слоя)
-		IndFuOffcet = Load.ToInt();
+		IndFuOffcet = Load.toInt();
 		break;
 	case 711: // ­	ModeSet Режим работы автомата (0 - настройка, 1 - рабочий режим)
-		Mode = Load.ToInt();
+		Mode = Load.toInt();
 	case 715: //CollectorSet 
 		CollectorFU = Load.Point;
 		break;
@@ -90,7 +90,7 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load)
 		MkExec(Load, { CIC, ReceiveProg });
 		break;
 	case 730: // ­AutoSendSet Установить флаг автоматической пересылки результатов вычисления
-		AutoSend = Load.ToBool();
+		AutoSend = Load.toBool();
 		break;
 	case 735: // ­	RezReadyOut 
 		Load.Write(RezReady);
@@ -99,7 +99,7 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load)
 		MkExec(Load,{Cbool, &RezReady});
 		break;
 	case 740: // VarAdd добавить локальную переменную
-		Vars.push_back(Load.ToDouble());
+		Vars.push_back(Load.toDouble());
 		break;
 	case 741: // VarClear очистить список локальных переменных
 		Vars.clear();
@@ -119,12 +119,12 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load)
 		break;
 	case 748: // VarSet Установить значение в список параметров (если VarInd=-1, то уставливается последний параметр)
 		if (VarInd < 0)
-			Vars[Vars.size() - 1] = Load.ToDouble();
+			Vars[Vars.size() - 1] = Load.toDouble();
 		else
-			Vars[VarInd] = Load.ToDouble();
+			Vars[VarInd] = Load.toDouble();
 		break;
 	case 745: // ­ParameterIndSet Индекс текущего параметра (при -1 выжается последний параметр)
-		ParameterInd = Load.ToInt();
+		ParameterInd = Load.toInt();
 		break;
 	case 746: // ­ParameterClear Сбросить список параметров
 		ParameterInd = -1;
@@ -173,13 +173,13 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load)
 		break;
 	}
 	case 763: // FUIndSet Установить индекс ФУ-автомата
-		FUInd = Load.ToInt();
+		FUInd = Load.toInt();
 		break;
 	case 765: // ­	ManagerSet Установить ссылку на менеджера автомата
 		Manager = Load.Point;
 		break;
 	case 770: // Настройка/рабочий режим
-		Mode = Load.ToInt();
+		Mode = Load.toInt();
 		break;
 	case 780: // RezSend Выдать результат вычислений соседям
 		for (int i = 0; i < Neighbours.size(); i++)
@@ -190,9 +190,9 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load)
 		break;
 	case 790: // InCounterSet Установить счетчик входных данных (Если PlyInd<0, то устанавливается для текущего уровня)
 		if(PlyInd<0)
-			InCounter[PlyCurrent] = Load.ToInt();
+			InCounter[PlyCurrent] = Load.toInt();
 		else
-			InCounter[PlyInd] = Load.ToInt();
+			InCounter[PlyInd] = Load.toInt();
 		break;
 	case 791: // InCounterOut Выдать знаение счетчика входных данных
 		Load.Write(InCounter);
@@ -219,7 +219,7 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load)
 		MkExec(Load, { Cint, &PlyCurrent });
 		break;
 	case 800: // FUIndSet Установить индекс автомата
-		FUInd = Load.ToInt();
+		FUInd = Load.toInt();
 		break;
 	case 801: // FUIndSet Выдать индекс автомата
 		Load.Write(FUInd);
@@ -389,7 +389,7 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load)
 		else if (MK / 100 == 3) // Установить ссылку на соседа
 			Neighbours[MK % 100] = (CellularAutomat*)Load.Point;
 		else if (MK / 100 == 4) // Установить МК для соседа
-			NeighboursMk[MK % 100] = Load.ToInt(); // Установить МК для соседа
+			NeighboursMk[MK % 100] = Load.toInt(); // Установить МК для соседа
 		else if (MK / 100 == 4) // Установить параметр
 			parameters[MK % 100].WriteFromLoad(Load);
 		else if (MK / 100 == 6) // Выдать МК с параметром
@@ -429,10 +429,10 @@ void CellularAutomatManager::ProgFU(int MK, LoadPoint Load)
 		NetType = 0;
 		break;
 	case 1:// NetTypeSet Установить тип сетки
-		NetType = Load.ToInt();
+		NetType = Load.toInt();
 		break;
 	case 3: // DimAdd Добавить измерение
-		Dim.push_back(Load.ToInt());
+		Dim.push_back(Load.toInt());
 	case 5: // DimClear Очистить вектора размерностей
 		Dim.clear();
 	case 10: // IniAutmataProgSet Установить программу инициализации автомата

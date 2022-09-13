@@ -14,14 +14,14 @@ void IntAlu::ProgFU(int MK, LoadPoint Load)
 		BiggerProg = nullptr; LessProg = nullptr; EQProg = nullptr; NEQProg = nullptr; BiggerEQProg = nullptr; LessEQProg = nullptr;
 		break;
 	case 1: // Set Установить значение аккумулятора
-		*AccumUk = Load.ToInt(0);
+		*AccumUk = Load.toInt(0);
 		if (!Load.isDigit()) ProgExec(NoCorrectTypeErrProg);
 		if (!Load.isInt()) ProgExec(NoIntTypeErrProg);
 		if (!Load.isIntBool()) ProgExec(NoBoolIntTypeErrProg);
 		break;
 	case 5: // Push Положить значенпие аккумулятора. Если нагрузка nil, то в аккумуляторе остается прежнее значение
 		Stack.push_back(*AccumUk);
-     	*AccumUk = Load.ToInt(0);
+     	*AccumUk = Load.toInt(0);
 
 	case 8: // Pop Вытолкнуть значение аккумулятора
 		Load.Write(*AccumUk);
@@ -42,7 +42,7 @@ void IntAlu::ProgFU(int MK, LoadPoint Load)
 		*AccumUk += AutoInc;
 		break;
 	case 25: // AutoIncSet Установить значение автоматического инкремента при операции считывания значения
-		AutoInc = Load.ToInt();
+		AutoInc = Load.toInt();
 		break;
 	case 30: // CounterExec Выполнить программу столько раз, сколько записано в аккумуляторе
 		if (Accum >= 0)
@@ -83,6 +83,11 @@ void IntAlu::ProgFU(int MK, LoadPoint Load)
 		if (*AccumUk <= *CompareUk)
 			ProgExec(Load);
 		break;
+	case 66: // StackEmptyExec Выполнить, если в стеке ничего нет
+	case 67: // StackFullExec Выполнить, если стек непустой
+		if (MK == 66 && Stack.size() || MK == 67 && !Stack.size())
+			ProgExec(Load);
+		break;
 
 	case 70: // EQProgSet
 		EQProg = Load.Point;
@@ -102,11 +107,6 @@ void IntAlu::ProgFU(int MK, LoadPoint Load)
 	case 75: // LessEQProgSet
 		LessEQProg = Load.Point;
 		break;
-	case 80: // StackEmptyExec Выполнить, если в стеке ничего нет
-	case 81: // StackFullExec Выполнить, если стек непустой
-		if (MK == 80 && Stack.size() || MK == 81 && !Stack.size())
-			ProgExec(Load);
-		break;
 	case 130: // Inc
 		++ *AccumUk;
 		break;
@@ -117,31 +117,31 @@ void IntAlu::ProgFU(int MK, LoadPoint Load)
 		if (!Load.isDigit()) ProgExec(NoCorrectTypeErrProg);
 		if (!Load.isInt()) ProgExec(NoIntTypeErrProg);
 		if (!Load.isIntBool()) ProgExec(NoBoolIntTypeErrProg);
-		*AccumUk += Load.ToInt();
+		*AccumUk += Load.toInt();
 		break;
 	case 141: // Sub
 		if (!Load.isDigit()) ProgExec(NoCorrectTypeErrProg);
 		if (!Load.isInt()) ProgExec(NoIntTypeErrProg);
 		if (!Load.isIntBool()) ProgExec(NoBoolIntTypeErrProg);
-		*AccumUk -= Load.ToInt();
+		*AccumUk -= Load.toInt();
 		break;
 	case 142: // Mul
 		if (!Load.isDigit()) ProgExec(NoCorrectTypeErrProg);
 		if (!Load.isInt()) ProgExec(NoIntTypeErrProg);
 		if (!Load.isIntBool()) ProgExec(NoBoolIntTypeErrProg);
-		*AccumUk *= Load.ToInt();
+		*AccumUk *= Load.toInt();
 		break;
 	case 143: // Div
 		if (!Load.isDigit()) ProgExec(NoCorrectTypeErrProg);
 		if (!Load.isInt()) ProgExec(NoIntTypeErrProg);
 		if (!Load.isIntBool()) ProgExec(NoBoolIntTypeErrProg);
-		*AccumUk /= Load.ToInt();
+		*AccumUk /= Load.toInt();
 		break;
 	case 144: // Mod
 		if (!Load.isDigit()) ProgExec(NoCorrectTypeErrProg);
 		if (!Load.isInt()) ProgExec(NoIntTypeErrProg);
 		if (!Load.isIntBool()) ProgExec(NoBoolIntTypeErrProg);
-		*AccumUk %= Load.ToInt();
+		*AccumUk %= Load.toInt();
 		break;
 	default:
 		CommonMk(MK, Load);

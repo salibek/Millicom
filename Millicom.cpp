@@ -79,11 +79,12 @@ int main()
 //	string STR = "MeanShift.ind";
 //	string STR = "Bag.ind";
 //	string STR = "NetTemperat2.ind";
-	string STR = "CompileC.ind";
+//	string STR = "CompileC.ind";
 //	string STR = "OAGraphOut.ind";
 //	string STR = "MultyList.ind";
 //	string STR = "CompLab.ind";
 //	string STR = "AlU_test.ind";
+	string STR = "TabTest.ind";
 	//	string STR = "LexTest.ind"; // Имя запускного файла
 
 	Bus.ProgFU(10, {Cstring, &STR}); //Запуск индексного файла

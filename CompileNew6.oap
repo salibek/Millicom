@@ -487,9 +487,10 @@ CommonMkList{
 		Obj={Mnemo="AccumPointerSet" Mk=919 Hint="Установить ссылку на аккумулятор"}
 		Obj={Mnemo="AccumPointerOut" Mk=920 Hint="Выдать ссылку на аккумулятор"}
 		Obj={Mnemo="AccumPointerOutMk" Mk=921 Hint="Выдать МК со ссылкой на аккумулятор"}
-		Obj={Mnemo="AccumSet" Mk=922 Hint="Установить значение аккумулятора"}
+		Obj={Mnemo="AccumSet" Mk=931 Hint="Установить значение аккумулятора"}
 		Obj={Mnemo="AccumOut" Mk=923 Hint="Выдать значение аккумулятора"}
 		Obj={Mnemo="AccumOutMk" Mk=925 Hint="Выдать МК со значением аккумулятора"}
+		Obj={Mnemo="IntAluCalc" Mk=932 Hint="Создать челочисленное АЛУ"}
 		Obj={Mnemo="Calc" Mk=927 Hint="Вычислить АЛВ"}
 		Obj={Mnemo="ALUSet" Mk=928 Hint="Установить ссылку на АЛУ"}
 		Obj={Mnemo="CalcContinue" Mk=929 Hint="Вычислить АЛВ и продолжеть выполнение программы, если результат true"}
@@ -4355,6 +4356,9 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 	FuTypeIndexes.CellSet=99 FuTypeMkTrees.CellSet=
 {
   Obj={Mnemo="ReceiverMkSet" Mk=5 Hint="Установить МК для приемника лексем"}
+  Obj={Mnemo="ReceiverMkPush" Mk=2 Hint="Положить адрес приёмника лексемы в стек"}
+  Obj={Mnemo="ReceiverMkPop" Mk=3 Hint="Вытолкнуть адрес премника из стека и записать его"}
+  Obj={Mnemo="ReceiverMkPopMk" Mk=4 Hint="Вытолкнуть адрес премника из стека и выдать МК с ним"}
 
   Obj={Mnemo="FinMkAdd" Mk=6 Hint="Добавить финальную МК"}
   Obj={Mnemo="FinMkClear" Mk=7 Hint="Очистить список фитальных МК"}
@@ -4393,8 +4397,10 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
   Obj={Mnemo="AtrOut" Mk=41 Hint="Выдать атрибут текущей лексемы"}
   Obj={Mnemo="AtrOutMk" Mk=42 Hint="Выдать МК с атрибутом текущей лексемы"}
 
-  Obj={Mnemo="PrevOutMk" Mk=45 Hint="Выдать МК с предыдущей лексемой"}
-  Obj={Mnemo="PrevCopyOutMk" Mk=46 Hint="Выдать МК с копией предыдущей лексемы"}
+  Obj={Mnemo="PrevOutMk" Mk=45 Hint="Выдать МК с предыдущей лексемой (если нагрузка nil, то выдается на Receiver)"}
+  Obj={Mnemo="PrevPrevOutMk" Mk=46 Hint="Выдать МК с предпредыдущей лексемой (если нагрузка nil, то выдается на Receiver)"}
+  Obj={Mnemo="PrevCopyOutMk" Mk=47 Hint="Выдать МК с копией предыдущей лексемы (если нагрузка nil, то выдается на Receiver)"}
+  Obj={Mnemo="PrevPrevCopyOutMk" Mk=48 Hint="Выдать МК с копией предпредыдущей лексемы (если нагрузка nil, то выдается на Receiver)"}
 
 //  Obj={Mnemo="PrevToReseiver" Mk=40 Hint="Выдать предыдущую лексему получателю"}
 //  Obj={Mnemo="PrevCopyToReseiver" Mk=41 Hint="Выдать копию предыдущей лексемы получателю"}
@@ -4416,6 +4422,8 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
   Obj={Mnemo="CendCopyToReceiver" Mk=71 Hint="Переслать копию лексемы из нагрузки получателю"}
 
 
+  Obj={Mnemo="TabModeSet" Mk=96 Hint="Установить решим генерации скобок по символам табуляции (по умолчанию ture)"}
+  Obj={Mnemo="LexReset" Mk=98 Hint="Сбросить настройки лексического анализа"}
   Obj={Mnemo="Stop" Mk=99 Hint="Остановить лексический анализ"}
   Obj={Mnemo="Lexing" Mk=100 Hint="Лексический разбор строки"}
   Obj=CommonMkList
@@ -4499,6 +4507,7 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
     
     Obj={Mk=160 Mnemo="LineAdd" Hint="Добавить строку"}
     Obj={Mk=161 Mnemo="LineCopyAdd" Hint="Добавить копию строки"}
+    Obj={Mk=192 Mnemo="LineCopyAddPrevSet" Hint="Добавить копию строки и установить ссылку на нее в предыдущую линию"}
     Obj={Mk=163 Mnemo="LineCopyAddPrevLoadSet" Hint="Добавить линию в список и поместить ссылку на нее в нагрузку последней ИП последней строки"}
     Obj={Mk=159 Mnemo="LineCopyAddPrevLoadSetLoadMov" Hint="Добавить копию линии перенести нагрузку в на новую строку и добавить в нагрзуку предыдущей строки ссылку на новую строку"}
     Obj={Mk=162 Mnemo="LineCopyTreeAdd" Hint="Добавить копию ОА-графа"}
@@ -4528,7 +4537,7 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
     Obj={Mk=196 Mnemo="LineLoadCopySet" Hint="Добавить ссылку на копию ИК в указатель текущей ИК текущей строки"}
     Obj={Mk=189 Mnemo="LastAtrSet" Hint="Установить атрибут последний ИК последней строки"}
     Obj={Mk=199 Mnemo="LineAtrSet" Hint="Установить атрибут последний ИК текущей строки"}
-    Obj={Mk=190 Mnemo="LastLoadIcEmptySet" Hint="Добавить ссылку в указатель последний ИК последней строки"}
+    Obj={Mk=190 Mnemo="LastLoadIcEmptySet" Hint="Установить ссылку на пустую ИК в нагрузке последней ИП последней строки"}
     Obj={Mk=191 Mnemo="LineLoadIcEmptySet" Hint="Установить ссылку на пустую ИК в нагрузке последней ИП текущей строки"}
   }
   
@@ -4597,6 +4606,10 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
     Obj={Mk=419 Mnemo="AtrReceivedOut" Hint="Выдать атрибут наденной в источнике ИП"}
     Obj={Mk=420 Mnemo="AtrReceivedOutMk" Hint="Выдать МК с атрибутом найденной в источнике ИП"}
     Obj={Mk=425 Mnemo="LastIpPopMk" Hint="Выдать МК со ссылкой на последнюю ИП и удалить ее из списка"}
+    Obj={Mk=210 Mnemo="LastAtrAttach" Hint="Прикрепить к последней строке ИП с атрибутом из нагрзуки"}
+    Obj={Mk=211 Mnemo="LineAtrAttach" Hint="Прикрепить к текущей строке ИП с атрибутом из нагрзуки"}
+    Obj={Mk=215 Mnemo="LastLoadBackSet" Hint="Записать нагрзуку последней ИП последний строки в предыдущие ИП (на входе количество обратных записей)"}
+    Obj={Mk=216 Mnemo="LineLoadBackSet" Hint="Записать нагрзуку последней ИП некущей строки в предыдущие ИП (на входе количество обратных записей)"}
   }
   Obj={Mk=1 Mnemo="Set" Hint="Установить указатель на список"}
   Obj={Mk=2 Mnemo="Out" Hint="Выдать ссылку на список"}
@@ -4718,6 +4731,8 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 	 	Obj={Mk=63 Mnemo="LessExec" Hint=""}
 	 	Obj={Mk=64 Mnemo="BiggerEQExec" Hint=""}
 	 	Obj={Mk=65 Mnemo="LessEQExec" Hint=""}
+	 	Obj={Mk=66 Mnemo="StackEmptyExec" Hint="Выполнить, если в стеке ничего нет"}
+	 	Obj={Mk=67 Mnemo="StackFullExec" Hint="Выполнить, если стек непустой"}
 		}
 	 Obj={Mk=130 Mnemo="Inc" Hint="Инкремент"}
 	 Obj={Mk=131 Mnemo="Dec" Hint="Декремент"}
@@ -5057,6 +5072,7 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
   	Obj={Mk=20 Mnemo="ErrProgSet" Hint="Программа обработки ошибки любого типа"}
   	Obj={Mk=21 Mnemo="VectorErrProgSet" Hint="Программа обработки ошибки векторной операции"}
   	Obj={Mk=22 Mnemo="IndexOutOfRangeProgSet" Hint="Программа обработки ошибки выхода за допустимые пределы индекса"}
+  	Obj={Mk=23 Mnemo="TypeMismatchErrProgSet" Hint="Установить программу отработки ошибки несоотвествия типов"}
 	}
 
   Obj={Mnemo="Ariphmetics" Hint="Арифметические функции" Comment

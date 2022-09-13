@@ -4,6 +4,7 @@
 #include <string>
 #include "LocationTable.h"
 #include "ALU.h"
+#include "IntAlu.h"
 
 using namespace std;
 
@@ -20,7 +21,7 @@ bool LoadPoint::isIP() // Определить указывает ли ссылка на ИП
 }
 
 
-string LoadPoint::ToStr(string define) // Перевод в bool
+string LoadPoint::toStr(string define) // Перевод в bool
 {
 	if (Point == nullptr)
 		return define;
@@ -37,7 +38,7 @@ string LoadPoint::ToStr(string define) // Перевод в bool
 	}
 }
 
-bool LoadPoint::ToBool(bool define) // Перевод в bool (по умолчания false)
+bool LoadPoint::toBool(bool define) // Перевод в bool (по умолчания false)
 {
 	if (Point == nullptr)
 		return define;
@@ -53,7 +54,7 @@ bool LoadPoint::ToBool(bool define) // Перевод в bool (по умолчания false)
 	}
 }
 
-int LoadPoint::ToInt(int define) { // Перевод в integer
+int LoadPoint::toInt(int define) { // Перевод в integer
 	if (Point == nullptr)
 		return define;
 	switch (Type >> 1)
@@ -68,7 +69,7 @@ int LoadPoint::ToInt(int define) { // Перевод в integer
 		break;
 	}
 }
-double LoadPoint::ToDouble(double define) {// Перевод в integer
+double LoadPoint::toDouble(double define) {// Перевод в integer
 	if (Point == nullptr) return define;
 	switch (Type >> 1)
 	{
@@ -83,7 +84,7 @@ double LoadPoint::ToDouble(double define) {// Перевод в integer
 	}
 }
 
-float LoadPoint::ToFloat(float define) {// Перевод в integer
+float LoadPoint::toFloat(float define) {// Перевод в integer
 	if (Point == nullptr)
 		return define;
 	switch (Type >> 1)
@@ -153,19 +154,19 @@ int LoadPoint::WriteFromLoad(LoadPoint Load) // Записать величину из нагрузки
 	switch (Type)
 	{
 	case Tdouble:
-		*((double*)Point) = Load.ToDouble();
+		*((double*)Point) = Load.toDouble();
 		break;
 	case Tfloat:
-		*((float*)Point) = Load.ToFloat();
+		*((float*)Point) = Load.toFloat();
 		break;
 	case Tint:
-		*((int*)Point) = Load.ToInt();
+		*((int*)Point) = Load.toInt();
 		break;
 	case Tbool:
-		*((bool*)Point) = Load.ToBool();
+		*((bool*)Point) = Load.toBool();
 		break;
 	case Tchar:
-		*((char*)Point) = Load.ToChar();
+		*((char*)Point) = Load.toChar();
 		break;
 	default: // Перезапись указателя
 		if (Type % 2 != 0) // Если тип переменной
@@ -377,27 +378,27 @@ int LoadPoint::Write(LoadPoint x) // Записать величино из нагрузки
 	case Tdouble:
 		if (!x.isDigitBool())
 			return 1;
-		*((double*)Point) = x.ToDouble();
+		*((double*)Point) = x.toDouble();
 		break;
 	case Tfloat:
 		if (!x.isDigitBool())
 			return 1;
-		*((float*)Point) = x.ToFloat();
+		*((float*)Point) = x.toFloat();
 		break;
 	case Tint:
 		if(x.Type>>1==Dint || x.Type >> 1 == Dbool || x.Type >> 1 == Dchar)
-			*((int*)Point) = x.ToInt();
+			*((int*)Point) = x.toInt();
 		else return 1;
 		break;
 	case Tbool:
 		if (!x.isDigitBool() || x.Type >> 1 == Dstring)
-			*((bool*)Point) = x.ToBool();
+			*((bool*)Point) = x.toBool();
 		else return 1;
 		break;
 	case Tchar:
 		if(x.Type >> 1 == Dchar || x.Type >> 1 == Dbool ||
 			x.Type >> 1 == Dint && *(int*)x.Point>=0 && *(int*)x.Point <256)
-		*((char*)Point) = x.ToChar();
+		*((char*)Point) = x.toChar();
 		break;
 
 	defoult:
@@ -408,7 +409,7 @@ int LoadPoint::Write(LoadPoint x) // Записать величино из нагрузки
 
 int LoadPoint::Write(vector<LoadPoint> x)
 {
-	if (Point == nullptr || !IsVector())
+	if (Point == nullptr || !isVector())
 		return 1;
 	*(LoadVect_type)Point = x;
 	return 0;
@@ -803,7 +804,7 @@ void FU::CommonMk(int Mk, LoadPoint Load)
 	switch (Mk)
 	{
 	case 902: // ActiveSet Установить активность ФУ (true по умолчанию)
-		Active = Load.ToBool(true);
+		Active = Load.toBool(true);
 		break;
 	case ProgMk: // 958 Prog Вызов подпрограммы
 	case ProgCycleMk: //959 CycleProg Вызов цикла
@@ -820,7 +821,7 @@ void FU::CommonMk(int Mk, LoadPoint Load)
 	case YesMk: //961 YesProg Вызов подпрограммы по ДА
 	case YesCycleMk: //962 YesCycleProg Вызов цикла по ДА
 	case YesPostCycleMk: //963 YesPostCycleProg Вызов пост цикла по ДА
-		if (Accum.ToBool())
+		if (Accum.toBool())
 		{
 			if (Alu != nullptr)
 				((ALU*)Alu)->Stack.push_back({}); //Буферизиация текущего стека
@@ -835,7 +836,7 @@ void FU::CommonMk(int Mk, LoadPoint Load)
 	case NoMk: //964 NoProg Вызов подпрограммы по НЕТ
 	case NoCycleMk: //965 NoCycleProg Вызов цикла по НЕТ
 	case NoPostCycleMk: //966 NoPostCycleProg Вызов пост цикла по НЕТ
-		if (Accum.ToBool())
+		if (Accum.toBool())
 		{
 			if (Alu != nullptr)
 				((ALU*)Alu)->Stack.push_back({}); //Буферизиация текущего стека
@@ -863,7 +864,7 @@ void FU::CommonMk(int Mk, LoadPoint Load)
 			Accum = { Cdouble,new double };
 			AccumCreating = true; // Устанавливаем флаг самостоятельного создания аккумулятора ФУ-ом
 		}
-		Accum.Write(Load.ToDouble());
+		Accum.Write(Load.toDouble());
 		AccumCreating = false;
 		break;
 	case 923: // AccumOut Выдать значение аккумулятора
@@ -884,20 +885,27 @@ void FU::CommonMk(int Mk, LoadPoint Load)
 		}
 		((FU*)Alu)->ProgFU(ProgExecMk,Load);
 		break;
-		if (Mk == 929 && Accum.ToBool() || Mk == 930 && !Accum.ToBool())
+		if (Mk == 929 && Accum.toBool() || Mk == 930 && !Accum.toBool())
 			ProgStop = 1; // Выход из программы
-	case 989: // ProgStop Остановка программы (несли нагрузка nil, то присваивается true)
-		ProgStop = Load.ToInt(1);
+	case 932: // IntAluCalc Создать челочисленное АЛУ
+		Alu = new IntAlu(this->Bus);
+		Accum = { Tint, &((IntAlu*)Alu)->Accum };
+		AccumCreating = false;
+		ALUCreating = true;
+		((FU*)Alu)->ProgFU(ProgExecMk, Load);
+		break;
+	case 989: // ProgStop Остановка программы (в нагрузке количество уровней выхода; если нагрузка nil, то присваивается 1)
+		ProgStop = Load.toInt(1);
 		break;
 	case 988: // ProgStopAll Остановка всех запущенных на выполнение миллипрограммы для данного ФУ
-		ProgStopAll = Load.ToBool(true);
+		ProgStopAll = Load.toBool(true);
 		break;
 	case 987: //Next Переход к следующей итерации цикла
-		CycleStop = Load.ToInt();
+		CycleStop = Load.toInt();
 		break;
 	case 916:// ManualModeSet Установить режим ручного управления
 		if (Modeling == nullptr) Modeling = new FUModeling();
-		Modeling->ManualMode = Load.ToBool();
+		Modeling->ManualMode = Load.toBool();
 		break;
 	case 918: // SchedulerSet Установить контекст планировщика вычислений
 		if (Modeling == nullptr) Modeling = new FUModeling();
@@ -940,14 +948,14 @@ void FU::CommonMk(int Mk, LoadPoint Load)
 		ALUCreating = false;
 		break;
 	case 998: //FUNameSet
-		FUName = Load.ToStr();
+		FUName = Load.toStr();
 		break;
 	case 996: // FUNameOut
 		Load.Write(FUName);
 		break;
 	case 997: // FUNameOutMk
 		if (Load.Point != nullptr)
-			MkExec(Load.ToInt(), { Cstring,&FUName });
+			MkExec(Load.toInt(), { Cstring,&FUName });
 		break;
 	case 999: //ContextOutMK Выдать милликоманду с указателем на контекст ФУ
 		if (Load.Type >> 1 == Dint)
@@ -982,16 +990,16 @@ void FU::ProgExec(void* UK, unsigned int CycleMode, FU* ProgBus, vector<ip>::ite
 				ProgBus->ProgFU(i->atr, i->Load); // Если диапазон МК не принадлежит ФУ (выдаем на Bus)
 			else // МК для данного ФУ
 			{
-				if (i->atr == BreakAtr) { ProgStop = i->Load.ToInt()-1; return; } // Прервать программу
+				if (i->atr == BreakAtr) { ProgStop = i->Load.toInt()-1; return; } // Прервать программу
 				if (i->atr == NextAtr)
-					if (!i->Load.ToInt())
+					if (!i->Load.toInt())
 					{
 						i = Uk->begin();  // Продолжение текущего цикла
 						continue;
 					}
 					else
 					{
-						CycleStop = i->Load.ToInt(); 
+						CycleStop = i->Load.toInt(); 
 						return;
 					} // Переход к следующим итерациям циклов
 				// Выход из цикла по условию
@@ -1002,11 +1010,11 @@ void FU::ProgExec(void* UK, unsigned int CycleMode, FU* ProgBus, vector<ip>::ite
 						CycleMode = 1;
 						continue;
 					}
-					if (i->Load.IsProg() && Alu != nullptr) // Запуск вычисления АЛВ
+					if (i->Load.isProg() && Alu != nullptr) // Запуск вычисления АЛВ
 //						((FU*)Alu)->ProgExec(i->Load.Point);
 //
 					// Перейти к следующей итерации цикла continue
-					if (i->Load.IsProg())
+					if (i->Load.isProg())
 					{
 						if (Alu == nullptr)
 						{
@@ -1021,7 +1029,7 @@ void FU::ProgExec(void* UK, unsigned int CycleMode, FU* ProgBus, vector<ip>::ite
 						}
 						((FU*)Alu)->ProgExec(i->Load);
 					}
-					if (i->atr == YesContinueAtr && !Accum.ToBool() || i->atr == NoContinueAtr && Accum.ToBool())
+					if (i->atr == YesContinueAtr && !Accum.toBool() || i->atr == NoContinueAtr && Accum.toBool())
 					{
 						CycleMode = 0; // Выход из цикла
 						break;
@@ -1033,16 +1041,16 @@ void FU::ProgExec(void* UK, unsigned int CycleMode, FU* ProgBus, vector<ip>::ite
 				}
 
 				if (i->atr == ProgMkAtr || // Переход к подрограмме
-					i->atr == YesAtr && Accum.ToBool() ||
-					i->atr == NoAtr && !Accum.ToBool()) {
+					i->atr == YesAtr && Accum.toBool() ||
+					i->atr == NoAtr && !Accum.toBool()) {
 					((ALU*)Alu)->Stack.push_back(((ALU*)Alu)->Stack.back());
 					ProgExec(i->Load, 0, ProgBus);
 					((ALU*)Alu)->Stack.pop_back();
 					((ALU*)Alu)->accum = ((ALU*)Alu)->Stack.back().accum;
 					continue;
 				}
-				if (i->atr == YesCycleAtr && Accum.ToBool() || // Переход к циклу с постусловием
-					i->atr == NoCycleAtr && !Accum.ToBool() ||
+				if (i->atr == YesCycleAtr && Accum.toBool() || // Переход к циклу с постусловием
+					i->atr == NoCycleAtr && !Accum.toBool() ||
 					i->atr == ProgCycleAtr) {
 					((ALU*)Alu)->Stack.push_back(((ALU*)Alu)->Stack.back());
 					ProgExec(i->Load, 1, ProgBus);
@@ -1050,8 +1058,8 @@ void FU::ProgExec(void* UK, unsigned int CycleMode, FU* ProgBus, vector<ip>::ite
 					((ALU*)Alu)->accum = ((ALU*)Alu)->Stack.back().accum;
 					continue;
 				}
-				if (i->atr == YesPostCycleAtr && Accum.ToBool() || // Переход к циклу
-					i->atr == NoPostCycleAtr && !Accum.ToBool() ||
+				if (i->atr == YesPostCycleAtr && Accum.toBool() || // Переход к циклу
+					i->atr == NoPostCycleAtr && !Accum.toBool() ||
 					i->atr == ProgPostCycleAtr) {
 					((ALU*)Alu)->Stack.push_back(((ALU*)Alu)->Stack.back());
 					ProgExec(i->Load, 2, ProgBus);

@@ -36,7 +36,7 @@ void BusFU::ProgFU(int MK, LoadPoint Load)
 		//	FUs.push_back(this); // Первой ФУ - это сам Bus
 			break;
 		case 1: // MakeFU Создать ФУ
-			FUs.push_back(FUTypes[Load.ToInt() - FUTypeCorrect](this, FUTempl));
+			FUs.push_back(FUTypes[Load.toInt() - FUTypeCorrect](this, FUTempl));
 			break;
 		case 5: // ProgExec Выполнить программу из ИК
 			ProgExec((vector<ip>*)Load.Point);
@@ -61,7 +61,7 @@ void BusFU::ProgFU(int MK, LoadPoint Load)
 			break;
 		case 25: // LastFUNameSet Установить имя последнего созданного ФУ
 			if (FUs.size() > 1)
-				FUs.back()->FUName = Load.ToStr();
+				FUs.back()->FUName = Load.toStr();
 			break;
 		case 40: // LastFUMkRangeOut Выдать начало МК-диапазона последнего ФУ
 			Load.Write(FUMkRange*(FUs.size() - 1));
@@ -78,7 +78,7 @@ void BusFU::ProgFU(int MK, LoadPoint Load)
 				ProgFU(((ip*)Load.Point)->atr, ((ip*)Load.Point)->Load);
 			break;
 		case 105: //InterpretatorModeSet Установить режим интерпретатора
-			InterpretatorMode = Load.ToBool(true);
+			InterpretatorMode = Load.toBool(true);
 			break;
 		case 106: // InterpretatorProgExec Выполнить программу, если режим интерпретатора
 			if (InterpretatorMode)

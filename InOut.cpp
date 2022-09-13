@@ -10,12 +10,12 @@ void InOut::ProgFU(int MK, LoadPoint Load)
 	{
 	case 0: // Reset
 		break;
-
+	case 1: //
+		break;
 	default:
 		CommonMk(MK, Load);
 	}
 }
-
 
 void AutomatManager::ProgFU(int MK, LoadPoint Load)
 {
@@ -48,7 +48,7 @@ void AutomatManager::ProgFU(int MK, LoadPoint Load)
 		if (TemplAutoClear) ((IC_type)Template)->clear();
 		break;
 	case 4: // TemplAutoClearSet Установить флаг автоматического сброса шаблона поиска при установке МК для получателя нового сигнала
-		TemplAutoClear = Load.ToBool();
+		TemplAutoClear = Load.toBool();
 		break;
 	case 5: // StageProgInAdd Добавить входную программу для состояния
 	case 6: // StageProgOutAdd Добавить выходную программу для состояния
@@ -138,7 +138,7 @@ void AutomatManager::ProgFU(int MK, LoadPoint Load)
 		break;
 	case 37: // SignalAtrSet
 		if (Load.Point != nullptr || Load.Type >> 1 == Dint)
-			IPout.atr = Load.ToInt(0);
+			IPout.atr = Load.toInt(0);
 		break;
 	case 38: // SignalLoadSet
 		if (Load.Point != nullptr)
@@ -177,7 +177,7 @@ void AutomatManager::ProgFU(int MK, LoadPoint Load)
 
 void border::Run(LoadPoint Load) {
 	if (!borders.size())return; // Если нет границ
-	double val = Load.ToDouble();
+	double val = Load.toDouble();
 	if (!borders.size()) return;
 	if (Start) // Если первое данное
 	{

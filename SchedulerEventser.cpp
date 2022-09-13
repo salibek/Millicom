@@ -45,10 +45,10 @@ void Eventser::ProgFU(int MK, LoadPoint Load)
 		ProgExec(FinProg);
 		break;
 	case 5: // WorkSet Установить флаг рабочего режима
-		work = Load.ToBool();
+		work = Load.toBool();
 		break;
 	case 45: //TimeSet Установить текущее модельное время
-		CurrentTime = Load.ToDouble();
+		CurrentTime = Load.toDouble();
 		break;
 	case 50: // TimeOut Выдать текущее модельное время
 		if(Load.Type==Tdouble)
@@ -148,10 +148,10 @@ void Scheduler::ProgFU(int MK, LoadPoint Load)
 		Queue.clear();
 		break;
 	case 5: //SchedulingTimeSet
-		SchedulingTime = Load.ToDouble();
+		SchedulingTime = Load.toDouble();
 		break;
 	case 8: // NCoresSet
-		NCores = Load.ToInt();
+		NCores = Load.toInt();
 		break;
 	case 10: // TimeOut
 		Load.Write(*CurrentTime);

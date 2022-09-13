@@ -41,7 +41,7 @@
 			break;
 		case 2: // ReceiverMkPush Положить адрес приёмника лексемы в стек
 			Receiver.push_back(Receiver.back());
-			ReceiverMK.push_back(Load.ToInt());
+			ReceiverMK.push_back(Load.toInt());
 			break;
 		case 3: // ReceiverMkPop Вытолкнуть адрес премника из стека и записать его
 			Load.Write(ReceiverMK.back());
@@ -64,9 +64,9 @@
 		}
 			break;
 		case 5: //ReceiverMKSet Установить МК для приемника лексем 
-			if (Load.Type >> 1 == Dint) ReceiverMK.back() = Load.ToInt(); break;
+			if (Load.Type >> 1 == Dint) ReceiverMK.back() = Load.toInt(); break;
 		case 6: // FinMkAdd Добавить финальную МК
-			FinMk.insert(Load.ToInt());
+			FinMk.insert(Load.toInt());
 			break;
 		case 7: // FinMkClear Очистить список фитальных МК
 			FinMk.clear();
@@ -80,11 +80,11 @@
 				ProgExec(Load);
 			break;
 		case 10: //ErrProgSet
-			if (Load.IsProg())
+			if (Load.isProg())
 				ErrProg = Load.Point;
 			break;
 		case 11: // TabErrorProgSet Ошибка табуляции
-			if(Load.IsProg())
+			if(Load.isProg())
 				TabErrProg = Load.Point;
 			break;
 		case 12: // StartProgSet Установить программу, запускаемую перед началом компиляции 
@@ -97,12 +97,12 @@
 			FinProg = (IC_type)Load.Point;
 			break;
 		case 15:// UnicAtrSet Установить уникальный атрибут
-			LastUnicAtr = Load.ToInt();
+			LastUnicAtr = Load.toInt();
 			UnicAtr[LastUnicAtr] = {0,Bus};
 			break;
 		case 16:// UnicMkSet Установить МК для уникального атрибута
 			if (UnicAtr.size())
-				UnicAtr[LastUnicAtr].Mk = Load.ToInt();
+				UnicAtr[LastUnicAtr].Mk = Load.toInt();
 			break;
 		case 17:// UnicFuSet Установить контекст для уникального атрибута
 			if (UnicAtr.size())
@@ -115,7 +115,7 @@
 			if (Load.Type >> 1 != Dint) break;
 			for (int i = 0; i < SizeBuf; LexBuf[i++].Load.Clear());
 			delete[] LexBuf;
-			SizeBuf = Load.ToInt(2);
+			SizeBuf = Load.toInt(2);
 			LexBuf = new ip[SizeBuf];
 			for (int i = 0; i < SizeBuf; LexBuf[i++].Load = { 0,nullptr });
 			LexBuf[0].atr=SeperatAtr;// Установить атрибут сеирататора для для начального псевдосимвола
@@ -123,19 +123,19 @@
 			ProgLevel = 0; // Уровень счетчик программный скобок
 			break;
 		case 21: // SepSet Установить разделить
-			Seps.insert(Load.ToStr());
+			Seps.insert(Load.toStr());
 			break;
 		case 22: // SepErase Удалить разделитель из списка разделителей
-			Seps.erase(Load.ToStr());
+			Seps.erase(Load.toStr());
 			break;
 		case 23: // SepClear Очистить список разделителей
 			Seps.clear();
 			break;
 		case 24: // FalseAdd Добавить мнемонику лжи
-			FalseConst.insert(Load.ToStr());
+			FalseConst.insert(Load.toStr());
 			break;
 		case 25: // TrueAdd Добавить мнемонику правды
-			TrueConst.insert(Load.ToStr());
+			TrueConst.insert(Load.toStr());
 			break;
 		case 19: // TrueFalseClear Очистить списки мнемоник правды и лжи
 			FalseConst.clear();
@@ -174,7 +174,7 @@
 			}
 			else
 				if(Load.Type>>1==Dint)
-					Receiver.back()->ProgFU(Load.ToInt(), { TIP, &LexBuf[ib] });
+					Receiver.back()->ProgFU(Load.toInt(), { TIP, &LexBuf[ib] });
 			break;
 		case 36: // CopyOutMk Выдать МК с копией последней лексемы (если nil в нагрузке, то выдается на Receiver)
 			if (Load.Point!=nullptr) 
@@ -205,20 +205,20 @@
 			if (Load.Point==nullptr)
 				Receiver.back()->ProgFU(ReceiverMK.back(), { TIP, &LexBuf[(ib - MK + 44) % SizeBuf] });
 			else
-				Receiver.back()->ProgFU(Load.ToInt(), {TIP, &LexBuf[(ib - MK + 44) % SizeBuf]});
+				Receiver.back()->ProgFU(Load.toInt(), {TIP, &LexBuf[(ib - MK + 44) % SizeBuf]});
 			break;
 		case 47: //PrevCopyOutMk Выдать МК с копией предыдущей лексемы (если нагрузка nil, то выдается на Receiver)
 		case 48: //PrevPrevCopyOutMk Выдать МК с копией предпредыдущей лексемы (если нагрузка nil, то выдается на Receiver)
 			if (Load.Point == nullptr)
 				Receiver.back()->ProgFU(ReceiverMK.back(), { TIP, LexBuf[(ib - MK + 46) % SizeBuf].Сlone() });
 			else	
-				Receiver.back()->ProgFU(Load.ToInt(), {TIP, LexBuf[(ib - MK + 46) % SizeBuf].Сlone()});
+				Receiver.back()->ProgFU(Load.toInt(), {TIP, LexBuf[(ib - MK + 46) % SizeBuf].Сlone()});
 			break;
 		case 50: // AtrSet Установить атрибут последней лексемы
-			LexBuf[ib].atr=Load.ToInt();
+			LexBuf[ib].atr=Load.toInt();
 			break;
 		case 51: // PrevAtrSet Установить атрибут предыдущей лексемы
-			LexBuf[(ib - 1 + SizeBuf) % SizeBuf].atr = Load.ToInt();
+			LexBuf[(ib - 1 + SizeBuf) % SizeBuf].atr = Load.toInt();
 			break;
 		case 55: // LoadSet Установить нагрзузку у последней лексемы
 			LexBuf[ib].Load = Load;
@@ -253,7 +253,9 @@
 			else
 				MkExec(ReceiverMK.back(), Load.Copy());
 			break;
-
+		case 96: //TabModeSet Установить решим генерации скобок по символам табуляции (по умолчанию ture)
+			TabMode = Load.toBool(true);
+			break;
 		case 98: // LexReset Сбросить настройки лексического анализа
 			S = 0;
 			LexBuf[0].atr = SeperatAtr;
@@ -270,10 +272,10 @@
 		case 100: // Lexing
 		{
 			string FigureBuf;
-			string str = Load.ToStr()+" ";
+			string str = Load.toStr()+" ";
 			str += EOL; // Дабавить символы конца строки
 			S = 0; // --- установка начального состояния автомата
-			if (Load.Type >> 1 == Dstring && Load.ToStr() == "")
+			if (Load.Type >> 1 == Dstring && Load.toStr() == "")
 			{
 				ib = (ib + 1) % SizeBuf;
 				LexBuf[ib].Load.Clear(); // Удаляем нагрузку ИП
@@ -281,28 +283,37 @@
 				LexOut();
 			}
 			Work = true;
-			int tabCounter = 0;
-			while (str[tabCounter] == '\t')
-				tabCounter++;
-			if (tabCounter > ProgLevel)
-			{
-				ProgExec(TabErrProg); // Ошибка табуляции
-				if(TabErrProg==nullptr)
+			if (TabMode) {
+				int tabCounter = 0;
+				while (str[tabCounter] == '\t')
+					tabCounter++;
+				if (tabCounter > ProgLevel + 1) // Табуляция больше чем на одну позицию
+				{
 					ProgExec(ErrProg); // Общая ошибка лексического анализа
-				break;
+					ProgExec(TabErrProg); // Ошибка табуляции
+					break;
+				}
+				if (tabCounter > ProgLevel && ProgBracket!="")
+				{
+					ib = (ib + 1) % SizeBuf;
+					LexBuf[ib].Load.Clear(); // Удаляем нагрузку ИП
+					string t = ProgBracket;
+					LexBuf[ib] = { SeperatAtr,Cstring , &t };
+					LexOut();
+				}
+				if(ProgFinBracket!="")
+					for (int i = ProgLevel - tabCounter; i > 0; i--) // Выдать закрывающеся програмные скобки
+					{
+						ib = (ib + 1) % SizeBuf;
+						LexBuf[ib].Load.Clear(); // Удаляем нагрузку ИП
+						string *t = new string(ProgFinBracket);
+						LexBuf[ib] = { SeperatAtr,Cstring , t };
+						LexOut();
+					}
+				ProgLevel = tabCounter; // Запомнить текущий программный уровень
+				if (tabCounter) // Убрать символы табуляции
+					str = str.substr(tabCounter, string::npos);
 			}
-			for (int i = ProgLevel - tabCounter; i > 0; i--) // Выдать закрывающеся програмные скобки
-			{
-				ib = (ib + 1) % SizeBuf;
-				LexBuf[ib].Load.Clear(); // Удаляем нагрузку ИП
-				string t;
-				t += ProgFinBracket;
-				LexBuf[ib] = { SeperatAtr,Cstring , &t };
-				LexOut();
-			}
-			ProgLevel = tabCounter; // Запомнить текущий программный уровень
-			if (tabCounter) // Убрать символы табуляции
-				str = str.substr(tabCounter, string::npos);
 			for (auto i = str.begin(); i != str.end() && Work; i++)
 				switch (S) //LEXER
 				{
@@ -314,7 +325,7 @@
 						//Debug(*i, S, FigureBuf); // --- отладка
 						break;
 					}
-					if (*i == ProgBracket) // открыающаяся программная скобка
+					if (*i == ProgBracket[0]) // открыающаяся программная скобка
 					{
 						auto j = i+1;
 						for (; *j == ' ' || *j == '\t'; j++);

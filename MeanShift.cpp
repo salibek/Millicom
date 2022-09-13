@@ -68,15 +68,15 @@ void MeanShiftCluster::ProgFU(int MK, LoadPoint Load) // Область для поиска макс
 	case 0: // Reset
 		break;
 	case 1: // NDimSet
-		NDim = Load.ToInt();
+		NDim = Load.toInt();
 		Center.resize(NDim);
 		break;
 	case 5: //CenterSet Установить координаты центра региона
-		Center[CenterPhase] = Load.ToDouble();
+		Center[CenterPhase] = Load.toDouble();
 		CenterPhase = (CenterPhase + 1) % NDim;
 		break;
 	case 10: //RSet Установить радиус региона
-		R = Load.ToDouble();
+		R = Load.toDouble();
 		break;
 	case 20: // ToStartPoint Переместить регион в стартовую позицию (в нагрузке указатель на ФУ-исполнителя вычислительной сетки)
 		MoveToPoint((MeanShiftPoint*)Load.Point); // Вызов метода установки региона в стартовую позицию
@@ -240,7 +240,7 @@ void MeanShift::ProgFU(int MK, LoadPoint Load) // Поведение ФУ MeanShift
 	case 0: // Reset
 		break;
 	case 3: // NDimSet Установить количество измерений фазового пространства
-		NDim = Load.ToInt();
+		NDim = Load.toInt();
 		EpsFaze = 0; // Сброс фазы считывания eps
 		eps.resize(NDim);
 		ProbMaxMin.resize(NDim);
@@ -256,15 +256,15 @@ void MeanShift::ProgFU(int MK, LoadPoint Load) // Поведение ФУ MeanShift
 			R.Migration();
 		break;
 	case 8: // NVSet Установить требуемое количество близлежащих точек для начала построения окрестной сетки вокруг узла
-		NV = Load.ToInt();
+		NV = Load.toInt();
 		break;
 	case 15: // PointsGen Генерация случайных точек (праметр: макс и мин координаты по осям и количество генерируемых точек)
 	case 16: // PointsGenStart Генерация случайных точек (праметры: верхний левый угол поля, правый нижний угол поля, количество точек)
 		if (ProbPhase < NDim + NDim)
-			ProbMaxMin[ProbPhase / 2][ProbPhase % 2] = Load.ToDouble();
+			ProbMaxMin[ProbPhase / 2][ProbPhase % 2] = Load.toDouble();
 		else
 		{
-			NProb = Load.ToInt();
+			NProb = Load.toInt();
 			PointsGen(); // Генерация точек поля
 			NetGen(); // Генерация сетки
 			if (MK == 16)
@@ -280,16 +280,16 @@ void MeanShift::ProgFU(int MK, LoadPoint Load) // Поведение ФУ MeanShift
 			Clusters.back().NDim = NDim;
 			Clusters.back().Manager = this;
 			Clusters.back().ID = Clusters.size() - 1; // Записать идентификатор ФУ-региона
-			Clusters.back().Center.push_back(Load.ToDouble());
+			Clusters.back().Center.push_back(Load.toDouble());
 			Clusters.back().Eps = ClusterEps;
 		}
 		else if (ClusterPhase == NDim)
 		{
-			Clusters.back().R = Load.ToDouble();
+			Clusters.back().R = Load.toDouble();
 			Clusters.back().MoveToPoint(VXY[0][0]);
 		}
 		else
-			Clusters.back().Center.push_back(Load.ToDouble());
+			Clusters.back().Center.push_back(Load.toDouble());
 		ClusterPhase = (ClusterPhase + 1) % (NDim+1);
 		break;
 	case 21: //ClustersReset Очистить список регионов
@@ -305,7 +305,7 @@ void MeanShift::ProgFU(int MK, LoadPoint Load) // Поведение ФУ MeanShift
 		break;
 	}
 	case 25: // ClusterIDSet Установить номер текущего региона
-		ClusterID = Load.ToInt();
+		ClusterID = Load.toInt();
 		break;
 	case 26: // ClusterCenterOut Выдать координаты региона
 		if(Clusters.size() && ClusterID>=0 && ClusterID<Clusters.size())
@@ -339,7 +339,7 @@ void MeanShift::ProgFU(int MK, LoadPoint Load) // Поведение ФУ MeanShift
 		if (!ClusterNetPhaze)
 			ClusterNetParameters.clear();
 		if (ClusterNetPhaze < 3 * NDim)
-			ClusterNetParameters.push_back(Load.ToDouble());
+			ClusterNetParameters.push_back(Load.toDouble());
 		else // Построение сетки регионов
 		{
 			Clusters.clear();
@@ -354,7 +354,7 @@ void MeanShift::ProgFU(int MK, LoadPoint Load) // Поведение ФУ MeanShift
 					MeanShiftCluster* Reg = &Clusters[i * round(ClusterNetParameters[5]) + j];
 					Reg->Eps=ClusterEps;
 					Reg->NDim = NDim;
-					Reg->R = Load.ToDouble();
+					Reg->R = Load.toDouble();
 					Reg->ID = i * ClusterNetParameters[5] + j;
 					Reg->Center.clear();
 					Reg->Center = { ClusterNetParameters[0] + (ClusterNetParameters[1] - ClusterNetParameters[0]) / (ClusterNetParameters[2]-1) * i,
@@ -405,17 +405,17 @@ void MeanShift::ProgFU(int MK, LoadPoint Load) // Поведение ФУ MeanShift
 		NVPointErrProg = Load.Point;
 		break;
 	case 71: // epsSet Установить количество анализируемых точек по оси (по умолчанию 20)
-		eps[EpsFaze] = Load.ToInt(20)/2;
+		eps[EpsFaze] = Load.toInt(20)/2;
 		EpsFaze = (EpsFaze + 1) % NDim;
 		break;
 	case 72: // epsAllSet Установить одинаковое количество анализируемых точек для всех осей (по умолчанию 20)
-	{	int t = Load.ToInt(20) / 2;
+	{	int t = Load.toInt(20) / 2;
 		for (auto& i : eps)
 			i = t;
 		break;
 	}
 	case 75: //ClusterEpsSet Утановить погрешность для прекращения миграции кластера
-		ClusterEps = Load.ToDouble();
+		ClusterEps = Load.toDouble();
 		break;
 	case 80://NClusterPointCallOut Выдать количество используемых во вермя миграции исполнительных устройств для одного кластера во время миграции
 		if (ClusterID >= 0 && ClusterID <= Clusters.size())
@@ -556,7 +556,7 @@ void MeanShift::FileRead(LoadPoint Load)
 	ifstream f; // файл для считывания исходных данных
 	string FName;
 	ifstream fin;
-	f.open(Load.ToStr());
+	f.open(Load.toStr());
 	if (!f) return;
 	vector<pair<double, MeanShiftPoint*>> VXt, VYt;
 	while (!f.eof())

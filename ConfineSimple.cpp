@@ -17,7 +17,7 @@ void ConfineSimple::ProgFU(int MK, LoadPoint Load)
 		MkExec(Load, ini);
 		break;
 	case 20: //FpostSet
-		Fpost = Load.ToBool();
+		Fpost = Load.toBool();
 		break;
 		
 	case 21: //FpostOut

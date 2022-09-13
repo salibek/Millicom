@@ -48,7 +48,7 @@ void Neuro::ProgFU(int MK, LoadPoint Load)
 
 	case 7: // FArgAdd Добавить аргумент выходной функции
 		if (Load.Type >> 1 == Ddouble || Load.Type >> 1 == Dfloat || Load.Type >> 1 == Dint)
-			F_Arg.push_back(Load.ToDouble());
+			F_Arg.push_back(Load.toDouble());
 		break;
 	case 8: // FArgClear Очистить буфер аргументов выходной функции
 			F_Arg.clear();
@@ -67,19 +67,19 @@ void Neuro::ProgFU(int MK, LoadPoint Load)
 		break;
 	case 14: //WIndSet Установить индекс веса
 		if (Load.Type >> 1 == Dint)
-			WInd = Load.ToInt();
+			WInd = Load.toInt();
 		break;
 	case 15: //WIndStepSet Установить индекс веса
 		if (Load.Type >> 1 == Dint)
-			WIndStep = Load.ToInt();
+			WIndStep = Load.toInt();
 		break;
 	case 17: //XIndStepSet Установить индекс входного сигнала
 		if (Load.Type >> 1 == Dint)
-			XInd = Load.ToInt();
+			XInd = Load.toInt();
 		break;
 	case 18: //XIndStepSet Установить индекс входного сигнала
 		if (Load.Type >> 1 == Dint)
-			XIndStep = Load.ToInt();
+			XIndStep = Load.toInt();
 		break;
 	case 19:// WSet
 	case 20:// W1Set
@@ -99,7 +99,7 @@ void Neuro::ProgFU(int MK, LoadPoint Load)
 				if (MK == 19){
 					i = WInd; WInd += WIndStep;
 				}
-			W[i] = Load.ToDouble();
+			W[i] = Load.toDouble();
 		}
 		break;
 
@@ -125,7 +125,7 @@ void Neuro::ProgFU(int MK, LoadPoint Load)
 					i = MK - 50;
 				if (XF[i])
 					S -= W[i] * X[i];
-				X[i] = Load.ToDouble();
+				X[i] = Load.toDouble();
 				// Проверка счетчика входных данных
 				// Запуск подпрограммы
 				S += W[i] * X[i];

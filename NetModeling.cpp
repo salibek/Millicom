@@ -32,7 +32,7 @@ void TemperatEx::ProgFU(int MK, LoadPoint Load)
 	}
 
 	if(Load.Point!=nullptr)
-		T_Neighbours[it][MK] = Load.ToDouble();
+		T_Neighbours[it][MK] = Load.toDouble();
 	else
 	{
 //		cout << Y << "," << X << " " << it << "|" << T_Neighbours[it-1][0] << " " << T_Neighbours[it-1][1] << " " << T_Neighbours[it-1][2] << " " << T_Neighbours[it-1][3] << " " << endl;
@@ -75,39 +75,39 @@ void NetManager::ProgFU(int MK, LoadPoint Load)
 		ManageTime = 0;
 		break;
 	case 1: // NtaySet Установить количество итераций по времени
-		Ntay = Load.ToInt();
+		Ntay = Load.toInt();
 		break;
 	case 2: // XSet Установить количество точек сетки по X
-		X = Load.ToInt();
+		X = Load.toInt();
 		break;
 	case 3: // XAdd Увеличить размерность X на Load единиц (по умолчаниию на 1)
-		X+= Load.ToInt();
-		if (Load.ToInt() == 0) X++;
+		X+= Load.toInt();
+		if (Load.toInt() == 0) X++;
 		break;
 	case 4: // XOutMk
 		MkExec(Load, { Cint,&X });
 		break;
 	case 5: // YSet Установить количество точке сетки по Y
-		Y = Load.ToInt();
+		Y = Load.toInt();
 		break;
 	case 6: // YAdd Увеличить размерность Y на Load единиц (по умолчаниию на 1)
-		Y += Load.ToInt();
-		if (Load.ToInt() == 0) Y++;
+		Y += Load.toInt();
+		if (Load.toInt() == 0) Y++;
 		break;
 	case 7: // YOutMk
 		MkExec(Load, { Cint,&Y });
 		break;
 	case 9: // ASet Установить коэффициент a в уравнении
-		a = Load.ToDouble();
+		a = Load.toDouble();
 		break;
 	case 10: // hSet Установить расстояние между точками
-		h= Load.ToDouble();
+		h= Load.toDouble();
 		break;
 	case 12: // taySet Установить временной шаг моделирования
-		tay = Load.ToDouble();
+		tay = Load.toDouble();
 		break;
 	case 13: //	ManageTimeSet Установить время работы менеджера
-		ManageTime = Load.ToDouble();
+		ManageTime = Load.toDouble();
 		break;
 	case 30: //NetGen Генерация вычилсительной сетки
 		if(Items.size()!=0)
@@ -175,7 +175,7 @@ void NetManager::ProgFU(int MK, LoadPoint Load)
 		}
 
 		if (Load.Point != nullptr && Load.Type >> 1 == Dint) {
-			Ntay = Load.ToInt(); NtayCounter = 0;
+			Ntay = Load.toInt(); NtayCounter = 0;
 			Load = { 0,nullptr };
 		}
 		do
@@ -199,13 +199,13 @@ void NetManager::ProgFU(int MK, LoadPoint Load)
 		switch (ConstTCounter)
 		{
 		case 0:
-			XC = Load.ToDouble();
+			XC = Load.toDouble();
 			break;
 		case 1:
-			YC = Load.ToDouble();
+			YC = Load.toDouble();
 			break;
 		case 2:
-			Items[YC][XC]->T[0] = Load.ToDouble();
+			Items[YC][XC]->T[0] = Load.toDouble();
 			if (Items[YC][XC]->Neighbours[0] != nullptr) Items[YC][XC]->Neighbours[0]->T_Neighbours[0][2] = Items[YC][XC]->T[0];
 			if (Items[YC][XC]->Neighbours[1] != nullptr) Items[YC][XC]->Neighbours[1]->T_Neighbours[0][3] = Items[YC][XC]->T[0];
 			if (Items[YC][XC]->Neighbours[2] != nullptr) Items[YC][XC]->Neighbours[2]->T_Neighbours[0][0] = Items[YC][XC]->T[0];
@@ -219,10 +219,10 @@ void NetManager::ProgFU(int MK, LoadPoint Load)
 		switch (ConstTCounter)
 		{
 		case 0:
-			XC = Load.ToDouble();
+			XC = Load.toDouble();
 			break;
 		case 1:
-			YC = Load.ToDouble();
+			YC = Load.toDouble();
 			break;
 		case 2:
 			Items[YC][XC]->FiringProg = Load.Point;
@@ -244,10 +244,10 @@ void NetManager::ProgFU(int MK, LoadPoint Load)
 		}
 		break;
 	case 60: // ReadTimeSet
-		ReadTime = Load.ToDouble();
+		ReadTime = Load.toDouble();
 		break;
 	case 61: // CalcTimeSet
-		CalcTime = Load.ToDouble();
+		CalcTime = Load.toDouble();
 		break;
 	case 65: //NetSchedulerSet
 		NetScheduler = (FU*)Load.Point;

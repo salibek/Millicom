@@ -3,7 +3,6 @@
 
 class IntAlu : public FU {
 private:
-	int Accum = 0; // Аккумулятор
 	int *AccumUk= &Accum; // Указатель на аккумулятор
 	vector <int> Stack; // Стек аккумуляторов
 	int Compare = 0; // Сравинаваемое значение
@@ -14,8 +13,9 @@ private:
 	void* NoIntTypeErrProg = nullptr; // Программа для ошибки записи нецелого типа
 	void* NoBoolIntTypeErrProg = nullptr; // Программа для ошибки записи нецелого типа или boolean 
 public:
+	int Accum = 0; // Аккумулятор
 	int AutoInc = 0; // Шаг автоматичекой инкрементация
 	void ProgFU(int MK, LoadPoint Load);
-	IntAlu(FU* BusContext, FU* Templ) : FU(BusContext) { ProgFU(0, { 0, nullptr }); Bus = BusContext; FUtype = 7; };
+	IntAlu(FU* BusContext, FU* Templ=nullptr) : FU(BusContext) { ProgFU(0, { 0, nullptr }); Bus = BusContext; FUtype = 7; };
 	IntAlu() : FU() { IntAlu(nullptr, nullptr); };
 };

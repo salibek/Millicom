@@ -3,6 +3,7 @@
 #include "Consts.h"
 #include <functional>
 
+//bool comp(LoadPoint x, LoadPoint y);
 // Контекст АЛУ
 class ALUContext
 {
@@ -13,9 +14,9 @@ public:
 	string		accumStr;		// строковой аккулятор
 	int Ind = 0; // Индекс элемента вектора
 	bool IndF = false; // флаг установки индекса
-	void* ConfineStart = nullptr, *ConfineExpression = nullptr, *ConfineBorder = nullptr, *ConfineInc = nullptr; // Конфайн
+	void* ConfineStart = nullptr, * ConfineExpression = nullptr, * ConfineBorder = nullptr, * ConfineInc = nullptr; // Конфайн
 	// TLoadArray - тип нагрузка, обозначающий вектор нагрузок
-//		vector<LoadPoint>* accumPoint = nullptr;	// Указатель на аккумулятор (вектор, матрица и т.п.)
+		vector<LoadPoint>* accumPoint = nullptr;	// Указатель на аккумулятор (вектор, матрица и т.п.)
 	vector<int> MkOut; // вектор МК для резульатов
 	vector<LoadPoint> OutAdr; // вектор адресов для записи результатов
 };
@@ -28,11 +29,12 @@ class ALU : FU
 	void		mult(LoadPoint load);
 	void		inc(LoadPoint load);
 	void		dec(LoadPoint load);
+//	bool comp(LoadPoint x, LoadPoint y); // Подпрограмма для сравнения элементов вектора
 public:
 	unsigned int accumType = 0; // Тип данных
 	double		accum = 0;		// Скалярный выходной аккумулятор (из него другие ФУ могут считать значение аккумулятора по ссылке)
 	string		accumStr;		// строковой аккулятор
-	void* accumPoint = nullptr;	// Указатель на аккумулятор (вектор, матрица и т.п.)
+	void* accumVect = nullptr;	// Указатель на аккумулятор (вектор, матрица и т.п.)
 	vector<int> MkOut; // вектор МК для резульатов
 	vector<LoadPoint> OutAdr; // вектор адресов для записи результатов
 
@@ -42,10 +44,11 @@ public:
 	void* Parent = nullptr;
 	void		add(LoadPoint load);
 	void		Clear();
-	void*		VarNew(LoadPoint load); // New value of accum
-	void*		ErrProg = nullptr; // Программа ошибки вычислений
-	void*		VectErrProg = nullptr; // Программа ошибки векторной операции
-	void*		OutOfRangeErrProg = nullptr; // Программа ошибки Выход индекса за пределы разрешенного диапазона
+	void* VarNew(LoadPoint load); // New value of accum
+	void* ErrProg = nullptr; // Программа ошибки вычислений
+	void* VectErrProg = nullptr; // Программа ошибки векторной операции
+	void* OutOfRangeErrProg = nullptr; // Программа ошибки Выход индекса за пределы разрешенного диапазона
+	void* TypeMismatchErrProg = nullptr; // Программа ошибки несоответствия типов
 	void		set(LoadPoint load);
 	void		error_msg(int error_code);
 	void		calc(int MK, LoadPoint load);
@@ -96,6 +99,19 @@ public:
 	void		emptyvect(); // Создать пустой вектор
 	void		concat(LoadPoint Load); // Конкатенация векторов
 	void        vecmult(LoadPoint Load);// умножение векторов
+	void length(LoadPoint Load);
+	void clear(LoadPoint Load);
+	void push_back(LoadPoint Load);
+	void emplace_back(LoadPoint Load);
+	void pop_back(LoadPoint Load);
+	void insert(LoadPoint Load);
+	void emplace(LoadPoint Load);
+	void pop_backMk(LoadPoint Load);
+	void Sort(LoadPoint Load, bool revers=false); // Сортировка Revers - флаг обратной сортировки
+	void Reverse(LoadPoint Load);
+	void lenMk(LoadPoint Load);
+	void pop(LoadPoint Load);
+	void del(LoadPoint Load);
 	// Подрограммы сообщений об ошибках
 
 };

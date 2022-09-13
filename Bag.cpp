@@ -26,7 +26,7 @@ void BagPoint::ProgFU(int MK, LoadPoint Load)
 		if ((p_Diag < 0) && (p_Up < 0))
 		{
 			if (w_i >= w_a)
-				p = Load.ToDouble();
+				p = Load.toDouble();
 			else
 				p = 0;
 		}
@@ -34,11 +34,11 @@ void BagPoint::ProgFU(int MK, LoadPoint Load)
 		{
 			if ((w_i > w_a) && (p_Diag >= 0))
 			{
-				p = max(p_Up, p_Diag + Load.ToDouble());
+				p = max(p_Up, p_Diag + Load.toDouble());
 			}
 			else if ((w_i == w_a) && (p_Diag < 0))
 			{
-				p = max(p_Up, Load.ToDouble());
+				p = max(p_Up, Load.toDouble());
 			}
 			else
 				p = p_Up;
@@ -49,10 +49,10 @@ void BagPoint::ProgFU(int MK, LoadPoint Load)
 		if (Next) Next->ProgFU(1, Load); // Передача вправо
 		break;
 	case 2: // Up Принять значение сверху
-		p_Up = Load.ToDouble();
+		p_Up = Load.toDouble();
 		break;
 	case 3: // Diag Принять значение по диагонали
-		p_Diag = Load.ToDouble();
+		p_Diag = Load.toDouble();
 		break;
 	}
 	if (SchedulerFlag)
@@ -104,7 +104,7 @@ void Bag::ProgFU(int MK, LoadPoint Load)
 		}
 		else
 		{
-			string str = Load.ToStr();
+			string str = Load.toStr();
 			ifstream in(str);
 			if (!in)
 				cout << "File error\n";
@@ -180,29 +180,29 @@ void Bag::ProgFU(int MK, LoadPoint Load)
 	break;
 	}
 	case 90: //WMaxSet Установить максимальный объем рюкзака
-		WMax = Load.ToInt();
+		WMax = Load.toInt();
 		break;
 	case 91: // WMaxOfItem Установить максимальный размер одной вещи
-		WMaxOfItem = Load.ToInt();
+		WMaxOfItem = Load.toInt();
 		break;
 	case 92: // PMaxOfItem Установить максимальный размер одной вещи
-		PMaxOfItem = Load.ToDouble();
+		PMaxOfItem = Load.toDouble();
 		break;
 	case 93: //NItemSet Установить количество предметов для укладки и начать вычисление
-		NItem = Load.ToInt();
+		NItem = Load.toInt();
 		break;
 	case 94: //NItemAdd
-		NItem += Load.ToInt();
+		NItem += Load.toInt();
 		break;
 	case 95: //WMaxAdd
-		WMax += Load.ToInt();
+		WMax += Load.toInt();
 		break;
 
 	case 100: // CalcTimeSet Установить время вычисления результата
-		CalcTime = Load.ToDouble();
+		CalcTime = Load.toDouble();
 		break;
 	case 101: // SendTimeSet Установить время пересылки данных
-		SendTime = Load.ToDouble();
+		SendTime = Load.toDouble();
 		break;
 	default:
 		CommonMk(MK, Load);

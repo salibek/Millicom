@@ -77,23 +77,33 @@ public:
 	static bool isIntBool(int type) { return type >> 1 == Dint || type >> 1 == Dbool; }; // Число или булеан?
 	static bool isIntBool(LoadPoint Load) { return Load.Type >> 1 == Dint || Load.Type>>1==Dbool; }; // Число или булеан?
 	bool isFloatDouble() { return Type >> 1 == Ddouble || Type >> 1 == Dfloat; }; // булеан?
-	static bool isFloatDoubleInt(int type) { return type >> 1 == Ddouble || type >> 1 == Dfloat; }; // Число или булеан?
+	static bool isFloatDouble(int type) { return type >> 1 == Ddouble || type >> 1 == Dfloat; }; // Число или булеан?
 	static bool isFloatDouble(LoadPoint Load) { return Load.Type >> 1 == Ddouble || Load.Type >> 1 == Dfloat; }; // Число или булеан?
+	bool isFloat() { return Type >> 1 == Dfloat; }; // булеан?
+	static bool isFloat(int type) { return type >> 1 == Dfloat; }; // Число или булеан?
+	static bool isFloat(LoadPoint Load) { return Load.Type >> 1 == Dfloat; }; // Число или булеан?
+	bool isDouble() { return Type >> 1 == Ddouble; }; // булеан?
+	static bool isDoubleInt(int type) { return type >> 1 == Ddouble; }; // Число или булеан?
+	static bool isDouble(LoadPoint Load) { return Load.Type >> 1 == Ddouble; }; // Число или булеан?
 	bool isIC(); // Определить указывает ли ссылка на ИК
 	bool isIP(); // Определить указывает ли ссылка на ИП
 	bool IpTest() { return (Type >> 1 == DIP || Type >> 1 == DIC); } // Является ли нагрузка ИП?
 	bool IsConvert(unsigned int T) {}; // Тест на возможность конвертации значения из Point в определенный тип
-	bool IsProg() { return Point != nullptr && Type >> 1 == DIC; }; // Определение может ли быть нагрузка программой
-	static bool IsProg(LoadPoint Load) { return Load.Point != nullptr && Load.Type >> 1 == DIC; }; // Определение может ли быть нагрузка программой
-	bool IsStrChar() { return Point != nullptr && (Type >> 1 == Dstring || Type >> 1 == Dchar); }; // Строка или символ?
-	static bool IsStrChar(LoadPoint Load) { return Load.Point != nullptr && (Load.Type >> 1 == Dstring || Load.Type >> 1 == Dchar); }; // Строка или символ?
-	bool IsStr() { return Point != nullptr && Type >> 1 == Dstring; }; // Строка?
-	static bool IsStr(LoadPoint Load) { return Load.Point != nullptr && Load.Type >> 1 == Dstring; }; // Строка?
-	bool IsChar() { return Point != nullptr && Type >> 1 == Dchar; }; // символ?
-	static bool IsChar(LoadPoint Load) { return Load.Point != nullptr && Load.Type >> 1 == Dchar; }; // символ?
-	bool IsVector() {return Type >> 1 == DLoadVect; }; // Вектор ли нагрузка
-	static bool IsVector(LoadPoint Load) { return (Load.Point != nullptr &&  Load.Type >> 1) == DLoadVect; }; // Вектор ли нагрузка
-	static bool IsVector(unsigned int type) { return (type >> 1) == DLoadVect; }; // Вектор ли нагрузка
+	bool isProg() { return Point != nullptr && Type >> 1 == DIC; }; // Определение может ли быть нагрузка программой
+	static bool isProg(LoadPoint Load) { return Load.Point != nullptr && Load.Type >> 1 == DIC; }; // Определение может ли быть нагрузка программой
+	static bool isProg(unsigned int type) { return type >> 1 == DIC; }; // Определение может ли быть нагрузка программой
+	bool isStrChar() { return Point != nullptr && (Type >> 1 == Dstring || Type >> 1 == Dchar); }; // Строка или символ?
+	static bool isStrChar(LoadPoint Load) { return Load.Point != nullptr && (Load.Type >> 1 == Dstring || Load.Type >> 1 == Dchar); }; // Строка или символ?
+	static bool isStrChar(unsigned int type) { return type >> 1 == Dstring || type >> 1 == Dchar; }; // Строка или символ?
+	bool isStr() { return Point != nullptr && Type >> 1 == Dstring; }; // Строка?
+	static bool isStr(LoadPoint Load) { return Load.Point != nullptr && Load.Type >> 1 == Dstring; }; // Строка?
+	static bool IsStr(unsigned int type) { return type >> 1 == Dstring; }; // Строка?
+	bool isChar() { return Point != nullptr && Type >> 1 == Dchar; }; // символ?
+	static bool isChar(LoadPoint Load) { return Load.Point != nullptr && Load.Type >> 1 == Dchar; }; // символ?
+	static bool isChar(unsigned int type) {return type >> 1 == Dchar; }; // символ?
+	bool isVector() {return Type >> 1 == DLoadVect; }; // Вектор ли нагрузка
+	static bool isVector(LoadPoint Load) { return (Load.Point != nullptr &&  Load.Type >> 1) == DLoadVect; }; // Вектор ли нагрузка
+	static bool isVector(unsigned int type) { return (type >> 1) == DLoadVect; }; // Вектор ли нагрузка
 	int Write(int x); // return 0 - корректная запись, 1 - несоотвествие типов
 	int Write(size_t x);
 	int Write(double x);
@@ -121,12 +131,12 @@ public:
 		return F(*this, y);
 	};
 
-	string ToStr(string define=""); // Первод в string
-	bool ToBool(bool define = false); // Перевод в bool
-	int ToInt(int define=0); // Перевод в integer
-	double ToDouble(double define=0); // Перевод в double
-	float ToFloat(float define=0);// Перевод во float
-	char ToChar() { return Point == nullptr ? 0 : *(char*)Point; }; // Перевод в integer
+	string toStr(string define=""); // Первод в string
+	bool toBool(bool define = false); // Перевод в bool
+	int toInt(int define=0); // Перевод в integer
+	double toDouble(double define=0); // Перевод в double
+	float toFloat(float define=0);// Перевод во float
+	char toChar() { return Point == nullptr ? 0 : *(char*)Point; }; // Перевод в integer
 	LoadPoint Copy();
 	void Copy(LoadPoint LP);
 	void Clear(); // Сброс нагрузки ИП

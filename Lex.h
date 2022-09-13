@@ -27,9 +27,10 @@ private:
 	set<string> TrueConst = { "true","True" }; // Константы true
 	set<string> FalseConst = { "false","False" }; // Константы false
 	int ProgLevel = 0; // Уровень скобочной конструкции
-	char ProgBracket = '{', ProgFinBracket = '}'; // Символы программных скобкок
+	string ProgBracket = "{", ProgFinBracket = "}"; // Символы программных скобкок
 	void* TabErrProg = nullptr; // программа обработки ошибки табуляции
 	void* ErrProg = nullptr; // Программа, запускаемая при ошибке
+	bool TabMode = false; // Режим расстановки скобок по знакам табуляции
 public:
 	void ProgFU(int MK, LoadPoint Load);
 	Lex(FU *BusContext=nullptr, FU *Templ=nullptr);

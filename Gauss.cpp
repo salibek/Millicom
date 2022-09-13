@@ -45,12 +45,12 @@ void GaussPoint::ProgFU(int MK, LoadPoint Load)
 			Neighbours[0]->ProgFU(DownARight, { 0, nullptr });
 		break;
 	case 7: // DownA
-		UpBuf = Load.ToDouble();
+		UpBuf = Load.toDouble();
 		if (Neighbours[3] != nullptr)
 			Neighbours[3]->ProgFU(DownA, Load);
 		break;
 	case 9: //Cof
-		a = a + UpBuf * Load.ToDouble();
+		a = a + UpBuf * Load.toDouble();
 		if (Neighbours[0] != nullptr)
 			Neighbours[0]->ProgFU(Cof, Load);
 		break;
@@ -67,7 +67,7 @@ void GaussPoint::ProgFU(int MK, LoadPoint Load)
 	{
 		if (KeyF)
 		{
-			a = -Load.ToDouble() / a; // Вычисление корня
+			a = -Load.toDouble() / a; // Вычисление корня
 			;// Отсылка результата Менеджеру
 			cout << a << endl;
 			if (Neighbours[1] != nullptr)
@@ -75,7 +75,7 @@ void GaussPoint::ProgFU(int MK, LoadPoint Load)
 		}
 		else
 		{
-			double t = -a + Load.ToDouble();
+			double t = -a + Load.toDouble();
 			if (Neighbours[2] != nullptr)
 				Neighbours[2]->ProgFU(SumToLeft, { Cdouble, &t });
 		}
@@ -106,7 +106,7 @@ void Gauss::ProgFU(int MK, LoadPoint Load)
 	{
 		if (Load.Type >> 1 == Dstring) // Данные из файла
 		{
-			ifstream f_in(Load.ToStr());
+			ifstream f_in(Load.toStr());
 			f_in >> Size;
 			Field.resize(Size);
 			for (auto& iu : Field)
@@ -121,7 +121,7 @@ void Gauss::ProgFU(int MK, LoadPoint Load)
 		else
 		{ // Данные, сгенерированные случайно
 			if (Load.Type >> 1 == Dint)
-				Size = Load.ToInt();
+				Size = Load.toInt();
 			Field.resize(Size);
 			for (auto& iu : Field)
 			{
@@ -144,13 +144,13 @@ void Gauss::ProgFU(int MK, LoadPoint Load)
 		Field[0][0].ProgFU(Key, {0 ,nullptr });
 		break;
 		case 5: // SizeSet Установить размерность матрицы
-			Size = Load.ToInt();
+			Size = Load.toInt();
 			break;
 		case 10: //MaxSet Установить максимальную величину коэффициентов для случайной генерации
-			Max = Load.ToInt();
+			Max = Load.toInt();
 			break;
 		case 15: //MinSet Установить мининмальную величину коэффициентов для случайной генерации
-			Min = Load.ToInt();
+			Min = Load.toInt();
 			break;
 		case 100: // CalcTimeSet Установить время выполнения операции
 			break;

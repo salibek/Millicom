@@ -46,7 +46,7 @@ void Router::ProgFU(int MK, LoadPoint Load)
 		MKCount = 0;
 		break;
 	case 1: // ChCreate Создать новый канал (на входе МК нижняя граница диапазона)
-		Channels.push_back({0,Load.ToInt(-1),Bus,-1});
+		Channels.push_back({0,Load.toInt(-1),Bus,-1});
 		if (Channels.back().Down >= 0)
 			Channels.back().Up = Channels.back().Down + FUMkRange; // Установка верхней границы по умолчанию
 		break;
@@ -54,28 +54,28 @@ void Router::ProgFU(int MK, LoadPoint Load)
 		Channels.clear();
 		break;
 	case 5: // DelayTimeSet Установить время передачи МК
-		DelayTime = Load.ToDouble();
+		DelayTime = Load.toDouble();
 		break;
 	case 6: // MkCounterSet Установить значение счетчика МК
-		MKCount = Load.ToInt();
+		MKCount = Load.toInt();
 		break;
 	case 8: // ErrRoutingProgset Ссылка на программу обработки ошибки "Не найден маршрут"
 		ErrRoutingProg = Load.Point;
 		break;
 	case 9: // ReceiverMkDefaultSet Установить значение МК для приемника по умолчанию
-		ReceiverMkDefault = Load.ToInt(-1);
+		ReceiverMkDefault = Load.toInt(-1);
 		break;
 	case 10: // ReceiverSet Установить адрес ФУ-приемника
 		Channels.back().Receiver = Load.Point;
 		break;
 	case 11: // ReceiverMkSet Установить МК ФУ-приемника
-		Channels.back().ReceiverMk = Load.ToInt(-1);
+		Channels.back().ReceiverMk = Load.toInt(-1);
 		break;
 	case 15: // RangeUpSet Установить верхний диапазон адресов
-		Channels.back().Up= Load.ToInt(-1);
+		Channels.back().Up= Load.toInt(-1);
 		break;
 	case 20: // RangeDownSet Установить нижний диапазон адресов
-		Channels.back().Down = Load.ToInt(-1);
+		Channels.back().Down = Load.toInt(-1);
 		if (Channels.back().Up < 0)
 			Channels.back().Up = Channels.back().Down + FUMkRange; // Автоматическая установка верхнего предела интервала равного мк-диапазону по умолчанию
 		break;

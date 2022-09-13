@@ -28,36 +28,36 @@ void Console::ProgFU(int MK, LoadPoint Load)
 		cout << endl;
 		break;
 	case 15: //SepSet Установить строку-разделитель
-		Sep = Load.ToStr();
+		Sep = Load.toStr();
 		break;
 	case 16: //EndSet Установить строку в конце вывода
-		End = Load.ToStr();
+		End = Load.toStr();
 		break;
 	case 17: // ArrayBracketStartSet Установить строку, обозначающую открывающуюся скобку при вывод вектора
-		ArrayBracketStart = Load.ToStr();
+		ArrayBracketStart = Load.toStr();
 		break;
 	case 18: // ArrayBracketStartSet Установить строку, обозначающую закрывающуюся скобку при вывод вектора
-		ArrayBracketFin = Load.ToStr();
+		ArrayBracketFin = Load.toStr();
 		break;
 	case 20: // PrefixSet Установить префикс перед выводом
 		if ((Load.Type) >> 1 == Dstring)
 			prefix = *(string*)Load.Point;
 		break;
 	case 25: // FileNameSet
-		filename = Load.ToStr();
+		filename = Load.toStr();
 		break;
 	case 30: // OutFileSet Установить файл для вывода
 		if(Load.Point==nullptr)
 			ostream& out = cout;
 		else
-			freopen_s(&streamOut, Load.ToStr().c_str(), "w", stdout);
+			freopen_s(&streamOut, Load.toStr().c_str(), "w", stdout);
 		break;
 
 	case 31: // StdOutFileAppend Установить файл для дополнения
 		if (Load.Point == nullptr)
 			ostream& out = cout;
 		else
-			freopen_s(&streamOut, Load.ToStr().c_str(), "a", stdout);
+			freopen_s(&streamOut, Load.toStr().c_str(), "a", stdout);
 		break;
 
 	case 35: // StdInFileSet Установить файл для ввода
@@ -65,14 +65,14 @@ void Console::ProgFU(int MK, LoadPoint Load)
 //			std::istream& in == cin;
 			;
 		else
-			freopen_s(&streamIn, Load.ToStr().c_str(), "r", stdin);
+			freopen_s(&streamIn, Load.toStr().c_str(), "r", stdin);
 		break;
 	case 40: // AtrMnemoAdd Добавить мнемоники атрибутов
 		if (Load.Type >> 1 == DIP)
-			AtrMnemo[((ip*)Load.Point)->atr] = ((ip*)Load.Point)->Load.ToStr();
+			AtrMnemo[((ip*)Load.Point)->atr] = ((ip*)Load.Point)->Load.toStr();
 		else if (Load.isIC())
 			for (auto& i : *(IC_type)Load.Point)
-				AtrMnemo[i.atr] = i.Load.ToStr();
+				AtrMnemo[i.atr] = i.Load.toStr();
 		break;
 	case 41: // AtrMnemoClear Очистить мнемоники атрибутов
 		AtrMnemo.clear();
@@ -81,20 +81,20 @@ void Console::ProgFU(int MK, LoadPoint Load)
 	case 44: // TrueValSet
 		TrueVar.clear();
 		if(Load.Point!=nullptr)
-			TrueVar.push_back(Load.ToStr());
+			TrueVar.push_back(Load.toStr());
 		break;
 	case 45: // TrueValAdd
 		if (Load.Point != nullptr)
-			TrueVar.push_back(Load.ToStr());
+			TrueVar.push_back(Load.toStr());
 		break;
 	case 46: // TrueValSet
 		FalseVar.clear();
 		if (Load.Point != nullptr)
-			FalseVar.push_back(Load.ToStr());
+			FalseVar.push_back(Load.toStr());
 		break;
 	case 47: // TrueValAdd
 		if (Load.Point != nullptr)
-			FalseVar.push_back(Load.ToStr());
+			FalseVar.push_back(Load.toStr());
 		break;
 
 	case 50: //VectIn ввод вектора 
@@ -145,13 +145,13 @@ void Console::ProgFU(int MK, LoadPoint Load)
 		else if (Load.isFloatDouble()) // Дробный тип
 		{
 		}
-		else if (Load.IsChar())   //
+		else if (Load.isChar())   //
 		{
 		}
-		else if (Load.IsStr())    //
+		else if (Load.isStr())    //
 		{
 		}
-		else if (Load.IsVector()) //
+		else if (Load.isVector()) //
 		{
 		}
 		else
