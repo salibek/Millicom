@@ -20,4 +20,5 @@ Lex.TabModeSet
 Lex.Lexing="for i"
 Lex.Lexing="	for"
 Lex.Lexing="		for"
+Lex.Lexing="			for"
 Lex.Lexing="for"

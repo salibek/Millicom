@@ -297,8 +297,8 @@
 				{
 					ib = (ib + 1) % SizeBuf;
 					LexBuf[ib].Load.Clear(); // Удаляем нагрузку ИП
-					string t = ProgBracket;
-					LexBuf[ib] = { SeperatAtr,Cstring , &t };
+					//string t = ProgBracket;
+					LexBuf[ib] = { SeperatAtr,Cstring , new string(ProgBracket) };
 					LexOut();
 				}
 				if(ProgFinBracket!="")
@@ -306,8 +306,8 @@
 					{
 						ib = (ib + 1) % SizeBuf;
 						LexBuf[ib].Load.Clear(); // Удаляем нагрузку ИП
-						string *t = new string(ProgFinBracket);
-						LexBuf[ib] = { SeperatAtr,Cstring , t };
+						//string *t = new string(ProgFinBracket);
+						LexBuf[ib] = { SeperatAtr,Cstring , new string(ProgFinBracket) };
 						LexOut();
 					}
 				ProgLevel = tabCounter; // Запомнить текущий программный уровень
