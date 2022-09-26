@@ -5,6 +5,12 @@
 
 //bool comp(LoadPoint x, LoadPoint y);
 // Контекст АЛУ
+class MkAdr {
+public:
+	int Mk = -1;
+	LoadPoint Adr = {0, nullptr};
+};
+
 class ALUContext
 {
 public:
@@ -17,8 +23,11 @@ public:
 	void* ConfineStart = nullptr, * ConfineExpression = nullptr, * ConfineBorder = nullptr, * ConfineInc = nullptr; // Конфайн
 	// TLoadArray - тип нагрузка, обозначающий вектор нагрузок
 		vector<LoadPoint>* accumPoint = nullptr;	// Указатель на аккумулятор (вектор, матрица и т.п.)
-	vector<int> MkOut; // вектор МК для резульатов
-	vector<LoadPoint> OutAdr; // вектор адресов для записи результатов
+//	vector<int> MkOut; // вектор МК для резульатов
+//	vector<LoadPoint> OutAdr; // вектор адресов для записи результатов
+	vector <MkAdr> OutMkAdr; // Буфер для указания порядка следования выдача векторных результатов вычисления
+
+	bool VectOut = false; // Векторная выдача результата
 };
 
 class ALU : FU
@@ -35,12 +44,11 @@ public:
 	double		accum = 0;		// Скалярный выходной аккумулятор (из него другие ФУ могут считать значение аккумулятора по ссылке)
 	string		accumStr;		// строковой аккулятор
 	void* accumVect = nullptr;	// Указатель на аккумулятор (вектор, матрица и т.п.)
-	vector<int> MkOut; // вектор МК для резульатов
-	vector<LoadPoint> OutAdr; // вектор адресов для записи результатов
 
 	vector<ALUContext> Stack = {};
 	ALU(void* parent, FU* Templ = nullptr) { Bus = (FU*)parent; Parent = parent; FUtype = 17; ProgFU(0, { 0, nullptr }); };
 	void ProgFU(int MK, LoadPoint Load) override;
+	void VectOperation(int MK, LoadPoint Load); // Реализацая векторных операций
 	void* Parent = nullptr;
 	void		add(LoadPoint load);
 	void		Clear();
@@ -49,6 +57,7 @@ public:
 	void* VectErrProg = nullptr; // Программа ошибки векторной операции
 	void* OutOfRangeErrProg = nullptr; // Программа ошибки Выход индекса за пределы разрешенного диапазона
 	void* TypeMismatchErrProg = nullptr; // Программа ошибки несоответствия типов
+	void* DivByZeroErrProg = nullptr; // Программа ошибки деления на нуль
 	void		set(LoadPoint load);
 	void		error_msg(int error_code);
 	void		calc(int MK, LoadPoint load);

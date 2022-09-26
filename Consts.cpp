@@ -10,7 +10,7 @@ using namespace std;
 
 bool LoadPoint::isIC() // Определить указывает ли ссылка на ИК
 {
-	set<unsigned int> IC_Types = {DIC}; // Множевство типов ИК и ОА-графов
+	set<unsigned int> IC_Types = {DIC, DCalc}; // Множевство типов ИК и ОА-графов
 	return IC_Types.count(Type>>1);
 }
 

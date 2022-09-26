@@ -4706,6 +4706,8 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
      FuTypeIndexes.CellSet=103 FuTypeMkTrees.CellSet=
 	{
 	 Obj={Mk=1 Mnemo="Set" Hint="Установить значение аккумулятора"}
+	 Obj={Mk=2 Mnemo="AccumREfOut" Hint="Выдать ссылку на аккумулятор"}
+	 Obj={Mk=3 Mnemo="AccumREfOutMk" Hint="Выдать МК со ссылкой на аккумулятор"}
 	 Obj={Mk=5 Mnemo="Push" Hint="Положить значенпие аккумулятора. Если нагрузка nil, то в аккумуляторе остается прежнее значение"}
 	 Obj={Mk=8 Mnemo="Pop" Hint="Вытолкнуть значение аккумулятора"}
 	 Obj={Mk=9 Mnemo="PopMk" Hint="Вытолкнуть значение аккумулятора"}
@@ -5149,13 +5151,9 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 
 	}
   Obj={Mnemo="Vector opetarins" Hint="Операции с векторами" Comment
-  	Obj={Mk=330 Mnemo="SumVect" Hint="Поэлементное векторное +"}
-  	Obj={Mk=331 Mnemo="SubVect" Hint="Поэлементное векторное -"}
-  	Obj={Mk=333 Mnemo="MulVect" Hint="Поэлементное векторное *"}
-  	Obj={Mk=332 Mnemo="DivVect" Hint="Поэлементное векторное /"}
+  	Obj={Mk=198 Mnemo="SumVect" Hint="Поэлементное векторное +"}
+  	Obj={Mk=199 Mnemo="MulVect" Hint="Поэлементное векторное -"}
 
-  	Obj={Mk=234 Mnemo="IncVect" Hint="Поэлементный векторный инкремент"}
-  	Obj={Mk=235 Mnemo="DecVect" Hint="Поэлементный векторный декримент"}
      }
 
       Obj=CommonMkList

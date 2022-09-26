@@ -102,69 +102,93 @@ void Console::ProgFU(int MK, LoadPoint Load)
 	case 55: //MatrIn ввод матрицы	
 		break;
 	case 60: //VarClear Очистить буфер адресов для результата ввода
-		VarBuf.clear();
+		VarOutBuf.clear();
 		break;
 	case 61: //VarSet Записать адрес переменной для записи результата ввода
-		VarBuf.clear();
-		VarBuf.push_back(Load);
+		VarOutBuf.clear();
+		VarOutBuf.push_back({ -1, Load });
 		break;
 	case 62: //VarAdd Добавить адрес переменной для записи результата ввода
-		VarBuf.push_back(Load);
+		VarOutBuf.push_back({-1, Load});
 		break;
-	case 80: //VarOut – выдать адрес переменной (если в буфере несколько переменных, то выдается адрес самой последней добавленной переменной)
-		if (!VarBuf.size())
-			ProgExec(NoVarToOutProg);// Сообщение об ошибке
-		else
-			Load.Write(VarBuf.back());
+	case 80: //VarOut – выдать адрес переменной
+		Load.Write(Var);
 		break;
-//	case 81: //VarOutAll выдать адрес всех переменных из буфера
-//		if(!VarBuf.size())
-//			ProgExec(NoVarToOutProg);// Сообщение об ошибке
-//		else
-//			for(auto i: VarBuf) // Запись всех переменных
-//				Load.Write(i);
 	case 85: // VarOutMk
-		MkExec(Load, VarBuf[0]);
+		MkExec(Load, Var);
+		break;
+	case 86: // InStrOut Выдать последнюю введенную строку
+		Load.Write(inStr);
+		break;
+	case 87: // InStrOutMk  Выдать МК с последней введенной строкой
+		MkExec(Load, {Cstring, &inStr});
 		break;
 	case 90: // Input Ввод данных
+//	case 91: // Input Ввод данных и запись их в переменную
+	case 92: // InputMk Ввод данных и выдача МК с ними
 	{
-		string inStr;
 		getline(cin, inStr);
-		if (Load.isBool()) // Булев тип
+		Var.Clear(); // Очистить предыдущее значение
+		if (MK == 92 && Load.Point != nullptr) // Выдать МК
 		{
-			// Проверка формата
-			// Сообщерние об ошибке
-			bool t=0;
-			// Преобразование текста в переменную
-			Load.Write(t); // Запись резульатата распознания введенной строки
+			// Опеределяем тип введенных данных
+			// Преобразуем в соответсвующий тип и записываем в Var
+			// Var={Тип, new Соотвествующий тип данных} Типы данных Cbool, Cint, Cchar, Cdouble, Cstring, CLoadVect
+			  // Регулятка - определить тип Var={Cbool, new bool(true)}
+			MkExec(Load, Var);
+			break;
 		}
-		else if (Load.isInt()) // Целый тип
-		{
+		// ---
 
-		}
-		else if (Load.isFloatDouble()) // Дробный тип
+		if (MK == 90 && Load.Point!=nullptr)
 		{
+			if (Load.isBool()) // Булев тип
+			{
+				// Проверка формата
+				// Сообщерние об ошибке
+				// Преобразование текста в переменную
+				Load.WriteFromLoad(Var); // Запись резульатата распознания введенной строки
+			}
+			else if (Load.isInt()) // Целый тип
+			{
+
+			}
+			else if (Load.isFloatDouble()) // Дробный тип
+			{
+			}
+			else if (Load.isChar())   //
+			{
+			}
+			else if (Load.isStr())    //
+			{
+			}
+			else if (Load.isVector()) //
+			{
+			}
+			else
+			{
+				ProgExec(WrongFormatProg); // Сообщение о неправильном формате данных
+				break;
+			}
+			break;
 		}
-		else if (Load.isChar())   //
+		// Выдать по списку заранее установленных адресов и МК в VarOutBuf
+		for (auto i : VarOutBuf)
 		{
+			// Выдача результата ввода на VarOutBuf
 		}
-		else if (Load.isStr())    //
-		{
-		}
-		else if (Load.isVector()) //
-		{
-		}
-		else
-			ProgExec(WrongFormatProg); // Сообщение о неправильном формате данных
 		break;
 	}
-	case 92: // InputMk Вввод данных и выдача Мк с ними (тип введенных данных определяется автоматически)
-		// Автоматическое распознание типа
-	{
-		int t = 0;
-		MkExec(Load, { Cint, &t });
+	case 95: // TrueFalseClear Очистить буфер наименований true и false
+		False.clear();
 		break;
-	}
+	case 96: // TrueAdd
+		True.insert(Load.toStr());
+		break;
+	case 97: // FalseAdd
+		False.insert(Load.toStr());
+		break;
+
 	case 200: // NoVarToOutProgSet Установить подрограмму реакции на ошибку "Нет переменной для ввода"
 		NoVarToOutProg = Load.Point;
 		break;

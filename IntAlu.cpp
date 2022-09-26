@@ -19,6 +19,15 @@ void IntAlu::ProgFU(int MK, LoadPoint Load)
 		if (!Load.isInt()) ProgExec(NoIntTypeErrProg);
 		if (!Load.isIntBool()) ProgExec(NoBoolIntTypeErrProg);
 		break;
+	case 2: // AccumREfOut Выдать ссылку на аккумулятор
+		{
+			LoadPoint t = { Tint, &Accum };
+			Load.Write(t);
+		}
+		break;
+	case 3: // AccumREfOutMk Выдать МК со ссылкой на аккумулятор
+		MkExec(Load,{Cint, &Accum});
+		break;
 	case 5: // Push Положить значенпие аккумулятора. Если нагрузка nil, то в аккумуляторе остается прежнее значение
 		Stack.push_back(*AccumUk);
      	*AccumUk = Load.toInt(0);
@@ -38,7 +47,7 @@ void IntAlu::ProgFU(int MK, LoadPoint Load)
 		*AccumUk += AutoInc;
 		break;
 	case 21: //OutMk
-		MkExec(Load, { Tint, AccumUk });
+		MkExec(Load, { Cint, AccumUk });
 		*AccumUk += AutoInc;
 		break;
 	case 25: // AutoIncSet Установить значение автоматического инкремента при операции считывания значения

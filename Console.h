@@ -4,6 +4,13 @@
 #include <fstream>
 #include <string>
 #include <map>
+
+class MkRef { // Парочка Мк и ссылка для записи результата
+public:
+	int Mk = -1;
+	LoadPoint Ref = {0,nullptr};
+};
+
 class Console : public FU
 {
 private:
@@ -16,15 +23,17 @@ private:
 	string Sep = " ", VectSep=",", End = "\n"; // Строка-разделитель и строка в конце вывода
 	string FloatPoint = "."; // Разделитель дробной части
 	string ArrayBracketStart = "[", ArrayBracketFin = "]"; // Начальная и конечная скобки для вывода вектора
-	vector<LoadPoint>VarBuf; // Буфер переменных
-	vector<int>MkOutBuf; // Буфер МК для выдачи результатов
-	LoadPoint NewVar = { 0,nullptr }; // Указатель на новую переменную
 	vector<string> TrueVar = { "true","True" }; // Вектор значений "правда"
 	vector<string> FalseVar = { "false","False" }; // Вектор значений "ложь"
 //	vector<LoadPoint> *NewVect; // Указатель на вектор
 	void* NoVarToOutProg = nullptr; // Подрограммы реакции на ошибку "Нет переменной для вывода"
 	void* WrongFormatProg = nullptr; // Подрограммы реакции на ошибку "Неправильный формат"
 	void* WrongVectFormatProg = nullptr; // Подрограммы реакции на ошибку "Неправильный формат"
+	LoadPoint Var = {0,nullptr};
+	void* WrongInterFormat = nullptr; // Подпрограмма обработки ошибки 'Неправильный формат введенных данных'
+	vector<MkRef> VarOutBuf; // Вектора Мк и указателей для вывода результата
+	set<string> True = { "true", "True" }, False = {"false", "False"}; // Множество значений true false
+	string inStr; // Последняя введенная строка
 public:
 	void ProgFU(int MK, LoadPoint Load) override;
 	Console(FU* BusContext, FU* Templ) : FU(BusContext) { Bus = BusContext; FUtype = 1; };
