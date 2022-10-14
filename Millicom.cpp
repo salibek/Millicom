@@ -83,9 +83,10 @@ int main()
 //	string STR = "OAGraphOut.ind";
 //	string STR = "MultyList.ind";
 //	string STR = "CompLab.ind";
-	string STR = "AlU_test.ind";
+//	string STR = "AlU_test.ind";
 //	string STR = "TabTest.ind";
 //	string STR = "LexTest.ind"; // Имя запускного файла
+	string STR = "ConsTest.ind";
 
 	Bus.ProgFU(10, {Cstring, &STR}); //Запуск индексного файла
 

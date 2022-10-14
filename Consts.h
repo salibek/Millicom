@@ -57,6 +57,8 @@ const int YesContinueMk = 969, NoContinueMk = 970;
 const int ProgExecMk = 990; // МК выполнения программы
 bool isIPinIC(void* iP, void* iC); //проверка, что ИК входит в ИП
 
+class FU;
+
 class LoadPoint
 {
 	void VectorPrint(unsigned int Type, void* P, map<int, string > AtrMnemo, string offset, string Sep, string End, string ArrayBracketStart, string ArrayBracketFin); // Печать вектора
@@ -125,7 +127,9 @@ public:
 	static LoadPoint TypeMinimizeOut(double x, bool var = false); // Минимизировать тип (возвращается LoadPoint), т.е. было целое число - возвращается int и т.д.
 	static unsigned int  TypeMinimize(double x); // Минимизировать тип, т.е. было целое число - возвращается int и т.д.
 
-	void Write(void* x) { Point = x; };
+	int Write(void* x) { Point = x; return 0; };
+	int Write(FU* x) { if (Type == TFU) Point = x; else return 1; return 0;}; // Ссылка на контекст ФУ
+
 	void WriteVar(LoadPoint x) { Point = x.Point; Type = x.Type; Type |= 1; Type--; }; //Записать ссылку и сделать ее переменной
 	void WriteConst(LoadPoint x) {Point = x.Point; Type = x.Type; Type |= 1;}; // Записать ссылку и сделать ее константой
 	vector<LoadPoint>* LoadVect() { return (vector<LoadPoint>*)Point; }; // Вернуть ссылку на вектор нагрузок
@@ -304,7 +308,7 @@ bool LoadCmp(LoadPoint x, LoadPoint y); // Сравнение двух нагрузок ИП
 bool IPCmp(ip* x, ip* y); // Сравнение двух  ИП
 vector<ip>::iterator IPSearch(void* ic, ip IP); // Поиск ИП в ИК (возвращается указатель на персую найденную ИП
 vector<ip>::iterator IPSearch(void* ic, LoadPoint IP); // Поиск ИП в ИК (возвращается указатель на персую найденную ИП
-void AtrProgExec(vector<ip>* Prog, int Atr, FU* Bus=nullptr, bool AfterContinue = false); // Найти в ИК ИП с атрибутом Atr и выполнить программу либо по адр. в нагрузке, либо после найденной ИП
+bool AtrProgExec(vector<ip>* Prog, int Atr, FU* Bus=nullptr, bool AfterContinue = false); // Найти в ИК ИП с атрибутом Atr и выполнить программу либо по адр. в нагрузке, либо после найденной ИП
 //void AddOrReplIPAtr(vector<ip>* UK, ip* IP); // 
 ip* AtrFind(void* IC, int Atr); // Поиск в ИК ИП с заданным атрибутом. На выходе указатель на ИП или NULLL
 bool AtrSearch(void* uk, int Atr); // Поиск атриубута в ИК

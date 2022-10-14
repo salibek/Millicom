@@ -1,38 +1,40 @@
 #pragma once
-#include "Consts.h"
 #include <map>
+#include "Consts.h"
+#include "ALU.h"
+
 
 class AutomatManager : public FU
 {
 private:
-	bool TemplAutoClear = true; // Флаг автоматического сброса шаблона поиска при установке МК для получателя нового сигнала
-	int ReceiverMk = -1; // МК для текущего ФУ-состояния
-	void* Template = nullptr;// Ссылка на эталонную ИК ic *
-	void* Var = nullptr; // Ссылка на ИК переменных ic *
-	ip IPout = { 0, {0,new double(0)} };// ИП сигнала(сигнал и его атрибут) ip
-	ip IPoutPrev = { 0, {0,new double(0)} };// ИП предыдущего сигнала(сигнал и его атрибут) ip
-	map<int, void*> StageInProg; // Программы на состояниях автомата (запуск программы по атрибуту для receiver-а)
-	map<int, void*> StageOutProg; // Программы на состояниях автомата (запуск программы по атрибуту для receiver-а)
-	int StageProgMk = -1; // МК для установки программы для состояния
+	bool TemplAutoClear = true;  // С„Р»Р°Рі Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєРѕРіРѕРі СЃР±СЂРѕСЃР° С€Р°Р±Р»РѕРЅР° РїРѕРёСЃРєР° РїСЂРё СѓСЃС‚Р°РЅРѕРІРєРµ РњРљ РґР»СЏ РїРѕР»СѓС‡Р°С‚РµР»СЏ
+	int ReceiverMk = -1;  // РњРљ РґР»СЏ С‚РµРєСѓС‰РµРіРѕ Р¤РЈ-СЃРѕСЃС‚РѕСЏРЅРёСЏ
+	void *Receiver = nullptr;  // РЈРєР°Р·Р°С‚РµР»СЊ РґР»СЏ С‚РµРєСѓС‰РµРіРѕ Р¤РЈ-СЃРѕСЃС‚РѕСЏРЅРёСЏ
+	IC_type Template = nullptr;  // СЃСЃС‹Р»РєР° РЅР° СЌС‚Р°Р»РѕРЅРЅСѓСЋ РРљ ic*
+	vector<ip> Var;  // РРљ РїРµСЂРµРјРµРЅРЅС‹С… ic*
+	ip IPout = { 0, {0,new double(0)} };  // РРџ СЃРёРіСЂР°Р»Р° (СЃРёРіРЅР°Р» Рё РµРіРѕ Р°С‚СЂРёР±СѓС‚) ip
+	ip IPoutPrev = { 0, {0,new double(0)} };  // РРџ РїСЂРµРґС‹РґСѓС‰РµРіРѕ СЃРёРіРЅР°Р»Р° (СЃРёРіРЅР°Р» Рё РµРіРѕ Р°С‚СЂРёР±СѓС‚) ip
+	map<int, void*> StageInProg;  // РїСЂРѕРіСЂР°РјРјС‹ РЅР° СЃРѕСЃС‚РѕСЏРЅРёС… Р°РІС‚РѕРјР°С‚Р° (Р·Р°РїСѓСЃРє РїСЂРѕРіСЂР°РјРјС‹ РїРѕ Р°С‚СЂРёР±СѓС‚Сѓ РґР»СЏ reciever-a)
+	map<int, void*> StageOutProg;  // РїСЂРѕРіСЂР°РјРјС‹ РЅР° СЃРѕСЃС‚РѕСЏРЅРёС… Р°РІС‚РѕРјР°С‚Р° (Р·Р°РїСѓСЃРє РїСЂРѕРіСЂР°РјРјС‹ РїРѕ Р°С‚СЂРёР±СѓС‚Сѓ РґР»СЏ reciever-a)
+	int StageProgMk = -1;  // РњРљ РґР»СЏ СѓСЃС‚Р°РЅРѕРІРєРё РїСЂРѕРіСЂР°РјРјС‹ РґР»СЏ СЃРѕСЃС‚РѕСЏРЅРёСЏ
 public:
 	void ProgFU(int MK, LoadPoint Load) override;
-	AutomatManager(FU* BusContext, FU* Templ) : FU(BusContext) { Bus = BusContext; FUtype = 9; ProgFU(0, { 0,0 }); };
+	AutomatManager(FU* BusContext, FU* Templ) : FU(BusContext) { Bus = BusContext; ProgFU(0, { 0,0 }); };
 	AutomatManager() : FU() { Bus = nullptr; };
 };
-
 
 class border
 {
 public:
 	FU Parent = nullptr;
-	bool Start = true; // Флаг стартового состояния
+	bool Start = true;  // С„Р»Р°Рі СЃС‚Р°СЂС‚РѕРІРѕРіРѕ СЃРѕСЃС‚РѕСЏРЅРёСЏ
 	double OldVal = 0;
 	vector<double> borders;
 	vector<void*> UpProg;
 	vector<void*> DownProg;
 	void Run(LoadPoint Load);
 	void Reset() { Start = true; borders.clear(); UpProg.clear(); DownProg.clear(); };
-	int* MK; // Ссылка на МК для потребителя
+	int* MK;  // СЃСЃС‹Р»РєР° РЅР° РњРљ РґР»СЏ РїРѕС‚СЂРµР±РёС‚РµР»СЏ
 	border(FU Pr) { Parent = Pr; };
 	border() { Parent = nullptr; };
 };
@@ -40,34 +42,43 @@ public:
 class Channel
 {
 public:
-	string Name; //Имя канала
-	int Ind = -1; // индекс канала
-	int Mode = 0; // Режим работы ФУ: 0 - вход, 1 - выход, 2 - дуплекс ...
-	// Входная функция преобразования сигнала???
-	// Выходная функция преобразования сигнала???
-	int Atr = 0, Mk = -1; // Атрибут и МК для выходного сигнала
-	double Tact = 0; // Период опроса
-	double PrevSignal = 0, Signal = 0; // Предыдущий и текущий сигнал (лучше очередь значений)
-	double Sensit = 0; // Чувствительность
-	border Border; // Границы
-	bool Active = true;
-	ip OutIP;
-	int* CurrentCh = nullptr;// Ссылка на канал, к которому пришли данные
-	FU Parent=nullptr;
-	Channel(FU Pr) { Parent = Pr;};
+    Channel(FU* Pr) { ParentFU = Pr; };
+	FU* Parent = nullptr;
+	string Name;  // РёРјСЏ РєР°РЅР°Р»Р°
+    int* CurrentCh = nullptr;  // СЃСЃС‹Р»РєР° РЅР° РєР°РЅР°Р», Рє РєРѕС‚РѕСЂРѕРјСѓ РїСЂРёС€Р»Рё РґР°РЅРЅС‹Рµ
+    int SignalOutMk = -1;  // РњРљ РІС‹С…РѕРґРЅРѕРіРѕ СЃРёРіРЅР°Р»Р° (РґР»СЏ РјРѕРґРµР»РёСЂРѕРІР°РЅРёСЏ)
+    int SignalOutAttr = 0;  // Р°С‚СЂРёР±СѓС‚ РІС‹С…РѕРґРЅРѕРіРѕ СЃРёРіРЅР°Р»Р° (РґР»СЏ РјРѕРґРµР»РёСЂРѕРІР°РЅРёСЏ)
+	int Ind = -1;  // РёРЅРµРґРµРєСЃ РєР°РЅР°Р»Р°
+	int Mode = 0;  // СЂРµР¶РёРј (РІС…РѕРґ/РІС‹С…РѕРґ/РґСѓРїР»РµРєСЃ)
+    bool Active = true;  // Р°РєС‚РёРІ/РЅРµР°РєС‚РёРІ РѕС‚РґРµР»СЊРЅРѕРіРѕ РєР°РЅР°Р»Р°
+	double Tact = 0;  // РїРµСЂРёРѕРґ РІС‹РґР°С‡Рё СЃРёРіРЅР°Р»Р° (РґР»СЏ С†РёС„СЂРѕРІС‹С… СЃРёРіРЅР°Р»РѕРІ РёР»Рё РёРјРїСѓР»СЊСЃРѕРІ)
+    double Period = 0;  // РїРµСЂРёРѕРґ РѕРїСЂРѕСЃР°
+	double Signal = 0;  // С‚РµРєСѓС‰РµРµ Р·РЅР°С‡РµРЅРёРµ СЃРёРіРЅР°Р»Р°
+	double Sensit = 0;  // С‡СѓРІСЃС‚РІРёС‚РµР»СЊРЅРѕСЃС‚СЊ
+    border* Borders=nullptr;  // С‚Р°Р±Р»РёС†Р° Р·РѕРЅ СЃРёРіРЅР°Р»Р°
+//    ip OutIP;  // 
+    FU* ParentFU = nullptr;  // СЃСЃС‹Р»РєР° РЅР° Р¤РЈ РІРІРѕРґР°-РІС‹РІРѕРґР°
+    FU* Archiver = nullptr;  // СЃСЃС‹Р»РєР° РЅР° Р¤РЈ-Р°СЂС…РёРІР°С‚РѕСЂ
+    ALU* ParentALU = nullptr;  // СЃСЃС‹Р»РєР° РЅР° РђР›РЈ (РјРЅРѕР¶РµСЃС‚РІРѕ РђР›РЈ)
+    vector<void*> ALUs;  // СЃС‚РµРє СЃС‚Р°РЅРґР°СЂС‚РЅС‹С… С„СѓРЅРєС†РёР№ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ СЃРёРіРЅР°Р»Р°
+    vector<int> InMks;  // Р±СѓС„РµСЂ РњРљ РґР»СЏ РІС…РѕРґРЅРѕРіРѕ СЃРёРіРЅР°Р»Р°
+    vector<LoadPoint> InAdrBuf;  // Р±СѓС„РµСЂ Р°РґСЂРµСЃРѕРІ РґР»СЏ РІС…РѕРґРЅРѕРіРѕ СЃРёРіРЅР°Р»Р°
+    vector<double> PrevSignals;  // Р±СѓС„РµСЂ РїСЂРµРґС‹РґСѓС‰РёС… Р·РЅР°С‡РµРЅРёР№ СЃРёРіРЅР°Р»Р°
+    void* InProg = nullptr;  // СЃСЃС‹Р»РєР° РЅР° РїСЂРѕРіСЂР°РјРјСѓ РѕР±СЂР°Р±РѕС‚РєРё РІС…РѕРґРЅРѕРіРѕ СЃРёРіРЅР°Р»Р°
+    void* OutProg = nullptr;  // СЃСЃС‹Р»РєР° РЅР° РїСЂРѕРіСЂР°РјРјСѓ РѕР±СЂР°Р±РѕС‚РєРё РІС‹С…РѕРґРЅРѕРіРѕ СЃРёРіРЅР°Р»Р°
 };
 
 class InOut : public FU
 {
 private:
 	string prefix;
-	vector <Channel*> Channels; // Вектор каналов
-	int Ind = -1; // Номер текущего канала
-	int AutoInc = 0; // Автоинкремент
-//	int Nch = 0; // Количество каналов
+	vector <Channel*> Channels;  // РІРµРєС‚РѕСЂ РєР°РЅР°Р»РѕРІ
+	int Ind = -1;  // РЅРѕРјРµСЂ С‚РµРєСѓС‰РµРіРѕ РєР°РЅР°Р»Р°
+	int AutoInc = 0;  // Р°РІС‚РѕРёРЅРєСЂРµРјРµРЅС‚
+	int Nch = 0; // РєРѕР»РёС‡РµСЃС‚РІРѕ РєР°РЅР°Р»РѕРІ
 public:
-//	int CurrentCh = -1; // Номер текущего канала (т.е. канала, на который пришли данные)
+	int CurrentCh = -1;  // ??? РЅРѕРјРµСЂ С‚РµРєСѓС‰РµРіРѕ РєР°РЅР°Р»Р°, РЅР° РєРѕС‚РѕСЂС‹Р№ РїСЂРёС€Р»Рё РґР°РЅРЅС‹Рµ
 	void ProgFU(int MK, LoadPoint Load) override;
-	InOut(FU* BusContext, FU* Templ) : FU(BusContext) { Bus = BusContext; FUtype = 8; ProgFU(0, { 0,0 }); };
+	InOut(FU* BusContext, FU* Templ) : FU(BusContext) { Bus = BusContext; ProgFU(0, { 0,0 }); };
 	InOut() : FU() { Bus = nullptr; };
 };

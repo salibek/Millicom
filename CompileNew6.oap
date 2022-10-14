@@ -4326,6 +4326,8 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
   Obj={Mnemo="StdInFileSet" Mk=35 Hint="Установить префикс перед строкой"}
   Obj={Mnemo="AtrMnemoAdd" Mk=40 Hint="Добавить мнемоники атрибутов (на входе ИП или ИК)"}
   Obj={Mnemo="AtrMnemoClear" Mk=41 Hint="Очистить мнемоники атрибутов"}
+  Obj={Mnemo="Input" Mk=90 Hint="Ввод данных"}
+  Obj={Mnemo="InputMk" Mk=92 Hint="Ввод данных и выдача МК с ними"}
 
   Obj=CommonMkList
 }
@@ -4624,6 +4626,7 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
   Obj={Mk=502 Mnemo="LastEmptyExec" Hint="Выполнить подпрограмму, если последняя строка пустая"}
   Obj={Mk=503 Mnemo="LastFullExec" Hint="Выполнить подпрограмму, если последняя строка не пустая"}
 
+  Obj={Mk=23 Mnemo="CalcModeSet" Hint="Установить режим управления поиском с помощью арифметико-логичекого устройства (true по умолчанию)"}
   Obj={Mk=8 Mnemo="EmptyExec" Hint="Выполнить программу, если список пуст"}
   Obj={Mk=9 Mnemo="FullExec" Hint="Выполнить программу, если список не пуст"}
   Obj={Mk=14 Mnemo="OneLineExec" Hint="Выполнить программу, если в списке только одна линия"}
@@ -4642,8 +4645,13 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
   Obj={Mk=22 Mnemo="SubAtrDef" Hint="Установить атрибут подсписка по умолчанию"}
   Obj={Mk=25 Mnemo="ReceivedOut" Hint="Выдать входной объект для поиска"}
 
+  Obj={Mk=25 Mnemo="ReceivedOut" Hint="Выдать входной объект для поиска"}
+
   Obj={Mk=23 Mnemo="SuccessExec" Hint="Выполнить программу, если перед этим был удачный поиск"}
   Obj={Mk=24 Mnemo="FailExec" Hint="Выполнить программу, если перед этим был удачный поиск"}
+
+  Obj={Mk=26 Mnemo="CalcModeSet" Hint="Установить режим управления поиском с помощью арифметико-логичекого устройства (true по умолчанию)"}
+  Obj={Mk=27 Mnemo="CalcMkSet" Hint="Установить МК для вычисления АЛВ"}
 
   Obj={Mk=30 Mnemo="ReceivedOutMk" Hint="Выдать МК со входным объектом для поиска"}
   Obj={Mk=31 Mnemo="ReceivedCopyOut" Hint="Выдать копию входного объекта для поиска"}
@@ -4848,28 +4856,33 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
    {
 //	Obj={Mk= Mnemo="" Hint=""}
   	Obj={Mk=3 Mnemo="RecieverMKSet" Hint="Установить значение ресивера"}
-	Obj={Mk=5 Mnemo="StageInProgAdd" Hint="Добавить входную программу для состояния"}
-	Obj={Mk=6 Mnemo="StageOutProgAdd" Hint="Добавить выходную программу для состояния"}
-	Obj={Mk=7 Mnemo="StageInProgClear" Hint="Очистить список входных программ состояний"}
-	Obj={Mk=8 Mnemo="StageOutProgClear" Hint="Очистить список выходных программ состояний"}
+  	Obj={Mk=4 Mnemo="TemplAutoClearSet" Hint="Установить флаг автоматического сброса шаблона поиска при установке МК для получателя нового сигнала"}
+  	Obj={Mk=5 Mnemo="ReceiverSet" Hint="Установить ссылку на ФУ-приемника"}
+
+//	Obj={Mk=5 Mnemo="StageInProgAdd" Hint="Добавить входную программу для состояния"}
+//	Obj={Mk=6 Mnemo="StageOutProgAdd" Hint="Добавить выходную программу для состояния"}
+//	Obj={Mk=7 Mnemo="StageInProgClear" Hint="Очистить список входных программ состояний"}
+//	Obj={Mk=8 Mnemo="StageOutProgClear" Hint="Очистить список выходных программ состояний"}
   	Obj={Mk=10 Mnemo="TemplSet" Hint="Установить шаблон"}
   	Obj={Mk=11 Mnemo="TemplClear" Hint="Очистить ИК шаблона"}
-  	Obj={Mk=15 Mnemo="TemplOut" Hint="Выдать шаблон"}
-  	Obj={Mk=16 Mnemo="TemplOutMK" Hint="выдать МК со значением шаблона"}
-  	Obj={Mk=17 Mnemo="TemplClear" Hint="очистить шаблон"}
-	Obj={Mk=20 Mnemo="VarSet" Hint="установить значение ИК"}
-	Obj={Mk=21 Mnemo="VarOut" Hint="выдать ИК"}
-	Obj={Mk=22 Mnemo="VarOutMK" Hint="Выдать МК с ИК"}
-  	Obj={Mk=30 Mnemo="SignalOut" Hint="Выдать сигнал"}
-	Obj={Mk=31 Mnemo="SignalOutMK" Hint="Выдать мк со значением сигнала"}	
-	Obj={Mk=33 Mnemo="SignalAtrOut" Hint="выдать атрибут сигнала"}
-	Obj={Mk=34 Mnemo="SignalAtrOutMK" Hint="Выдать МК со значением атрибута сигнала"}
-	Obj={Mk=35 Mnemo="SignalLoadOut" Hint="Выдать нагрузку сигнала"}
-	Obj={Mk=36 Mnemo="SignalLoadOutMK" Hint="Выдать мк со значением нагрузки сигнала"}
-	Obj={Mk=37 Mnemo="SignalAtrSet" Hint="Установить атрибут сигнала"}
-	Obj={Mk=38 Mnemo="SignalLoadSet" Hint="Установить нагрузку сигнала"}
-	Obj={Mk=50 Mnemo="SignalSet" Hint="Установить сигнал"}
-	Obj={Mk=51 Mnemo="Send" Hint="Отправить ИП"}
+  	Obj={Mk=12 Mnemo="TemplOut" Hint="Выдать шаблон"}
+  	Obj={Mk=13 Mnemo="TemplOutMk" Hint="Выдать МК с указателем на шаблон ИК"}
+  	Obj={Mk=20 Mnemo="SignalSet" Hint="Установить сигнал"}
+
+//  	Obj={Mk=17 Mnemo="TemplClear" Hint="очистить шаблон"}
+//	Obj={Mk=20 Mnemo="VarSet" Hint="установить значение ИК"}
+//	Obj={Mk=21 Mnemo="VarOut" Hint="выдать ИК"}
+//	Obj={Mk=22 Mnemo="VarOutMK" Hint="Выдать МК с ИК"}
+//  	Obj={Mk=30 Mnemo="SignalOut" Hint="Выдать сигнал"}
+//	Obj={Mk=31 Mnemo="SignalOutMk" Hint="Выдать мк со значением сигнала"}	
+//	Obj={Mk=33 Mnemo="SignalAtrOut" Hint="выдать атрибут сигнала"}
+//	Obj={Mk=34 Mnemo="SignalAtrOutMk" Hint="Выдать МК со значением атрибута сигнала"}
+//	Obj={Mk=35 Mnemo="SignalLoadOut" Hint="Выдать нагрузку сигнала"}
+//	Obj={Mk=36 Mnemo="SignalLoadOutMk" Hint="Выдать мк со значением нагрузки сигнала"}
+//	Obj={Mk=37 Mnemo="SignalAtrSet" Hint="Установить атрибут сигнала"}
+//	Obj={Mk=38 Mnemo="SignalLoadSet" Hint="Установить нагрузку сигнала"}
+//	Obj={Mk=50 Mnemo="SignalSet" Hint="Установить сигнал"}
+//	Obj={Mk=51 Mnemo="Send" Hint="Отправить ИП"}
 	
      Obj=CommonMkList
   }
@@ -5064,11 +5077,9 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
   	Obj={Mk=16 Mnemo="Pop" Hint="Выдать значение аккумулятора и удалить аккмумулятор"}
   	Obj={Mk=17 Mnemo="PopMk" Hint="Выдать МК со значением аккумулятора и удалить аккмумулятор"}
 
-  	Obj={Mk=10 Mnemo="OutMkAdd" Hint="Добавить адрес для выдачи результата вычисления"}
-  	Obj={Mk=11 Mnemo="OutMkClear" Hint="Очистить буфер МК для выдачи результата"}
+  	Obj={Mk=10 Mnemo="OutMkAdrClear" Hint="Очистить буфер МК и адресов для выдачи результата"}
+  	Obj={Mk=11 Mnemo="OutMkAdd" Hint="Добавить адрес для выдачи результата вычисления"}
   	Obj={Mk=12 Mnemo="OutAdrAdd" Hint="Добавить адрес для выдачи результатов"}
-  	Obj={Mk=14 Mnemo="OutAdrSet" Hint="Очислить буфер адресов для записи выходного результата и установить адрес"}
-  	Obj={Mk=13 Mnemo="OutAdrClear" Hint="Очислить буфер адресов для записи выходного результата"}
 
   Obj={Mnemo="ErrProg" Hint="Установка программ обработки ошибок" Comment
   	Obj={Mk=20 Mnemo="ErrProgSet" Hint="Программа обработки ошибки любого типа"}
@@ -5153,7 +5164,6 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
   Obj={Mnemo="Vector opetarins" Hint="Операции с векторами" Comment
   	Obj={Mk=198 Mnemo="SumVect" Hint="Поэлементное векторное +"}
   	Obj={Mk=199 Mnemo="MulVect" Hint="Поэлементное векторное -"}
-
      }
 
       Obj=CommonMkList
@@ -5183,18 +5193,23 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 	 	Obj={Mk=302 Mnemo="NeighbourMk_1_Set" Hint="Выдать значение, полученное от 2-го соседа"}
 		
 	 }
-	 Obj={Mnemo="Set" Hint="Установка параметра" Comment
+	 Obj={Mnemo="Neighbour" Hint="Работа с параметрами автомата" Comment
+	 	Obj={Mk=301 Mnemo="NeighbourMk_1_Set" Hint="Выдать значение, полученное от 1-го соседа"}
+	 	Obj={Mk=302 Mnemo="NeighbourMk_1_Set" Hint="Выдать значение, полученное от 2-го соседа"}
+		
+	 }
+	 Obj={Mnemo="ParametrSet" Hint="Установка параметра" Comment
 	 	Obj={Mk=401 Mnemo="Parametr_1_Set" Hint="Установить 1-й параметр"}
 	 	Obj={Mk=402 Mnemo="Parametr_2_Set" Hint="Установить 2-й параметр"}
 
 	}
-	Obj={Mnemo="Out" Hint="Выдача параметра" Comment
-	 	Obj={Mk=501 Mnemo="Parametr_1_Set" Hint="Выдать 1-й параметр"}
-	 	Obj={Mk=502 Mnemo="Parametr_2_Set" Hint="Выдать 2-й параметр"}
+	Obj={Mnemo="ParametrOut" Hint="Выдача параметра" Comment
+	 	Obj={Mk=501 Mnemo="Parametr_1_Out" Hint="Выдать 1-й параметр"}
+	 	Obj={Mk=502 Mnemo="Parametr_2_Out" Hint="Выдать 2-й параметр"}
 	}
-	Obj={Mnemo="OutMk" Hint="Выдача МК с параметром" Comment
-	 	Obj={Mk=601 Mnemo="Parametr_1_Set" Hint="Выдать МК с 1-м параметром"}
-	 	Obj={Mk=602 Mnemo="Parametr_2_Set" Hint="Установить со 2-м параметром"}
+	Obj={Mnemo="ParametrOutMk" Hint="Выдача МК с параметром" Comment
+	 	Obj={Mk=601 Mnemo="Parametr_1_OutMk" Hint="Выдать МК с 1-м параметром"}
+	 	Obj={Mk=602 Mnemo="Parametr_2_OutMk" Hint="Установить со 2-м параметром"}
 	}
 
 	 Obj={Mnemo="Result" Hint="Выдача результатов расчета" Comment

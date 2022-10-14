@@ -34,6 +34,7 @@ private:
 	vector<MkRef> VarOutBuf; // Вектора Мк и указателей для вывода результата
 	set<string> True = { "true", "True" }, False = {"false", "False"}; // Множество значений true false
 	string inStr; // Последняя введенная строка
+	void* InputFormatErrProg = nullptr; // Программа ошибки формата входных данных
 public:
 	void ProgFU(int MK, LoadPoint Load) override;
 	Console(FU* BusContext, FU* Templ) : FU(BusContext) { Bus = BusContext; FUtype = 1; };

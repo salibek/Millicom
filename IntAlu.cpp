@@ -29,19 +29,28 @@ void IntAlu::ProgFU(int MK, LoadPoint Load)
 		MkExec(Load,{Cint, &Accum});
 		break;
 	case 5: // Push Положить значенпие аккумулятора. Если нагрузка nil, то в аккумуляторе остается прежнее значение
-		Stack.push_back(*AccumUk);
+		Stack.push_back({ AccumUk,Accum, AutoInc, Fin });
      	*AccumUk = Load.toInt(0);
 
 	case 8: // Pop Вытолкнуть значение аккумулятора
 		Load.Write(*AccumUk);
-		*AccumUk = Stack.back();
+		AccumUk = Stack.back().AccumUk;
+		Accum = Stack.back().Accum;
+		AutoInc = Stack.back().AutoInc;
+		Fin = Stack.back().Fin;
 		Stack.pop_back();
 		break;
 	case 9: // PopMk Вытолкнуть значение аккумулятора
-		MkExec(Load, { Tint, AccumUk });
-		*AccumUk = Stack.back();
+	{
+		auto t = AccumUk;
+		AccumUk = Stack.back().AccumUk;
+		Accum = Stack.back().Accum;
+		AutoInc = Stack.back().AutoInc;
+		Fin = Stack.back().Fin;
 		Stack.pop_back();
+		MkExec(Load, { Tint, t });
 		break;
+	}
 	case 20: // Out
 		Load.Write(*AccumUk);
 		*AccumUk += AutoInc;
@@ -52,6 +61,24 @@ void IntAlu::ProgFU(int MK, LoadPoint Load)
 		break;
 	case 25: // AutoIncSet Установить значение автоматического инкремента при операции считывания значения
 		AutoInc = Load.toInt();
+		break;
+	case 27: // For Выполнить цикл с началом в аккумуляторе, шагом Autoinc и концом последовательностьи, заданным значением из аккумулятора, тело цикла в prog
+		Fin = Load.toInt();
+		if (AutoInc > 0)
+			for (; *AccumUk < Fin; *AccumUk += AutoInc)
+				ProgExec(Prog);
+		else
+			for (; *AccumUk > Fin; *AccumUk += AutoInc)
+				ProgExec(Prog);
+		break;
+	case 28: // ForInclude Выполнить цикл с началом в аккумуляторе, шагом Autoinc и концом последовательности включительно, заданным значением из аккумулятора, тело цикла в prog
+		Fin = Load.toInt();
+		if (AutoInc > 0)
+			for (; *AccumUk <= Fin; *AccumUk += AutoInc)
+				ProgExec(Prog);
+		else
+			for (; *AccumUk >= Fin; *AccumUk += AutoInc)
+				ProgExec(Prog);
 		break;
 	case 30: // CounterExec Выполнить программу столько раз, сколько записано в аккумуляторе
 		if (Accum >= 0)

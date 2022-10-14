@@ -5,8 +5,6 @@
 #include <string>
 #include <fstream>
 #include <cstdio>
-#include <regex>
-
 
 void Console::ProgFU(int MK, LoadPoint Load)
 {
@@ -125,136 +123,71 @@ void Console::ProgFU(int MK, LoadPoint Load)
 	case 87: // InStrOutMk  Выдать МК с последней введенной строкой
 		MkExec(Load, {Cstring, &inStr});
 		break;
-	case 90: // TrueFalseClear Очистить буфер наименований true и false
-		False.clear();
-		break;
-	case 91: // TrueAdd
-		True.insert(Load.toStr());
-		break;
-	case 92: // FalseAdd
-		False.insert(Load.toStr());
-		break;
-	case 94: // InputErrProgSet Установить программу обработки ошибки неправильного формата входных данных
-		InputFormatErrProg = Load.Point;
-	case 100: // Input Ввод данных
-	case 101: // InputMk Ввод данных и выдача МК с ними
+	case 90: // Input Ввод данных
+//	case 91: // Input Ввод данных и запись их в переменную
+	case 92: // InputMk Ввод данных и выдача МК с ними
 	{
-		std::cmatch results;
-		regex regular_str("[\\D\\s]+");
-		regex regular_int("([\\d]+)");
-		regex regular_float("\\d+\\.\\d+");
-		regex regular_true("[Tt][Rr][Uu][Ee]");
-		regex regular_false("[Ff][Aa][Ll][Ss][Ee]");
-		regex regular_vector("^\\[(\\d+,?\\s?)+\\]$"); //интовый вектор
-		regex regular_matrix("^\\[(\\d+[,;]?\\s?)+\\]$"); //интовая матрица
-		regex regular_char("\\w{1}");
-
-
-
-
-
 		getline(cin, inStr);
 		Var.Clear(); // Очистить предыдущее значение
-	//	if (MK == 101 && Load.Point != nullptr) // Выдать МК
+		if (MK == 92 && Load.Point != nullptr) // Выдать МК
 		{
-			if (std::regex_match(inStr.c_str(), regular_float)) {
-
-
-				//cout << "its float";
-				double res = stof(inStr);
-				Var = { Cdouble,new double(res) };
-			}
-			else  if (std::regex_match(inStr.c_str(), regular_int)) {
-
-				//cout << "its int";
-				int res = stoi(inStr);
-				Var = { Cint,new int(res) };
-			}
-			else if (std::regex_match(inStr.c_str(), regular_true)) {
-
-				Var = { Cbool, new bool(true) };
-
-			}
-			else if (std::regex_match(inStr.c_str(), regular_false)) {
-
-				Var = { Cbool, new bool(false) };
-
-			}
-			else if (std::regex_match(inStr.c_str(), regular_char)) {
-
-				//cout << "its char";
-				char res;
-				res = inStr[0];
-				Var = { Cchar,new char(res) };
-			}
-			else if (std::regex_match(inStr.c_str(), regular_str)) {
-
-				///cout << "its string";
-				Var = { Cstring,new string(inStr) };
-			}
-			else if (std::regex_match(inStr.c_str(), regular_vector)) {
-
-				int res;
-				int counter = -1;
-				int* intbufArray = new int[256];
-				vector<LoadPoint> Ar;
-				int i = 0;
-				for (sregex_iterator it = sregex_iterator(inStr.begin(), inStr.end(), regular_int);
-					it != sregex_iterator(); it++) {
-					smatch match = *it;
-					counter++;
-					res = stoi(match.str(0));
-					intbufArray[i] = res;
-					i++;
-				}
-				int* intArray = new int[counter];
-
-				for (int i = 0; i < counter; i++) {
-					intArray[i] = intbufArray[i];
-				}
-				delete[] intbufArray;
-				//delete[] intArray;
-
-				Var = { CLoadVect, new int* (intArray) };
-			}
-			else if (std::regex_match(inStr.c_str(), regular_matrix)) {
-
-				cout << "its matrix";
-
-			}
-
 			// Опеределяем тип введенных данных
 			// Преобразуем в соответсвующий тип и записываем в Var
 			// Var={Тип, new Соотвествующий тип данных} Типы данных Cbool, Cint, Cchar, Cdouble, Cstring, CLoadVect
 			  // Регулятка - определить тип Var={Cbool, new bool(true)}
-			if (MK == 101) // Выдать МК
-				MkExec(Load, Var);
-			else // Записать в переменную
-				Load.WriteFromLoad(Var);
+			MkExec(Load, Var);
+			break;
+		}
+		// ---
+
+		if (MK == 90 && Load.Point!=nullptr)
+		{
+			if (Load.isBool()) // Булев тип
+			{
+				// Проверка формата
+				// Сообщерние об ошибке
+				// Преобразование текста в переменную
+				Load.WriteFromLoad(Var); // Запись резульатата распознания введенной строки
+			}
+			else if (Load.isInt()) // Целый тип
+			{
+
+			}
+			else if (Load.isFloatDouble()) // Дробный тип
+			{
+			}
+			else if (Load.isChar())   //
+			{
+			}
+			else if (Load.isStr())    //
+			{
+			}
+			else if (Load.isVector()) //
+			{
+			}
+			else
+			{
+				ProgExec(WrongFormatProg); // Сообщение о неправильном формате данных
+				break;
+			}
 			break;
 		}
 		// Выдать по списку заранее установленных адресов и МК в VarOutBuf
-//		for (auto& i : VarOutBuf)
-//		{
-//			// Выдача результата ввода на VarOutBuf
-//		}
+		for (auto i : VarOutBuf)
+		{
+			// Выдача результата ввода на VarOutBuf
+		}
 		break;
 	}
-	case 105: //InputBool Ввод буленова значения
-	case 106: //InputBoolMk Ввод буленова значения и выдача МК с ним
-	//	if(неправильный формат)
-		if(false)
-			ProgExec(InputFormatErrProg);
-		else
-			if (MK == 106) // Выдать МК
-				MkExec(Load, Var);
-			else // Записать в переменную
-				Load.WriteFromLoad(Var);
+	case 95: // TrueFalseClear Очистить буфер наименований true и false
+		False.clear();
 		break;
-	case 110: //InputInt
-	case 111: //InputIntMk
+	case 96: // TrueAdd
+		True.insert(Load.toStr());
 		break;
-// ......
+	case 97: // FalseAdd
+		False.insert(Load.toStr());
+		break;
 
 	case 200: // NoVarToOutProgSet Установить подрограмму реакции на ошибку "Нет переменной для ввода"
 		NoVarToOutProg = Load.Point;

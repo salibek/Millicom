@@ -20,7 +20,6 @@ bool LoadPoint::isIP() // Определить указывает ли ссылка на ИП
 	return IP_Types.count(Type >> 1);
 }
 
-
 string LoadPoint::toStr(string define) // Перевод в bool
 {
 	if (Point == nullptr)
@@ -1268,8 +1267,8 @@ void GraphDel(void* Uk, LocatTable* Table = nullptr) // Удаление ОА-графа
 
 
 
-// Найти в ИК ИП с атрибутом Atr и выполнить программу либо по адр. в нагрузке, либо после найденной ИП
-void AtrProgExec(vector<ip>* Prog, int Atr, FU* Bus, bool AfterContinue)
+// Найти в ИК ИП с атрибутом Atr и выполнить программу либо по адр. в нагрузке, либо после найденной ИП, если атрибут не найден, возвращается true
+bool AtrProgExec(vector<ip>* Prog, int Atr, FU* Bus, bool AfterContinue)
 {
 	auto i = Prog->begin();
 	for (; i != Prog->end() && i->atr != Atr; i++);
@@ -1279,7 +1278,9 @@ void AtrProgExec(vector<ip>* Prog, int Atr, FU* Bus, bool AfterContinue)
 			Bus->ProgExec((vector<ip> *)i->Load.Point);
 		if ((++i) != Prog->end() && AfterContinue)
 			Bus->ProgExec(Prog, 0, nullptr, &i);
+		return true;
 	}
+	return false;
 }
 
 ip* AtrFind(void* IC, int Atr) // Поиск в ИК ИП с заданным атрутом

@@ -48,6 +48,12 @@ void List::ProgFU(int MK, LoadPoint Load)
 	case 7: // MkModeSet Режим выполнения всех МК в ИК-шаблоне (МК-ой считается любой атрибут, индекс которого больше 0) При пустой нагрузке режим устанавливается
 		Searcher.MkMode = Load.toBool(true);
 		break;
+	case 26: // CalcModeSet Установить режим управления поиском с помощью арифметико-логичекого устройства (true по умолчанию)
+		Searcher.CalcMode = Load.toBool(true);
+		break;
+	case 27: // CalcMkSet Установить МК для вычисления АЛВ
+		Searcher._CalcMk=Load.toInt();
+		break;
 	case 8:// EmptyProgExec Выполнить программу, если список пуст
 	case 9:// FullExec Выполнить программу, если список не пуст
 	case 14: // OneLineExec Выполнить программу, если в списке только одна строка
@@ -918,7 +924,7 @@ void List::ProgFU(int MK, LoadPoint Load)
 		break;
 	case 401: // LineOut Выдать найденную линиию
 		if (LineUk == nullptr)
-			Load.Write(nullptr);
+			Load.Write((void*)nullptr);
 		else
 			Load.Write(LineUk->Load.Point);
 		break;

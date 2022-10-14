@@ -10,6 +10,8 @@ private:
 	void MkAtrExec();
 public:
 //	vector<ip>* Template; // Шаблон для поиска
+	int _CalcMk = CalcMk; // Атрибут вычисления АЛВ
+	bool CalcMode = false; // Режим вычисления предиката
 	LoadPoint Template={0, nullptr}; // Шаблон для поиска
 	LoadPoint Obj = { 0, nullptr }; //ИК для поиска
 	bool MkMode = true; //  Режим выполнения всех МК в ИК-шаблоне (МК-ой считается любой атрибут, индекс которого больше 0)

@@ -111,7 +111,6 @@ bool Search::FindOr(LoadPoint obj)
 				IPRezPoint = j._Ptr;
 				break;
 			}
-
 		}
 		if (j != ((vector<ip>*)(Obj.Point))->end() || i->atr == Prog_atr)
 			break;
@@ -124,12 +123,18 @@ bool Search::FindOr(LoadPoint obj)
 	}
 	else
 	{
-		Rez = true;
-		MainFU->ProgExec(SuccessProg);
-		AtrProgExec((IC_type)Template.Point, Prog_atr, MainFU->Bus, true);
-		MkAtrExec();
-		MainFU->ProgExec(SuccessAfterProg);
-		return true;
+		if (CalcMode)
+		{
+			
+		}
+		else {
+			Rez = true;
+			MainFU->ProgExec(SuccessProg);
+			AtrProgExec((IC_type)Template.Point, Prog_atr, MainFU->Bus, true);
+			MkAtrExec();
+			MainFU->ProgExec(SuccessAfterProg);
+			return true;
+		}
 	}
 }
 
