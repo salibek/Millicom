@@ -104,45 +104,60 @@ int LoadPoint::Write(vector<double> x) // Копирование вектора
 	if (Point == nullptr)
 		return 1;
 	if (Type == CdoubleArray)
+	{
 		*(vector<double>*)Point = x;
+	return 0;
+}
 	else
-		return 0;
+		return 1;
 }
 int LoadPoint::Write(vector<float> x) // Копирование вектора
 {
 	if (Point == nullptr)
 		return 1;
 	if (Type == CdoubleArray)
+	{
 		*(vector<float>*)Point = x;
-	else
 		return 0;
+	}
+	else
+		return 1;
 }
 int LoadPoint::Write(vector<bool> x) // Копирование вектора
 {
 	if (Point == nullptr)
 		return 1;
 	if (Type == CdoubleArray)
+	{
 		*(vector<bool>*)Point = x;
-	else
 		return 0;
+	}
+	else
+		return 1;
 }
 int LoadPoint::Write(vector<char> x) // Копирование вектора
 {
 	if (Point == nullptr)
 		return 1;
 	if (Type == CdoubleArray)
+	{
 		*(vector<char>*)Point = x;
-	else
 		return 0;
+	}
+	else
+		return 1;
 }
 int  LoadPoint::Write(vector<int> x) // Копирование вектора
 {
 	if (Point == nullptr)
 		return 1;
 	if (Type == CdoubleArray)
+	{
 		*(vector<int>*)Point = x;
-	else
 		return 0;
+	}
+	else
+		return 1;
 }
 // -----
 
@@ -872,12 +887,15 @@ void FU::CommonMk(int Mk, LoadPoint Load)
 	case 925: // AccumOutMk Выдать МК со значением аккумулятора
 		MkExec(Load,Accum);
 		break;
+	case FUIndSetMk: // 926 FUIndSet Установить индекс ФУ
+		FUInd = Load.toInt();
+		break;
 	case CalcMk: // 927 Calc вычислить АЛВ
 	case 929: // CalcContinue Вычислить АЛВ и продолжеть выполнение программы, если результат true
 	case 930: // CalcBreak Вычислить АЛВ и продолжеть выполнение программы, если результат false
 		if (Alu == nullptr)
 		{
-			Alu = new ALU(this->Bus);
+			Alu = (FU*)new ALU(this->Bus);
 			Accum = { Cdouble, &((ALU*)Alu)->accum };
 			AccumCreating = false;
 			ALUCreating = true;
@@ -936,14 +954,15 @@ void FU::CommonMk(int Mk, LoadPoint Load)
 		Prog = (IC_type)Load.Point;
 		ProgExec((vector<ip>*)Prog);
 		break;
-	case 995: //ContextOut Выдать указатель на контекст ФУ
-		if (Load.Type >> 1 == Dvoid || Load.Type >> 1 == DPPoint || Load.Type >> 1 == DFU)
-			Load.Point = this;
+	case ContextOutMk:  // 995 ContextOut Выдать указатель на контекст ФУ
+//		if (Load.Type >> 1 == Dvoid || Load.Type >> 1 == DPPoint || Load.Type >> 1 == DFU)
+//			Load.Point = this;
+		Load.Write((FU*)this);
 		break;
 	case 928: // ALUSet Установить ссылку на АЛУ
 		if (ALUCreating)
 			delete Alu;
-		Alu = Load.Point;
+		Alu = (FU*)Load.Point;
 		ALUCreating = false;
 		break;
 	case 998: //FUNameSet
@@ -956,7 +975,7 @@ void FU::CommonMk(int Mk, LoadPoint Load)
 		if (Load.Point != nullptr)
 			MkExec(Load.toInt(), { Cstring,&FUName });
 		break;
-	case 999: //ContextOutMK Выдать милликоманду с указателем на контекст ФУ
+	case ContextOutMkMk: // 999 ContextOutMK Выдать милликоманду с указателем на контекст ФУ
 		if (Load.Type >> 1 == Dint)
 			Bus->ProgFU(*(int*)Load.Point, { TFU, this });
 		break;
@@ -989,6 +1008,18 @@ void FU::ProgExec(void* UK, unsigned int CycleMode, FU* ProgBus, vector<ip>::ite
 				ProgBus->ProgFU(i->atr, i->Load); // Если диапазон МК не принадлежит ФУ (выдаем на Bus)
 			else // МК для данного ФУ
 			{
+				if (i->atr < 0) // Команда для FUALU
+				{
+					if (Alu == nullptr) // Если еще не создан АЛУ
+					{ // Создать АЛУ
+						Alu = (FU*)new ALU(Bus);
+						Alu->ProgFU(0,{0,nullptr});
+						((FU*)Alu)->Parent = this;
+						Accum = { Cdouble, &((ALU*)Alu)->accum };
+					}
+					Alu->ProgFU(-i->atr,i->Load);
+					continue;
+				}
 				if (i->atr == BreakAtr) { ProgStop = i->Load.toInt()-1; return; } // Прервать программу
 				if (i->atr == NextAtr)
 					if (!i->Load.toInt())
@@ -1017,7 +1048,7 @@ void FU::ProgExec(void* UK, unsigned int CycleMode, FU* ProgBus, vector<ip>::ite
 					{
 						if (Alu == nullptr)
 						{
-							Alu = new ALU(this);
+							Alu = (FU*)new ALU(this);
 							((FU*)Alu)->Bus = Bus;
 							ALUCreating = true;
 							AccumCreating = false;

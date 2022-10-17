@@ -86,7 +86,7 @@ int main()
 //	string STR = "AlU_test.ind";
 //	string STR = "TabTest.ind";
 //	string STR = "LexTest.ind"; // Имя запускного файла
-	string STR = "ConsTest.ind";
+	string STR = "Bag2.ind";
 
 	Bus.ProgFU(10, {Cstring, &STR}); //Запуск индексного файла
 

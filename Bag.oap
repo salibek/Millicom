@@ -1,59 +1,6 @@
-\\ Для создания индексного файла сначала надо запустить программу !!!!
-
- CapsManager.IndexVectCreate=20000
+ CapsManager.IndexVectCreate=60000
  CapsManager.IpIcIdOutMk=MainBus.IpIcIdSet
  CapsManager.IpIcIdOutMk=VariableManager.IpIcIdSet
  CapsManager.IpIcIdOutMk=ListSyntez.IpIcIdSet
  MainBus.ModeSet=1
 \\ -------------------------------------- \\
-MainBus.FUTypeCorrectSet=-96 // Корректировка номера типа ФУ для переноса на новую ОА-платформу
-
-NewFU={Mnemo="Bag" FUType=FUBag}
-NewFU={Mnemo="Console" FUType=FUConsNew}
-
-NewFU={Mnemo="Eventser" FUType=FUEventserNew}
-NewFU={Mnemo="Scheduler" FUType=FUSchedulerNew}
-NewFU={Mnemo="ALUG" FUType=FUALUG}
-
-MainBus.PartialResetSet \\ Запомнить число созданных ФУ
-MainBus.ModeSet=2
-// ---------------------
-
-Eventser.ContextOutMk=Scheduler.EventserSet
-Eventser.TimeOutRefMk=Scheduler.CurrTimeRefSet
-Scheduler.SchedulingTimeSet=0.1
-Scheduler.ContextOutMk=Bag.SchedulerSet
-Scheduler.NCoresSet=2
-Bag.CalcTimeSet=1
-Bag.SendTimeSet=0.2
-
-Bag.WMaxSet=200
-Bag.NItemSet=100
-Bag.PMaxOfItem=5
-Bag.WMaxOfItem=5
-
-//Bag.Start="Bag5.txt"
-
-Scheduler.NCoresSet=100
-
-Console.StdOutFileSet="BagRez.txt"
-
-ALUG.RangeProgExec=300=1=1={
-	Eventser.TimeSet=0
-	Scheduler.Clear
-	ALUG.OutMk=Console.Out Console.Out=" " ALUG.OutMk=Bag.WMaxSet=Bag.NItemSet
-
-	Bag.Start
-	
-//	Console.Out="Moleling time: "
-	Eventser.TimeOutMk=Console.Out Console.Out=" "
-	Scheduler.MaxMkQueueOutMk=Console.OutLn
-//	Console.Out="Parallel factor: "
-//	Scheduler.ParallelFactorOutMk=Console.OutLn
-//	Console.Out="Average Mk Queue: "
-//	Scheduler.AverageMkQueueOutMk=Console.OutLn
-//	Console.Out="Max Average Mk Queue: "
-//	Scheduler.MaxMkQueueOutMk=Console.OutLn
-}
-Bag.ResOutMk=Console.OutLn
-

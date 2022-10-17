@@ -40,9 +40,6 @@ const unsigned int DIPArray2 = 1007, DICArray2 = 1008, DPPointArray2 = 1009, DGr
 // Типы ФУ
 const int FUBus = 0, FUCons = 1, FUStrGen = 2, FULex = 3, FUList = 4, FUFind = 5;
 
-// Веса типов
-//const vector<int> w_type = { 10, 30, 40, 50, 60, 70, 20 };
-
 // Общие атрибуты
 const int ProgAtr = -100, Atr = -60, SubObj = -6, GotoAtr=-99;
 const int ListLine = -80, ListSub = -90; // Атрибуты линии списка и подсписка
@@ -55,6 +52,9 @@ const int BreakMk = 909, NextMk = 910; // МК прерывания программы и продолжения 
 const int RepeatMk=911; // Начать выполнение ИК заново
 const int YesContinueMk = 969, NoContinueMk = 970;
 const int ProgExecMk = 990; // МК выполнения программы
+const int FUIndSetMk = 933; // МК установки индекса ФУ
+const int ContextOutMkMk = 999; // МК выдачи МК с контекстом ФУ
+const int ContextOutMk = 995; // МК выдачи контекста ФУ
 bool isIPinIC(void* iP, void* iC); //проверка, что ИК входит в ИП
 
 class FU;
@@ -259,14 +259,16 @@ public:
 	bool Active = true;
 	LoadPoint Accum = { 0,nullptr }; // Указатель на аккумулятор
 	bool AccumCreating = false; // Флаг создания аккумулятора (аккумулятор создается при первой записи в него какого-либо значения)
-	void* Alu = nullptr; // Ссылка на АЛУ
+	FU* Alu = nullptr; // Ссылка на АЛУ
 	bool ALUCreating = false; // Флаг создания АЛУ
+	FU* Parent = nullptr; // Ссылка на родительский ФУ
+	int FUInd = -1; // Индекс ФУ
 
 	FUModeling *Modeling=nullptr; // Моделирование
 
 	FU() { Bus = nullptr; ProgFU(0, { 0,nullptr }); };
 	FU(FU* BusContext) { Bus = BusContext; ProgFU(0, { 0,nullptr }); };
-	~FU() { 
+	~FU() {
 		if (AccumCreating) Accum.Clear(); // Уничтожаем самостоятельно созданнный ФУ-ом аккумулятор
 		if (ALUCreating) delete Alu; // Уничтожаем самостоятельно созданнного АЛУ
 	};

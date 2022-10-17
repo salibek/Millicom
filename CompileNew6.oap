@@ -4326,8 +4326,12 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
   Obj={Mnemo="StdInFileSet" Mk=35 Hint="Установить префикс перед строкой"}
   Obj={Mnemo="AtrMnemoAdd" Mk=40 Hint="Добавить мнемоники атрибутов (на входе ИП или ИК)"}
   Obj={Mnemo="AtrMnemoClear" Mk=41 Hint="Очистить мнемоники атрибутов"}
-  Obj={Mnemo="Input" Mk=90 Hint="Ввод данных"}
-  Obj={Mnemo="InputMk" Mk=92 Hint="Ввод данных и выдача МК с ними"}
+  Obj={Mnemo="InputErrProgSet" Mk=94 Hint="Установить программу обработки ошибки неправильного формата входных данных"}
+
+  Obj={Mnemo="Input" Mk=100 Hint="Ввод данных"}
+  Obj={Mnemo="InputMk" Mk=101 Hint="Ввод данных и выдача МК с ними"}
+  Obj={Mnemo="InputBool" Mk=105 Hint="Ввод буленова значения"}
+  Obj={Mnemo="InputBoolMk" Mk=106 Hint="Ввод буленова значения и выдача МК с ним"}
 
   Obj=CommonMkList
 }
@@ -4722,6 +4726,8 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 	 Obj={Mk=20 Mnemo="Out" Hint="Выдать значение аккмумулятора"}
 	 Obj={Mk=21 Mnemo="OutMk" Hint="Выдать МК со значением аккумулятора"}
 	 Obj={Mk=25 Mnemo="AutoIncSet" Hint="Установить значение автоматического инкремента при операции считывания значения"}
+	 Obj={Mk=27 Mnemo="For" Hint="Выполнить цикл с началом в аккумуляторе, шагом Autoinc и концом последовательностьи, заданным значением из аккумулятора, тело цикла в prog"}
+	 Obj={Mk=28 Mnemo="ForInclude" Hint="ForInclude Выполнить цикл с началом в аккумуляторе, шагом Autoinc и концом последовательности включительно, заданным значением из аккумулятора, тело цикла в prog"}
       Obj={Mnemo="Programming" Hint="Программирование" Comment
 		Obj={Mk=50 Mnemo="NoCorrectTypeErrProgSet" Hint="Программа для ошибки записи некорректного (нечислового типа)"}
 		Obj={Mk=51 Mnemo="NoIntTypeErrProg" Hint="Программа для ошибки записи нецелого типа"}
@@ -5172,50 +5178,181 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 // CellularAutomat Клеточный автомат
      FuTypeIndexes.CellSet=114 FuTypeMkTrees.CellSet=
 	{
-	 Obj={Mk=700 Mnemo="N_NeighbourSet" Hint="Установить количество соседей"}
-	 Obj={Mk=701 Mnemo="N_PlySet" Hint="Установить количество слоев для расчета"}
+	 Obj={Mk=3  Mnemo="IndSet" Hint="Установить индекс"}
+	 Obj={Mk=3  Mnemo="IndAdd" Hint="Увеличить индекс на величину из нагрузки входящей ИП"}
+	 Obj={Mk=800 Mnemo="N_NeighbourSet" Hint="Установить количество соседей"}
+	 Obj={Mk=801 Mnemo="N_PlySet" Hint="Установить количество слоев для расчета"}
+	 Obj={Mk=805 Mnemo="RezSet" Hint="Установить результат вычислений (если PlyInd<0, устанавливается значение текущего слоя)"}
+	 Obj={Mk=806 Mnemo="RezOut" Hint="Выдать результат вычислений (если PlyInd<0, выдается значение результат расчета текущего слоя)"}
+	 Obj={Mk=807 Mnemo="RezOutMk" Hint="Выдать МК с результатом вычислений (если PlyInd<0, выдается значение результат расчета текущего слоя)"}
+	 Obj={Mk=808 Mnemo="PlyIndSet" Hint="Установить индекс слоя для расчета"}
+	 Obj={Mk=810 Mnemo="CollectorSet" Hint="Установить коллектор для сбора результатов"}
+	 Obj={Mk=820 Mnemo="FiringProgSet" Hint="Установить ссылку на программу вычисления результата при накоплении пакета данных"}
+	 Obj={Mk=825 Mnemo="ReceiveProgSet" Hint="Установить программу, запускаемую при приеме данных"}
+	 Obj={Mk=830 Mnemo="AutoSendSet" Hint="Установить флаг автоматической пересылки результатов вычисления"}
+	 Obj={Mk=853 Mnemo="ParameterAdd" Hint="Добавить новый параметр"}
+	 Obj={Mk=854 Mnemo="ParametersClear" Hint="Очистать список параметров"}
+	 Obj={Mk=863 Mnemo="FUIndSet" Hint="Очистать список параметров"}
+	 Obj={Mk=865 Mnemo="ManagerSet" Hint="Установить ссылку на менеджера автомата"}
+	 Obj={Mk=880 Mnemo="RezSendToAll" Hint="Выдать результат вычислений соседям"}
+	 Obj={Mk=885 Mnemo="PlyNSet" Hint="Установить количество слоев"}
+	 
+	 Obj={Mk=3  Mnemo="InOut" Hint="Выдать полученное от соседа значение по индексу"}
+	 Obj={Mk=4  Mnemo="InOutMk" Hint="Выдать соседу МК со значением от соседа по индексу"}
+	 Obj={Mk=5  Mnemo="NeighbourMkSet" Hint="Установить МК для соседа по индексу"}
+	 Obj={Mk=6  Mnemo="NeighbourSet" Hint="Установить ссылку на соседа по индексу"}
+	 Obj={Mk=7  Mnemo="ParametrSet" Hint="Установить параметр по индексу"}
+	 Obj={Mk=8  Mnemo="ParametrOut" Hint="Выдать МК с параметром по индексу"}
+	 Obj={Mk=9  Mnemo="ParametrOutMk" Hint="Установить ссылку на соседа по индексу"}
+	 Obj={Mk=10 Mnemo="ToNeighbourOutMk" Hint="Выдать значение для соседа с индексом по индексу"}
 
-	 Obj={Mnemo="Set" Hint="Приём данных от соседей" Comment
-	 	Obj={Mk=1 Mnemo="In_1_Set" Hint="Принять значение от 1-го соседа"}
-	 	Obj={Mk=2 Mnemo="In_2_Set" Hint="Принять значение от 2-го соседа"}
 
+
+
+	Obj={Mnemo="InSet" Hint="Выдача данных соседу" Comment
+	 	Obj={Mk=100 Mnemo="In_0_In" Hint="Выдать значение, полученное от 0-го соседа"}
+	 	Obj={Mk=101 Mnemo="In_1_In" Hint="Выдать значение, полученное от 1-го соседа"}
+	 	Obj={Mk=102 Mnemo="In_2_In" Hint="Выдать значение, полученное от 2-го соседа"}
+	 	Obj={Mk=103 Mnemo="In_3_In" Hint="Выдать значение, полученное от 3-го соседа"}
+	 	Obj={Mk=104 Mnemo="In_4_In" Hint="Выдать значение, полученное от 4-го соседа"}
+	 	Obj={Mk=105 Mnemo="In_5_In" Hint="Выдать значение, полученное от 5-го соседа"}
+	 	Obj={Mk=106 Mnemo="In_6_In" Hint="Выдать значение, полученное от 6-го соседа"}
+	 	Obj={Mk=107 Mnemo="In_7_In" Hint="Выдать значение, полученное от 7-го соседа"}
+	 	Obj={Mk=108 Mnemo="In_8_In" Hint="Выдать значение, полученное от 8-го соседа"}
+	 	Obj={Mk=109 Mnemo="In_9_In" Hint="Выдать значение, полученное от 9-го соседа"}
+	 	Obj={Mk=110 Mnemo="In_10_In" Hint="Выдать значение, полученное от 10-го соседа"}
+	 	Obj={Mk=111 Mnemo="In_11_In" Hint="Выдать значение, полученное от 11-го соседа"}
+	 	Obj={Mk=112 Mnemo="In_12_In" Hint="Выдать значение, полученное от 12-го соседа"}
+	 	Obj={Mk=113 Mnemo="In_13_In" Hint="Выдать значение, полученное от 13-го соседа"}
+	 	Obj={Mk=114 Mnemo="In_14_In" Hint="Выдать значение, полученное от 14-го соседа"}
+	 	Obj={Mk=115 Mnemo="In_15_In" Hint="Выдать значение, полученное от 15-го соседа"}
 	}
-	Obj={Mnemo="Out" Hint="Выдача данных от соседей" Comment
-	 	Obj={Mk=101 Mnemo="In_1_Out" Hint="Выдать значение, полученное от 1-го соседа"}
-	 	Obj={Mk=102 Mnemo="In_2_Out" Hint="Выдать значение, полученное от 2-го соседа"}
+	Obj={Mnemo="Out" Hint="Выдача данных соседу" Comment
+	 	Obj={Mk=150 Mnemo="In_0_Out" Hint="Выдать значение, полученное от 0-го соседа"}
+	 	Obj={Mk=151 Mnemo="In_1_Out" Hint="Выдать значение, полученное от 1-го соседа"}
+	 	Obj={Mk=152 Mnemo="In_2_Out" Hint="Выдать значение, полученное от 2-го соседа"}
+	 	Obj={Mk=153 Mnemo="In_3_Out" Hint="Выдать значение, полученное от 3-го соседа"}
+	 	Obj={Mk=154 Mnemo="In_4_Out" Hint="Выдать значение, полученное от 4-го соседа"}
+	 	Obj={Mk=155 Mnemo="In_5_Out" Hint="Выдать значение, полученное от 5-го соседа"}
+	 	Obj={Mk=156 Mnemo="In_6_Out" Hint="Выдать значение, полученное от 6-го соседа"}
+	 	Obj={Mk=157 Mnemo="In_7_Out" Hint="Выдать значение, полученное от 7-го соседа"}
+	 	Obj={Mk=158 Mnemo="In_8_Out" Hint="Выдать значение, полученное от 8-го соседа"}
+	 	Obj={Mk=159 Mnemo="In_9_Out" Hint="Выдать значение, полученное от 9-го соседа"}
+	 	Obj={Mk=150 Mnemo="In_10_Out" Hint="Выдать значение, полученное от 10-го соседа"}
+	 	Obj={Mk=161 Mnemo="In_11_Out" Hint="Выдать значение, полученное от 11-го соседа"}
+	 	Obj={Mk=162 Mnemo="In_12_Out" Hint="Выдать значение, полученное от 12-го соседа"}
+	 	Obj={Mk=163 Mnemo="In_13_Out" Hint="Выдать значение, полученное от 13-го соседа"}
+	 	Obj={Mk=164 Mnemo="In_14_Out" Hint="Выдать значение, полученное от 14-го соседа"}
+	 	Obj={Mk=165 Mnemo="In_15_Out" Hint="Выдать значение, полученное от 15-го соседа"}
 	}
-	Obj={Mnemo="OutMk" Hint="Выдача МК с данными для соседей" Comment
-	 	Obj={Mk=201 Mnemo="In_1_Out" Hint="Выдать значение, полученное от 1-го соседа"}
-	 	Obj={Mk=202 Mnemo="In_2_Out" Hint="Выдать значение, полученное от 2-го соседа"}
+	Obj={Mnemo="OutMk" Hint="Выдача МК с данными для соседа" Comment
+	 	Obj={Mk=200 Mnemo="In_0_OutMk" Hint="Выдать значение, полученное от 0-го соседа"}
+	 	Obj={Mk=201 Mnemo="In_1_OutMk" Hint="Выдать значение, полученное от 1-го соседа"}
+	 	Obj={Mk=202 Mnemo="In_2_OutMk" Hint="Выдать значение, полученное от 2-го соседа"}
+	 	Obj={Mk=203 Mnemo="In_3_OutMk" Hint="Выдать значение, полученное от 3-го соседа"}
+	 	Obj={Mk=204 Mnemo="In_4_OutMk" Hint="Выдать значение, полученное от 4-го соседа"}
+	 	Obj={Mk=205 Mnemo="In_5_OutMk" Hint="Выдать значение, полученное от 5-го соседа"}
+	 	Obj={Mk=206 Mnemo="In_6_OutMk" Hint="Выдать значение, полученное от 6-го соседа"}
+	 	Obj={Mk=207 Mnemo="In_7_OutMk" Hint="Выдать значение, полученное от 7-го соседа"}
+	 	Obj={Mk=208 Mnemo="In_8_OutMk" Hint="Выдать значение, полученное от 8-го соседа"}
+	 	Obj={Mk=209 Mnemo="In_9_OutMk" Hint="Выдать значение, полученное от 9-го соседа"}
+	 	Obj={Mk=210 Mnemo="In_10_OutMk" Hint="Выдать значение, полученное от 10-го соседа"}
+	 	Obj={Mk=211 Mnemo="In_11_OutMk" Hint="Выдать значение, полученное от 11-го соседа"}
+	 	Obj={Mk=212 Mnemo="In_12_OutMk" Hint="Выдать значение, полученное от 12-го соседа"}
+	 	Obj={Mk=213 Mnemo="In_13_OutMk" Hint="Выдать значение, полученное от 13-го соседа"}
+	 	Obj={Mk=214 Mnemo="In_14_OutMk" Hint="Выдать значение, полученное от 14-го соседа"}
+	 	Obj={Mk=215 Mnemo="In_15_OutMk" Hint="Выдать значение, полученное от 15-го соседа"}
 	}
-	 Obj={Mnemo="NeighbourMk" Hint="Работа с параметрами автомата" Comment
-	 	Obj={Mk=301 Mnemo="NeighbourMk_1_Set" Hint="Выдать значение, полученное от 1-го соседа"}
-	 	Obj={Mk=302 Mnemo="NeighbourMk_1_Set" Hint="Выдать значение, полученное от 2-го соседа"}
-		
+	 Obj={Mnemo="NeighbourMkSet" Hint="Установить МК для соседа" Comment
+	 	Obj={Mk=250 Mnemo="NeighbourMk_0_Set" Hint="Выдать значение, полученное от 0-го соседа"}		
+	 	Obj={Mk=251 Mnemo="NeighbourMk_1_Set" Hint="Выдать значение, полученное от 1-го соседа"}
+	 	Obj={Mk=252 Mnemo="NeighbourMk_2_Set" Hint="Выдать значение, полученное от 2-го соседа"}
+	 	Obj={Mk=253 Mnemo="NeighbourMk_3_Set" Hint="Выдать значение, полученное от 3-го соседа"}
+	 	Obj={Mk=254 Mnemo="NeighbourMk_4_Set" Hint="Выдать значение, полученное от 4-го соседа"}
+	 	Obj={Mk=255 Mnemo="NeighbourMk_5_Set" Hint="Выдать значение, полученное от 5-го соседа"}
+	 	Obj={Mk=256 Mnemo="NeighbourMk_6_Set" Hint="Выдать значение, полученное от 6-го соседа"}
+	 	Obj={Mk=257 Mnemo="NeighbourMk_7_Set" Hint="Выдать значение, полученное от 7-го соседа"}
+	 	Obj={Mk=258 Mnemo="NeighbourMk_8_Set" Hint="Выдать значение, полученное от 8-го соседа"}
+	 	Obj={Mk=259 Mnemo="NeighbourMk_9_Set" Hint="Выдать значение, полученное от 9-го соседа"}
+	 	Obj={Mk=260 Mnemo="NeighbourMk_10_Set" Hint="Выдать значение, полученное от 10-го соседа"}
+	 	Obj={Mk=261 Mnemo="NeighbourMk_11_Set" Hint="Выдать значение, полученное от 11-го соседа"}
+	 	Obj={Mk=262 Mnemo="NeighbourMk_12_Set" Hint="Выдать значение, полученное от 12-го соседа"}
+	 	Obj={Mk=263 Mnemo="NeighbourMk_13_Set" Hint="Выдать значение, полученное от 13-го соседа"}
+	 	Obj={Mk=264 Mnemo="NeighbourMk_14_Set" Hint="Выдать значение, полученное от 14-го соседа"}
+	 	Obj={Mk=265 Mnemo="NeighbourMk_15_Set" Hint="Выдать значение, полученное от 15-го соседа"}
 	 }
-	 Obj={Mnemo="Neighbour" Hint="Работа с параметрами автомата" Comment
+	 Obj={Mnemo="NeighbourSet" Hint="Ссылка на контекст соседа" Comment
+	 	Obj={Mk=300 Mnemo="NeighbourMk_0_Set" Hint="Выдать значение, полученное от 0-го соседа"}
 	 	Obj={Mk=301 Mnemo="NeighbourMk_1_Set" Hint="Выдать значение, полученное от 1-го соседа"}
-	 	Obj={Mk=302 Mnemo="NeighbourMk_1_Set" Hint="Выдать значение, полученное от 2-го соседа"}
-		
+	 	Obj={Mk=302 Mnemo="NeighbourMk_2_Set" Hint="Выдать значение, полученное от 2-го соседа"}
+	 	Obj={Mk=303 Mnemo="NeighbourMk_3_Set" Hint="Выдать значение, полученное от 3-го соседа"}
+	 	Obj={Mk=304 Mnemo="NeighbourMk_4_Set" Hint="Выдать значение, полученное от 4-го соседа"}
+	 	Obj={Mk=305 Mnemo="NeighbourMk_5_Set" Hint="Выдать значение, полученное от 5-го соседа"}
+	 	Obj={Mk=306 Mnemo="NeighbourMk_6_Set" Hint="Выдать значение, полученное от 6-го соседа"}
+	 	Obj={Mk=307 Mnemo="NeighbourMk_7_Set" Hint="Выдать значение, полученное от 7-го соседа"}
+	 	Obj={Mk=308 Mnemo="NeighbourMk_8_Set" Hint="Выдать значение, полученное от 8-го соседа"}
+	 	Obj={Mk=309 Mnemo="NeighbourMk_9_Set" Hint="Выдать значение, полученное от 9-го соседа"}
+	 	Obj={Mk=310 Mnemo="NeighbourMk_10_Set" Hint="Выдать значение, полученное от 10-го соседа"}
+	 	Obj={Mk=311 Mnemo="NeighbourMk_11_Set" Hint="Выдать значение, полученное от 11-го соседа"}
+	 	Obj={Mk=312 Mnemo="NeighbourMk_12_Set" Hint="Выдать значение, полученное от 12-го соседа"}
+	 	Obj={Mk=313 Mnemo="NeighbourMk_13_Set" Hint="Выдать значение, полученное от 13-го соседа"}
+	 	Obj={Mk=314 Mnemo="NeighbourMk_14_Set" Hint="Выдать значение, полученное от 14-го соседа"}
+	 	Obj={Mk=315 Mnemo="NeighbourMk_15_Set" Hint="Выдать значение, полученное от 15-го соседа"}
 	 }
 	 Obj={Mnemo="ParametrSet" Hint="Установка параметра" Comment
-	 	Obj={Mk=401 Mnemo="Parametr_1_Set" Hint="Установить 1-й параметр"}
-	 	Obj={Mk=402 Mnemo="Parametr_2_Set" Hint="Установить 2-й параметр"}
-
+	 	Obj={Mk=350 Mnemo="Parametr_0_Set" Hint="Установить 0-й параметр"}
+	 	Obj={Mk=351 Mnemo="Parametr_1_Set" Hint="Установить 1-й параметр"}
+	 	Obj={Mk=352 Mnemo="Parametr_2_Set" Hint="Установить 2-й параметр"}
+	 	Obj={Mk=353 Mnemo="Parametr_3_Set" Hint="Установить 3-й параметр"}
+	 	Obj={Mk=354 Mnemo="Parametr_4_Set" Hint="Установить 4-й параметр"}
+	 	Obj={Mk=355 Mnemo="Parametr_5_Set" Hint="Установить 5-й параметр"}
+	 	Obj={Mk=356 Mnemo="Parametr_6_Set" Hint="Установить 6-й параметр"}
+	 	Obj={Mk=357 Mnemo="Parametr_7_Set" Hint="Установить 7-й параметр"}
+	 	Obj={Mk=358 Mnemo="Parametr_8_Set" Hint="Установить 8-й параметр"}
+	 	Obj={Mk=359 Mnemo="Parametr_9_Set" Hint="Установить 9-й параметр"}
+	 	Obj={Mk=360 Mnemo="Parametr_10_Set" Hint="Установить 10-й параметр"}
+	 	Obj={Mk=361 Mnemo="Parametr_11_Set" Hint="Установить 11-й параметр"}
+	 	Obj={Mk=362 Mnemo="Parametr_12_Set" Hint="Установить 12-й параметр"}
+	 	Obj={Mk=363 Mnemo="Parametr_13_Set" Hint="Установить 13-й параметр"}
+	 	Obj={Mk=364 Mnemo="Parametr_14_Set" Hint="Установить 14-й параметр"}
+	 	Obj={Mk=365 Mnemo="Parametr_15_Set" Hint="Установить 15-й параметр"}
 	}
 	Obj={Mnemo="ParametrOut" Hint="Выдача параметра" Comment
-	 	Obj={Mk=501 Mnemo="Parametr_1_Out" Hint="Выдать 1-й параметр"}
-	 	Obj={Mk=502 Mnemo="Parametr_2_Out" Hint="Выдать 2-й параметр"}
+	 	Obj={Mk=400 Mnemo="Parametr_0_Out" Hint="Выдать 0-й параметр"}
+	 	Obj={Mk=401 Mnemo="Parametr_1_Out" Hint="Выдать 1-й параметр"}
+	 	Obj={Mk=402 Mnemo="Parametr_2_Out" Hint="Выдать 2-й параметр"}
+	 	Obj={Mk=403 Mnemo="Parametr_3_Out" Hint="Выдать 3-й параметр"}
+	 	Obj={Mk=404 Mnemo="Parametr_4_Out" Hint="Выдать 4-й параметр"}
+	 	Obj={Mk=405 Mnemo="Parametr_5_Out" Hint="Выдать 5-й параметр"}
+	 	Obj={Mk=406 Mnemo="Parametr_6_Out" Hint="Выдать 6-й параметр"}
+	 	Obj={Mk=407 Mnemo="Parametr_7_Out" Hint="Выдать 7-й параметр"}
+	 	Obj={Mk=408 Mnemo="Parametr_8_Out" Hint="Выдать 8-й параметр"}
+	 	Obj={Mk=409 Mnemo="Parametr_9_Out" Hint="Выдать 9-й параметр"}
+	 	Obj={Mk=410 Mnemo="Parametr_10_Out" Hint="Выдать 10-й параметр"}
+	 	Obj={Mk=411 Mnemo="Parametr_11_Out" Hint="Выдать 11-й параметр"}
+	 	Obj={Mk=412 Mnemo="Parametr_12_Out" Hint="Выдать 12-й параметр"}
+	 	Obj={Mk=413 Mnemo="Parametr_13_Out" Hint="Выдать 13-й параметр"}
+	 	Obj={Mk=414 Mnemo="Parametr_14_Out" Hint="Выдать 14-й параметр"}
+	 	Obj={Mk=415 Mnemo="Parametr_15_Out" Hint="Выдать 15-й параметр"}
 	}
 	Obj={Mnemo="ParametrOutMk" Hint="Выдача МК с параметром" Comment
-	 	Obj={Mk=601 Mnemo="Parametr_1_OutMk" Hint="Выдать МК с 1-м параметром"}
-	 	Obj={Mk=602 Mnemo="Parametr_2_OutMk" Hint="Установить со 2-м параметром"}
+	 	Obj={Mk=450 Mnemo="Parametr_0_OutMk" Hint="Установить со 0-м параметром"}
+	 	Obj={Mk=451 Mnemo="Parametr_1_OutMk" Hint="Выдать МК с 1-м параметром"}
+	 	Obj={Mk=452 Mnemo="Parametr_2_OutMk" Hint="Установить со 2-м параметром"}
+	 	Obj={Mk=453 Mnemo="Parametr_3_OutMk" Hint="Установить со 3-м параметром"}
+	 	Obj={Mk=454 Mnemo="Parametr_4_OutMk" Hint="Установить со 4-м параметром"}
+	 	Obj={Mk=455 Mnemo="Parametr_5_OutMk" Hint="Установить со 5-м параметром"}
+	 	Obj={Mk=456 Mnemo="Parametr_6_OutMk" Hint="Установить со 6-м параметром"}
+	 	Obj={Mk=457 Mnemo="Parametr_7_OutMk" Hint="Установить со 7-м параметром"}
+	 	Obj={Mk=458 Mnemo="Parametr_8_OutMk" Hint="Установить со 8-м параметром"}
+	 	Obj={Mk=459 Mnemo="Parametr_9_OutMk" Hint="Установить со 9-м параметром"}
+	 	Obj={Mk=460 Mnemo="Parametr_10_OutMk" Hint="Установить со 10-м параметром"}
+	 	Obj={Mk=461 Mnemo="Parametr_11_OutMk" Hint="Установить со 11-м параметром"}
+	 	Obj={Mk=462 Mnemo="Parametr_12_OutMk" Hint="Установить со 12-м параметром"}
+	 	Obj={Mk=463 Mnemo="Parametr_13_OutMk" Hint="Установить со 13-м параметром"}
+	 	Obj={Mk=464 Mnemo="Parametr_14_OutMk" Hint="Установить со 14-м параметром"}
+	 	Obj={Mk=465 Mnemo="Parametr_15_OutMk" Hint="Установить со 15-м параметром"}
 	}
-
-	 Obj={Mnemo="Result" Hint="Выдача результатов расчета" Comment
-		Obj={Mk=0 Mnemo="" Hint=""}
-	 }
-
       Obj=CommonMkList
 	}
 // CellularAutomatManager Менеджер клеточного автомата
@@ -5225,6 +5362,29 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 	 Obj={Mk=3 Mnemo="DimAdd" Hint="Добавить измерение"}
 	 Obj={Mk=5 Mnemo="DimClear" Hint="Очистить вектора размерностей"}
 	 Obj={Mk=10 Mnemo="IniAutmataProgSet" Hint="Установить программу инициализации автомата"}
+	 Obj={Mk=11 Mnemo="CollectorSet" Hint="Утановить ссылку на коллектор"}
+	 Obj={Mk=15 Mnemo="FiringProgSet" Hint="Установить указатель на программу активации при приходе всех операндов"}
+	 Obj={Mk=16 Mnemo="ReceiveProgSet" Hint="Установить программу вычисления результата"}
+	 Obj={Mk=17 Mnemo="InCounterSet" Hint="Установить счетчик входных данных"}
+	 Obj={Mk=30 Mnemo="Ind1Set" Hint="Установить первый индекс ФУ-автомата"}
+	 Obj={Mk=31 Mnemo="Ind2Set" Hint="Установить второй индекс ФУ-автомата"}
+	 Obj={Mk=35 Mnemo="Ind1ContextOut" Hint="Выдать контекст первого ФУ-автомата"}
+	 Obj={Mk=36 Mnemo="Ind1ContextOutMk" Hint="Выдать МК с контекстот первого ФУ-автомата"}
+	 Obj={Mk=37 Mnemo="Ind2ContextOut" Hint="Выдать контекст второго ФУ-автомата"}
+	 Obj={Mk=38 Mnemo="Ind2ContextOutMk" Hint="Выдать МК с контекстом второго ФУ-автомата"}
+	 Obj={Mk=50 Mnemo="Ind1ProgExec" Hint="Выполнить программу для первого ФУ-автомата"}
+	 Obj={Mk=51 Mnemo="Ind2ProgExec" Hint="Выполнить программу для второго ФУ-автомата"}
+
+	 Obj={Mk=60 Mnemo="Neitborder1Set" Hint="Установить соседа для ФУ с индексом 1"}
+	 Obj={Mk=61 Mnemo="Neitborder2Set" Hint="Установить соседа для ФУ с индексом 2"}
+	 Obj={Mk=65 Mnemo="Neitborder1Out" Hint="Выдать ссылку на контекст ФУ с индексом 1"}
+	 Obj={Mk=66 Mnemo="Neitborder2Out" Hint="Выдать ссылку на контекст ФУ с индексом 2"}
+	 Obj={Mk=67 Mnemo="Neitborder1OutMk" Hint="Выдать МК со ссылкой на контекст ФУ с индексом 1"}
+	 Obj={Mk=68 Mnemo="Neitborder2OutMk" Hint="Выдать МК со ссылкой на контекст ФУ с индексом 2"}
+	 
+	 Obj={Mk=70 Mnemo="PlyNSet" Hint="Установить количество слоев"}
+
+	 Obj={Mk=100 Mnemo="NetGenerate" Hint="Генерация сетки"}
 
       Obj=CommonMkList
 	}

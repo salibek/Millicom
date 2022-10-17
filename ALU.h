@@ -46,10 +46,10 @@ public:
 	void* accumVect = nullptr;	// Указатель на аккумулятор (вектор, матрица и т.п.)
 
 	vector<ALUContext> Stack = {};
-	ALU(void* parent, FU* Templ = nullptr) { Bus = (FU*)parent; Parent = parent; FUtype = 17; ProgFU(0, { 0, nullptr }); };
+	ALU(FU* parent, FU* Templ = nullptr) { Bus = (FU*)parent; Parent = parent; FUtype = 17; ProgFU(0, { 0, nullptr }); };
 	void ProgFU(int MK, LoadPoint Load) override;
 	void VectOperation(int MK, LoadPoint Load); // Реализацая векторных операций
-	void* Parent = nullptr;
+//	void* Parent = nullptr;
 	void		add(LoadPoint load);
 	void		Clear();
 	void* VarNew(LoadPoint load); // New value of accum

@@ -32,20 +32,27 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load)
 		PlyCurrent = 0; ParameterInd = -1;
 		FiringProg = nullptr; ReceiveProg = nullptr; IndFuOffcet = 0; FUInd = 0;
 		break;
+	case 20: // NeighbourAdd Добавить ссылку на исполнительное устройство
+		Neighbours.push_back((FU*)Load.Point);
+		break;
+	case 21: // NeighbourMkAdd Добавить МК для соседа (сначала добавляем ссылку, затем МК; если добавляется только МК, то в качестве сслыки автоматически добавлается Bus)
+		if (Neighbours.size() == NeighboursMk.size())
+			Neighbours.push_back(Bus);
+		NeighboursMk.push_back(Load.toInt());
+		break;
+	case 22: // NeighbourClear Очистить буфера ссылок на соседей и МК для них
+		Neighbours.clear();
+		NeighboursMk.clear();
+		break;
 	case 700: // IndSet Установить индекс
 		Ind = Load.toInt();
 		break;
 	case 701: //IndAdd Увеличить индекс на величину из нагрузки входящей ИП
 		Ind += Load.toInt();
 		break;
-	case 800: // N_NeighbourSet Установить количество соседей
-		Neighbours.resize(Load.toInt());
-		NeighboursMk.resize(Load.toInt());
-		if (!Plys.size())
-		{
-			for (auto& i : Plys)
-				i.resize(Load.toInt());
-		}
+	case 800: // N_InSet Установить количество входных данных для срабатывания
+		N_In = Load.toInt();
+		Plys[PlyCurrent].resize(N_In);
 		break;
 	case 801: // N_PlySet Установить количество слоев для расчета
 		Plys.resize(Load.toInt());
@@ -266,20 +273,21 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load)
 	case 9: // ParametrOutMk Установить ссылку на соседа по индексу
 		Neighbours[Ind] = (FU*)Load.Point;
 		break;
-	case 10: // ToNeighbourOutMk Выдать значение для соседа с индексом по индексу
-		Neighbours[PlyInd][Ind].ProgFU(NeighboursMk[MK % 50], Load);
+	case 10: // ToNeighbourOutMk Выдать МК со значением для соседа по индексу
+		Neighbours[PlyInd][Ind].ProgFU(NeighboursMk[Ind], Load);
 		break;
 
 	
 	case 100: //In_0_Set Принять значение от 0-го соседа
 	case 150: //In_0_Out Выдать значение, полученное от 0-го соседа
-	case 200: //In_1_OutMk Выдать МК соз значением, полученным от 0-го соседа
+	case 200: //In_0_OutMk Выдать МК соз значением, полученным от 0-го соседа
 	case 250: //NeighbourMk_0_Set Установить МК для 0-го соседа
 	case 300: //Neighbour_0_Set Установить ссылку на 0-го соседа
 	case 350: //Parametr_0_Set Установить 0-й параметр
 	case 400: //Parametr_0_Out Выдать 0-й параметр
 	case 450: //Parametr_0_OutMk Выдать  МК с 0-м параметром
-	case 500: //ToNeighbour_1_OutMk Выдать МК для соседа
+	case 500: //SendTo_0 Выдать для соседа 0
+	case 550: //AccumToNeighbour_0_Out Выдать значение аккумулятора соседу 0
 
 	case 101:   //In_1_Set Принять значение от 1-го соседа
 	case 151: //In_1_Out Выдать значение, полученное от 1-го соседа
@@ -289,7 +297,8 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load)
 	case 351: //Parametr_1_Set Установить 1-й параметр
 	case 401: //Parametr_1_Out Выдать 1-й параметр
 	case 451: //Parametr_1_OutMk Выдать  МК с 1-м параметром
-	case 501: //ToNeighbour_1_OutMk Выдать МК для соседа
+	case 501: //SendTo_1 Выдать для соседа 1
+	case 551: //AccumToNeighbour_1_Out Выдать значение аккумулятора соседу 1
 
 	case 102:   //In_2_Set Принять значение от 2-го соседа
 	case 152: //In_2_Out Выдать значение, полученное от 2-го соседа
@@ -299,7 +308,8 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load)
 	case 352: //Parametr_2_Set Установить 2-й параметр
 	case 402: //Parametr_2_Out Выдать 2-м параметром
 	case 452: //Parametr_2_OutMk Выдать  МК с 1-й параметр
-	case 502: //ToNeighbour_1_OutMk Выдать МК для соседа
+	case 502: //SendTo_1 Выдать для соседа 2
+	case 552: //AccumToNeighbour_2_Out Выдать значение аккумулятора соседу 2
 
 	case 103:   //In_3_Set Принять значение от 3-го соседа
 	case 153: //In_3_Out Выдать значение, полученное от 3-го соседа
@@ -309,7 +319,8 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load)
 	case 353: //Parametr_3_Set Установить 3-й параметр
 	case 403: //Parametr_3_Out Выдать 3-й параметр
 	case 453: //Parametr_3_OutMk Выдать МК с 3-м параметром
-	case 503: //ToNeighbour_3_OutMk Выдать МК для соседа
+	case 503: //SendTo_3 Выдать для соседа 3
+	case 553: //AccumToNeighbour_3_Out Выдать значение аккумулятора соседу 3
 
 	case 104:   //In4_Set Принять значение от 4-го соседа
 	case 154: //In4_Out Выдать значение, полученное от 4-го соседа
@@ -319,7 +330,8 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load)
 	case 354: //Parametr_4_Set Установить 4-й параметр
 	case 404: //Parametr_4_Out Выдать 4-й параметр
 	case 454: //Parametr_4_OutMk Выдать  МК с 4-м параметром
-	case 504: //ToNeighbour_4_OutMk Выдать МК для соседа
+	case 504: //ToNeighbour_4_Send Выдать для соседа 4
+	case 554: //AccumToNeighbour_4_Out Выдать значение аккумулятора соседу 4
 
 	case 105:   //In5_Set Принять значение от 5-го соседа
 	case 155: //In5_Out Выдать значение, полученное от 5-го соседа
@@ -329,7 +341,8 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load)
 	case 355: //Parametr_5_Set Установить 5-й параметр
 	case 405: //Parametr_5_Out Выдать 5-й параметр
 	case 455: //Parametr_5_OutMk Выдать  МК с 5-й параметр
-	case 505: //ToNeighbour_5_OutMk Выдать МК для соседа
+	case 505: //SendTo_5 Выдать для соседа 5
+	case 555: //AccumToNeighbour_5_Out Выдать значение аккумулятора соседу 5
 
 	case 106:   //In6_Set Принять значение от 6-го соседа
 	case 156: //In6_Out Выдать значение, полученное от 6-го соседа
@@ -339,7 +352,8 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load)
 	case 356: //Parametr_6_Set Установить 6-й параметр
 	case 406: //Parametr_6_Out Выдать 6-й параметр
 	case 456: //Parametr_6_OutMk Выдать  МК с 6-й параметр
-	case 506: //ToNeighbour_6_OutMk Выдать МК для соседа
+	case 506: //SendTo_6 Выдать для соседа 6
+	case 556: //AccumToNeighbour_6_Out Выдать значение аккумулятора соседу 6
 
 	case 107:   //In7_Set Принять значение от 7-го соседа
 	case 157: //In7_Out Выдать значение, полученное от 7-го соседа
@@ -349,7 +363,8 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load)
 	case 357: //Parametr_7_Set Установить 7-й параметр
 	case 407: //Parametr_7_Out Выдать 7-й параметр
 	case 457: //Parametr_7_OutMk Выдать  МК с 7-й параметр
-	case 507: //ToNeighbour_7_OutMk Выдать МК для соседа
+	case 507: //SendTo_7 Выдать для соседа 7
+	case 557: //AccumToNeighbour_7_Out Выдать значение аккумулятора соседу 7
 
 	case 108:   //In8_Set Принять значение от 8-го соседа
 	case 158: //In8_Out Выдать значение, полученное от 8-го соседа
@@ -359,7 +374,8 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load)
 	case 358: //Parametr_8_Set Установить 8-й параметр
 	case 408: //Parametr_8_Out Выдать 8-й параметр
 	case 458: //Parametr_8_OutMk Выдать  МК с 8-й параметр
-	case 508: //ToNeighbour_8_OutMk Выдать МК для соседа
+	case 508: //SendTo_8 Выдать для соседа 8
+	case 558: //AccumToNeighbour_8_Out Выдать значение аккумулятора соседу 8
 
 	case 109:   //In9_Set Принять значение от 9-го соседа
 	case 159: //In9_Out Выдать значение, полученное от 9-го соседа
@@ -369,7 +385,8 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load)
 	case 359: //Parametr_9_Set Установить 9-й параметр
 	case 409: //Parametr_9_Out Выдать 9-й параметр
 	case 459: //Parametr_9_OutMk Выдать  МК с 9-й параметр
-	case 509: //ToNeighbour_9_OutMk Выдать МК для соседа
+	case 509: //SendTo_9 Выдать для соседа 9
+	case 559: //AccumToNeighbour_9_Out Выдать значение аккумулятора соседу 9
 
 	case 110:  //In10_Set Принять значение от 10-го соседа
 	case 160: //In10_Out Выдать значение, полученное от 10-го соседа
@@ -379,7 +396,8 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load)
 	case 360: //Parametr_10_Set Установить 10-й параметр
 	case 410: //Parametr_10_Out Выдать 10-й параметр
 	case 460: //Parametr_10_OutMk Выдать   МК с 10-й параметр
-	case 510: //ToNeighbour_10_OutMk Выдать МК для соседа
+	case 510: //SendTo_10 Выдать для соседа 10
+	case 560: //AccumToNeighbour_10_Out Выдать значение аккумулятора соседу 10
 
 	case 111:  //In11_Set Принять значение от 11-го соседа
 	case 161: //In11_Out Выдать значение, полученное от 11-го соседа
@@ -389,7 +407,8 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load)
 	case 361: //Parametr_11_Set Установить 11-й параметр
 	case 411: //Parametr_11_Out Выдать 11-й параметр
 	case 461: //Parametr_11_OutMk Выдать  МК 11-й параметр
-	case 511: //ToNeighbour_11_OutMk Выдать МК для соседа
+	case 511: //SendTo_11 Выдать для соседа 11
+	case 561: //AccumToNeighbour_11_Out Выдать значение аккумулятора соседу 11
 
 	case 112:  //In12_Set Принять значение от 12-го соседа
 	case 162: //In12_Out Выдать значение, полученное от 12-го соседа
@@ -399,7 +418,8 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load)
 	case 362: //Parametr_12_Set Установить 12-й параметр
 	case 412: //Parametr_12_Out Выдать 12-й параметр
 	case 462: //Parametr_12_OutMk Выдать  МК 12-й параметр
-	case 512: //ToNeighbour_12_OutMk Выдать МК для соседа
+	case 512: //TSendTo_12 Выдать для соседа 12
+	case 562: //AccumToNeighbour_12_Out Выдать значение аккумулятора соседу 12
 
 	case 113:  //In13_Set Принять значение от 13-го соседа
 	case 163: //In13_Out Выдать значение, полученное от 13-го соседа
@@ -409,7 +429,8 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load)
 	case 363: //Parametr_13_Set Установить 13-й параметр
 	case 413: //Parametr_13_Out Выдать 13-й параметр
 	case 463: //Parametr_13_OutMk Выдать  МК 13-й параметр
-	case 513: //ToNeighbour_13_OutMk Выдать МК для соседа
+	case 513: //SendTo_13 Выдать для соседа 13
+	case 563: //AccumToNeighbour_13_Out Выдать значение аккумулятора соседу 13
 
 	case 114:  //In14_Set Принять значение от 14-го соседа
 	case 164: //In14_Out Выдать значение, полученное от 14-го соседа
@@ -419,7 +440,8 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load)
 	case 364: //Parametr_14_Set Установить 14-й параметр
 	case 414: //Parametr_14_Out Выдать 14-й параметр
 	case 464: //Parametr_14_OutMk Выдать МК 14-й параметр
-	case 514: //ToNeighbour_14_OutMk Выдать МК для соседа
+	case 514: //SendTo_14 Выдать для соседа 14
+	case 564: //AccumToNeighbour_14_Out Выдать значение аккумулятора соседу 14
 
 	case 115:  //In15_Set Принять значение от 15-го соседа
 	case 165: //In15_Out Выдать значение, полученное от 15-го соседа
@@ -429,8 +451,10 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load)
 	case 365: //Parametr_15_Set Установить 15-й параметр
 	case 415: //Parametr_15_Out Выдать 15-й параметр
 	case 465: //Parametr_15_OutMk Выдать МК 15-й параметр
-	case 515: //ToNeighbour_15_OutMk Выдать МК для соседа
+	case 515: //SendTo_15 Выдать для соседа 15
+	case 565: //AccumToNeighbour_15_Out Выдать значение аккумулятора соседу 15
 
+		MK-=100;
 		switch (MK / 50) {
 		case 3: // Выдать полученное от соседа значение
 			Load.Write(Plys[PlyInd][MK % 50]);
@@ -439,22 +463,25 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load)
 			MkExec(Load, Plys[PlyInd][MK % 50]);
 			break;
 		case 5: // Установить МК для соседа
-			NeighboursMk[MK % 50] = Load.toInt(); // Установить МК для соседа
+			NeighboursMk[Ind] = Load.toInt(); // Установить МК для соседа
 			break;
 		case 6: // Установить ссылку на соседа
-			Neighbours[MK % 50] = (CellularAutomat*)Load.Point;
+			Neighbours[Ind] = (CellularAutomat*)Load.Point;
 			break;
 		case 7: // Установить параметр
-			parameters[MK % 50].WriteFromLoad(Load);
+			parameters[Ind].WriteFromLoad(Load);
 			break;
 		case 8: // Выдать МК с параметром
-			MkExec(Load, parameters[MK % 50]);
+			MkExec(Load, parameters[Ind]);
 			break;
 		case 9: // Установить ссылку на соседа
-			Neighbours[MK % 50] = (FU*)Load.Point;
+			Neighbours[Ind] = (FU*)Load.Point;
 			break;
 		case 10: // ToNeighbour_N_OutMk Выдать значение для соседа с индексом
-			Neighbours[PlyInd][MK % 50].ProgFU(NeighboursMk[MK % 50], Load);
+			Neighbours[PlyInd][Ind].ProgFU(NeighboursMk[MK % 50], Load);
+			break;
+		case 11: //AccumToNeighbour_N_Out Выдать значение аккумулятора соседу
+			Neighbours[PlyInd][Ind].ProgFU(NeighboursMk[MK % 50], Accum);
 			break;
 		case 2: // Приять значение от соседа
 		{
@@ -470,6 +497,7 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load)
 				RezReady[PlyCurrent] = true;
 				if (AutoSend) ProgFU(890, { 0, nullptr });
 				PlyCurrent++;
+				PlyCurrent %= PlyN;
 				InCounter[PlyCurrent] = 0;
 				RezReady[PlyCurrent] = false;
 				for (int i = 0; i < Neighbours.size(); i++)
@@ -495,12 +523,10 @@ void CellularAutomatManager::ProgFU(int MK, LoadPoint Load)
 	case 1:// NetTypeSet Установить тип сетки
 		NetType = Load.toInt();
 		break;
-	case 3: // DimAdd Добавить измерение
-		Dim.push_back(Load.toInt());
+	case 3: // DimSet Добавить измерение
+		Dim=Load.toInt();
 		break;
-	case 5: // DimClear Очистить вектора размерностей
-		Dim.clear();
-		break;
+
 	case 10: // IniAutmataProgSet Установить программу инициализации автомата
 		iniAutmataProg = Load.Point;
 		break;
@@ -534,6 +560,12 @@ void CellularAutomatManager::ProgFU(int MK, LoadPoint Load)
 	case 38: // Ind2ContextOutMk Выдать МК с контекстом второго ФУ-автомата
 		MkExec(Load, { TFU, &Net[Ind2] });
 		break;
+	case 40: // ContextAddMkSet Установить МК для добавления контекста соседа исполнительного ФУ
+		ContextAddMk = Load.toInt();
+		break;
+	case 41: // MkAddMkSet Установить МК для добавления МК для соседа исполнительного ФУ
+		MkAddMk = Load.toInt();
+		break;
 	case 50: // Ind1ProgExec Выполнить программу для первого ФУ-автомата
 		Net[Ind1].ProgExec(Load);
 	case 51: // Ind2ProgExec Выполнить программу для второго ФУ-автомата
@@ -554,32 +586,27 @@ void CellularAutomatManager::ProgFU(int MK, LoadPoint Load)
 	case 68: // Neitborder2OutMk Выдать МК со ссылкой на контекст ФУ с индексом 2
 		MkExec(Load, { TFU,&Net[Ind2] });
 		break;
-	case 70: //PlyNSet Установить количество слоев
-		PlyN = Load.toInt(1);
 
-	case 100: //NetGenerate Генерация сетки
+	case 200: //NetGenerate Генерация сетки (На вход может подаваться количество ФУ в сетке)
 	{
-		int N = 0;
-		for (auto i : Dim)
-			N += i;
-		Net.resize(N); // Создать поле автоматов
+		if (Load.Point != nullptr)
+			Dim = Load.toInt();
+		Net.resize(Dim); // Создать поле автоматов
+		for (auto& i : Net)
+			i.Bus = Bus;
 		int k = 0;
 		for (auto& i : Net)
 		{
 			i.Manager = this; // Установить ссылку на менеджера
 			i.Collector = Collector; // Установит ссылку на коллектор
 			i.ProgExec(iniAutmataProg); // Запуск программы инициализации каждого автомата
-			i.FUInd = k; // Установить индекс автомата
-			i.FiringProg = FiringProg; // Установить программу вычисления результата
-			i.InCounter[0] = InCounter;
-			i.Plys[0].resize(InCounter);
+			i.ProgFU(FUIndSetMk, {Cint,&k}); // Установить индекс ФУ
 			k++;
 		}
 	}
 		break;
-	case 101: // NetClear Очистить сетку
+	case 201: // NetClear Очистить сетку
 		Net.clear();
-		Dim.clear();
 		break;
 	default:
 		CommonMk(MK, Load);
