@@ -20,6 +20,7 @@ public:
 	string		accumStr;		// строковой аккулятор
 	int Ind = 0; // Индекс элемента вектора
 	bool IndF = false; // флаг установки индекса
+	int IndAutoInc = 0; // Величина автоинкрементации индекса вектора
 	void* ConfineStart = nullptr, * ConfineExpression = nullptr, * ConfineBorder = nullptr, * ConfineInc = nullptr; // Конфайн
 	// TLoadArray - тип нагрузка, обозначающий вектор нагрузок
 		vector<LoadPoint>* accumPoint = nullptr;	// Указатель на аккумулятор (вектор, матрица и т.п.)

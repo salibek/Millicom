@@ -433,6 +433,9 @@ void ALU::ProgFU(int MK, LoadPoint Load)
 		}
 
 			// Векторные операции
+		case 269: //IndAutoIncSet Установить величину автоинкрементации индекса вектора
+			Stack.back().IndAutoInc = Load.toInt();
+			break;
 		case 270: //IndSet Установить индекс вектора (nil в нагрузке вызывает сброс индекса, т.е. по команде Out выдается вектор, а не элемент)
 			if (Load.Point == nullptr)
 			{

@@ -5,7 +5,7 @@ void IntAlu::ProgFU(int MK, LoadPoint Load)
 	switch (MK)
 	{
 	case 0:// Reset
-		//AccumUk = &Accum;
+		AccumUk = &Accum;
 		Accum = 0;
 		AutoInc = 0;
 		Compare = 0;
@@ -31,7 +31,7 @@ void IntAlu::ProgFU(int MK, LoadPoint Load)
 	case 5: // Push Положить значенпие аккумулятора. Если нагрузка nil, то в аккумуляторе остается прежнее значение
 		Stack.push_back({ AccumUk,Accum, AutoInc, Fin });
      	*AccumUk = Load.toInt(0);
-
+		break;
 	case 8: // Pop Вытолкнуть значение аккумулятора
 		Load.Write(*AccumUk);
 		AccumUk = Stack.back().AccumUk;
@@ -63,28 +63,56 @@ void IntAlu::ProgFU(int MK, LoadPoint Load)
 		AutoInc = Load.toInt();
 		break;
 	case 27: // For Выполнить цикл с началом в аккумуляторе, шагом Autoinc и концом последовательностьи, заданным значением из аккумулятора, тело цикла в prog
-		Fin = Load.toInt();
+	{
+		void* t = Prog;
+		if (Load.isDigitBool())
+			Fin = Load.toInt();
+		if (Load.isProg())
+			t = Load.Point;
 		if (AutoInc > 0)
 			for (; *AccumUk < Fin; *AccumUk += AutoInc)
-				ProgExec(Prog);
+				ProgExec(t);
 		else
 			for (; *AccumUk > Fin; *AccumUk += AutoInc)
-				ProgExec(Prog);
+				ProgExec(t);
 		break;
+	}
 	case 28: // ForInclude Выполнить цикл с началом в аккумуляторе, шагом Autoinc и концом последовательности включительно, заданным значением из аккумулятора, тело цикла в prog
-		Fin = Load.toInt();
+	{	
+		void* t = Prog;
+		if (Load.isDigitBool())
+			Fin = Load.toInt();
+		if (Load.isProg())
+			t = Load.Point;
 		if (AutoInc > 0)
 			for (; *AccumUk <= Fin; *AccumUk += AutoInc)
-				ProgExec(Prog);
+				ProgExec(t);
 		else
 			for (; *AccumUk >= Fin; *AccumUk += AutoInc)
-				ProgExec(Prog);
+				ProgExec(t);
 		break;
-	case 30: // CounterExec Выполнить программу столько раз, сколько записано в аккумуляторе
+	}
+	case 29: //ForSet Установить значение для цикла for (цикл запускается с помощью МК  for или forInclude без нагрузки)
+		Fin = Load.toInt();
+		break;
+	case 30: // ForOut Выдать конечное значение для цикла for
+		Load.Write(Fin);
+		break;
+	case 31: // ForOutMk Выдать МК с конечным значением цикла for
+		MkExec(Load, {Cint,&Fin});
+		break;
+	case 40: // CounterExec Выполнить программу столько раз, сколько записано в аккумуляторе
+	{
+		void* t = Prog;
+		if (Load.isProg())
+			t = Load.Point;
+		if (Load.isDigitBool())
+			Accum = Load.toInt();
 		if (Accum >= 0)
 			for (; Accum > 0; Accum--)
-				ProgExec(Prog);
+				ProgExec(t);
 		break;
+	}
 	case 50: // NoCorrectTypeErrProgSet Программа для ошибки записи некорректного (нечислового типа)
 		NoCorrectTypeErrProg = Load.Point;
 		break;

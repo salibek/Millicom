@@ -44,15 +44,43 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load)
 		Neighbours.clear();
 		NeighboursMk.clear();
 		break;
+	case 30: // StateSet Установить индекс состояния автомата
+		State = Load.toInt();
+		break;
+	case 31: // StateOut Выдать индекс состояния автомата
+		Load.Write(State);
+		break;
+	case 32: // StateOutMk Выдать МК с индексом состояния автомата
+		MkExec(Load, { Cint,&State });
+		break;
+	case 35: // IndSet Установить индекс
+		Ind = Load.toInt();
+		break;
+	case 36: // IndAdd Прибавить к индексу
+		Ind += Load.toInt();
+		break;
+	case 37: // IndOut Выдать индекс
+		Load.Write(Ind);
+		break;
+	case 38: // IndOutMk Выдать МК с индексом
+		MkExec(Load, {Cint, &Ind});
+		break;
+
 	case 700: // IndSet Установить индекс
 		Ind = Load.toInt();
 		break;
 	case 701: //IndAdd Увеличить индекс на величину из нагрузки входящей ИП
 		Ind += Load.toInt();
 		break;
+	case 799: // N_InAdd Изменить число входных параметров (по умолчанию +1)
+		N_In += Load.toInt(1);
+		break;
 	case 800: // N_InSet Установить количество входных данных для срабатывания
 		N_In = Load.toInt();
 		Plys[PlyCurrent].resize(N_In);
+		ReceiveProgs.resize(N_In);
+		for (auto& i : ReceiveProgs)
+			i = nullptr;
 		break;
 	case 801: // N_PlySet Установить количество слоев для расчета
 		Plys.resize(Load.toInt());
@@ -75,7 +103,7 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load)
 		break;
 	}
 	case 808: // PlyIndSet Установить индекс слоя для расчета
-		PlyInd = Load.toInt(-1);
+		PlyInd = Load.toInt(0);
 		break;
 	case 810: //­	IndFuOffcetSet Смещение индекса ФУ (индекс домножается на эту величину и к нему прибавляется индекс слоя)
 		IndFuOffcet = Load.toInt();
@@ -94,7 +122,10 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load)
 	case 822: // FiringProgOutMk Установить ссылку на программу вычисления результата при накоплении пакета данных
 		MkExec(Load, {CIC, FiringProg });
 		break;
-	case 825: // ReceiveProgSet Установить программу, запускаемую при приеме данных
+	case 824: // ReceiveProgSet Установить программу, запускаемую при приеме данных по каналу Ind
+		ReceiveProgs[Ind] = Load.Point;
+		break;
+	case 825: // ReceiveAllProgSet Установить программу, запускаемую при приеме данных
 		ReceiveProg = Load.Point;
 		break;
 	case 826: // ReceiveProgOut Установить ссылку на программу вычисления результата при накоплении пакета данных
@@ -273,7 +304,8 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load)
 	case 9: // ParametrOutMk Установить ссылку на соседа по индексу
 		Neighbours[Ind] = (FU*)Load.Point;
 		break;
-	case 10: // ToNeighbourOutMk Выдать МК со значением для соседа по индексу
+	case 10: // Cend Выдать МК со значением для соседа по индексу
+		if (Ind > Plys[PlyInd].size()) break;
 		Neighbours[PlyInd][Ind].ProgFU(NeighboursMk[Ind], Load);
 		break;
 
@@ -456,34 +488,42 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load)
 
 		MK-=100;
 		switch (MK / 50) {
-		case 3: // Выдать полученное от соседа значение
+		case 1: // Выдать полученное от соседа значение
+			if (MK % 50 > Plys[PlyInd].size()) break;
 			Load.Write(Plys[PlyInd][MK % 50]);
 			break;
-		case 4: // Выдать соседу МК со значением от соседа
+		case 2: // Выдать соседу МК со значением от соседа
+			if (MK % 50 > Plys[PlyInd].size()) break;
 			MkExec(Load, Plys[PlyInd][MK % 50]);
 			break;
-		case 5: // Установить МК для соседа
-			NeighboursMk[Ind] = Load.toInt(); // Установить МК для соседа
+		case 3: // Установить МК для соседа
+			if (MK % 50 > Neighbours.size()) break;
+			NeighboursMk[MK % 50] = Load.toInt(); // Установить МК для соседа
 			break;
-		case 6: // Установить ссылку на соседа
-			Neighbours[Ind] = (CellularAutomat*)Load.Point;
+		case 4: // Установить ссылку на соседа
+			if (MK % 50 > Neighbours.size()) break;
+			Neighbours[MK % 50] = (CellularAutomat*)Load.Point;
 			break;
-		case 7: // Установить параметр
-			parameters[Ind].WriteFromLoad(Load);
+		case 5: // Установить параметр
+			if (MK % 50 > parameters.size()) break;
+			parameters[MK % 50].WriteFromLoad(Load);
 			break;
-		case 8: // Выдать МК с параметром
-			MkExec(Load, parameters[Ind]);
+		case 6: // Выдать МК с параметром
+			if (MK % 50 > parameters.size()) break;
+			MkExec(Load, parameters[MK % 50]);
 			break;
-		case 9: // Установить ссылку на соседа
-			Neighbours[Ind] = (FU*)Load.Point;
+		case 7: // Установить ссылку на соседа
+			if (MK % 50 > Neighbours.size()) break;
+			Neighbours[MK % 50] = (FU*)Load.Point;
 			break;
-		case 10: // ToNeighbour_N_OutMk Выдать значение для соседа с индексом
-			Neighbours[PlyInd][Ind].ProgFU(NeighboursMk[MK % 50], Load);
+		case 8: // Send_N Выдать значение для соседа с индексом
+			if (MK % 50 > Neighbours.size()) break;
+			Neighbours[PlyInd][MK % 50].ProgFU(NeighboursMk[MK % 50], Load);
 			break;
-		case 11: //AccumToNeighbour_N_Out Выдать значение аккумулятора соседу
-			Neighbours[PlyInd][Ind].ProgFU(NeighboursMk[MK % 50], Accum);
+		case 9: //AccumToNeighbour_N_Out Выдать значение аккумулятора соседу
+			Neighbours[PlyInd][MK % 50].ProgFU(NeighboursMk[MK % 50], Accum);
 			break;
-		case 2: // Приять значение от соседа
+		case 0: // Приять значение от соседа
 		{
 			if (Plys[PlyCurrent][MK % 50].Point == nullptr)
 				InCounter[PlyCurrent]++;
@@ -524,7 +564,7 @@ void CellularAutomatManager::ProgFU(int MK, LoadPoint Load)
 		NetType = Load.toInt();
 		break;
 	case 3: // DimSet Добавить измерение
-		Dim=Load.toInt();
+		Dim = Load.toInt();
 		break;
 
 	case 10: // IniAutmataProgSet Установить программу инициализации автомата
@@ -542,22 +582,38 @@ void CellularAutomatManager::ProgFU(int MK, LoadPoint Load)
 	case 17: // InCounterSet Установить счетчик входных данных
 		InCounter = Load.toInt();
 		break;
+	case 28: // Ind1Add Увеличить значение первого счетчика
+		Ind1 += Load.toInt();
+		break;
+	case 29: //Ind2Add Увеличить значение второго счетчика
+		Ind2 += Load.toInt();
+		break;
 	case 30: // Ind1Set Установить первый индекс ФУ-автомата
 		Ind1 = Load.toInt();
 		break;
 	case 31: // Ind2Set Установить второй индекс ФУ-автомата
 		Ind2 = Load.toInt();
 		break;
-	case 35: // Ind1ContextOut Выдать контекст первого ФУ-автомата
+	case 32: // Step1Set Установить шаг автоматической инкрементации для 1-го индекса
+		Step1 = Load.toInt();
+		break;
+	case 33: // Step2Set Установить шаг автоматической инкрементации для 2-го индекса
+		Step2 = Load.toInt();
+		break;
+	case 35: // Context1Out Выдать контекст первого ФУ-автомата
+		if (Ind1 >= Net.size() || Ind1 < 0) break;
 		Load.Write((FU*)&Net[Ind1]);
 		break;
-	case 36: // Ind1ContextOutMk Выдать МК с контекстот первого ФУ-автомата
+	case 36: // Context2OutMk Выдать МК с контекстот первого ФУ-автомата
+		if (Ind1 >= Net.size() || Ind1 < 0) break;
 		MkExec(Load, { TFU, &Net[Ind1] });
 		break;
-	case 37: // Ind2ContextOut Выдать контекст второго ФУ-автомата
+	case 37: // Context2Out Выдать контекст второго ФУ-автомата
+		if (Ind2 >= Net.size() || Ind2 < 0) break;
 		Load.Write((FU*)&Net[Ind2]);
 		break;
-	case 38: // Ind2ContextOutMk Выдать МК с контекстом второго ФУ-автомата
+	case 38: // Context2OutMk Выдать МК с контекстом второго ФУ-автомата
+		if (Ind2 >= Net.size() || Ind2 < 0) break;
 		MkExec(Load, { TFU, &Net[Ind2] });
 		break;
 	case 40: // ContextAddMkSet Установить МК для добавления контекста соседа исполнительного ФУ
@@ -567,24 +623,84 @@ void CellularAutomatManager::ProgFU(int MK, LoadPoint Load)
 		MkAddMk = Load.toInt();
 		break;
 	case 50: // Ind1ProgExec Выполнить программу для первого ФУ-автомата
+		if (Ind1 >= Net.size() || Ind1 < 0) break;
 		Net[Ind1].ProgExec(Load);
+		Ind1 += Step1;
+		break;
 	case 51: // Ind2ProgExec Выполнить программу для второго ФУ-автомата
+		if (Ind2 >= Net.size() || Ind2 < 0) break;
 		Net[Ind1].ProgExec(Load);
-	case 60: // Neitborder1Set Установить соседа для ФУ с индексом 1
-		Net[Ind1].Neighbours.push_back((FU*)Load.Point);
-	case 61: // Neitborder2Set Установить соседа для ФУ с индексом 2
-		Net[Ind2].Neighbours.push_back((FU*)Load.Point);
+		Ind2 += Step2;
+		break;
+	case 60: // Neitborder1Append Добавить соседа для ФУ с индексом 1 (на входе ссылка на соседе, если nil, то соседом делается ФУ и Ind2)
+		if (Ind1 >= Net.size() || Ind1<0) break;
+		if (Load.Point == nullptr)
+		{
+			if(Ind2 >= Net.size() || Ind2 < 0)
+				Net[Ind1].Neighbours.push_back(Bus);
+			else
+				Net[Ind1].Neighbours.push_back(&Net[Ind2]);
+			Net[Ind2].N_In++;
+			Net[Ind2].Plys[Net[Ind2].PlyCurrent].push_back({0, nullptr});
+			Net[Ind2].ReceiveProgs.push_back(
+nullptr);
+			Ind1 += Step1;
+			Ind2 += Step2;
+		}
+		else
+		{
+			Net[Ind1].Neighbours.push_back((FU*)Load.Point);
+			Ind1 += Step1;
+		}
+		break;
+	case 61: // Neitborder2Append Добавить соседа для ФУ с индексом 2 (на входе ссылка на соседе, если nil, то соседом делается ФУ и Ind1)
+		if (Ind2 >= Net.size() || Ind2 < 0) break;
+		if (Load.Point == nullptr)
+		{
+			if (Ind1 >= Net.size() || Ind1 < 0)
+				Net[Ind2].Neighbours.push_back(nullptr);
+			else
+				Net[Ind2].Neighbours.push_back(&Net[Ind1]);
+			Net[Ind1].N_In++; // Инкремент количества входных параметров
+			Net[Ind1].Plys[Net[Ind1].PlyCurrent].push_back({ 0, nullptr });
+			Net[Ind1].ReceiveProgs.push_back(nullptr);
+
+			Ind1 += Step1;
+			Ind2 += Step2;
+		}
+		else
+		{
+			Net[Ind2].Neighbours.push_back((FU*)Load.Point);
+			Ind2 += Step2;
+		}
+		break;
+	case 62: // Neitborder1MkAppend Добавить МК для соседа для ФУ с индексом 1
+		if (Ind1 >= Net.size() || Ind1 < 0) break;
+		Net[Ind1].NeighboursMk.push_back(Load.toInt());
+		if (Net[Ind1].Neighbours.size() < Net[Ind1].NeighboursMk.size())
+			Net[Ind1].Neighbours.push_back(Bus);
+		break;
+	case 63: // Neitborder2MkAppend Добавить МК для соседа для ФУ с индексом 2
+		if (Ind2 >= Net.size() || Ind2 < 0) break;
+		Net[Ind2].NeighboursMk.push_back(Load.toInt());
+		if (Net[Ind2].Neighbours.size() < Net[Ind2].NeighboursMk.size())
+			Net[Ind2].Neighbours.push_back(Bus);
+		break;
 	case 65: // Neitborder1Out Выдать ссылку на контекст ФУ с индексом 1
 		Load.Write((FU*)&Net[Ind1]);
+		Ind1 += Step1;
 		break;
 	case 66: // Neitborder2Out  Выдать ссылку на контекст ФУ с индексом 2
 		Load.Write((FU*)&Net[Ind2]);
+		Ind2 += Step2;
 		break; 
 	case 67: // Neitborder1OutMk  Выдать МК со ссылкой на контекст ФУ с индексом 1
 		MkExec(Load, {TFU,&Net[Ind1] });
+		Ind1 += Step1;
 		break;
 	case 68: // Neitborder2OutMk Выдать МК со ссылкой на контекст ФУ с индексом 2
 		MkExec(Load, { TFU,&Net[Ind2] });
+		Ind2 += Step2;
 		break;
 
 	case 200: //NetGenerate Генерация сетки (На вход может подаваться количество ФУ в сетке)

@@ -16,29 +16,35 @@ NewFU={Mnemo="IntAlu1" FUType=FUIntAluNew}
 NewFU={Mnemo="IntAlu2" FUType=FUIntAluNew}
 NewFU={Mnemo="Alu" FUType=FUALUNew}
 NewFU={Mnemo="Alu2" FUType=FUALUNew}
-NewFU={Mnemo="Alu3" FUType=FUALUNew}
+NewFU={Mnemo="AluRez" FUType=FUALUNew Hint="АЛУ для сбора результата вычисления"}
 NewFU={Mnemo="Dev" FUType=FUCellularAutomat}
 
 MainBus.PartialResetSet \\ Запомнить число созданных ФУ
 MainBus.ModeSet=2
 
-N#100 // Общее количество исполнителей
-Nx#20 // Количество исполнителей по оси x
-Ny#5  // Количество слоев для расчета
+V#20 // Объём рюкзака
+NItem#5  // Количество предметов для расположения в рюкзаке
 
-Manager.IniAutmataProgSet={
+IntAlu.Set=V
+IntAlu.Mul=NItem // Вычислить количество узлов в сетке
+
+Manager.IniAutomataProgSet={
 	FUCellularAutomat.FiringProgSet={
-		FUCellularAutomat.In_0_OutMk=SetAlu
+		FUCellularAutomat.In_2_OutMk=SetAlu
+		FUCellularAutomat.In_0_OutMk=AddAlu
 		FUCellularAutomat.In_1_OutMk=MaxAlu
-		FUCellularAutomat.AccumOutMk=FUCellularAutomat.SendTo_0
+
 		FUCellularAutomat.AccumOutMk=FUCellularAutomat.SendTo_1
+		FUCellularAutomat.AccumOutMk=FUCellularAutomat.SendTo_2
 	}
-	
-	FUCellularAutomat.N_InSet=2
+	FUCellularAutomat.N_InSet=1
+	FUCellularAutomat.IndSet=0
+	FUCellularAutomat.ReceiveProgSet={FUCellularAutomat.In_0_OutMk=FUCellularAutomat.SendTo_0} // Передать вправо
 }
-Manager.NetGenerate=N
-V=20 // Объём рюкзака
-// СОздание связей между исполнителями
+IntAlu.OutMk=Manager.NetGenerate // Генерация поля автоматов
+
+// Создание связей между исполнителями
+
 Alu.VectCreat // Вектор объёмов предметов
 Alu.Append=2
 Alu.Append=3
@@ -52,17 +58,74 @@ Alu2.Append=4
 Alu2.Append=3
 Alu2.Append=8
 Alu2.Append=9
+Alu.IndAutoIncSet=1
+Alu2.IndAutoIncSet=1
 // Заполнение ссылок в сетке автоматов
-IntAlu1.Set=0
-IntAlu1.AutoIncSet=1
-IntAlu1.ProgSet={
-	IntAlu2.Set=0
-	
-	IntAlu2.AutoIncSet=1
-	IntAlu2.ProgSet={}
-	IntAlu2.For=Nx
-}
+Manager.Step1Set=1
+Manager.Step2Set=1
+IntAlu.OutMk=IntAlu.ForSet
+IntAlu.StepSet=V
 
-IntAlu.For=Ny
+// Установление связей между узлами на одном уровне
+IntAlu.Set=0
+IntAlu.ProgSet={
+	IntAlu.OutMk=Manager.Ind1Set=Manager.Ind2Set
+	Manager.Ind2Add=V
+	IntAlu1.Set=V
+	IntAlu1.Dec
+	IntAlu1.CounterExec={Manager.Neitborder1Append
+	Manager.NeitborderМк1Append=FUCellularAutomat.In_0_In}
+}
+IntAlu.For
+
+// Установление связей между узлами на уровень ниже
+IntAlu.Set=0
+IntAlu.ForOutMk=IntAlu.Set
+IntAlu.Sub=V
+IntAlu.OutMk=IntAlu.ForSet
+IntAlu.ProgSet={
+	IntAlu.OutMk=Manager.Ind1Set=Manager.Ind2Set
+	Manager.Ind2Add=V
+	IntAlu1.Set=V
+	IntAlu1.CounterExec={Manager.Neitborder2Append
+	Manager.NeitborderМк1Append=FUCellularAutomat.In_1_In}
+	Manager.Ind2ProgExec={FUCellularAutomat.N_InAdd=1}
+}
+IntAlu.For
+
+// Установление связей между узлами на разных уровнях
+IntAlu.OutMk=IntAlu.ForSet
+IntAlu.Set=0
+IntAlu.ProgSet={
+	IntAlu.OutMk=Manager.Ind1Set=Manager.Ind2Set
+	Manager.Ind2Add=V
+	Alu.OutMk=Manager.Ind2Add
+	IntAlu1.Set=V
+	Alu.OutMk=IntAlu1.Sub
+	IntAlu1.CounterExec={Manager.Neitborder2Append Manager.NeitborderМк1Append=FUCellularAutomat.In_2_In}
+	Manager.Ind2ProgExec={FUCellularAutomat.N_InAdd=1}
+}
+IntAlu.For
+
+// Ссылки на коллектор сбора результата
+IntAlu1.Set=V
+IntAlu.ForOutMk=Manager.Ind1Set // Установить индекс первого ФУ последнего ряда
+IntAlu1.CounterExec={
+	AluRez.ContextOutMk=Manager.Neitborder1Append
+	Manager.NeitborderМк1Append=FUALUNew.Max
+}
+IntAlu.For
 // Запуск расчета, сбор результата
-Alu.Set=0
+Manager.Ind1Set=0
+IntAlu.ForOutMk=Manager.Ind1Set
+IntAlu.Set=V
+\*
+IntAlu.CounterExec={
+	Manager.Ind1ProgExec={
+	Console.OutLn="*"
+	//Alu2.OutMk=FUCellularAutomat.SendTo_0
+}
+}
+*\
+// Вывод результата
+AluRez.OutMk=Console.LnOut
