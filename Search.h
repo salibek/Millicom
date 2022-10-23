@@ -1,6 +1,7 @@
 #pragma once
 #include "Consts.h"
 #include "Search.h"
+#include "ALU.h"
 #include <set>
 
 class Search
@@ -9,9 +10,12 @@ private:
 	bool null_check();// Проверка на нуль (false, если всё в порядке)
 	void MkAtrExec();
 public:
+	~Search() { if (Alu != nullptr) delete Alu; };
 //	vector<ip>* Template; // Шаблон для поиска
 	int _CalcMk = CalcMk; // Атрибут вычисления АЛВ
 	bool CalcMode = false; // Режим вычисления предиката
+	FU* Alu = nullptr; // Ссылка на АЛУ
+	bool PredicatCalc(IC_type Templ); // Функция вычисления предиката, если он присутствует в ИК
 	LoadPoint Template={0, nullptr}; // Шаблон для поиска
 	LoadPoint Obj = { 0, nullptr }; //ИК для поиска
 	bool MkMode = true; //  Режим выполнения всех МК в ИК-шаблоне (МК-ой считается любой атрибут, индекс которого больше 0)

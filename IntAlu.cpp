@@ -5,8 +5,8 @@ void IntAlu::ProgFU(int MK, LoadPoint Load)
 	switch (MK)
 	{
 	case 0:// Reset
-		AccumUk = &Accum;
-		Accum = 0;
+		AccumulatUk = &Accumulat;
+		Accumulat = 0;
 		AutoInc = 0;
 		Compare = 0;
 		CompareUk = &Compare;
@@ -14,37 +14,37 @@ void IntAlu::ProgFU(int MK, LoadPoint Load)
 		BiggerProg = nullptr; LessProg = nullptr; EQProg = nullptr; NEQProg = nullptr; BiggerEQProg = nullptr; LessEQProg = nullptr;
 		break;
 	case 1: // Set Установить значение аккумулятора
-		*AccumUk = Load.toInt(0);
+		*AccumulatUk = Load.toInt(0);
 		if (!Load.isDigit()) ProgExec(NoCorrectTypeErrProg);
 		if (!Load.isInt()) ProgExec(NoIntTypeErrProg);
 		if (!Load.isIntBool()) ProgExec(NoBoolIntTypeErrProg);
 		break;
-	case 2: // AccumREfOut Выдать ссылку на аккумулятор
+	case 2: // AccumulatREfOut Выдать ссылку на аккумулятор
 		{
-			LoadPoint t = { Tint, &Accum };
+			LoadPoint t = { Tint, AccumulatUk };
 			Load.Write(t);
 		}
 		break;
-	case 3: // AccumREfOutMk Выдать МК со ссылкой на аккумулятор
-		MkExec(Load,{Cint, &Accum});
+	case 3: // AccumulatREfOutMk Выдать МК со ссылкой на аккумулятор
+		MkExec(Load,{Cint, AccumulatUk});
 		break;
 	case 5: // Push Положить значенпие аккумулятора. Если нагрузка nil, то в аккумуляторе остается прежнее значение
-		Stack.push_back({ AccumUk,Accum, AutoInc, Fin });
-     	*AccumUk = Load.toInt(0);
+		Stack.push_back({ AccumulatUk,Accumulat, AutoInc, Fin });
+     	*AccumulatUk = Load.toInt(0);
 		break;
 	case 8: // Pop Вытолкнуть значение аккумулятора
-		Load.Write(*AccumUk);
-		AccumUk = Stack.back().AccumUk;
-		Accum = Stack.back().Accum;
+		Load.Write(*AccumulatUk);
+		AccumulatUk = Stack.back().AccumulatUk;
+		Accumulat = Stack.back().Accumulat;
 		AutoInc = Stack.back().AutoInc;
 		Fin = Stack.back().Fin;
 		Stack.pop_back();
 		break;
 	case 9: // PopMk Вытолкнуть значение аккумулятора
 	{
-		auto t = AccumUk;
-		AccumUk = Stack.back().AccumUk;
-		Accum = Stack.back().Accum;
+		auto t = AccumulatUk;
+		AccumulatUk = Stack.back().AccumulatUk;
+		Accumulat = Stack.back().Accumulat;
 		AutoInc = Stack.back().AutoInc;
 		Fin = Stack.back().Fin;
 		Stack.pop_back();
@@ -52,12 +52,12 @@ void IntAlu::ProgFU(int MK, LoadPoint Load)
 		break;
 	}
 	case 20: // Out
-		Load.Write(*AccumUk);
-		*AccumUk += AutoInc;
+		Load.Write(*AccumulatUk);
+		*AccumulatUk += AutoInc;
 		break;
 	case 21: //OutMk
-		MkExec(Load, { Cint, AccumUk });
-		*AccumUk += AutoInc;
+		MkExec(Load, { Cint, AccumulatUk });
+		*AccumulatUk += AutoInc;
 		break;
 	case 25: // AutoIncSet Установить значение автоматического инкремента при операции считывания значения
 		AutoInc = Load.toInt();
@@ -70,10 +70,10 @@ void IntAlu::ProgFU(int MK, LoadPoint Load)
 		if (Load.isProg())
 			t = Load.Point;
 		if (AutoInc > 0)
-			for (; *AccumUk < Fin; *AccumUk += AutoInc)
+			for (; *AccumulatUk < Fin; *AccumulatUk += AutoInc)
 				ProgExec(t);
 		else
-			for (; *AccumUk > Fin; *AccumUk += AutoInc)
+			for (; *AccumulatUk > Fin; *AccumulatUk += AutoInc)
 				ProgExec(t);
 		break;
 	}
@@ -85,10 +85,10 @@ void IntAlu::ProgFU(int MK, LoadPoint Load)
 		if (Load.isProg())
 			t = Load.Point;
 		if (AutoInc > 0)
-			for (; *AccumUk <= Fin; *AccumUk += AutoInc)
+			for (; *AccumulatUk <= Fin; *AccumulatUk += AutoInc)
 				ProgExec(t);
 		else
-			for (; *AccumUk >= Fin; *AccumUk += AutoInc)
+			for (; *AccumulatUk >= Fin; *AccumulatUk += AutoInc)
 				ProgExec(t);
 		break;
 	}
@@ -107,9 +107,9 @@ void IntAlu::ProgFU(int MK, LoadPoint Load)
 		if (Load.isProg())
 			t = Load.Point;
 		if (Load.isDigitBool())
-			Accum = Load.toInt();
-		if (Accum >= 0)
-			for (; Accum > 0; Accum--)
+			*AccumulatUk = Load.toInt();
+		if (*AccumulatUk >= 0)
+			for (; *AccumulatUk > 0; (*AccumulatUk)--)
 				ProgExec(t);
 		break;
 	}
@@ -124,27 +124,27 @@ void IntAlu::ProgFU(int MK, LoadPoint Load)
 		break;
 
 	case 60: // EQExec
-		if (*AccumUk != *CompareUk)
+		if (*AccumulatUk != *CompareUk)
 			ProgExec(Load);
 		break;
 	case 61: // NEQExec
-		if (*AccumUk != *CompareUk)
+		if (*AccumulatUk != *CompareUk)
 			ProgExec(Load);
 		break;
 	case 62: // BiggerExec
-		if (*AccumUk > *CompareUk)
+		if (*AccumulatUk > *CompareUk)
 			ProgExec(Load);
 		break;
 	case 63: // LessExec
-		if (*AccumUk < *CompareUk)
+		if (*AccumulatUk < *CompareUk)
 			ProgExec(Load);
 		break;
 	case 64: // BiggerEQExec
-		if (*AccumUk >= *CompareUk)
+		if (*AccumulatUk >= *CompareUk)
 			ProgExec(Load);
 		break;
 	case 65: // LessEQExec
-		if (*AccumUk <= *CompareUk)
+		if (*AccumulatUk <= *CompareUk)
 			ProgExec(Load);
 		break;
 	case 66: // StackEmptyExec Выполнить, если в стеке ничего нет
@@ -172,40 +172,40 @@ void IntAlu::ProgFU(int MK, LoadPoint Load)
 		LessEQProg = Load.Point;
 		break;
 	case 130: // Inc
-		++ *AccumUk;
+		++ *AccumulatUk;
 		break;
 	case 131: // Dec
-		-- *AccumUk;
+		-- *AccumulatUk;
 		break;
 	case 140: // Add
 		if (!Load.isDigit()) ProgExec(NoCorrectTypeErrProg);
 		if (!Load.isInt()) ProgExec(NoIntTypeErrProg);
 		if (!Load.isIntBool()) ProgExec(NoBoolIntTypeErrProg);
-		*AccumUk += Load.toInt();
+		*AccumulatUk += Load.toInt();
 		break;
 	case 141: // Sub
 		if (!Load.isDigit()) ProgExec(NoCorrectTypeErrProg);
 		if (!Load.isInt()) ProgExec(NoIntTypeErrProg);
 		if (!Load.isIntBool()) ProgExec(NoBoolIntTypeErrProg);
-		*AccumUk -= Load.toInt();
+		*AccumulatUk -= Load.toInt();
 		break;
 	case 142: // Mul
 		if (!Load.isDigit()) ProgExec(NoCorrectTypeErrProg);
 		if (!Load.isInt()) ProgExec(NoIntTypeErrProg);
 		if (!Load.isIntBool()) ProgExec(NoBoolIntTypeErrProg);
-		*AccumUk *= Load.toInt();
+		*AccumulatUk *= Load.toInt();
 		break;
 	case 143: // Div
 		if (!Load.isDigit()) ProgExec(NoCorrectTypeErrProg);
 		if (!Load.isInt()) ProgExec(NoIntTypeErrProg);
 		if (!Load.isIntBool()) ProgExec(NoBoolIntTypeErrProg);
-		*AccumUk /= Load.toInt();
+		*AccumulatUk /= Load.toInt();
 		break;
 	case 144: // Mod
 		if (!Load.isDigit()) ProgExec(NoCorrectTypeErrProg);
 		if (!Load.isInt()) ProgExec(NoIntTypeErrProg);
 		if (!Load.isIntBool()) ProgExec(NoBoolIntTypeErrProg);
-		*AccumUk %= Load.toInt();
+		*AccumulatUk %= Load.toInt();
 		break;
 	default:
 		CommonMk(MK, Load);
@@ -214,11 +214,11 @@ void IntAlu::ProgFU(int MK, LoadPoint Load)
 
 	if (MK >= 130 || (MK == 8 || MK == 9) && AutoInc != 0) // Отработка программ сравнения значений
 	{
-		if (*AccumUk == *CompareUk) ProgExec(EQProg);
-		if (*AccumUk != *CompareUk) ProgExec(NEQProg);
-		if (*AccumUk >  *CompareUk) ProgExec(BiggerProg);
-		if (*AccumUk <  *CompareUk) ProgExec(LessProg);
-		if (*AccumUk >= *CompareUk) ProgExec(BiggerEQProg);
-		if (*AccumUk <= *CompareUk) ProgExec(LessEQProg);
+		if (*AccumulatUk == *CompareUk) ProgExec(EQProg);
+		if (*AccumulatUk != *CompareUk) ProgExec(NEQProg);
+		if (*AccumulatUk >  *CompareUk) ProgExec(BiggerProg);
+		if (*AccumulatUk <  *CompareUk) ProgExec(LessProg);
+		if (*AccumulatUk >= *CompareUk) ProgExec(BiggerEQProg);
+		if (*AccumulatUk <= *CompareUk) ProgExec(LessEQProg);
 	}
 }

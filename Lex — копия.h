@@ -16,13 +16,11 @@ private:
 	set<int> FinMk; // Множество индексов МК для потребителя, характерных для финального состояния
 	string ABC_templ = "_QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm"; // Алфавит символов
 	string Digit_templ = "0123456789"; // --- Алфавит чисел
-	string DigitOCT_templ = "01234567"; // --- Алфавит чисел
-	string DigitHEX_templ= "0123456789ABCDEF"; // --- Алфавит чисел
 	string Digit_seps_templ = "."; // --- Алфавит разделителей чисел
 	set<string> Seps_templ = { "//=", "!!=", "&&=", "||=", "&&=", "^^=",\
 	"^=", "*=", "%=", "/=", "//", "++", "--", "-=","+=","<>", ">=", "<=", "!!", "!=", "||", "|=", "&&", "&=", "^^", "^=",\
 	"<", ">", "~", "`", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "+", "=", "-", "{", "}", "[", "]", "?", ";", ":", ",", ".", "\\", "/", "|", "\""};// Алфавит разделителей
-	set<char> ABC, Digit, DigitHEX, DigitOCT, DigitBIN, DigitSeps; // --- DigitSeps - множество, хранящее разделители целой и дробной части чисел
+	set<char> ABC, Digit, DigitSeps; // --- DigitSeps - множество, хранящее разделители целой и дробной части чисел
 	set<string> Seps;
 	IC_type StartProg = nullptr, StopProg = nullptr, FinProg = nullptr; // Программы, выполняемые при запуске процесса лексического анализа
 	string EOL = "\n"; // Символы окончания строки

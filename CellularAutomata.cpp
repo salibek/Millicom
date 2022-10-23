@@ -180,7 +180,7 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load)
 		ParameterInd = -1;
 		parameters.clear();
 		break;
-	case 850: // ParameterSet Установить параметр (при -1 добавляется новый параметр)
+	case 850: // ParameterAdd Установить параметр для расчетов (при -1 добавляется новый параметр)
 		if (ParameterInd < 0)
 			parameters.push_back(Load);
 		else
@@ -576,7 +576,7 @@ void CellularAutomatManager::ProgFU(int MK, LoadPoint Load)
 	case 15: // FiringProgSet Установить программу вычисления результата
 		FiringProg = Load.Point;
 		break;
-	case 16: // ReceiveProgSet Установить программу вычисления результата
+	case 16: // ReceiveProgSet Установить программу, запускаемую при приходе одного значения от соседа
 		ReceiveProg = Load.Point;
 		break;
 	case 17: // InCounterSet Установить счетчик входных данных
@@ -619,15 +619,15 @@ void CellularAutomatManager::ProgFU(int MK, LoadPoint Load)
 	case 40: // ContextAddMkSet Установить МК для добавления контекста соседа исполнительного ФУ
 		ContextAddMk = Load.toInt();
 		break;
-	case 41: // MkAddMkSet Установить МК для добавления МК для соседа исполнительного ФУ
+	case 41: // MkAppendMkSet Установить МК для добавления МК для соседа исполнительного ФУ
 		MkAddMk = Load.toInt();
 		break;
-	case 50: // Ind1ProgExec Выполнить программу для первого ФУ-автомата
+	case 50: // Prog1Exec Выполнить программу для первого ФУ-автомата
 		if (Ind1 >= Net.size() || Ind1 < 0) break;
 		Net[Ind1].ProgExec(Load);
 		Ind1 += Step1;
 		break;
-	case 51: // Ind2ProgExec Выполнить программу для второго ФУ-автомата
+	case 51: // Prog2Exec Выполнить программу для второго ФУ-автомата
 		if (Ind2 >= Net.size() || Ind2 < 0) break;
 		Net[Ind1].ProgExec(Load);
 		Ind2 += Step2;
@@ -642,8 +642,7 @@ void CellularAutomatManager::ProgFU(int MK, LoadPoint Load)
 				Net[Ind1].Neighbours.push_back(&Net[Ind2]);
 			Net[Ind2].N_In++;
 			Net[Ind2].Plys[Net[Ind2].PlyCurrent].push_back({0, nullptr});
-			Net[Ind2].ReceiveProgs.push_back(
-nullptr);
+			Net[Ind2].ReceiveProgs.push_back(nullptr);
 			Ind1 += Step1;
 			Ind2 += Step2;
 		}

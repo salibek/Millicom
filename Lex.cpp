@@ -643,10 +643,39 @@
 					ProgExec(ErrProg, 0, Bus, nullptr); //обработчик ошибок
 					break;
 				//Определитель системы счисления
+									//Определитель системы счисления
+				/*
+				case 9:
+					if (*i == '0') //число (0); 9 -> 1
+					{
+						S = 1; //переход в состояние 1
+						FigureBuf += *i; //добавление символа в буферную переменную
+						//TO DO numberFormat = DEC (реализация соответствующих действий)
+						break;
+					}
+					if (*i == 'x') //символ (x); 9 -> 1
+					{
+						S = 1; //переход в состояние 1
+						FigureBuf += *i; //добавление символа в буферную переменную
+						//TO DO numberFormat = HEX (реализация соответствующих действий)
+						break;
+					}
+					if (*i == 'b') //символ (b); 9 -> 1
+					{
+						S = 1; //переход в состояние 1
+						FigureBuf += *i; //добавление символа в буферную переменную
+						//TO DO numberFormat = BIN (реализация соответствующих действий)
+						break;
+					}
+					Work = false;  //установка флага рабочего режима лексера на false
+					ProgExec(ErrProg); //обработчик ошибок
+					break;
+
+					*/
 				case 9:
 					if (*i == '_') //символ разделения чисел (_); 9 -> 9
 					{
-						//Debug(*i, S, FigureBuf); // --- отладка
+			//			Debug(*i, S, FigureBuf); // --- отладка
 						break;
 					}
 					if (Digit.count(*i)) // --- число (0..9); 9 -> 1
@@ -654,37 +683,46 @@
 						FigureBuf += *i; //добавление символа в буферную переменную
 						//TO DO numberFormat = DEC (реализация соответствующих действий)
 						S = 1; //переход в состояние 1
-						//Debug(*i, S, FigureBuf); // --- отладка
+				//		Debug(*i, S, FigureBuf); // --- отладка
 						break;
 					}
-					if (*i == 'x') //символ (x); 9 -> 1
+					if (*i == 'b') //символ (b); 9 -> 13
 					{
-						FigureBuf += *i; //добавление символа в буферную переменную
-						//TO DO numberFormat = HEX (реализация соответствующих действий)
-						S = 1; //переход в состояние 1
-						//Debug(*i, S, FigureBuf); // --- отладка
-						break;
-					}
-					if (*i == 'b') //символ (b); 9 -> 1
-					{
-						FigureBuf += *i; //добавление символа в буферную переменную
+						//FigureBuf += *i; //добавление символа в буферную переменную не нужно, так как b является обозначением BIN числа
 						//TO DO numberFormat = BIN (реализация соответствующих действий)
-						S = 1; //переход в состояние 1
-						//Debug(*i, S, FigureBuf); // --- отладка
+						S = 13; //переход в состояние 13
+				//		Debug(*i, S, FigureBuf); // --- отладка
+						break;
+					}
+					if (*i == 'o') //символ (o); 9 -> 15
+					{
+						//FigureBuf += *i; //добавление символа в буферную переменную не нужно, так как o является обозначением OCT числа
+						//TO DO numberFormat = OCT (реализация соответствующих действий)
+						S = 15; //переход в состояние 15
+				//		Debug(*i, S, FigureBuf); // --- отладка
+						break;
+					}
+					if (*i == 'x') //символ (x); 9 -> 17
+					{
+						//FigureBuf += *i; //добавление символа в буферную переменную не нужно, так как x является обозначением HEX числа
+						//TO DO numberFormat = HEX (реализация соответствующих действий)
+						S = 17; //переход в состояние 17
+				//		Debug(*i, S, FigureBuf); // --- отладка
 						break;
 					}
 					if (DigitSeps.count(*i))  // --- символ разделения дробной и целой части (. ,); 9 -> 2
 					{
-						FigureBuf += *i; //добавление символа в буферную переменную
+						FigureBuf += "."; //добавление символа в буферную переменную
 						//TO DO numberFormat = DEC (реализация соответствующих действий)
 						S = 2; //переход в состояние 2
-						//Debug(*i, S, FigureBuf); // --- отладка
+				//		Debug(*i, S, FigureBuf); // --- отладка
 						break;
 					}
 					Work = false;  //установка флага рабочего режима лексера на false
-					ProgExec(ErrProg, 0, Bus, nullptr); //обработчик ошибок
+					ProgExec(ErrProg); //обработчик ошибок
 					break;
-				//Обработка АЛВ
+					
+					//Обработка АЛВ
 				case 10:
 					if ((Digit.count(*i)) && (*i != '0')) // --- число (1..9); 10 -> 1
 					{
@@ -775,6 +813,214 @@
 					Work = false; //установка флага рабочего режима лексера на false
 					ProgExec(ErrProg, 0, Bus, nullptr); //обработчик ошибок
 					break;
+				case 13:
+					if (DigitBIN.count(*i)) // --- число (0..1); 13 -> 13
+					{
+						FigureBuf += *i; //добавление символа в буферную переменную
+						//Debug(*i, S, FigureBuf); // --- отладка
+						break;
+					}
+					if (*i == '_') //символ разделения чисел (_); 13 -> 13
+					{
+					//	Debug(*i, S, FigureBuf); // --- отладка
+						break;
+					}
+					if (DigitSeps.count(*i))  // --- символ разделения дробной и целой части (. ,); 13 -> 14
+					{
+						FigureBuf += "."; //добавление символа в буферную переменную
+						S = 2; //переход в состояние 2
+					//	Debug(*i, S, FigureBuf); // --- отладка
+						break;
+					}
+					if (Seps.count(str.substr(distance(str.begin(), i), 1)) || *i == ' ') //разделитель; 13 -> 0
+					{
+						i--; // Для обработки сепаратора
+						int* tint = new int;
+						*tint = atoi(FigureBuf.c_str()); //запись лексемы в переменную
+						ib = (ib + 1) % SizeBuf; //увеличение текущего адреса буфера выходных лексем на 1
+						LexBuf[ib].Load.Clear(); //удаление нагрузки ИП
+						LexBuf[ib] = { IntAtr, Cint , tint }; //добавление лексемы в буфер выходных лексем в виде ИП {атрибут, тип, указатель}
+						S = 0; //переход в состояние 0
+
+					//	Debug(*i, S, FigureBuf); // --- отладка
+						std::cout << "LexBuf[" << ib << "] = {IntAtr, TBinInt, " << *tint << "}\n"; // --- отладка
+
+						break;
+					}
+					Work = false; //установка флага рабочего режима лексера на false
+					ProgExec(ErrProg); //обработчик ошибок
+					break;
+					// Обработка дробной части двоичных чисел
+				case 14:
+					if (DigitBIN.count(*i))  // --- число (0..1); 14 -> 14
+					{
+						FigureBuf += *i; //добавление символа в буферную переменную
+					//	Debug(*i, S, FigureBuf); // --- отладка
+						break;
+					}
+					if (*i == '_') //символ разделения чисел (_); 14 -> 14
+					{
+					//	Debug(*i, S, FigureBuf); // --- отладка
+						break;
+					}
+					if (Seps.count(str.substr(distance(str.begin(), i), 1)) || *i == ' ') //разделитель; 14 -> 0
+					{
+						i--; // Для обработки сепаратора
+						double* ft = new double;
+						*ft = atof(FigureBuf.c_str()); //запись лексемы в переменную
+						ib = (ib + 1) % SizeBuf; //увеличение текущего адреса буфера выходных лексем на 1
+						LexBuf[ib].Load.Clear(); //удаление нагрузки ИП
+						LexBuf[ib] = { DoubleAtr, Cdouble, ft }; //добавление лексемы в буфер выходных лексем в виде ИП {атрибут, тип, указатель}
+						LexOut();
+						S = 0; //переход в состояние 0
+
+					//	Debug(*i, S, FigureBuf); // --- отладка
+						std::cout << "LexBuf[" << ib << "] = {DoubleAtr, TBinDouble, " << *ft << "}\n"; // --- отладка
+
+						break;
+					}
+					Work = false;  //установка флага рабочего режима лексера на false
+					ProgExec(ErrProg); //обработчик ошибок
+					break;
+					// Обработка целой части восьмеричных чисел
+				case 15:
+					if (DigitOCT.count(*i)) // --- число (0..7); 15 -> 15
+					{
+						FigureBuf += *i; //добавление символа в буферную переменную
+						//Debug(*i, S, FigureBuf); // --- отладка
+						break;
+					}
+					if (*i == '_') //символ разделения чисел (_); 15 -> 15
+					{
+						//Debug(*i, S, FigureBuf); // --- отладка
+						break;
+					}
+					if (DigitSeps.count(*i))  // --- символ разделения дробной и целой части (. ,); 15 -> 16
+					{
+						FigureBuf += "."; //добавление символа в буферную переменную
+						S = 2; //переход в состояние 2
+						//Debug(*i, S, FigureBuf); // --- отладка
+						break;
+					}
+					if (Seps.count(str.substr(distance(str.begin(), i), 1)) || *i == ' ') //разделитель; 15 -> 0
+					{
+						i--; // Для обработки сепаратора
+						int* tint = new int;
+						*tint = atoi(FigureBuf.c_str()); //запись лексемы в переменную
+						ib = (ib + 1) % SizeBuf; //увеличение текущего адреса буфера выходных лексем на 1
+						LexBuf[ib].Load.Clear(); //удаление нагрузки ИП
+						LexBuf[ib] = { IntAtr, Cint, tint }; //добавление лексемы в буфер выходных лексем в виде ИП {атрибут, тип, указатель}
+						S = 0; //переход в состояние 0
+
+						//Debug(*i, S, FigureBuf); // --- отладка
+						std::cout << "LexBuf[" << ib << "] = {IntAtr, TOctInt, " << *tint << "}\n"; // --- отладка
+
+						break;
+					}
+					Work = false; //установка флага рабочего режима лексера на false
+					ProgExec(ErrProg); //обработчик ошибок
+					break;
+					// Обработка дробной части восьмеричных чисел
+				case 16:
+					if (DigitOCT.count(*i))  // --- число (0..7); 16 -> 16
+					{
+						FigureBuf += *i; //добавление символа в буферную переменную
+						//Debug(*i, S, FigureBuf); // --- отладка
+						break;
+					}
+					if (*i == '_') //символ разделения чисел (_); 16 -> 16
+					{
+						//Debug(*i, S, FigureBuf); // --- отладка
+						break;
+					}
+					if (Seps.count(str.substr(distance(str.begin(), i), 1)) || *i == ' ') //разделитель; 16 -> 0
+					{
+						i--; // Для обработки сепаратора
+						double* ft = new double;
+						*ft = atof(FigureBuf.c_str()); //запись лексемы в переменную
+						ib = (ib + 1) % SizeBuf; //увеличение текущего адреса буфера выходных лексем на 1
+						LexBuf[ib].Load.Clear(); //удаление нагрузки ИП
+						LexBuf[ib] = { DoubleAtr, Cdouble, ft }; //добавление лексемы в буфер выходных лексем в виде ИП {атрибут, тип, указатель}
+						LexOut();
+						S = 0; //переход в состояние 0
+
+						//Debug(*i, S, FigureBuf); // --- отладка
+						std::cout << "LexBuf[" << ib << "] = {DoubleAtr, TOctDouble, " << *ft << "}\n"; // --- отладка
+
+						break;
+					}
+					Work = false;  //установка флага рабочего режима лексера на false
+					ProgExec(ErrProg); //обработчик ошибок
+					break;
+					// Обработка целой части шестнадцатеричных чисел
+				case 17:
+					if (DigitHEX.count(*i)) // --- число (0..9, A..F, a..f); 17 -> 17
+					{
+						FigureBuf += *i; //добавление символа в буферную переменную
+						//Debug(*i, S, FigureBuf); // --- отладка
+						break;
+					}
+					if (*i == '_') //символ разделения чисел (_); 17 -> 17
+					{
+						//Debug(*i, S, FigureBuf); // --- отладка
+						break;
+					}
+					if (DigitSeps.count(*i))  // --- символ разделения дробной и целой части (. ,); 17 -> 2
+					{
+						FigureBuf += "."; //добавление символа в буферную переменную
+						S = 2; //переход в состояние 2
+					//	Debug(*i, S, FigureBuf); // --- отладка
+						break;
+					}
+					if (Seps.count(str.substr(distance(str.begin(), i), 1)) || *i == ' ') //разделитель; 17 -> 0
+					{
+						i--; // Для обработки сепаратора
+						string* st2 = new string;
+						*st2 = FigureBuf; //запись лексемы в переменную
+						ib = (ib + 1) % SizeBuf; //увеличение текущего адреса буфера выходных лексем на 1
+						LexBuf[ib].Load.Clear(); //удаление нагрузки ИП
+						LexBuf[ib] = { IntAtr, Cint, st2 }; //добавление лексемы в буфер выходных лексем в виде ИП {атрибут, тип, указатель}
+						S = 0; //переход в состояние 0
+
+						//Debug(*i, S, FigureBuf); // --- отладка
+						std::cout << "LexBuf[" << ib << "] = {IntAtr, THexInt, " << *st2 << "}\n"; // --- отладка
+
+						break;
+					}
+					Work = false; //установка флага рабочего режима лексера на false
+					ProgExec(ErrProg); //обработчик ошибок
+					break;
+					// Обработка дробной части шестнадцатеричных чисел
+				case 18:
+					if (DigitHEX.count(*i))  // --- число (0..9, A..F, a..f); 18 -> 18
+					{
+						FigureBuf += *i; //добавление символа в буферную переменную
+						//Debug(*i, S, FigureBuf); // --- отладка
+						break;
+					}
+					if (*i == '_') //символ разделения чисел (_); 18 -> 18
+					{
+						//Debug(*i, S, FigureBuf); // --- отладка
+						break;
+					}
+					if (Seps.count(str.substr(distance(str.begin(), i), 1)) || *i == ' ') //разделитель; 18 -> 0
+					{
+						i--; // Для обработки сепаратора
+						string* st2 = new string;
+						*st2 = FigureBuf; //запись лексемы в переменную
+						ib = (ib + 1) % SizeBuf; //увеличение текущего адреса буфера выходных лексем на 1
+						LexBuf[ib].Load.Clear(); //удаление нагрузки ИП
+						LexBuf[ib] = { DoubleAtr, Cdouble, st2 }; //добавление лексемы в буфер выходных лексем в виде ИП {атрибут, тип, указатель}
+						S = 0; //переход в состояние 0
+
+						//Debug(*i, S, FigureBuf); // --- отладка
+						std::cout << "LexBuf[" << ib << "] = {DoubleAtr, THexDouble, " << *st2 << "}\n"; // --- отладка
+
+						break;
+					}
+					Work = false;  //установка флага рабочего режима лексера на false
+					ProgExec(ErrProg); //обработчик ошибок
+					break;
 				default:
 					break;
 				}
@@ -800,8 +1046,11 @@
 		Receiver.back() = BusContext;
 		copy(ABC_templ.begin(), ABC_templ.end(), inserter(ABC, ABC.end()));
 		copy(Digit_templ.begin(), Digit_templ.end(), inserter(Digit, Digit.end())); // --- Добавление в множество чисел
+		copy(DigitHEX_templ.begin(), DigitHEX_templ.end(), inserter(DigitHEX, DigitHEX.end())); // --- Добавление в множество чисел
+		copy(DigitOCT_templ.begin(), DigitOCT_templ.end(), inserter(DigitOCT, DigitOCT.end())); // --- Добавление в множество чисел
 		copy(Digit_seps_templ.begin(), Digit_seps_templ.end(), inserter(DigitSeps, DigitSeps.end())); // --- Добавление в множество разделителей дробных и целых частей чисел
 		copy(Seps_templ.begin(), Seps_templ.end(), inserter(Seps, Seps.end()));
+		DigitBIN.insert('0'); DigitBIN.insert('1');
 		LexBuf = new ip[SizeBuf];
 		for (int i = 0; i < SizeBuf; LexBuf[i++].Load = { 0,nullptr });
 		LexBuf[0].atr = SeperatAtr;

@@ -2,17 +2,7 @@
 #pragma once
 #include "Consts.h"
 #include "Search.h"
-/*
-class ListContext
-{
-public:
-	vector<ip>* ListHead = nullptr; // Указатель на начало списка
-	ip* LineUk = nullptr; // Указатель на найленную строку списка
-	int LineNum = -1, LineNumOld = -1; // Номер первой совпадающей линии, номер предыдущей совпадающей линии
-	int LineCount = 0; // Количество найденных строк
-	bool StopSearch = false; // Флаг прекращения поиска в текущей иерархии
-};
-*/
+
 class List : public FU
 {
 public:

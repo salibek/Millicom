@@ -31,7 +31,7 @@ enum E_MK
 	
 	// �������� � ������������� 
 	RESET_A,				// 25
-	SET,					// 26
+	SETA,					// 26
 	GET,					// 27
 	GET_LOGIC,				// 28
 	OUT_A,					// 29
@@ -77,7 +77,7 @@ enum E_MK
 	Remainder,				// 69
 	XOR_BIT,				// 70
 	Compar3Way,				// 71
-
-	PUSH=3,
+	PUSH,					// 72
 	
+	SET = 1,					// 1
 };

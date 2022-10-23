@@ -6,6 +6,21 @@
 
 using namespace std;
 
+bool Search::PredicatCalc(IC_type Templ) // Функция вычисления предиката, если он присутствует в ИК
+{
+	ip* t = AtrFind(Templ, _CalcMk);
+	if (t == nullptr) return true;
+	if (Alu == nullptr) // Создание АЛУ
+	{
+		Alu = (FU*)new ALU({});
+		Alu->ProgFU(0, { 0,nullptr });
+	}
+	double tt = 1;
+	Alu->ProgExec(t->Load);
+	Alu->ProgFU(2, {Tdouble, &tt}); // Чтение результата из АЛУ
+	return tt;
+}
+
 bool Search::null_check()// Проверка на нуль (false, если всё в порядке)
 {
 	if (Template.Point != nullptr && Obj.Point != nullptr)
@@ -73,6 +88,7 @@ bool Search::FindIPObj(LoadPoint Templ, LoadPoint obj, bool XOR) // Поиск, если 
 	else
 	{
 		Rez = true;
+		if (CalcMode) Rez &= PredicatCalc((IC_type)Template.Point); // Режим вычисления предиката
 		IPTemplRezPoint = i._Ptr;
 		IPRezPoint = (ip*)obj.Point;
 		return true;
@@ -123,18 +139,19 @@ bool Search::FindOr(LoadPoint obj)
 	}
 	else
 	{
-		if (CalcMode)
-		{
-			
-		}
-		else {
 			Rez = true;
+			if (CalcMode) Rez &= PredicatCalc((IC_type)Template.Point); // Режим вычисления предиката
+			if (!Rez)
+			{
+				IPTemplRezPoint = nullptr; IPRezPoint = nullptr;
+				MainFU->ProgExec(FailProg);
+				return false;
+			}
 			MainFU->ProgExec(SuccessProg);
 			AtrProgExec((IC_type)Template.Point, Prog_atr, MainFU->Bus, true);
 			MkAtrExec();
 			MainFU->ProgExec(SuccessAfterProg);
 			return true;
-		}
 	}
 }
 
@@ -176,6 +193,13 @@ bool Search::FindXor(LoadPoint obj)
 	if (Count == 1)
 	{// Выполнилось условие
 		Rez = true;
+		if (CalcMode) Rez &= PredicatCalc((IC_type)Template.Point); // Режим вычисления предиката
+		if (!Rez)
+		{
+			IPTemplRezPoint = nullptr; IPRezPoint = nullptr;
+			MainFU->ProgExec(FailProg);
+			return false;
+		}
 		MainFU->ProgExec(SuccessProg);
 		AtrProgExec((IC_type)Template.Point, Prog_atr, MainFU->Bus, true);
 		MkAtrExec();
@@ -231,6 +255,13 @@ bool Search::FindAnd(LoadPoint obj) // Поиск
 	if (i==((vector<ip>*)(Obj.Point))->end())
 	{// Выполнилось условие
 		Rez = true;
+		if (CalcMode) Rez &= PredicatCalc((IC_type)Template.Point); // Режим вычисления предиката
+		if (!Rez) // Если предикат false
+		{
+			IPTemplRezPoint = nullptr; IPRezPoint = nullptr;
+			MainFU->ProgExec(FailProg);
+			return false;
+		}
 		MainFU->ProgExec(SuccessProg);
 		AtrProgExec((IC_type)Template.Point, Prog_atr, MainFU->Bus);
 		MkAtrExec();
@@ -287,6 +318,13 @@ bool Search::FindAndSource(LoadPoint obj) // Поиск
 		if (i == ((IC_type)Template.Point)->end())
 		{
 			Rez = true;
+			if (CalcMode) Rez &= PredicatCalc((IC_type)Template.Point); // Режим вычисления предиката
+			if (!Rez) // Если предикат false
+			{
+				IPTemplRezPoint = nullptr; IPRezPoint = nullptr;
+				MainFU->ProgExec(FailProg);
+				return false;
+			}
 			IPTemplRezPoint = (ip*)Template.Point;
 			IPRezPoint = (ip*)obj.Point;
 			return true;
@@ -318,6 +356,13 @@ bool Search::FindAndSource(LoadPoint obj) // Поиск
 	if (i != ((IC_type)Template.Point)->end())
 	{// Выполнилось условие
 		Rez = true;
+		if (CalcMode) Rez &= PredicatCalc((IC_type)Template.Point); // Режим вычисления предиката
+		if (!Rez) // Если предикат false
+		{
+			IPTemplRezPoint = nullptr; IPRezPoint = nullptr;
+			MainFU->ProgExec(FailProg);
+			return false;
+		}
 		MainFU->ProgExec(SuccessProg, 0, MainFU->Bus);
 		AtrProgExec((IC_type)Template.Point, Prog_atr, MainFU->Bus, true);
 		MkAtrExec();

@@ -5089,8 +5089,8 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
   	Obj={Mk=17 Mnemo="PopMk" Hint="Выдать МК со значением аккумулятора и удалить аккмумулятор"}
 
   	Obj={Mk=10 Mnemo="OutMkAdrClear" Hint="Очистить буфер МК и адресов для выдачи результата"}
-  	Obj={Mk=11 Mnemo="OutMkAdd" Hint="Добавить адрес для выдачи результата вычисления"}
-  	Obj={Mk=12 Mnemo="OutAdrAdd" Hint="Добавить адрес для выдачи результатов"}
+  	Obj={Mk=11 Mnemo="OutMkAppend" Hint="Добавить адрес для выдачи результата вычисления"}
+  	Obj={Mk=12 Mnemo="OutAdrAppend" Hint="Добавить адрес для выдачи результатов"}
 
   Obj={Mnemo="ErrProg" Hint="Установка программ обработки ошибок" Comment
   	Obj={Mk=20 Mnemo="ErrProgSet" Hint="Программа обработки ошибки любого типа"}
@@ -5431,8 +5431,8 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 	 Obj={Mk=40 Mnemo="ContextAddMkSet" Hint="Установить МК для добавления контекста соседа исполнительного ФУ"}
 	 Obj={Mk=41 Mnemo="MkAddMkSet" Hint="Установить МК для добавления МК для соседа исполнительного ФУ"}
 
-	 Obj={Mk=50 Mnemo="Prog1Exec" Hint="Выполнить программу для первого ФУ-автомата"}
-	 Obj={Mk=51 Mnemo="Prog2Exec" Hint="Выполнить программу для второго ФУ-автомата"}
+	 Obj={Mk=50 Mnemo="Ind1ProgExec" Hint="Выполнить программу для первого ФУ-автомата"}
+	 Obj={Mk=51 Mnemo="Ind2ProgExec" Hint="Выполнить программу для второго ФУ-автомата"}
 
 	 Obj={Mk=60 Mnemo="Neitborder1Append" Hint="Добавить соседа для ФУ с индексом 1 (на входе ссылка на соседе, если nil, то соседом делается ФУ и Ind2)"}
 	 Obj={Mk=61 Mnemo="Neitborder2Append" Hint="Добавить соседа для ФУ с индексом 2 (на входе ссылка на соседе, если nil, то соседом делается ФУ и Ind1)"}
@@ -5445,7 +5445,7 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 	 
 	 Obj={Mk=70 Mnemo="PlyNSet" Hint="Установить количество слоев"}
 
-	 Obj={Mk=100 Mnemo="NetGenerate" Hint="Генерация сетки (На вход может подаваться количество ФУ в сетке)"}
+	 Obj={Mk=200 Mnemo="NetGenerate" Hint="Генерация сетки (На вход может подаваться количество ФУ в сетке)"}
 
       Obj=CommonMkList
 	}

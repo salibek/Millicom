@@ -84,9 +84,9 @@ int main()
 //	string STR = "MultyList.ind";
 //	string STR = "CompLab.ind";
 //	string STR = "AlU_test.ind";
-//	string STR = "TabTest.ind";
+	string STR = "TabTest.ind";
 //	string STR = "LexTest.ind"; // Имя запускного файла
-	string STR = "Bag2.ind";
+//	string STR = "Bag2.ind";
 
 	Bus.ProgFU(10, {Cstring, &STR}); //Запуск индексного файла
 

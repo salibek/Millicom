@@ -140,7 +140,7 @@ void ALU::ProgFU(int MK, LoadPoint Load)
 			Stack.back().accum = 0;
 			Accum = { Cdouble,&accum };
 			break;
-		case 2: // OutMk Выдать МК со значением аккумулятора
+		case 3: // OutMk Выдать МК со значением аккумулятора
 			if (Stack.back().accumType >> 1 == Dstring)
 				MkExec(Load, { Stack.back().accumType,&Stack.back().accumStr }, Bus, true);
 			else if (Stack.back().accumType >> 1 == DLoadVect) // вектор
@@ -148,7 +148,7 @@ void ALU::ProgFU(int MK, LoadPoint Load)
 			else
 				MkExec(Load, { Cdouble,&Stack.back().accum }, Bus, true); // Заглушка!!!
 			break;
-		case 1: // Out Выдать значение аккумулятора
+		case 2: // Out Выдать значение аккумулятора
 			if (accumType >> 1 == Dstring)
 				Load.Write(Stack.back().accumStr);
 			else if (Stack.back().accumType >> 1 == DLoadArray) // Вектор
@@ -169,7 +169,7 @@ void ALU::ProgFU(int MK, LoadPoint Load)
 			else
 				Load.Write(Stack.back().accum);
 			break;
-		case E_MK::PUSH: // 3 Push Сделать еще один уровень аккумулятора
+		case E_MK::PUSH: //  Push Сделать еще один уровень аккумулятора
 			Stack.push_back({});
 			ProgFU(E_MK::SET, Load);
 			break;

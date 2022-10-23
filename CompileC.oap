@@ -46,6 +46,8 @@ NewFU={Mnemo="ConstWait" FUType=FUListNew Hint="Ожидание константы"}
 NewFU={Mnemo="ConstWait2" FUType=FUListNew Hint="Ожидание константы2"}
 NewFU={Mnemo="VarIniWait" FUType=FUListNew Hint="Ожидание инициализации переменной"}
 NewFU={Mnemo="VarIniWait2" FUType=FUListNew Hint="Ожидание инициализации переменной2"}
+NewFU={Mnemo="LoadVar" FUType=FUListNew Hint="Ожидание переменной в качестве нагрузки ИП"}
+NewFU={Mnemo="BrackLoadVar" FUType=FUListNew Hint="Ожидание ) после описания переменной в качестве нагрузки ИП"}
 
 NewFU={Mnemo="VectWait" FUType=FUListNew Hint="Ожидание элемента вектора"}
 NewFU={Mnemo="VectNext" FUType=FUListNew Hint="Ожидание возможного следующего элемента вектора"}
@@ -88,7 +90,7 @@ LineAtr*-6 // Метка линии списка
 MkTable.FailProgSet={Console.OutLn="MK is not found MkTable" Lex.Stop}
 
 AtrCounter.Set=-10000 // Начальный индекс атрибута
-AtrCounter.AutoIncSet=-1
+AtrCounter.StepSet=-1
 MkCalc.NoIntTypeErrProg={ // Ошибка записи нецелого числа в качестве МК
 	Console.OutLn="Integer is expected"
 	Lex.Stop Str_Gen.Stop}
@@ -377,11 +379,11 @@ Console.OutLn="= >"
 //  OAList.OutMk=Console.OutLn
 }
 >{Mk Lex.ReceiverMkSet=EgAleWait.FindAnd
-  OAList.LastAttach={FUALUNew.OutMkAdd}
+  OAList.LastAttach={FUALUNew.OutMkAppend}
   FUListNew.ReceivedLoadOutMk=OAList.LastLoadSet
 }
 >{Var Lex.ReceiverMkSet=EgAleWait.FindAnd
-  OAList.LastAttach={FUALUNew.OutAdrAdd}
+  OAList.LastAttach={FUALUNew.OutAdrAppend}
   FUListNew.ReceivedLoadOutMk=OAList.LastLoadSet
 }
 >{0 Lex.Stop Console.OutLn="Mk or Var is expected"}
@@ -426,6 +428,7 @@ Console.OutLn="=Name{"
 //  OAList.OutMk=Console.OutLn
   MnemoTable.LastPopMk
 }
+>{Sep="(" Lex.ReceiverMkSet=LoadVar.FindAnd}
 >{0 Lex.ReceiverMkSet=Root.FindAnd
   MnemoTable.LineCopyAddPrevLoadSet={BackVar}
   OAList.LastLoadRefOutMk=MnemoTable.LastLoadSet}
@@ -481,6 +484,16 @@ ListAfterMnemo.Set=
 \**\VectNext.Set=
 >{Sep="]" Lex.ReceiverMkSet=Root.FindAnd}
 
+LoadVar.Set=
+>{Const Lex.ReceiverMkSet=BrackLoadVar.FindAnd
+  FUListNew.ReceivedOutMk=MnemoTable.LastCopyAttach
+ MnemoTable.LastLoadConstVarTypeSet
+}
+>{0 Console.OutLn="Var or Const is expected" Lex.Stop}
+
+BrackLoadVar.Set=
+>{Sep=")" Lex.ReceiverMkSet=Root.FindAnd}
+>{0 Console.OutLn="'('is expected" Lex.Stop}
 // ---- ALE ----
 
 
@@ -490,11 +503,11 @@ ALEStart.PrefixProgSet={
 }
 \**\ALEStart.Set=
 >{Var Lex.ReceiverMkSet=VarAfter.FindAnd
-  OAList.LastAttach={FUALUNew.OutAdrAdd}
+  OAList.LastAttach={FUALUNew.OutAdrAppend}
   FUListNew.ReceivedLoadOutMk=OAList.LastLoadSet
 }
 >{Mk Lex.ReceiverMkSet=EgAleWait.FindAnd
-  OAList.LastAttach={FUALUNew.OutMkAdd}
+  OAList.LastAttach={FUALUNew.OutMkAppend}
   FUListNew.ReceivedLoadOutMk=OAList.LastLoadSet
 }
 // >{Vect Lex.ReceiverMkSet=VectAfter.FindAnd}

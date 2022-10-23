@@ -3,6 +3,7 @@
 #include "Consts.h"
 #include "ALU.h"
 
+class Channel;
 
 class AutomatManager : public FU
 {
@@ -61,7 +62,7 @@ public:
 class Channel
 {
 public:
-    Channel(FU* Pr) { ParentFU = Pr; }
+    Channel(Channel* Pr) { ParentFU = Pr; }
 	string Name;  // имя канала
     int* CurrentCh = nullptr;  // ссылка на канал, к которому пришли данные
     int SignalOutMk = -1;  // МК выходного сигнала (для моделирования)
@@ -77,18 +78,22 @@ public:
 	double Sensit = 0;  // чувствительность
     border* Borders = nullptr;  // таблица зон сигнала
     ip OutIP;  //
-    FU* ParentFU = nullptr;  // ссылка на ФУ ввода-вывода
+	Channel* ParentFU = nullptr;  // ссылка на ФУ ввода-вывода
     FU* Archiver = nullptr;  // ссылка на ФУ-архиватор
     ALU* ParentALU = nullptr;  // ссылка на АЛУ (множество АЛУ)
     vector<void*> ALUs;  // стек стандартных функций преобразования сигнала
-    vector<int> InMks;  // буфер МК для входного сигнала
-    vector<LoadPoint> InAdrBuf;  // буфер адресов для входного сигнала
-	vector<LoadPoint> OutMkBuf;  // буфер МК для выходного сигнала
-    vector<double> PrevSignals;  // буфер предыдущих значений сигнала
+	vector<int> InMks;  // буфер МК для входного сигнала
+	vector<LoadPoint> InAdrBuf;  // буфер адресов для входного сигнала
+	vector<int> OutMkBuf;  // буфер МК для выходного сигнала
+	vector<LoadPoint> OutAdrBuf;  // буфер адресов для выходного сигнала
+	vector<double> PrevSignals;  // буфер предыдущих значений сигнала
     void* InProg = nullptr;  // ссылка на программу обработки входного сигнала
     void* OutProg = nullptr;  // ссылка на программу обработки выходного сигнала
 	void* InPollProg = nullptr;  // ссылка на программу опроса входного сигнала
 	void* OutPollProg = nullptr;  // ссылка на программу опроса выходного сигнала
+	int InAtr = 0, OutAtr = 0; // Атрибуты входного и выходного сигналов
+	int SignalArchSize = 1; // Величина архива сигналов
+	void* ReceiveProg = nullptr; // Программа, запускаемая при приходе входного сигнала
 };
 
 class InOut : public FU
@@ -106,4 +111,5 @@ public:
 	InOut(FU* BusContext, FU* Templ) : FU(BusContext) { Bus = BusContext; ProgFU(0, { 0,0 }); };
 	InOut() : FU() { Bus = nullptr; };
 	int ArchSignalVolume = 2; // Количество архивных сигналов
+	int LastReceiveChInd = -1; // Индекс канала, по которому получено последнее сообщение
 };

@@ -43,8 +43,6 @@ Manager.IniAutomataProgSet={
 }
 IntAlu.OutMk=Manager.NetGenerate // Генерация поля автоматов
 
-// Создание связей между исполнителями
-
 Alu.VectCreat // Вектор объёмов предметов
 Alu.Append=2
 Alu.Append=3
@@ -79,10 +77,10 @@ IntAlu.ProgSet={
 IntAlu.For
 
 // Установление связей между узлами на уровень ниже
-IntAlu.Set=0
 IntAlu.ForOutMk=IntAlu.Set
 IntAlu.Sub=V
 IntAlu.OutMk=IntAlu.ForSet
+IntAlu.Set=0
 IntAlu.ProgSet={
 	IntAlu.OutMk=Manager.Ind1Set=Manager.Ind2Set
 	Manager.Ind2Add=V
@@ -94,7 +92,6 @@ IntAlu.ProgSet={
 IntAlu.For
 
 // Установление связей между узлами на разных уровнях
-IntAlu.OutMk=IntAlu.ForSet
 IntAlu.Set=0
 IntAlu.ProgSet={
 	IntAlu.OutMk=Manager.Ind1Set=Manager.Ind2Set
@@ -115,17 +112,18 @@ IntAlu1.CounterExec={
 	Manager.NeitborderМк1Append=FUALUNew.Max
 }
 IntAlu.For
+
 // Запуск расчета, сбор результата
 Manager.Ind1Set=0
 IntAlu.ForOutMk=Manager.Ind1Set
 IntAlu.Set=V
-\*
+IntAlu.OutMk=Console.OutLn
 IntAlu.CounterExec={
 	Manager.Ind1ProgExec={
 	Console.OutLn="*"
-	//Alu2.OutMk=FUCellularAutomat.SendTo_0
+	Alu2.OutMk=FUCellularAutomat.SendTo_0
 }
 }
-*\
+
 // Вывод результата
 AluRez.OutMk=Console.LnOut
