@@ -11,16 +11,17 @@ MainBus.FUTypeCorrectSet=-96 // Корректировка номера типа ФУ для переноса на нов
 
 NewFU={Mnemo="Console" FUType=FUConsNew Hint="Консоль для вывода логов"}
 NewFU={Mnemo="Barrel" FUType=FUALUNew Hint="ФУ для создания нового ФУ"}
+NewFU={Mnemo="DWater" FUType=FUALUNew Hint="Аккумулятор изменения объема воды в баке"}
 NewFU={Mnemo="Autom1" FUType=FUFSM Hint="Менеджер первого автомата"}
 NewFU={Mnemo="InOut1" FUType=FUInOutNew  Hint="Устройство ввода-вывода второго автомата"}
 NewFU={Mnemo="Start1" FUType=FUListNew Hint="Стартовое состояние первого автомата"}
 NewFU={Mnemo="Fulling" FUType=FUListNew Hint="Состояние наполнения бака"}
 NewFU={Mnemo="AlarmStage" FUType=FUListNew Hint="Состояние угрозы переполнения бака"}
-NewFU={Mnemo="AlarmDrain" FUType=FUListNew Hint="Состояние аварийного сброса воды"}
+NewFU={Mnemo="AlarmDrainStage" FUType=FUListNew Hint="Состояние аварийного сброса воды"}
 NewFU={Mnemo="Autom2" FUType=FUFSM Hint="Менеджер второго автомата"}
 NewFU={Mnemo="Start2" FUType=FUListNew Hint="Стартовое состояние первого автомата"}
+NewFU={Mnemo="InOut2" FUType=FUInOutNew  Hint="Устройство ввода-вывода второго автомата"}
 NewFU={Mnemo="DrainStage" FUType=FUListNew Hint="Состояние слива излишней воды"}
-NewFU={Mnemo="AlarmDrainStage" FUType=FUListNew Hint="Состояние аварийного сброса воды"}
 NewFU={Mnemo="TactCounter" FUType=FUIntAluNew Hint="Счетчик количества тактов моделирования"}
 NewFU={Mnemo="Radom" FUType=FUALUNew Hint="Генерация случайного прибытия и расходования воды"}
 MainBus.PartialResetSet \\ Запомнить число созданных ФУ
@@ -37,6 +38,7 @@ BarrelLowLevel#200 // Нижний уровень
 BarrelLowAlarmLevel#100 // Нижний критический уровень
 
 AlarmHightSignal // Аварийныйы сигнал переполнения бака
+NoAlarmHightSignal // Отмена аварийныйы сигнал переполнения бака
 AlarmLowSignal // Аварийныйы сигнал опустошения бака
 HightSignal // Сигнал превышения верхнего нормального уровня бака
 LowSignal // Сигнал понижения уровня ниже нижнего пределела
@@ -45,12 +47,12 @@ NormalSignal  // Приемлемый уровень воды
 Barrel.Set=500 // Начальный уровень воды в баке
 Barrel.PostfixProgSet={Barrel.OutMk=InOut1.SignalSend_0} // Программа пересылки данных датчика уровня воды на устройство ввода-вывода первого контроллера
 
-InOut1.ChCreate
+InOut1.ChCreate="Water Level"
 InOut1.NameSet="Barrel"
 
 InOut1.BorderSet=BarrelHightAlarmLevel
 InOut1.BorderUpProgSet={Autom1.SignalSet={AlarmHightSignal }} // Превышение верхнего аварийного уровня воды
-InOut1.BorderDownProgSet={Autom1.SignalSet={HightSignal }} // Снижение уровня воды меньше верхнего аварийного уровня
+InOut1.BorderDownProgSet={Autom1.SignalSet={NoAlarmHightSignal}} // Снижение уровня воды меньше верхнего аварийного уровня сигнал отмены превышения верхнего аварийного уровня
 
 InOut1.BorderSet=BarrelHightLevel
 InOut1.BorderUpProgSet={Autom1.SignalSet={HightSignal }}
@@ -63,6 +65,40 @@ InOut1.BorderDownProgSet={Autom1.SignalSet={LowSignal }}
 InOut1.BorderSet=BarrelLowAlarmLevel
 InOut1.BorderUpProgSet={Autom1.SignalSet={NormalSignal }}
 InOut1.BorderDownProgSet={Autom1.SignalSet={LowSignal }}
+
+InOut1.ChCreate="PumpOn"
+InOut1.ChSendProgSet={DWater.Sum=dFull // Включаем насос закачивания
+	Console.Out="PumpOn"}
+
+InOut1.ChCreate="PumpOff"
+InOut1.ChSendProgSet={DWater.Sub=dFull // Включаем насос закачивания
+	Console.Out="Pump=Off"}
+
+Autom1.RecieverMkSet=Start1.FindAnd // Начальное состояние первого автомата
+\**\Start1.Set=
+>{BarrelLowLevel InOut1.SignalSend_1=1 Autom1.RecieverMkSet=Fulling.FindAnd}
+>{AlarmHightSignal InOut1.SignalSend_1=0 AlarmStage.FindAnd}
+
+\**\Fulling.Set=
+>{HightSignal InOut1.SignalSend_0=1 Autom1.RecieverMkSet=Start1.FindAnd}
+>{AlarmHightSignal InOut1.SignalSend_1=0 Autom1.RecieverMkSet=AlarmDrainStage.FindAnd }
+
+\**\AlarmDrainStage.Set=
+>{NoAlarmHightSignal Autom1.RecieverMkSet=Start1.FindAnd Autom2.SignalSet={NoAlarmHightSignal}}
+
+InOut2.ChCreate="Water Alarm drein"
+InOut2.ChSendProgSet={Console.OutLn="Water alarm drein" DWater.Sub=dAlarmDrin}
+InOut2.ChCreate="Water Alarm drein stop"
+InOut2.ChSendProgSet={Console.OutLn="Water alarm drein stop" DWater.Sum=dAlarmDrin}
+
+Autom2.RecieverMkSet=Start2.FindAnd // Начальное состояние второго автомата
+
+\**\Start2.Set=
+>{LowSignal InOut2.SignalSend_0=1 Autom2.RecieverMkSet=DrainStage.FindAnd}
+>{AlarmLowSignal InOut2.SignalSend_2=1 Autom2.RecieverMkSet=AlarmDrainStage.FindAnd}
+
+\**\AlarmDrainStage.Set=
+>{NoAlarmHightSignal InOut2.SignalSend_1=1 Autom2.RecieverMkSet=Start2}
 
 TactCounter.ProgSet={ // Программа опроса датчика уровня воды
 	Console.Out="Water level: " InOut1.SignalOutMk=Console.OutLn // Вывести объем воды в баке

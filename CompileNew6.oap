@@ -4923,7 +4923,7 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 	FuTypeIndexes.CellSet=105 FuTypeMkTrees.CellSet=
    {
 //	Obj={Mk= Mnemo="" Hint=""}
-  	Obj={Mk=3 Mnemo="RecieverMKSet" Hint="Переслатьзначение ресивера"}
+  	Obj={Mk=3 Mnemo="RecieverMkSet" Hint="Переслатьзначение ресивера"}
   	Obj={Mk=4 Mnemo="TemplAutoClearSet" Hint="Установить флаг автоматического сброса шаблона поиска при установке МК для получателя нового сигнала"}
   	Obj={Mk=5 Mnemo="ReceiverSet" Hint="Установить ссылку на ФУ-приемника"}
 
