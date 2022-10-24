@@ -28,8 +28,8 @@ NItem#5  // Количество предметов для расположения в рюкзаке
 IntAlu.Set=V
 IntAlu.Mul=NItem // Вычислить количество узлов в сетке
 
-Manager.IniAutomataProgSet={
-	FUCellularAutomat.FiringProgSet={
+Manager.IniAutomataProgSet={ // Программа инициализации каждого исполнительного автомата
+	FUCellularAutomat.FiringProgSet={ // Программа при приходе всех данных
 		FUCellularAutomat.In_2_OutMk=SetAlu
 		FUCellularAutomat.In_0_OutMk=AddAlu
 		FUCellularAutomat.In_1_OutMk=MaxAlu
@@ -37,9 +37,9 @@ Manager.IniAutomataProgSet={
 		FUCellularAutomat.AccumOutMk=FUCellularAutomat.SendTo_1
 		FUCellularAutomat.AccumOutMk=FUCellularAutomat.SendTo_2
 	}
-	FUCellularAutomat.N_InSet=1
-	FUCellularAutomat.IndSet=0
-	FUCellularAutomat.ReceiveProgSet={FUCellularAutomat.In_0_OutMk=FUCellularAutomat.SendTo_0} // Передать вправо
+	FUCellularAutomat.N_InSet=1 // Ожидаемое количество входных данных
+	FUCellularAutomat.IndSet=0 // Индекс устанавливаем в 0
+	FUCellularAutomat.ReceiveProgSet={FUCellularAutomat.In_0_OutMk=FUCellularAutomat.SendTo_0} // Программа Передать вправо цену товара
 }
 IntAlu.OutMk=Manager.NetGenerate // Генерация поля автоматов
 
@@ -56,23 +56,24 @@ Alu2.Append=4
 Alu2.Append=3
 Alu2.Append=8
 Alu2.Append=9
-Alu.IndAutoIncSet=1
+Alu.IndAutoIncSet=1 // Настройка автоматического изменения индекса вектор
 Alu2.IndAutoIncSet=1
 // Заполнение ссылок в сетке автоматов
-Manager.Step1Set=1
-Manager.Step2Set=1
-IntAlu.OutMk=IntAlu.ForSet
+Manager.Step1Set=1 // Настройка автоматическо изменения 1-го индекса
+Manager.Step2Set=1 // Настройка автоматическо изменения 2-го индекса
+
+IntAlu.OutMk=IntAlu.ForSet // Настройка цикла генерации сетки
 IntAlu.StepSet=V
 
 // Установление связей между узлами на одном уровне
 IntAlu.Set=0
 IntAlu.ProgSet={
 	IntAlu.OutMk=Manager.Ind1Set=Manager.Ind2Set
-	Manager.Ind2Add=V
+	Manager.Ind2Add=1
 	IntAlu1.Set=V
 	IntAlu1.Dec
-	IntAlu1.CounterExec={Manager.Neitborder1Append
-	Manager.NeitborderМк1Append=FUCellularAutomat.In_0_In}
+	IntAlu1.CounterExec={Manager.Neitborder1Append // Цикл расстановки ссылок (Neitborder1Append - добавлять в автомата с индексом 1 автомат с индексом 2 в качестве соседа)
+	Manager.NeitborderМк1Append=FUCellularAutomat.In_0_In} // Добавить МК для соседа (т.е. МК прихода 0-го операнда)
 }
 IntAlu.For
 
@@ -96,10 +97,10 @@ IntAlu.Set=0
 IntAlu.ProgSet={
 	IntAlu.OutMk=Manager.Ind1Set=Manager.Ind2Set
 	Manager.Ind2Add=V
-	Alu.OutMk=Manager.Ind2Add
+	Alu.OutMk=Manager.Ind2Add // Задать смещение сетки по объему
 	IntAlu1.Set=V
-	Alu.OutMk=IntAlu1.Sub
-	IntAlu1.CounterExec={Manager.Neitborder2Append Manager.NeitborderМк1Append=FUCellularAutomat.In_2_In}
+	Alu.OutMk=IntAlu1.Sub // Задать количество итераций цикла
+	IntAlu1.CounterExec={Manager.Neitborder2Append Manager.NeitborderМк1Append=FUCellularAutomat.In_2_In} // Генерация косых ссыслок
 	Manager.Ind2ProgExec={FUCellularAutomat.N_InAdd=1}
 }
 IntAlu.For
@@ -109,7 +110,7 @@ IntAlu1.Set=V
 IntAlu.ForOutMk=Manager.Ind1Set // Установить индекс первого ФУ последнего ряда
 IntAlu1.CounterExec={
 	AluRez.ContextOutMk=Manager.Neitborder1Append
-	Manager.NeitborderМк1Append=FUALUNew.Max
+	Manager.NeitborderМк1Append=FUALUNew.Max // 
 }
 IntAlu.For
 
@@ -120,8 +121,8 @@ IntAlu.Set=V
 IntAlu.OutMk=Console.OutLn
 IntAlu.CounterExec={
 	Manager.Ind1ProgExec={
-	Console.OutLn="*"
-	Alu2.OutMk=FUCellularAutomat.SendTo_0
+	//Console.OutLn="*"
+	Alu2.OutMk=FUCellularAutomat.SendTo_0 // Переслать цену предмета на автомат в начале строки сетки
 }
 }
 

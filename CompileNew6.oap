@@ -4770,13 +4770,49 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
    {
 //	Obj={Mk= Mnemo="" Hint=""}
   	Obj={Mk=1 Mnemo="IndSet" Hint="Установить индекс текущего канала"}
-  	Obj={Mk=2 Mnemo="AutoIncSet" Hint="установить автоматический инкремент (по умолчанию 0)"}
+  	Obj={Mk=2 Mnemo="IndAdd" Hint="Прибавление к индексу значение из нагрузки (использовать, например, для инкремента индекса)"}
   	Obj={Mk=3 Mnemo="IndOut" Hint="выдать значение текущего индекса"}
   	Obj={Mk=4 Mnemo="IndOutMk" Hint="выдать МК со значением текущего индекса"}
-  	Obj={Mk=5 Mnemo="NameOut" Hint="выдать значение(имя?) текущего индекса"}
-  	Obj={Mk=6 Mnemo="NameOutMk" Hint="выдать МК со значением(именем) текущего индекса"}
-  	Obj={Mk=7 Mnemo="NameSet" Hint="установить имя текущего канала"}
-	Obj={Mk=8 Mnemo="NameIndSet" Hint="установить индекс по имени канала"}
+  	Obj={Mk=5 Mnemo="AutoIncSet" Hint="установить автоматический инкремент (по умолчанию 0)"}
+  	Obj={Mk=6 Mnemo="OutOfChRangeErrProgSet" Hint="Установить программу обработки ошибки выхода за пределеы диапазона индексов канала"}
+  	Obj={Mk=7 Mnemo="IndLastSet" Hint="Установить последний индекс канала в качестве текущего канала"}
+
+  	Obj={Mk=10 Mnemo="NameOut" Hint="выдать значение(имя?) текущего индекса"}
+  	Obj={Mk=11 Mnemo="NameOutMk" Hint="выдать МК со значением(именем) текущего индекса"}
+  	Obj={Mk=12 Mnemo="NameSet" Hint="установить имя текущего канала"}
+	Obj={Mk=9 Mnemo="NameIndSet" Hint="Установить индекс по имени канала"}
+	Obj={Mk=15 Mnemo="ChCountOut" Hint="Выдать количество каналов"}
+	Obj={Mk=16 Mnemo="ChCountOutMk" Hint="Выдать МК с количеством каналов;"}
+	Obj={Mk=17 Mnemo="ChLastOut" Hint="Вывод индекса последнего канала"}
+	Obj={Mk=18 Mnemo="ChLastOutMk" Hint="Вывод МК с индексом последнего канала"}
+	Obj={Mk=20 Mnemo="ChClone" Hint="Клонирование канала с индексом Ind"}
+	Obj={Mk=21 Mnemo="ChCreate" Hint="Создать новый канал"}
+	Obj={Mk=22 Mnemo="ChDelete" Hint="Удалить канал с индексом Ind"}
+	Obj={Mk=30 Mnemo="ChInAdrAdd" Hint="Добавить адрес записи входного сигнала"}
+	Obj={Mk=31 Mnemo="ChInAtrSet" Hint="Очистить буфер адресов для записи входного сигнала"}
+	Obj={Mk=32 Mnemo="ChInMkAdd" Hint="Добавить милликоманду для рассылки входного сигнала"}
+	Obj={Mk=33 Mnemo="ChInAtrSet" Hint="Установить атрибут сигнала"}
+	Obj={Mk=34 Mnemo="ChInMkAtrAdd" Hint="Добавить МК и атрибут для рассылки (FUName.ChMkAtrAdd=Mk=Atr)"}
+	Obj={Mk=35 Mnemo="ChOutAdrAdd" Hint="Добавить адрес для записи выходного значения"}
+	Obj={Mk=36 Mnemo="ChOutAdrReset" Hint="Очистить буфер адресов для записи входного сигнала"}
+	Obj={Mk=37 Mnemo="ChOutMkAdd" Hint="Добавить МК для выходного сигнала"}
+	Obj={Mk=38 Mnemo="ChOutAtrSet" Hint="Добавить атрибут для выходного сигнала"}
+	Obj={Mk=39 Mnemo="ChOutMkAtrAdd" Hint="Добавить МК и атрибут для выходного сигнала (FUName.ChOutMkAtrAdd=2=4)"}
+	Obj={Mk=40 Mnemo="ChOutMkClear" Hint="Очистить буфер МК для выходного сигнала"}
+
+	Obj={Mk=50 Mnemo="ChReceiveProgSet" Hint="Установить программу реакции на входной сигнал"}
+	Obj={Mk=51 Mnemo="ChSendProgSet" Hint="Установить программу реакции на входной сигнал"}
+	Obj={Mk=53 Mnemo="ChInPollProgSet" Hint="Установить программу опроса входного сигнала"}
+	Obj={Mk=54 Mnemo="ChOutPollProgSet" Hint="Установить программы опроса выходного сигнала"}
+	Obj={Mk=58 Mnemo="ChDiffValOut" Hint="Выдать разницу двух последних значений текущего канала"}
+	Obj={Mk=59 Mnemo="ChDiffValOutMk" Hint="Выдать МК с разницей двух последних значений текущего канала"}
+	Obj={Mk=60 Mnemo="BorderSet" Hint="Установить значение порога"}
+	Obj={Mk=61 Mnemo="BorderUpProgSet" Hint="Установить программу реакции на проход порога снизу вверх"}
+	Obj={Mk=62 Mnemo="BorderDownProgSet" Hint="Установить программу реакции на проход порога свезху вниз"}
+	Obj={Mk=63 Mnemo="BorderReset" Hint="Сброс порогов"}
+	Obj={Mk=64 Mnemo="BorderActiveSet" Hint="Установить флаг активность порогов (true по умолчанию)"}
+	Obj={Mk=65 Mnemo="ChPollStepSet" Hint="Установить период опроса канала"}
+	
 	Obj={Mk=10 Mnemo="ChannelCreate" Hint="на входе количество создаваемых каналов"}
 
 	Obj={Mk=15 Mnemo="NChannelsOut" Hint="Выдать количество каналов"}
@@ -4803,7 +4839,7 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 
 
      Obj={Mnemo="Signal out" Hint="Выдача сигнала" Comment
-       Obj={Mk=99 Mnemo="SignalCurrentOut" Hint="выдача текущего сигнала"}
+       Obj={Mk=99 Mnemo="SignalOut" Hint="выдача текущего сигнала"}
        Obj={Mk=100 Mnemo="SignalOut_0" Hint="выдача сигнала 0 канала"}
        Obj={Mk=101 Mnemo="SignalOut_1" Hint="выдача сигнала 1 канала"}
        Obj={Mk=102 Mnemo="SignalOut_2" Hint="выдача сигнала 2 канала"}
@@ -4823,7 +4859,7 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
      }
 
      Obj={Mnemo="Signal out Mk" Hint="Выдача МК со значением сигнала" Comment
-       Obj={Mk=149 Mnemo="SignaCurrentlOutMk" Hint="выдача мк со значением текущего сигнала 0 канала"}
+       Obj={Mk=149 Mnemo="SignalOutMk" Hint="выдача мк со значением текущего сигнала 0 канала"}
        Obj={Mk=150 Mnemo="SignalOutMk_1" Hint="выдача мк со значением сигнала 0 канала"}
        Obj={Mk=151 Mnemo="SignalOutMk_2" Hint="выдача мк со значением сигнала 1 канала"}
        Obj={Mk=152 Mnemo="SignalOutMk_3" Hint="выдача мк со значением сигнала 2 канала"}
@@ -4841,23 +4877,44 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
        Obj={Mk=164 Mnemo="SignalOutMk_15" Hint="выдача мк со значением сигнала 14 канала"}
        Obj={Mk=165 Mnemo="SignalOutMk_15" Hint="выдача мк со значением сигнала 15 канала"}
      }
-     Obj={Mnemo="Signal set" Hint="Установка сигнала" Comment
-       Obj={Mk=200 Mnemo="SignalSet_0" Hint="установить сигнал 0 канала"}
-	  Obj={Mk=201 Mnemo="SignalSet_1" Hint="установить сигнал 1 канала"}
-	  Obj={Mk=202 Mnemo="SignalSet_2" Hint="установить сигнал 2 канала"}
-	  Obj={Mk=203 Mnemo="SignalSet_3" Hint="установить сигнал 3 канала"}
-	  Obj={Mk=204 Mnemo="SignalSet_4" Hint="установить сигнал 4 канала"}
-	  Obj={Mk=205 Mnemo="SignalSet_5" Hint="установить сигнал 5 канала"}
-	  Obj={Mk=206 Mnemo="SignalSet_6" Hint="установить сигнал 6 канала"}
-	  Obj={Mk=207 Mnemo="SignalSet_7" Hint="установить сигнал 7 канала"}
-	  Obj={Mk=208 Mnemo="SignalSet_8" Hint="установить сигнал 8 канала"}
-	  Obj={Mk=209 Mnemo="SignalSet_9" Hint="установить сигнал 9 канала"}
-	  Obj={Mk=210 Mnemo="SignalSet_10" Hint="установить сигнал 10 канала"}
-	  Obj={Mk=211 Mnemo="SignalSet_11" Hint="установить сигнал 11 канала"}
-	  Obj={Mk=212 Mnemo="SignalSet_12" Hint="установить сигнал 12 канала"}
-	  Obj={Mk=213 Mnemo="SignalSet_13" Hint="установить сигнал 13 канала"}
-	  Obj={Mk=214 Mnemo="SignalSet_14" Hint="установить сигнал 14 канала"}
-	  Obj={Mk=215 Mnemo="SignalSet_15" Hint="установить сигнал 15 канала"}
+     Obj={Mnemo="SignalReceive" Hint="Принять сигнал" Comment
+       Obj={Mk=199 Mnemo="SignalReceive" Hint="установить сигнал 0 канала"}
+       Obj={Mk=200 Mnemo="SignalReceive_0" Hint="установить сигнал 0 канала"}
+	  Obj={Mk=201 Mnemo="SignalReceive_1" Hint="установить сигнал 1 канала"}
+	  Obj={Mk=202 Mnemo="SignalReceive_2" Hint="установить сигнал 2 канала"}
+	  Obj={Mk=203 Mnemo="SignalReceive_3" Hint="установить сигнал 3 канала"}
+	  Obj={Mk=204 Mnemo="SignalReceive_4" Hint="установить сигнал 4 канала"}
+	  Obj={Mk=205 Mnemo="SignalReceive_5" Hint="установить сигнал 5 канала"}
+	  Obj={Mk=206 Mnemo="SignalReceive_6" Hint="установить сигнал 6 канала"}
+	  Obj={Mk=207 Mnemo="SignalReceive_7" Hint="установить сигнал 7 канала"}
+	  Obj={Mk=208 Mnemo="SignalReceive_8" Hint="установить сигнал 8 канала"}
+	  Obj={Mk=209 Mnemo="SignalReceive_9" Hint="установить сигнал 9 канала"}
+	  Obj={Mk=210 Mnemo="SignalReceive_10" Hint="установить сигнал 10 канала"}
+	  Obj={Mk=211 Mnemo="SignalReceive_11" Hint="установить сигнал 11 канала"}
+	  Obj={Mk=212 Mnemo="SignalReceive_12" Hint="установить сигнал 12 канала"}
+	  Obj={Mk=213 Mnemo="SignalReceive_13" Hint="установить сигнал 13 канала"}
+	  Obj={Mk=214 Mnemo="SignalReceive_14" Hint="установить сигнал 14 канала"}
+	  Obj={Mk=215 Mnemo="SignalReceive_15" Hint="установить сигнал 15 канала"}
+     }
+
+     Obj={Mnemo="Signal Send" Hint="Выдать сигнал" Comment
+       Obj={Mk=249 Mnemo="SignalSend" Hint="Переслать сигнал Ind канала"}
+       Obj={Mk=250 Mnemo="SignalSend_0" Hint="Переслать сигнал 0 канала"}
+	  Obj={Mk=201 Mnemo="SignalSend_1" Hint="Переслать сигнал 1 канала"}
+	  Obj={Mk=202 Mnemo="SignalSend_2" Hint="Переслать сигнал 2 канала"}
+	  Obj={Mk=203 Mnemo="SignalSend_3" Hint="Переслать сигнал 3 канала"}
+	  Obj={Mk=204 Mnemo="SignalSend_4" Hint="Переслать сигнал 4 канала"}
+	  Obj={Mk=205 Mnemo="SignalSend_5" Hint="Переслать сигнал 5 канала"}
+	  Obj={Mk=206 Mnemo="SignalSend_6" Hint="Переслать сигнал 6 канала"}
+	  Obj={Mk=207 Mnemo="SignalSend_7" Hint="Переслать сигнал 7 канала"}
+	  Obj={Mk=208 Mnemo="SignalSend_8" Hint="Переслать сигнал 8 канала"}
+	  Obj={Mk=209 Mnemo="SignalSend_9" Hint="Переслать сигнал 9 канала"}
+	  Obj={Mk=210 Mnemo="SignalSend_10" Hint="Переслать сигнал 10 канала"}
+	  Obj={Mk=211 Mnemo="SignalSend_11" Hint="Переслать сигнал 11 канала"}
+	  Obj={Mk=212 Mnemo="SignalSend_12" Hint="Переслать сигнал 12 канала"}
+	  Obj={Mk=213 Mnemo="SignalSend_13" Hint="Переслать сигнал 13 канала"}
+	  Obj={Mk=214 Mnemo="SignalSend_14" Hint="Переслать сигнал 14 канала"}
+	  Obj={Mk=215 Mnemo="SignalSend_15" Hint="Переслать сигнал 15 канала"}
      }
      Obj=CommonMkList
   }
@@ -4866,7 +4923,7 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 	FuTypeIndexes.CellSet=105 FuTypeMkTrees.CellSet=
    {
 //	Obj={Mk= Mnemo="" Hint=""}
-  	Obj={Mk=3 Mnemo="RecieverMKSet" Hint="Установить значение ресивера"}
+  	Obj={Mk=3 Mnemo="RecieverMKSet" Hint="Переслатьзначение ресивера"}
   	Obj={Mk=4 Mnemo="TemplAutoClearSet" Hint="Установить флаг автоматического сброса шаблона поиска при установке МК для получателя нового сигнала"}
   	Obj={Mk=5 Mnemo="ReceiverSet" Hint="Установить ссылку на ФУ-приемника"}
 
@@ -5081,10 +5138,10 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 // ALUNew
      FuTypeIndexes.CellSet=113 FuTypeMkTrees.CellSet=
    {
-  	Obj={Mk=1 Mnemo="Out" Hint="Выдать значение аккумулятора"}
-  	Obj={Mk=2 Mnemo="OutMk" Hint="Выдать МК со значением аккумулятора"}
+  	Obj={Mk=2 Mnemo="Out" Hint="Выдать значение аккумулятора"}
+  	Obj={Mk=3 Mnemo="OutMk" Hint="Выдать МК со значением аккумулятора"}
 
-  	Obj={Mk=15 Mnemo="Push" Hint="Добавить новый аккумулятор (аналог Set, только сначала создается новый аккумулятор)"}
+  	Obj={Mk=72 Mnemo="Push" Hint="Добавить новый аккумулятор (аналог Set, только сначала создается новый аккумулятор)"}
   	Obj={Mk=16 Mnemo="Pop" Hint="Выдать значение аккумулятора и удалить аккмумулятор"}
   	Obj={Mk=17 Mnemo="PopMk" Hint="Выдать МК со значением аккумулятора и удалить аккмумулятор"}
 
@@ -5101,7 +5158,7 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 
   Obj={Mnemo="Ariphmetics" Hint="Арифметические функции" Comment
 //  	Obj={Mk=100 Mnemo="AccumReset" Hint="Сбросить аккумулятор"}
-  	Obj={Mk=26 Mnemo="Set" Hint="Установить значение в аккумулятор"}
+  	Obj={Mk=1 Mnemo="Set" Hint="Установить значение в аккумулятор"}
   	Obj={Mk=25 Mnemo="Get" Hint="Установить значение в аккумулятор"}
   	Obj={Mk=34 Mnemo="Inc" Hint="Декремент (если Load=nil инкремент аккумулятора)"}
   	Obj={Mk=35 Mnemo="Dec" Hint="Инкремент (если Load=nil инкремент аккумулятора)"}
@@ -5429,7 +5486,7 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 	 Obj={Mk=37 Mnemo="Context2Out" Hint="Выдать контекст второго ФУ-автомата"}
 	 Obj={Mk=38 Mnemo="Context2OutMk" Hint="Выдать МК с контекстом второго ФУ-автомата"}
 	 Obj={Mk=40 Mnemo="ContextAddMkSet" Hint="Установить МК для добавления контекста соседа исполнительного ФУ"}
-	 Obj={Mk=41 Mnemo="MkAddMkSet" Hint="Установить МК для добавления МК для соседа исполнительного ФУ"}
+	 Obj={Mk=41 Mnemo="MkAppendMkSet" Hint="Установить МК для добавления МК для соседа исполнительного ФУ"}
 
 	 Obj={Mk=50 Mnemo="Ind1ProgExec" Hint="Выполнить программу для первого ФУ-автомата"}
 	 Obj={Mk=51 Mnemo="Ind2ProgExec" Hint="Выполнить программу для второго ФУ-автомата"}

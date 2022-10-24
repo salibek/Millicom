@@ -574,13 +574,13 @@ void CellularAutomatManager::ProgFU(int MK, LoadPoint Load)
 		Collector = Load.Point;
 		break;
 	case 15: // FiringProgSet Установить программу вычисления результата
-		FiringProg = Load.Point;
+//		FiringProg = Load.Point;
 		break;
 	case 16: // ReceiveProgSet Установить программу, запускаемую при приходе одного значения от соседа
-		ReceiveProg = Load.Point;
+//		ReceiveProg = Load.Point;
 		break;
 	case 17: // InCounterSet Установить счетчик входных данных
-		InCounter = Load.toInt();
+//		InCounter = Load.toInt();
 		break;
 	case 28: // Ind1Add Увеличить значение первого счетчика
 		Ind1 += Load.toInt();
@@ -714,8 +714,8 @@ void CellularAutomatManager::ProgFU(int MK, LoadPoint Load)
 		{
 			i.Manager = this; // Установить ссылку на менеджера
 			i.Collector = Collector; // Установит ссылку на коллектор
+			i.ProgFU(FUIndSetMk, { Cint,&k }); // Установить индекс ФУ
 			i.ProgExec(iniAutmataProg); // Запуск программы инициализации каждого автомата
-			i.ProgFU(FUIndSetMk, {Cint,&k}); // Установить индекс ФУ
 			k++;
 		}
 	}

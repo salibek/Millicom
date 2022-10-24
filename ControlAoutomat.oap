@@ -1,0 +1,71 @@
+NewFU={Mnemo="Main_Bus" MkBegRange=1000 FUType=FUBusNew} // Описание Bus
+
+\\ Для создания индексного файла сначала надо запустить программу !!!!
+ CapsManager.IndexVectCreate=20000
+ CapsManager.IpIcIdOutMk=MainBus.IpIcIdSet
+ CapsManager.IpIcIdOutMk=VariableManager.IpIcIdSet
+ CapsManager.IpIcIdOutMk=ListSyntez.IpIcIdSet
+ MainBus.ModeSet=1
+\\ -------------------------------------- \\
+MainBus.FUTypeCorrectSet=-96 // Корректировка номера типа ФУ для переноса на новую ОА-платформу
+
+NewFU={Mnemo="Console" FUType=FUConsNew Hint="Консоль для вывода логов"}
+NewFU={Mnemo="Barrel" FUType=FUALUNew Hint="ФУ для создания нового ФУ"}
+NewFU={Mnemo="Autom1" FUType=FUFSM Hint="Менеджер первого автомата"}
+NewFU={Mnemo="InOut1" FUType=FUInOutNew  Hint="Устройство ввода-вывода второго автомата"}
+NewFU={Mnemo="Start1" FUType=FUListNew Hint="Стартовое состояние первого автомата"}
+NewFU={Mnemo="Fulling" FUType=FUListNew Hint="Состояние наполнения бака"}
+NewFU={Mnemo="AlarmStage" FUType=FUListNew Hint="Состояние угрозы переполнения бака"}
+NewFU={Mnemo="AlarmDrain" FUType=FUListNew Hint="Состояние аварийного сброса воды"}
+NewFU={Mnemo="Autom2" FUType=FUFSM Hint="Менеджер второго автомата"}
+NewFU={Mnemo="Start2" FUType=FUListNew Hint="Стартовое состояние первого автомата"}
+NewFU={Mnemo="DrainStage" FUType=FUListNew Hint="Состояние слива излишней воды"}
+NewFU={Mnemo="AlarmDrainStage" FUType=FUListNew Hint="Состояние аварийного сброса воды"}
+NewFU={Mnemo="TactCounter" FUType=FUIntAluNew Hint="Счетчик количества тактов моделирования"}
+NewFU={Mnemo="Radom" FUType=FUALUNew Hint="Генерация случайного прибытия и расходования воды"}
+MainBus.PartialResetSet \\ Запомнить число созданных ФУ
+MainBus.ModeSet=2
+
+TactCounter.Set=50 // КОличество тактов моделирования
+dFull=3       // Скорость залива по команде системы управления
+dDrain=2		// Скорость слива по коменде системы управления
+dAlarmDrin=5  // Скорость аварийного слива в единицу времени
+
+BarrelHightAlarmLevel#900 // Верхний книтический уровень
+BarrelHightLevel#800 // Верхний уровень
+BarrelLowLevel#200 // Нижний уровень
+BarrelLowAlarmLevel#100 // Нижний критический уровень
+
+AlarmHightSignal // Аварийныйы сигнал переполнения бака
+AlarmLowSignal // Аварийныйы сигнал опустошения бака
+HightSignal // Сигнал превышения верхнего нормального уровня бака
+LowSignal // Сигнал понижения уровня ниже нижнего пределела
+NormalSignal  // Приемлемый уровень воды
+
+Barrel.Set=500 // Начальный уровень воды в баке
+Barrel.PostfixProgSet={Barrel.OutMk=InOut1.SignalSend_0} // Программа пересылки данных датчика уровня воды на устройство ввода-вывода первого контроллера
+
+InOut1.ChCreate
+InOut1.NameSet="Barrel"
+
+InOut1.BorderSet=BarrelHightAlarmLevel
+InOut1.BorderUpProgSet={Autom1.SignalSet={AlarmHightSignal }} // Превышение верхнего аварийного уровня воды
+InOut1.BorderDownProgSet={Autom1.SignalSet={HightSignal }} // Снижение уровня воды меньше верхнего аварийного уровня
+
+InOut1.BorderSet=BarrelHightLevel
+InOut1.BorderUpProgSet={Autom1.SignalSet={HightSignal }}
+InOut1.BorderDownProgSet={Autom1.SignalSet={NormalSignal }}
+
+InOut1.BorderSet=BarrelLowLevel
+InOut1.BorderUpProgSet={Autom1.SignalSet={NormalSignal }}
+InOut1.BorderDownProgSet={Autom1.SignalSet={LowSignal }}
+
+InOut1.BorderSet=BarrelLowAlarmLevel
+InOut1.BorderUpProgSet={Autom1.SignalSet={NormalSignal }}
+InOut1.BorderDownProgSet={Autom1.SignalSet={LowSignal }}
+
+TactCounter.ProgSet={ // Программа опроса датчика уровня воды
+	Console.Out="Water level: " InOut1.SignalOutMk=Console.OutLn // Вывести объем воды в баке
+	Barrel.OutMk=InOut1.SignalReceive_0 // Передать уровень воду на устройство ввода-вывода первого управляющего автмомата
+}
+

@@ -90,6 +90,8 @@ void	ALU::error_msg(int error_code)
 
 void ALU::ProgFU(int MK, LoadPoint Load)
 {
+	ProgExec(PrefixProg); // Выполнить префиксную программу
+
 	bool LoadDelFlag = false; // Флаг удаления нагрузки со временными данными
 	if (MK == ProgExecMk || MK == CalcMk) // выполнение программы
 	{
@@ -551,6 +553,7 @@ void ALU::ProgFU(int MK, LoadPoint Load)
 		accumVect = &Stack.back().accumVect;
 		accumType = Stack.back().accumType;
 	}
+	ProgExec(PostfixProg); // Выполнить постфиксную программу
 }
 
 void ALU::VectOperation(int MK, LoadPoint Load) // Реализацая векторных операций

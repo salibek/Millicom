@@ -1,6 +1,7 @@
 16 1
-C:\Users\salib\YandexDisk\MillicomNew\Millicom\ConsTest.oap 
 C:\Users\salib\YandexDisk\MillicomNew\Millicom\Bag2.oap 
+C:\Users\salib\YandexDisk\MillicomNew\Millicom\ControlAoutomat.oap 
+C:\Users\salib\YandexDisk\MillicomNew\Millicom\ConsTest.oap 
 C:\Users\salib\YandexDisk\MillicomNew\Millicom\ALU_test.oap 
 C:\Users\salib\YandexDisk\Millicom\ALU_test2.oap 
 C:\Users\salib\YandexDisk\MillicomNew\Millicom\ALU_test2.oap 
@@ -14,4 +15,3 @@ C:\Users\salib\YandexDisk\MillicomNew\Millicom\ModuleTest.oap
 C:\Users\salib\YandexDisk\MillicomNew\Millicom\ModuleTest 
 C:\Users\salib\YandexDisk\MillicomNew\Millicom\ModuleTest2.oap 
 C:\Users\salib\YandexDisk\MillicomNew\Millicom\include.oap 
-C:\Users\salib\YandexDisk\Millicom\CompLab.oap 
