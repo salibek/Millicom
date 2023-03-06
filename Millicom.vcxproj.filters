@@ -84,9 +84,6 @@
     <ClCompile Include="Bag.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="Simplex.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
     <ClCompile Include="ConfineSimple.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
@@ -179,13 +176,10 @@
     <ClInclude Include="Bag.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="Simplex.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
     <ClInclude Include="ConfineSimple.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="CellularAutomat.h">
+    <ClInclude Include="CellularAutomata.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="IntAlu.h">

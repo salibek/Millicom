@@ -8,32 +8,262 @@
 
 using namespace std;
 
+bool LoadPoint::isDigit() {
+	if (Point == nullptr) return false;
+	register unsigned int t = Type;
+	if (Ind >= 0)
+		if (Type >> 1 == DLoadVect)
+			if (((LoadVect_type)Point)->at(Ind).Point == nullptr) return false; else t = ((LoadVect_type)Point)->at(Ind).Type;
+		else if (Type >> 1 == DIC)	switch (Ind % 3) {
+			case 0: return false;
+			case 1: return true;
+			case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point==nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
+		}
+	return t >> 1 == Dint || t >> 1 == Dchar || t >> 1 == Dfloat || t >> 1 == Ddouble;
+}; // Число?}
+
+bool LoadPoint::isDigitBool() {
+	if (Point == nullptr) return false;
+	register unsigned int t = Type;
+	if (Ind >= 0)
+		if (Type >> 1 == DLoadVect)
+			if (((LoadVect_type)Point)->at(Ind).Point == nullptr) return false; else t = ((LoadVect_type)Point)->at(Ind).Type;
+		else if (Type >> 1 == DIC)	switch (Ind % 3) {
+			case 0: return false;
+			case 1: return true;
+			case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
+		}
+	return t >> 1 == Dint || t >> 1 == Dchar || t >> 1 == Dfloat || t >> 1 == Ddouble || t >> 1 == Dbool;
+}; // Число или булеан?
+
+bool LoadPoint::isBool() {
+	if (Point == nullptr) return false;
+	register unsigned int t = Type;
+	if (Ind >= 0)
+		if (Type >> 1 == DLoadVect)
+			if (((LoadVect_type)Point)->at(Ind).Point == nullptr) return false; else t = ((LoadVect_type)Point)->at(Ind).Type;
+		else if (Type >> 1 == DIC)	switch (Ind % 3) {
+			case 0: return false;
+			case 1: return true;
+			case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
+		}
+	return t >> 1 == Dbool;
+}; // булеан?
+
+bool LoadPoint::isInt() {
+	if (Point == nullptr) return false;
+	register unsigned int t = Type;
+	if (Ind >= 0)
+		if (Type >> 1 == DLoadVect)
+			if (((LoadVect_type)Point)->at(Ind).Point == nullptr) return false; else t = ((LoadVect_type)Point)->at(Ind).Type;
+		else if (Type >> 1 == DIC)	switch (Ind % 3) {
+			case 0: return false;
+			case 1: return true;
+			case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
+		}
+	return t >> 1 == Dint;
+}; // Целое число?
+
+bool LoadPoint::isIntBool() {
+	if (Point == nullptr) return false;
+	register unsigned int t = Type;
+	if (Ind >= 0)
+		if (Type >> 1 == DLoadVect)
+			if (((LoadVect_type)Point)->at(Ind).Point == nullptr) return false; else t = ((LoadVect_type)Point)->at(Ind).Type;
+		else if (Type >> 1 == DIC)	switch (Ind % 3) {
+			case 0: return false;
+			case 1: return true;
+			case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
+		}
+	return t >> 1 == Dint || t >> 1 == Dbool;
+}; // булеан или целое число?
+
+bool LoadPoint::isFloatDouble() {
+	if (Point == nullptr) return false;
+	register unsigned int t = Type;
+	if (Ind >= 0)
+		if (Type >> 1 == DLoadVect)
+			if (((LoadVect_type)Point)->at(Ind).Point == nullptr) return false; else t = ((LoadVect_type)Point)->at(Ind).Type;
+		else if (Type >> 1 == DIC)	switch (Ind % 3) {
+			case 0: return false;
+			case 1: return true;
+			case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
+		}
+	return t >> 1 == Ddouble || t >> 1 == Dfloat;
+};
+
+bool LoadPoint::isFloat() {
+	if (Point == nullptr) return false;
+	register unsigned int t = Type;
+	if (Ind >= 0)
+		if (Type >> 1 == DLoadVect)
+			if (((LoadVect_type)Point)->at(Ind).Point == nullptr) return false; else t = ((LoadVect_type)Point)->at(Ind).Type;
+		else if (Type >> 1 == DIC)	switch (Ind % 3) {
+			case 0: return false;
+			case 1: return true;
+			case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
+		}
+	return t >> 1 == Dfloat;
+};
+
+bool LoadPoint::isDouble() {
+	if (Point == nullptr) return false;
+	register unsigned int t = Type;
+	if (Ind >= 0)
+		if (Type >> 1 == DLoadVect)
+			if (((LoadVect_type)Point)->at(Ind).Point == nullptr) return false; else t = ((LoadVect_type)Point)->at(Ind).Type;
+		else if (Type >> 1 == DIC)	switch (Ind % 3) {
+			case 0: return false;
+			case 1: return true;
+			case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
+		}
+	return t >> 1 == Ddouble;
+};
+
+bool LoadPoint::isProg() {
+	if (Point == nullptr) return false;
+	unsigned int t = Type;
+	if (Ind >= 0)
+		if (Type >> 1 == DLoadVect)
+			if (((LoadVect_type)Point)->at(Ind).Point == nullptr) return false; else t = ((LoadVect_type)Point)->at(Ind).Type;
+		else if (Type >> 1 == DIC)	switch (Ind % 3) {
+			case 0: return false;
+			case 1: return true;
+			case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
+		}
+	return t >> 1 == DIC || t>>1 == DCalc;
+}; // Определение может ли быть нагрузка программой
+
+bool LoadPoint::isStrChar() {
+	if (Point == nullptr) return false;
+	register unsigned int t = Type;
+	if (Ind >= 0)
+		if (Type >> 1 == DLoadVect)
+			if (((LoadVect_type)Point)->at(Ind).Point == nullptr) return false; else t = ((LoadVect_type)Point)->at(Ind).Type;
+		else if (Type >> 1 == DIC)	switch (Ind % 3) {
+			case 0: return false;
+			case 1: return true;
+			case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
+		}
+	return Point != nullptr && (t >> 1 == Dstring || t >> 1 == Dchar);
+}; // Строка или символ?
+
+bool LoadPoint::isStr() {
+	if (Point == nullptr) return false;
+	register unsigned int t = Type;
+	if (Ind >= 0)
+		if (Type >> 1 == DLoadVect)
+			if (((LoadVect_type)Point)->at(Ind).Point == nullptr) return false; else t = ((LoadVect_type)Point)->at(Ind).Type;
+		else if (Type >> 1 == DIC)	switch (Ind % 3) {
+			case 0: return false;
+			case 1: return true;
+			case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
+		}
+	return Point != nullptr && t >> 1 == Dstring;
+}; // Строка?
+
+bool LoadPoint::isChar() {
+	if (Point == nullptr) return false;
+	unsigned int t = Type;
+	if (Ind >= 0)
+		if (Type >> 1 == DLoadVect)
+			if (((LoadVect_type)Point)->at(Ind).Point == nullptr) return false; else t = ((LoadVect_type)Point)->at(Ind).Type;
+		else if (Type >> 1 == DIC)	switch (Ind % 3) {
+		case 0: return false;
+		case 1: return true;
+		case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
+		}
+	return Point != nullptr && t >> 1 == Dchar;
+}; // символ?
+
+bool LoadPoint::isMk() {
+	if (Point == nullptr) return false;
+	unsigned int t = Type;
+	if (Ind >= 0)
+		if (Type >> 1 == DLoadVect)
+			if (((LoadVect_type)Point)->at(Ind).Point == nullptr) return false; else t = ((LoadVect_type)Point)->at(Ind).Type;
+		else if (Type >> 1 == DIC)	switch (Ind % 3) {
+		case 0: return false;
+		case 1: return true;
+		case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
+		}
+	return Point != nullptr && t >> 1 == DMk;
+}; // Милликоманда?
+
+bool LoadPoint::isVector() {
+	if (Point == nullptr) return false;
+	register unsigned int t = Type;
+	if (Ind >= 0)
+		if (Type >> 1 == DLoadVect)
+			if (((LoadVect_type)Point)->at(Ind).Point == nullptr) return false; else t = ((LoadVect_type)Point)->at(Ind).Type;
+		else if (Type >> 1 == DIC)	switch (Ind % 3) {
+			case 0: return false;
+			case 1: return true;
+			case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
+		}
+	return t >> 1 == DLoadVect;
+}; // Вектор ли нагрузка
+
+
 bool LoadPoint::isIC() // Определить указывает ли ссылка на ИК
 {
+	if (Point == nullptr) return false;
+	register unsigned int t = Type;
+	if (Ind >= 0)
+		if (Type >> 1 == DLoadVect)
+			if (((LoadVect_type)Point)->at(Ind).Point == nullptr) return false; else t = ((LoadVect_type)Point)->at(Ind).Type;
+		else if (Type >> 1 == DIC)	switch (Ind % 3) {
+			case 0: return false;
+			case 1: return true;
+			case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
+		}
 	set<unsigned int> IC_Types = {DIC, DCalc}; // Множевство типов ИК и ОА-графов
-	return IC_Types.count(Type>>1);
+	return IC_Types.count(t>>1);
 }
 
 bool LoadPoint::isIP() // Определить указывает ли ссылка на ИП
 {
+	if (Point == nullptr) return false;
+	register unsigned int t = Type;
+	if (Ind >= 0)
+		if (Type >> 1 == DLoadVect)
+			if (((LoadVect_type)Point)->at(Ind).Point == nullptr) return false; else t = ((LoadVect_type)Point)->at(Ind).Type;
+		else if (Type >> 1 == DIC)	switch (Ind % 3) {
+			case 0: return false;
+			case 1: return true;
+			case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
+		}	
 	set<unsigned int> IP_Types = { DIP }; // Множевство типов ИК и ОА-графов
-	return IP_Types.count(Type >> 1);
+	return IP_Types.count(t >> 1);
 }
 
 string LoadPoint::toStr(string define) // Перевод в bool
 {
 	if (Point == nullptr)
 		return define;
-	switch (Type >> 1)
-	{
-	case Dstring: return *((string*)Point);
-	case Ddouble: return to_string(*(double*)Point); break;
-	case Dfloat: return to_string(*(float*)Point); break;
-	case Dint: return to_string(*(int*)Point); break;
-	case Dbool: return to_string(*(bool*)Point); break;
-	default:
-		return "";
-		break;
+	register void* P = Point; register unsigned int t = Type;
+	if (Ind >= 0) // Значение по индексу
+		if(Type>>1==DLoadVect){
+			if (Ind >= ((LoadVect_type)Point)->size()) return define;
+			P = ((LoadVect_type)Point)->at(Ind).Point;
+			t = ((LoadVect_type)Point)->at(Ind).Type;
+		}
+		else if (Type >> 1 == DIC) {
+			if (Ind/3>= ((IC_type)Point)->size()) return define;
+			switch (Ind % 3) {
+			case 0: return define;
+			case 1: return to_string(*(int*)P);
+			case 2: P = ((IC_type)Point)->at(Ind / 3).Load.Point; t = ((IC_type)Point)->at(Ind / 3).Load.Type; break;
+			}}
+	switch (t >> 1){
+		case Dstring: return *((string*)P);
+		case Ddouble: return to_string(*(double*)P); break;
+		case Dfloat: return to_string(*(float*)P); break;
+		case Dint: return to_string(*(int*)P); break;
+		case Dbool: return to_string(*(bool*)P); break;
+		default:
+			return define;
+			break;
 	}
 }
 
@@ -41,44 +271,87 @@ bool LoadPoint::toBool(bool define) // Перевод в bool (по умолчания false)
 {
 	if (Point == nullptr)
 		return define;
-	switch (Type >> 1)
+	register void* P = Point; register unsigned int t = Type;
+	if (Ind >= 0) // Значение по индексу
+		if (Type >> 1 == DLoadVect) {
+			if (Ind >= ((LoadVect_type)Point)->size()) return define;
+			P = ((LoadVect_type)Point)->at(Ind).Point;
+			t = ((LoadVect_type)Point)->at(Ind).Type;
+		}
+		else if (Type >> 1 == DIC) {
+			if (Ind / 3 >= ((IC_type)Point)->size()) return define;
+			switch (Ind % 3) {
+				case 0: return define;
+				case 1: return *(int*)P;
+				case 2: P = ((IC_type)Point)->at(Ind / 3).Load.Point; t = ((IC_type)Point)->at(Ind / 3).Load.Type; break;
+		}}
+	switch (t >> 1)
 	{
-	case Ddouble: return *(double*)Point;
-	case Dfloat: return *(float*)Point;
-	case Dint: return *(int*)Point;
-	case Dbool: return *(bool*)Point;
-	case Dstring: return !((*(string*)Point) == "");
+	case Ddouble: return *(double*)P;
+	case Dfloat: return *(float*)P;
+	case Dint: return *(int*)P;
+	case Dbool: return *(bool*)P;
+	case Dstring: return !((*(string*)P) == "");
 	default:
-		return false;
+		return define;
 	}
 }
 
 int LoadPoint::toInt(int define) { // Перевод в integer
 	if (Point == nullptr)
 		return define;
-	switch (Type >> 1)
+	register void* P = Point; register unsigned int t = Type;
+	if (Ind >= 0) // Значение по индексу
+		if (Type >> 1 == DLoadVect) {
+			if (Ind >= ((LoadVect_type)Point)->size()) return define;
+			P = ((LoadVect_type)Point)->at(Ind).Point;
+			t = ((LoadVect_type)Point)->at(Ind).Type;
+		}
+		else if (Type >> 1 == DIC){
+			if (Ind / 3 >= ((IC_type)Point)->size()) return define;
+			switch (Ind % 3) {
+				case 0: return define;
+				case 1: return *(int*)P;
+				case 2: P = ((IC_type)Point)->at(Ind / 3).Load.Point; t = ((IC_type)Point)->at(Ind / 3).Load.Type; break;
+		}}
+	switch (t >> 1)
 	{
-	case Ddouble: return (int)*(double*)Point; break;
-	case Dfloat: return (int)*(float*)Point; break;
-	case Dint: return *(int*)Point; break;
-	case Dbool: return *(bool*)Point; break;
+	case Ddouble: return (int)*(double*)P; break;
+	case Dfloat: return (int)*(float*)P; break;
+	case Dint: return *(int*)P; break;
+	case Dbool: return *(bool*)P; break;
 	case Dstring: return atoi((*(string*)Point).c_str());
 	default:
-		return 0;
+		return define;
 		break;
 	}
 }
 double LoadPoint::toDouble(double define) {// Перевод в integer
-	if (Point == nullptr) return define;
-	switch (Type >> 1)
+	if (Point == nullptr)
+		return define;
+	register void* P = Point; register unsigned int t = Type;
+	if (Ind >= 0) // Значение по индексу
+		if (Type >> 1 == DLoadVect) {
+			if (Ind >= ((LoadVect_type)Point)->size()) return define;
+			P = ((LoadVect_type)Point)->at(Ind).Point;
+			t = ((LoadVect_type)Point)->at(Ind).Type;
+		}
+		else if (Type >> 1 == DIC) {
+			if (Ind / 3 >= ((IC_type)Point)->size()) return define;
+			switch (Ind % 3) {
+				case 0: return define;
+				case 1: return *(int*)P;
+				case 2: P = ((IC_type)Point)->at(Ind / 3).Load.Point; t = ((IC_type)Point)->at(Ind / 3).Load.Type; break;
+			}}
+	switch (t >> 1)
 	{
-	case Ddouble: return *(double*)Point; break;
-	case Dfloat: return *(float*)Point; break;
-	case Dint: return *(int*)Point; break;
-	case Dbool: return *(bool*)Point; break;
-	case Dstring: return atof((*(string*)Point).c_str());
+	case Ddouble: return *(double*)P; break;
+	case Dfloat: return *(float*)P; break;
+	case Dint: return *(int*)P; break;
+	case Dbool: return *(bool*)P; break;
+	case Dstring: return atof((*(string*)P).c_str());
 	default:
-		return 0;
+		return define;
 		break;
 	}
 }
@@ -86,20 +359,34 @@ double LoadPoint::toDouble(double define) {// Перевод в integer
 float LoadPoint::toFloat(float define) {// Перевод в integer
 	if (Point == nullptr)
 		return define;
-	switch (Type >> 1)
+	register void* P = Point; register unsigned int t = Type;
+	if (Ind >= 0) // Значение по индексу
+		if (Type >> 1 == DLoadVect) {
+			if (Ind >= ((LoadVect_type)Point)->size()) return define;
+			P = ((LoadVect_type)Point)->at(Ind).Point;
+			t = ((LoadVect_type)Point)->at(Ind).Type;
+		}
+		else if (Type >> 1 == DIC) {
+			if (Ind / 3 >= ((IC_type)Point)->size()) return define;
+			switch (Ind % 3) {
+			case 0: return define;
+			case 1: return *(int*)P;
+			case 2: P = ((IC_type)Point)->at(Ind / 3).Load.Point; t = ((IC_type)Point)->at(Ind / 3).Load.Type; break;
+			}}
+	switch (t >> 1)
 	{
-	case Ddouble: return *(double*)Point; break;
-	case Dfloat: return *(float*)Point; break;
-	case Dint: return *(int*)Point; break;
-	case Dbool: return *(bool*)Point; break;
-	case Dstring: return atof((*(string*)Point).c_str());
+	case Ddouble: return *(double*)P; break;
+	case Dfloat: return *(float*)P; break;
+	case Dint: return *(int*)P; break;
+	case Dbool: return *(bool*)P; break;
+	case Dstring: return atof((*(string*)P).c_str());
 	default:
-		return 0;
+		return define;
 		break;
 	}
 };
 // Запись в нагрузку ИП
-int LoadPoint::Write(vector<double> x) // Копирование вектора
+int LoadPoint::Write(vector<double> x) //
 {
 	if (Point == nullptr)
 		return 1;
@@ -111,7 +398,7 @@ int LoadPoint::Write(vector<double> x) // Копирование вектора
 	else
 		return 1;
 }
-int LoadPoint::Write(vector<float> x) // Копирование вектора
+int LoadPoint::Write(vector<float> x) //
 {
 	if (Point == nullptr)
 		return 1;
@@ -165,22 +452,43 @@ int LoadPoint::WriteFromLoad(LoadPoint Load) // Записать величину из нагрузки
 {
 	if (Point == nullptr)
 		return 1;
-	switch (Type)
+	register unsigned int t = Type;
+	register void* P = Point;
+	if (Ind >= 0)
+		if (Type == TLoadVect) {
+			if (Ind >= ((LoadVect_type)Point)->size()) return 2; // Ошибка индекса
+			P = ((LoadVect_type)Point)->at(Ind).Point;
+			t = ((LoadVect_type)Point)->at(Ind).Type;
+		}
+		else if (Type == TIC){
+			if (Ind/3 >= ((LoadVect_type)Point)->size()) return 2; // Ошибка индекса
+			switch (Ind % 3) {
+				case 0: P = &((IC_type)P)->at(Ind / 3); t = TIP; break;
+				case 1: P = &((IC_type)P)->at(Ind / 3).atr; t = Tint; break;
+				case 2: P = ((IC_type)P)->at(Ind / 3).Load.Point; t = ((IC_type)P)->at(Ind / 3).Load.Type;
+			}
+		}
+		else return 2; // Ошибка индекса
+	if (P == nullptr || t % 2 != 0) return 1;
+	switch (t)
 	{
 	case Tdouble:
-		*((double*)Point) = Load.toDouble();
+		*((double*)P) = Load.toDouble();
 		break;
 	case Tfloat:
-		*((float*)Point) = Load.toFloat();
+		*((float*)P) = Load.toFloat();
 		break;
 	case Tint:
-		*((int*)Point) = Load.toInt();
+		*((int*)P) = Load.toInt();
 		break;
 	case Tbool:
-		*((bool*)Point) = Load.toBool();
+		*((bool*)P) = Load.toBool();
 		break;
 	case Tchar:
-		*((char*)Point) = Load.toChar();
+		*((char*)P) = Load.toChar();
+		break;
+	case Tstring:
+		*((string*)P) = Load.toStr();
 		break;
 	default: // Перезапись указателя
 		if (Type % 2 != 0) // Если тип переменной
@@ -198,23 +506,45 @@ int LoadPoint::Write(size_t x)
 {
 	if (Point == nullptr)
 		return 1;
-	switch (Type)
+	register unsigned int t = Type;
+	register void* P = Point;
+	if (Ind >= 0)
+		if (Type == TLoadVect) {
+			if (Ind >= ((LoadVect_type)Point)->size()) return 2; // Ошибка индекса
+			P = ((LoadVect_type)Point)->at(Ind).Point;
+			t = ((LoadVect_type)Point)->at(Ind).Type;
+		}
+		else if (Type == TIC) {
+			if (Ind / 3 >= ((LoadVect_type)Point)->size()) return 2; // Ошибка индекса
+			switch (Ind % 3) {
+			case 0: P = &((IC_type)P)->at(Ind / 3); t = TIP; break;
+			case 1: P = &((IC_type)P)->at(Ind / 3).atr; t = Tint; break;
+			case 2: P = ((IC_type)P)->at(Ind / 3).Load.Point; t = ((IC_type)P)->at(Ind / 3).Load.Type;
+			}
+		}
+		else return 2; // Ошибка индекса
+	if (P == nullptr || t % 2 != 0) return 1;
+	switch (t)
 	{
 	case Tdouble:
-		*((double*)Point) = x;
+		*((double*)P) = x;
 		break;
 	case Tfloat:
-		*((float*)Point) = x;
+		*((float*)P) = x;
 		break;
 	case Tint:
-		*((int*)Point) = x;
+		*((int*)P) = x;
 		break;
 	case Tbool:
-		*((bool*)Point) = x;
+		*((bool*)P) = x;
 		break;
 	case Tchar:
-		*((char*)Point) = x;
+		*((char*)P) = x;
 		break;
+	case Tstring:
+		*((string*)P) = to_string(x);
+		break;
+
 	default:
 		return 2; // Несоответствие типов
 	}
@@ -225,19 +555,37 @@ int LoadPoint::Write(int x)
 {
 	if (Point == nullptr)
 		return 1;
-	switch (Type)
+	register unsigned int t = Type;
+	register void* P = Point;
+	if (Ind >= 0)
+		if (Type == TLoadVect) {
+			if (Ind >= ((LoadVect_type)Point)->size()) return 2; // Ошибка индекса
+			P = ((LoadVect_type)Point)->at(Ind).Point;
+			t = ((LoadVect_type)Point)->at(Ind).Type;
+		}
+		else if (Type == TIC) {
+			if (Ind / 3 >= ((LoadVect_type)Point)->size()) return 2; // Ошибка индекса
+			switch (Ind % 3) {
+			case 0: P = &((IC_type)P)->at(Ind / 3); t = TIP; break;
+			case 1: P = &((IC_type)P)->at(Ind / 3).atr; t = Tint; break;
+			case 2: P = ((IC_type)P)->at(Ind / 3).Load.Point; t = ((IC_type)P)->at(Ind / 3).Load.Type;
+			}
+		}
+		else return 2; // Ошибка индекса
+	if (P == nullptr || t % 2 != 0) return 1;
+	switch (t)
 	{
 	case Tdouble:
-		*((double*)Point) = x;
+		*((double*)P) = x;
 		break;
 	case Tfloat:
-		*((float*)Point) = x;
+		*((float*)P) = x;
 		break;
 	case Tint:
-		*((int*)Point) = x;
+		*((int*)P) = x;
 		break;
 	case Tbool:
-		*((bool*)Point) = x;
+		*((bool*)P) = x;
 		break;
 	case Tchar:
 		if (x >= 0 && x < 256)
@@ -245,7 +593,10 @@ int LoadPoint::Write(int x)
 		else
 			return 1; // Несоответствие типов
 		break;
-	defoult:
+	case Tstring:
+		*((string*)P) = to_string(x);
+		break;
+	default:
 		return 1; // Несоответствие типов
 	}
 	return 0;
@@ -255,22 +606,43 @@ int LoadPoint::Write(double x)
 {
 	if (Point == nullptr)
 		return 1;
-	switch (Type)
+	register unsigned int t = Type;
+	register void* P = Point;
+	if (Ind >= 0)
+		if (Type == TLoadVect) {
+			if (Ind >= ((LoadVect_type)Point)->size()) return 2; // Ошибка индекса
+			P = ((LoadVect_type)Point)->at(Ind).Point;
+			t = ((LoadVect_type)Point)->at(Ind).Type;
+		}
+		else if (Type == TIC) {
+			if (Ind / 3 >= ((LoadVect_type)Point)->size()) return 2; // Ошибка индекса
+			switch (Ind % 3) {
+			case 0: P = &((IC_type)P)->at(Ind / 3); t = TIP; break;
+			case 1: P = &((IC_type)P)->at(Ind / 3).atr; t = Tint; break;
+			case 2: P = ((IC_type)P)->at(Ind / 3).Load.Point; t = ((IC_type)P)->at(Ind / 3).Load.Type;
+			}
+		}
+		else return 2; // Ошибка индекса
+	if (P == nullptr || t % 2 != 0) return 1;
+	switch (t)
 	{
 	case Tdouble:
-		*((double*)Point) = x;
+		*((double*)P) = x;
 		break;
 	case Tfloat:
-		*((float*)Point) = x;
+		*((float*)P) = x;
 		break;
 	case Tint:
-		*((int*)Point) = x;
+		*((int*)P) = x;
 		break;
 	case Tbool:
-		*((bool*)Point) = x;
+		*((bool*)P) = x;
 		break;
 	case Tchar:
-		*((char*)Point) = x;
+		*((char*)P) = x;
+		break;
+	case Tstring:
+		*((string*)P) = to_string(x);
 		break;
 	defoult:
 		return 1; // Несоответствие типов
@@ -282,22 +654,43 @@ int LoadPoint::Write(float x)
 {
 	if (Point == nullptr)
 		return 1;
-	switch (Type)
+	register unsigned int t = Type;
+	register void* P = Point;
+	if (Ind >= 0)
+		if (Type == TLoadVect) {
+			if (Ind >= ((LoadVect_type)Point)->size()) return 2; // Ошибка индекса
+			P = ((LoadVect_type)Point)->at(Ind).Point;
+			t = ((LoadVect_type)Point)->at(Ind).Type;
+		}
+		else if (Type == TIC) {
+			if (Ind / 3 >= ((LoadVect_type)Point)->size()) return 2; // Ошибка индекса
+			switch (Ind % 3) {
+			case 0: P = &((IC_type)P)->at(Ind / 3); t = TIP; break;
+			case 1: P = &((IC_type)P)->at(Ind / 3).atr; t = Tint; break;
+			case 2: P = ((IC_type)P)->at(Ind / 3).Load.Point; t = ((IC_type)P)->at(Ind / 3).Load.Type;
+			}
+		}
+		else return 2; // Ошибка индекса
+	if (P == nullptr || t % 2 != 0) return 1;
+	switch (t)
 	{
 	case Tdouble:
-		*((double*)Point) = x;
+		*((double*)P) = x;
 		break;
 	case Tfloat:
-		*((float*)Point) = x;
+		*((float*)P) = x;
 		break;
 	case Tint:
-		*((int*)Point) = x;
+		*((int*)P) = x;
 		break;
 	case Tbool:
-		*((bool*)Point) = x;
+		*((bool*)P) = x;
 		break;
 	case Tchar:
-		*((char*)Point) = x;
+		*((char*)P) = x;
+		break;
+	case Tstring:
+		*((string*)P) = to_string(x);
 		break;
 	defoult:
 		return 1; // Несоответствие типов
@@ -309,22 +702,43 @@ int LoadPoint::Write(bool x)
 {
 	if (Point == nullptr)
 		return 1;
-	switch (Type)
+	register unsigned int t = Type;
+	register void* P = Point;
+	if (Ind >= 0)
+		if (Type == TLoadVect) {
+			if (Ind >= ((LoadVect_type)Point)->size()) return 2; // Ошибка индекса
+			P = ((LoadVect_type)Point)->at(Ind).Point;
+			t = ((LoadVect_type)Point)->at(Ind).Type;
+		}
+		else if (Type == TIC) {
+			if (Ind / 3 >= ((LoadVect_type)Point)->size()) return 2; // Ошибка индекса
+			switch (Ind % 3) {
+			case 0: P = &((IC_type)P)->at(Ind / 3); t = TIP; break;
+			case 1: P = &((IC_type)P)->at(Ind / 3).atr; t = Tint; break;
+			case 2: P = ((IC_type)P)->at(Ind / 3).Load.Point; t = ((IC_type)P)->at(Ind / 3).Load.Type;
+			}
+		}
+		else return 2; // Ошибка индекса
+	if (P == nullptr || t % 2 != 0) return 1;
+	switch (t)
 	{
 	case Tdouble:
-		*((double*)Point) = x;
+		*((double*)P) = x;
 		break;
 	case Tfloat:
-		*((float*)Point) = x;
+		*((float*)P) = x;
 		break;
 	case Tint:
-		*((int*)Point) = x;
+		*((int*)P) = x;
 		break;
 	case Tbool:
-		*((bool*)Point) = x;
+		*((bool*)P) = x;
 		break;
 	case Tchar:
-		*((char*)Point) = x;
+		*((char*)P) = x;
+		break;
+	case Tstring:
+		*((string*)P) = to_string(x);
 		break;
 	defoult:
 		return 1; // Несоответствие типов
@@ -336,22 +750,43 @@ int LoadPoint::Write(char x)
 {
 	if (Point == nullptr)
 		return 1;
-	switch (Type)
+	register unsigned int t = Type;
+	register void* P = Point;
+	if (Ind >= 0)
+		if (Type == TLoadVect) {
+			if (Ind >= ((LoadVect_type)Point)->size()) return 2; // Ошибка индекса
+			P = ((LoadVect_type)Point)->at(Ind).Point;
+			t = ((LoadVect_type)Point)->at(Ind).Type;
+		}
+		else if (Type == TIC) {
+			if (Ind / 3 >= ((LoadVect_type)Point)->size()) return 2; // Ошибка индекса
+			switch (Ind % 3) {
+			case 0: P = &((IC_type)P)->at(Ind / 3); t = TIP; break;
+			case 1: P = &((IC_type)P)->at(Ind / 3).atr; t = Tint; break;
+			case 2: P = ((IC_type)P)->at(Ind / 3).Load.Point; t = ((IC_type)P)->at(Ind / 3).Load.Type;
+			}
+		}
+		else return 2; // Ошибка индекса
+	if (P == nullptr || t % 2 != 0) return 1;
+	switch (t)
 	{
 	case Tdouble:
-		*((double*)Point) = x;
+		*((double*)P) = x;
 		break;
 	case Tfloat:
-		*((float*)Point) = x;
+		*((float*)P) = x;
 		break;
 	case Tint:
-		*((int*)Point) = x;
+		*((int*)P) = x;
 		break;
 	case Tbool:
-		*((bool*)Point) = x;
+		*((bool*)P) = x;
 		break;
 	case Tchar:
-		*((char*)Point) = x;
+		*((char*)P) = x;
+		break;
+	case Tstring:
+		*((string*)P) = x;
 		break;
 	defoult:
 		return 1; // Несоответствие типов
@@ -363,10 +798,43 @@ int LoadPoint::Write(string x)
 {
 	if (Point == nullptr)
 		return 1;
-	switch (Type)
+	register unsigned int t = Type;
+	register void* P = Point;
+	if (Ind >= 0)
+		if (Type == TLoadVect) {
+			if (Ind >= ((LoadVect_type)Point)->size()) return 2; // Ошибка индекса
+			P = ((LoadVect_type)Point)->at(Ind).Point;
+			t = ((LoadVect_type)Point)->at(Ind).Type;
+		}
+		else if (Type == TIC) {
+			if (Ind / 3 >= ((LoadVect_type)Point)->size()) return 2; // Ошибка индекса
+			switch (Ind % 3) {
+			case 0: P = &((IC_type)P)->at(Ind / 3); t = TIP; break;
+			case 1: P = &((IC_type)P)->at(Ind / 3).atr; t = Tint; break;
+			case 2: P = ((IC_type)P)->at(Ind / 3).Load.Point; t = ((IC_type)P)->at(Ind / 3).Load.Type;
+			}
+		}
+		else return 2; // Ошибка индекса
+	if (P == nullptr || t % 2 != 0) return 1;
+	switch (t)
 	{
+	case Tdouble:
+		*((double*)P) = atof(x.c_str());
+		break;
+	case Tfloat:
+		*((float*)P) = atof(x.c_str());
+		break;
+	case Tint:
+		*((int*)P) = atoi(x.c_str());
+		break;
+	case Tbool:
+		*((bool*)P) = atoi(x.c_str());
+		break;
+	case Tchar:
+		*((char*)P) = atoi(x.c_str());
+		break;
 	case Tstring:
-		*((string*)Point) = x;
+		*((string*)P) = x;
 		break;
 	defoult:
 		return 1; // Несоответствие типов
@@ -374,30 +842,52 @@ int LoadPoint::Write(string x)
 	return 0;
 }
 
-int LoadPoint::Write(LoadPoint x) // Записать величино из нагрузки
+int LoadPoint::Write(LoadPoint x) // Записать величину из нагрузки
 {
 	if (Point == nullptr)
 		return 1;
-	switch (Type)
+	register unsigned int t = Type;
+	register void* P = Point;
+	if (Ind >= 0)
+		if (Type == TLoadVect) {
+			if (Ind >= ((LoadVect_type)Point)->size()) return 2; // Ошибка индекса
+			P = ((LoadVect_type)Point)->at(Ind).Point;
+			t = ((LoadVect_type)Point)->at(Ind).Type;
+		}
+		else if (Type == TIC) {
+			if (Ind / 3 >= ((LoadVect_type)Point)->size()) return 2; // Ошибка индекса
+			switch (Ind % 3) {
+			case 0: P = &((IC_type)P)->at(Ind / 3); t = TIP; break;
+			case 1: P = &((IC_type)P)->at(Ind / 3).atr; t = Tint; break;
+			case 2: P = ((IC_type)P)->at(Ind / 3).Load.Point; t = ((IC_type)P)->at(Ind / 3).Load.Type;
+			}
+		}
+		else return 2; // Ошибка индекса
+	if (P == nullptr || t % 2 != 0) return 1;
+
+	Point = x.Point; Type = x.Type; Ind = x.Ind;
+	return 0;
+/*
+	switch (t)
 	{
 	case TLoad:
 		if (x.Type >> 1 != DLoad)
 			return 1;
-		*(LoadPoint*)Point = *(LoadPoint*)x.Point;
+		*(LoadPoint*)P = *(LoadPoint*)x.Point;
 		break;
 	case Tstring:
 		if (x.Type >> 1 != Dstring)
 			return 1;
-		*(string*)Point = *(string*)x.Point;	
+		*(string*)P = *(string*)x.Point;	
 	case Tdouble:
 		if (!x.isDigitBool())
 			return 1;
-		*((double*)Point) = x.toDouble();
+		*((double*)P) = x.toDouble();
 		break;
 	case Tfloat:
 		if (!x.isDigitBool())
 			return 1;
-		*((float*)Point) = x.toFloat();
+		*((float*)P) = x.toFloat();
 		break;
 	case Tint:
 		if(x.Type>>1==Dint || x.Type >> 1 == Dbool || x.Type >> 1 == Dchar)
@@ -412,20 +902,117 @@ int LoadPoint::Write(LoadPoint x) // Записать величино из нагрузки
 	case Tchar:
 		if(x.Type >> 1 == Dchar || x.Type >> 1 == Dbool ||
 			x.Type >> 1 == Dint && *(int*)x.Point>=0 && *(int*)x.Point <256)
-		*((char*)Point) = x.toChar();
+		*((char*)P) = x.toChar();
 		break;
 
 	defoult:
 		WriteFromLoad(x); // Попытка записать по нагрузке
 	}
 	return 0;
+	*/
 }
 
-int LoadPoint::Write(vector<LoadPoint> x)
+int LoadPoint::Write(vector<LoadPoint>* x)
 {
-	if (Point == nullptr || !isVector())
+	register unsigned int t = Type;
+	register void* P = Point;
+	if (Ind >= 0)
+		if (Type == TLoadVect) {
+			if (Ind >= ((LoadVect_type)Point)->size()) return 2; // Ошибка индекса
+			P = ((LoadVect_type)Point)->at(Ind).Point;
+			t = ((LoadVect_type)Point)->at(Ind).Type;
+		}
+		else if (Type == TIC) {
+			if (Ind / 3 >= ((LoadVect_type)Point)->size()) return 2; // Ошибка индекса
+			switch (Ind % 3) {
+			case 0: P = &((IC_type)P)->at(Ind / 3); t = TIP; break;
+			case 1: P = &((IC_type)P)->at(Ind / 3).atr; t = Tint; break;
+			case 2: P = ((IC_type)P)->at(Ind / 3).Load.Point; t = ((IC_type)P)->at(Ind / 3).Load.Type;
+			}
+		}
+		else return 2; // Ошибка индекса
+	if (P == nullptr || t%2!=0) return 1;
+	P = x; t = TLoadVect;
+	return 0;
+}
+
+int LoadPoint::Write(vector<LoadPoint> x) // Копирование вектора нагрузок нагрузку
+{
+	if (Point == nullptr || !isVector() || Type%2!=0)
 		return 1;
+	register unsigned int t = Type;
+	register void* P = Point;
+	if (Ind >= 0)
+		if (Type == TLoadVect) {
+			if (Ind >= ((LoadVect_type)Point)->size()) return 2; // Ошибка индекса
+			P = ((LoadVect_type)Point)->at(Ind).Point;
+			t = ((LoadVect_type)Point)->at(Ind).Type;
+		}
+		else if (Type == TIC) {
+			if (Ind / 3 >= ((LoadVect_type)Point)->size()) return 2; // Ошибка индекса
+			switch (Ind % 3) {
+			case 0: P = &((IC_type)P)->at(Ind / 3); t = TIP; break;
+			case 1: P = &((IC_type)P)->at(Ind / 3).atr; t = Tint; break;
+			case 2: P = ((IC_type)P)->at(Ind / 3).Load.Point; t = ((IC_type)P)->at(Ind / 3).Load.Type;
+			}
+		}
+		else return 2; // Ошибка индекса
+	if (P == nullptr || t % 2 != 0) return 1;
+
+	((LoadVect_type)P)->resize(x.size());
+	copy(x.begin(), x.end(), ((LoadVect_type)P)->begin());
+	/*
+	if (Type == TLoadVect && Ind >= 0) // Операции с индексом ИК
+	{
+		if (Ind >= ((LoadVect_type)Point)->size()) return 2; // Выход индекса на пределы вектора
+		((LoadVect_type)Point)->at(Ind).Write(x);
+	}
+	if (Type == TIC && Ind >= 0) // Операции с индексом ИК
+	{
+		if (Ind/3 >= ((IC_type)Point)->size()) return 2; // Выход индекса на пределы вектора
+		LoadPoint LP;
+		switch (Ind)
+		{
+		case 0: // ИП
+			LP = { CIP + Type % 2, &((IC_type)Point)->at(Ind % 3) ,-1 };
+			return LP.Write(x);
+		case 1: // Атрибут
+			LP = { CIP + Type % 2, &((IC_type)Point)->at(Ind % 3).atr ,-1 };
+			return LP.Write(x); break;
+		case 2: // Нагрузка
+			LP = { CIP + Type % 2, &((IC_type)Point)->at(Ind % 3).atr ,-1 };
+			return LP.Write(x);
+		default:
+			return 1;
+		}
+		return 0;
+	}
+	if (Type == TLoadVect && Ind >= 0) // Операции с индексом ИК
+	{
+		if (Ind >= ((LoadVect_type)Point)->size()) return 2; // Выход индекса на пределы вектора
+		((LoadVect_type)Point)->at(Ind).Write(x);
+	}
+	if (Type == TIC && Ind >= 0) // Операции с индексом ИК
+	{
+		LoadPoint LP;
+		switch (Ind)
+		{
+		case 0: // ИП
+			LP = { CIP + Type % 2, &((IC_type)Point)->at(Ind % 3) ,-1 };
+			LP.Write(x); break;
+		case 1: // Атрибут
+			LP = { CIP + Type % 2, &((IC_type)Point)->at(Ind % 3).atr ,-1 };
+			LP.Write(x); break;
+		case 2: // Нагрузка
+			LP = { CIP + Type % 2, &((IC_type)Point)->at(Ind % 3).atr ,-1 };
+			LP.Write(x);			break;
+		default:
+			return 1;
+		}
+		return 0;
+	}
 	*(LoadVect_type)Point = x;
+	*/
 	return 0;
 }
 
@@ -459,6 +1046,11 @@ LoadPoint LoadPoint::TypeMinimizeOut(double x, bool var) // Минимизировать тип (
 	}
 }
 
+LoadPoint LoadPoint::Clone(LoadPoint LP) // Дублировать нагрузку (вариант с передаваемой в качестве параметра нагрузки)
+{
+	return LP.Clone();
+}
+
 LoadPoint LoadPoint::Clone() // Вернуть клонированную нагрузку
 {
 	if (Point == nullptr)
@@ -475,7 +1067,19 @@ LoadPoint LoadPoint::Clone() // Вернуть клонированную нагрузку
 	case Dchar: return { Type,new char(*(char*)Point) };
 	case Dbool: return { Type,new bool(*(bool*)Point) };
 	case DPPoint: return { Type,new (void*)(*(void**)Point) };
-	case DIC: return { Type, ICCopy(*this).Point };
+	case DIC: 
+		if (Ind < 0)
+			return { Type, ICCopy(*this).Point };
+		else // Клонирование по индексу в ИК
+			switch (Ind % 3)
+			{
+				case 0: // ИП
+					return LoadPoint::Clone({TIP + Type%2, &((IC_type)Point)->at(Ind/3),-1});
+				case 1: // Атрибут
+					return LoadPoint::Clone({ TIP + Type % 2, &((IC_type)Point)->at(Ind / 3).atr,-1 });
+				case 2: // Нагрузка
+					return LoadPoint::Clone(((IC_type)Point)->at(Ind / 3).Load);
+			}
 	case DIP: //return { Type, (*(ip*)Point).Сlone() };
 	{
 		vector<ip>* t = new vector<ip>;
@@ -485,9 +1089,15 @@ LoadPoint LoadPoint::Clone() // Вернуть клонированную нагрузку
 	}
 	case DLoadVect: // Копирование вектора нагрузок
 	{
-		vector<LoadPoint> t;
-		for (auto& i : *(vector<LoadPoint>*)Point)
-			t.push_back(i.Clone());
+		if (Ind >= 0) 
+			// Клонирование переменной по индексу
+			return ((LoadVect_type)Point)->at(Ind).Clone();
+		else{ // Клонирование по индексу в векторе
+			vector<LoadPoint>* t=new vector<LoadPoint>;
+			for (auto& i : *(vector<LoadPoint>*)Point)
+				t->push_back(i.Clone());
+			return{ Type, t };
+		}
 	}
 	default: return *this;
 	}
@@ -499,15 +1109,20 @@ void* LoadPoint::VarClone() // Вернуть ссылку на клонированное значение из нагру
 		return nullptr;
 	switch (Type >> 1)
 	{
-	case Dstring: return new string(*(string*)Point);
-	case Dint: return new int(*(int*)Point);
-	case Dfloat: return new float(*(float*)Point);
-	case Ddouble: return new double(*(double*)Point);
-	case Dchar: return new char(*(char*)Point);
-	case Dbool: return new bool(*(bool*)Point);
-	case DPPoint: return new (void*)(*(void**)Point);
-	case DIP: {IC_type t = new vector<ip>; t->push_back(*(ip*)Point); return t; }
-	case DIC: return ICCopy(*this).Point;
+		case Dstring: return new string(*(string*)Point);
+		case Dint: return new int(*(int*)Point);
+		case Dfloat: return new float(*(float*)Point);
+		case Ddouble: return new double(*(double*)Point);
+		case Dchar: return new char(*(char*)Point);
+		case Dbool: return new bool(*(bool*)Point);
+		case DPPoint: return new (void*)(*(void**)Point);
+		case DIP: {IC_type t = new vector<ip>; t->push_back(*(ip*)Point); return t; }
+		case DIC: return ICCopy(*this).Point;
+		case DLoadVect: {
+			LoadVect_type t = new vector<LoadPoint>;
+			t->resize(((LoadVect_type)Point)->size());
+			copy(((LoadVect_type)Point)->begin(), ((LoadVect_type)Point)->end(), t->begin());
+		}
 	}
 }
 
@@ -525,18 +1140,12 @@ void LoadPoint::VarDel() // Удаление нагрузки ИП
 	case Dbool: delete (bool*)Point; break;
 	case DPPoint: delete (void**)Point; break;
 	case DLoadVect: ((vector<LoadPoint>*)Point)->resize(0); delete ((vector<LoadPoint>*)Point); break;
-		//	case DIP: return (*(ip*)Point).сlone();
-		//	case DIC: return Point = ICCopy(*this);
 	}
 	Point = nullptr; Type = 0;
 }
 
 LoadPoint LoadPoint::Copy()
 {
-//	if (!this->isIC())
-//		return { 0,nullptr };
-//	IC_type t=new vector<ip>;
-	
 	LoadPoint LP;
 	LP.Copy(*this);
 	return LP;
@@ -713,8 +1322,9 @@ void LoadPoint::MatrixPrint(unsigned int Type, void* P, map<int, string > AtrMne
 		cout << "unknown load\n";
 	}
 }
-
-void LoadPoint::print(map<int, string > AtrMnemo, string offset, string Sep, string End, string ArrayBracketStart, string ArrayBracketFin, map<void*, int> *AdrMap)
+// AtrMnemo - словарь мнемоник атрибутов
+// AdrMap - список ссылок уже пройденных ИК при выводе ОА-графа
+void LoadPoint::print(map<int, string > AtrMnemo, string offset, string Sep, string End, string quote, string ArrayBracketStart, string ArrayBracketFin, map<void*, int> *AdrMap)
 {
 	if (Point == nullptr)
 	{
@@ -724,7 +1334,7 @@ void LoadPoint::print(map<int, string > AtrMnemo, string offset, string Sep, str
 	switch (Type)
 	{
 	case Tstring:
-	case Cstring: cout << "\"" << * (string*)Point << "\""; break;
+	case Cstring: cout << quote << * (string*)Point << quote; break;
 	case Tint:
 	case Cint:	  cout << *(int*)Point; break;
 	case Tfloat:
@@ -777,7 +1387,7 @@ void LoadPoint::print(map<int, string > AtrMnemo, string offset, string Sep, str
 					cout << offset << AtrMnemo[i->atr] <<  ((i->Load.Type % 2) ? " # " : " = ");
 				else
 					cout << offset << i->atr << ((i->Load.Type % 2) ? " # " : " = ");
-			i->Load.print(AtrMnemo, offset + "  ", Sep, End, ArrayBracketStart, ArrayBracketFin, AdrMap);
+			i->Load.print(AtrMnemo, offset + "  ", Sep, End, quote, ArrayBracketStart, ArrayBracketFin, AdrMap);
 			if (i != ((IC_type)Point)->end() - 1)
 				cout << endl;
 		}
@@ -815,6 +1425,19 @@ void LoadPoint::print(map<int, string > AtrMnemo, string offset, string Sep, str
 // Работа с ФУ
 void FU::CommonMk(int Mk, LoadPoint Load)
 {
+	if (Mk < 0) // Команды для АЛУ
+	{
+		
+		if (Alu == nullptr) // Если еще не создан АЛУ
+		{ // Создать АЛУ
+			Alu = (FU*)new ALU(Bus);
+			Alu->ProgFU(0, { 0,nullptr });
+			((FU*)Alu)->Parent = this;
+			Accum = { Cdouble, &((ALU*)Alu)->accum };
+		}
+		Alu->ProgFU(-Mk, Load);
+		return;
+	}
 	switch (Mk)
 	{
 	case 902: // ActiveSet Установить активность ФУ (true по умолчанию)
@@ -885,10 +1508,16 @@ void FU::CommonMk(int Mk, LoadPoint Load)
 		Load.WriteFromLoad(Accum);
 		break;
 	case 925: // AccumOutMk Выдать МК со значением аккумулятора
-		MkExec(Load,Accum);
+		MkExec(Load, Accum);
 		break;
-	case FUIndSetMk: // 926 FUIndSet Установить индекс ФУ
+	case FUIndSetMk: // 933 FUIndSet Установить индекс ФУ
 		FUInd = Load.toInt();
+		break;
+	case 992: // FUIndOut Выдать индекс ФУ
+		Load.Write(FUInd);
+		break;
+	case 993L: //FUIndOutMk Выдать милликоманду с индексом ФУ
+		MkExec(Load, { Cint, &FUInd });
 		break;
 	case CalcMk: // 927 Calc вычислить АЛВ
 	case 929: // CalcContinue Вычислить АЛВ и продолжеть выполнение программы, если результат true
@@ -924,7 +1553,8 @@ void FU::CommonMk(int Mk, LoadPoint Load)
 		if (Modeling == nullptr) Modeling = new FUModeling();
 		Modeling->ManualMode = Load.toBool();
 		break;
-	case 918: // SchedulerSet Установить контекст планировщика вычислений
+	case SchedulerSetMk: //918: // SchedulerSet Установить контекст планировщика вычислений
+		if (Load.Point == nullptr) break;
 		if (Modeling == nullptr) Modeling = new FUModeling();
 		Modeling->scheduler = (FU*)Load.Point;
 		Modeling->ManualMode = true;
@@ -1008,18 +1638,6 @@ void FU::ProgExec(void* UK, unsigned int CycleMode, FU* ProgBus, vector<ip>::ite
 				ProgBus->ProgFU(i->atr, i->Load); // Если диапазон МК не принадлежит ФУ (выдаем на Bus)
 			else // МК для данного ФУ
 			{
-				if (i->atr < 0) // Команда для FUALU
-				{
-					if (Alu == nullptr) // Если еще не создан АЛУ
-					{ // Создать АЛУ
-						Alu = (FU*)new ALU(Bus);
-						Alu->ProgFU(0,{0,nullptr});
-						((FU*)Alu)->Parent = this;
-						Accum = { Cdouble, &((ALU*)Alu)->accum };
-					}
-					Alu->ProgFU(-i->atr,i->Load);
-					continue;
-				}
 				if (i->atr == BreakAtr) { ProgStop = i->Load.toInt()-1; return; } // Прервать программу
 				if (i->atr == NextAtr)
 					if (!i->Load.toInt())
@@ -1041,9 +1659,8 @@ void FU::ProgExec(void* UK, unsigned int CycleMode, FU* ProgBus, vector<ip>::ite
 						continue;
 					}
 					if (i->Load.isProg() && Alu != nullptr) // Запуск вычисления АЛВ
-//						((FU*)Alu)->ProgExec(i->Load.Point);
-//
-					// Перейти к следующей итерации цикла continue
+
+				// Перейти к следующей итерации цикла continue
 					if (i->Load.isProg())
 					{
 						if (Alu == nullptr)

@@ -83,7 +83,7 @@ public:
 	void		fu_floor(LoadPoint Load);
 	void		fu_round(LoadPoint Load);
 	void		fu_log(LoadPoint Load);
-	void		fu_random();
+	void		fu_random(LoadPoint Load);
 	void		fu_inverse(LoadPoint load);
 	void		fu_and(LoadPoint load);
 	void		fu_or(LoadPoint load);

@@ -552,7 +552,6 @@ CommonMkList{
 	Obj={Mnemo="ContextPopMk" Mk=999 Hint="Выдать милликоманду с указателем на контекст ФУ"}
 	Obj={Mnemo="ContextOut" Mk=995 Hint="Выдать указатель на контекст ФУ"}
 	Obj={Mnemo="ContextOutMk" Mk=999 Hint="Выдать милликоманду с указателем на контекст ФУ"}
-
  
 	Obj={Mnemo="FUTypePop" Mk=906 Hint="Выдать тип ФУ"}
 	Obj={Mnemo="FUTypePopMk" Mk=905 Hint="Выдать милликоманду с типом ФУ"}
@@ -565,8 +564,10 @@ CommonMkList{
 	Obj={Mnemo="FUModeOut" Mk=951 Hint="Выдать режим работы ФУ"}
 	Obj={Mnemo="FUModeOutMk" Mk=952 Hint="Выдать МК с режимом работы ФУ"}
 
-	Obj={Mnemo="FUIndexPop" Mk=992 Hint="Выдать индекс ФУ"}
-	Obj={Mnemo="FUIndexPopMk" Mk=993 Hint="Выдать милликоманду с индексом ФУ"}
+	Obj={Mnemo="FUIndPop" Mk=992 Hint="Выдать индекс ФУ"}
+	Obj={Mnemo="FUIndOut" Mk=992 Hint="Выдать индекс ФУ"}
+	Obj={Mnemo="FUIndPopMk" Mk=993 Hint="Выдать милликоманду с индексом ФУ"}
+	Obj={Mnemo="FUIndOutMk" Mk=993 Hint="Выдать милликоманду с индексом ФУ"}
 
 	Obj={Mnemo="FUCommentAdd" Mk=994 Hint="Добавить строку комментария к ФУ"}
 }
@@ -4321,6 +4322,7 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
   Obj={Mnemo="EndSet" Mk=16 Hint="Установить строку в конце вывода"}
   Obj={Mnemo="ArrayBracketStartSet" Mk=17 Hint="Установить строку, обозначающую открывающуюся скобку при вывод вектора"}
   Obj={Mnemo="ArrayBracketFinSet" Mk=18 Hint="Установить строку, обозначающую закрывающуюся скобку при вывод вектора"}
+  Obj={Mnemo="QuoteSet" Mk=19 Hint="Установить символ кавычек при воводе строки или символа"}
   Obj={Mnemo="PrefixSet" Mk=20 Hint="Установить файл для вывода"}
   Obj={Mnemo="StdOutFileSet" Mk=30 Hint="Установить файл для ввода"}
   Obj={Mnemo="StdOutFileAppend" Mk=31 Hint="Установить файл для дополнения"}
@@ -4428,6 +4430,11 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
   Obj={Mnemo="CendToReceiver" Mk=70 Hint="Переслать лексему из нагрузки получателю"}
   Obj={Mnemo="CendCopyToReceiver" Mk=71 Hint="Переслать копию лексемы из нагрузки получателю"}
 
+  Obj={Mnemo="RegSet" Mk=85 Hint="Установить регулярное выражение"}
+  Obj={Mnemo="RegProgSet" Mk=86 Hint="Установить программу обработки лексемы, выделенной регулярным выражением"}
+  
+  Obj={Mnemo="LexStrOut" Mk=94 Hint="Выдать строку с последней распознанной лексемой"}
+  Obj={Mnemo="LexStrOutMk" Mk=95 Hint="Выдать МК со строкой с последней распознанной лексемой"}
 
   Obj={Mnemo="TabModeSet" Mk=96 Hint="Установить решим генерации скобок по символам табуляции (по умолчанию ture)"}
   Obj={Mnemo="LexReset" Mk=98 Hint="Сбросить настройки лексического анализа"}
@@ -4839,7 +4846,7 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 
 
      Obj={Mnemo="Signal out" Hint="Выдача сигнала" Comment
-       Obj={Mk=99 Mnemo="SignalOut" Hint="выдача текущего сигнала"}
+       Obj={Mk=99 Mnemo="SignalCurrentOut" Hint="выдача текущего сигнала"}
        Obj={Mk=100 Mnemo="SignalOut_0" Hint="выдача сигнала 0 канала"}
        Obj={Mk=101 Mnemo="SignalOut_1" Hint="выдача сигнала 1 канала"}
        Obj={Mk=102 Mnemo="SignalOut_2" Hint="выдача сигнала 2 канала"}
@@ -5279,27 +5286,26 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 	 Obj={Mk=8  Mnemo="ParametrOut" Hint="Выдать МК с параметром по индексу"}
 	 Obj={Mk=9  Mnemo="ParametrOutMk" Hint="Установить ссылку на соседа по индексу"}
 	 Obj={Mk=10 Mnemo="SendTo" Hint="Выдать значение для соседа с индексом по индексу"}
-
-
+	 Obj={Mk=11 Mnemo="InSet" Hint="Установить значение для соседа по индексу"}
 
 
 	Obj={Mnemo="InSet" Hint="Выдача данных соседу" Comment
-	 	Obj={Mk=100 Mnemo="In_0_In" Hint="Выдать значение, полученное от 0-го соседа"}
-	 	Obj={Mk=101 Mnemo="In_1_In" Hint="Выдать значение, полученное от 1-го соседа"}
-	 	Obj={Mk=102 Mnemo="In_2_In" Hint="Выдать значение, полученное от 2-го соседа"}
-	 	Obj={Mk=103 Mnemo="In_3_In" Hint="Выдать значение, полученное от 3-го соседа"}
-	 	Obj={Mk=104 Mnemo="In_4_In" Hint="Выдать значение, полученное от 4-го соседа"}
-	 	Obj={Mk=105 Mnemo="In_5_In" Hint="Выдать значение, полученное от 5-го соседа"}
-	 	Obj={Mk=106 Mnemo="In_6_In" Hint="Выдать значение, полученное от 6-го соседа"}
-	 	Obj={Mk=107 Mnemo="In_7_In" Hint="Выдать значение, полученное от 7-го соседа"}
-	 	Obj={Mk=108 Mnemo="In_8_In" Hint="Выдать значение, полученное от 8-го соседа"}
-	 	Obj={Mk=109 Mnemo="In_9_In" Hint="Выдать значение, полученное от 9-го соседа"}
-	 	Obj={Mk=110 Mnemo="In_10_In" Hint="Выдать значение, полученное от 10-го соседа"}
-	 	Obj={Mk=111 Mnemo="In_11_In" Hint="Выдать значение, полученное от 11-го соседа"}
-	 	Obj={Mk=112 Mnemo="In_12_In" Hint="Выдать значение, полученное от 12-го соседа"}
-	 	Obj={Mk=113 Mnemo="In_13_In" Hint="Выдать значение, полученное от 13-го соседа"}
-	 	Obj={Mk=114 Mnemo="In_14_In" Hint="Выдать значение, полученное от 14-го соседа"}
-	 	Obj={Mk=115 Mnemo="In_15_In" Hint="Выдать значение, полученное от 15-го соседа"}
+	 	Obj={Mk=100 Mnemo="In_0_Set" Hint="Установить значение, полученное от 0-го соседа"}
+	 	Obj={Mk=101 Mnemo="In_1_Set" Hint="Установить значение, полученное от 1-го соседа"}
+	 	Obj={Mk=102 Mnemo="In_2_Set" Hint="Установить значение, полученное от 2-го соседа"}
+	 	Obj={Mk=103 Mnemo="In_3_Set" Hint="Установить значение, полученное от 3-го соседа"}
+	 	Obj={Mk=104 Mnemo="In_4_Set" Hint="Установить значение, полученное от 4-го соседа"}
+	 	Obj={Mk=105 Mnemo="In_5_Set" Hint="Установить значение, полученное от 5-го соседа"}
+	 	Obj={Mk=106 Mnemo="In_6_Set" Hint="Установить значение, полученное от 6-го соседа"}
+	 	Obj={Mk=107 Mnemo="In_7_Set" Hint="Установить значение, полученное от 7-го соседа"}
+	 	Obj={Mk=108 Mnemo="In_8_Set" Hint="Установить значение, полученное от 8-го соседа"}
+	 	Obj={Mk=109 Mnemo="In_9_Set" Hint="Установить значение, полученное от 9-го соседа"}
+	 	Obj={Mk=110 Mnemo="In_10_Set" Hint="Установить значение, полученное от 10-го соседа"}
+	 	Obj={Mk=111 Mnemo="In_11_Set" Hint="Установить значение, полученное от 11-го соседа"}
+	 	Obj={Mk=112 Mnemo="In_12_Set" Hint="Установить значение, полученное от 12-го соседа"}
+	 	Obj={Mk=113 Mnemo="In_13_Set" Hint="Установить значение, полученное от 13-го соседа"}
+	 	Obj={Mk=114 Mnemo="In_14_Set" Hint="Установить значение, полученное от 14-го соседа"}
+	 	Obj={Mk=115 Mnemo="In_15_Set" Hint="Установить значение, полученное от 15-го соседа"}
 	}
 	Obj={Mnemo="Out" Hint="Выдача данных соседу" Comment
 	 	Obj={Mk=150 Mnemo="In_0_Out" Hint="Выдать значение, полученное от 0-го соседа"}
@@ -5477,8 +5483,14 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 	 Obj={Mk=17 Mnemo="InCounterSet" Hint="Установить счетчик входных данных"}
 	 Obj={Mk=30 Mnemo="Ind1Set" Hint="Установить первый индекс ФУ-автомата"}
 	 Obj={Mk=31 Mnemo="Ind2Set" Hint="Установить второй индекс ФУ-автомата"}
+	 Obj={Mk=24 Mnemo="Ind1Out" Hint="Выдать первый индекс ФУ-автомата"}
+	 Obj={Mk=25 Mnemo="Ind1OutMk" Hint="Выдать МК с первым индексом ФУ-автомата"}
+	 Obj={Mk=26 Mnemo="Ind2Out" Hint="Выдать второй индекс ФУ-автомата"}
+	 Obj={Mk=27 Mnemo="Ind2OutMk" Hint="Выдать МК совторым индексом ФУ-автомата"}
 	 Obj={Mk=28 Mnemo="Ind1Add" Hint="Увеличить значение первого счетчика"}
+	 Obj={Mk=28 Mnemo="Ind1Sub" Hint="Уменьшить значение первого счетчика"}
 	 Obj={Mk=29 Mnemo="Ind2Add" Hint="Увеличить значение второго счетчика"}
+	 Obj={Mk=29 Mnemo="Ind2Sub" Hint="Уменьшить значение второго счетчика"}
 	 Obj={Mk=32 Mnemo="Step1Set" Hint="Установить шаг автоматической инкрементации для 1-го индекса"}
 	 Obj={Mk=33 Mnemo="Step2Set" Hint="Установить шаг автоматической инкрементации для 2-го индекса"}
 	 Obj={Mk=35 Mnemo="Context1Out" Hint="Выдать контекст первого ФУ-автомата"}
@@ -5488,8 +5500,9 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 	 Obj={Mk=40 Mnemo="ContextAddMkSet" Hint="Установить МК для добавления контекста соседа исполнительного ФУ"}
 	 Obj={Mk=41 Mnemo="MkAppendMkSet" Hint="Установить МК для добавления МК для соседа исполнительного ФУ"}
 
-	 Obj={Mk=50 Mnemo="Ind1ProgExec" Hint="Выполнить программу для первого ФУ-автомата"}
-	 Obj={Mk=51 Mnemo="Ind2ProgExec" Hint="Выполнить программу для второго ФУ-автомата"}
+	 Obj={Mk=50 Mnemo="Ind1Exec" Hint="Выполнить программу для первого ФУ-автомата"}
+	 Obj={Mk=51 Mnemo="Ind2Exec" Hint="Выполнить программу для второго ФУ-автомата"}
+	 Obj={Mk=52 Mnemo="AllExec" Hint="Выполнить программу для всех исполнительных ФУ"}
 
 	 Obj={Mk=60 Mnemo="Neitborder1Append" Hint="Добавить соседа для ФУ с индексом 1 (на входе ссылка на соседе, если nil, то соседом делается ФУ и Ind2)"}
 	 Obj={Mk=61 Mnemo="Neitborder2Append" Hint="Добавить соседа для ФУ с индексом 2 (на входе ссылка на соседе, если nil, то соседом делается ФУ и Ind1)"}
@@ -5499,8 +5512,17 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 	 Obj={Mk=66 Mnemo="Neitborder2Out" Hint="Выдать ссылку на контекст ФУ с индексом 2"}
 	 Obj={Mk=67 Mnemo="Neitborder1OutMk" Hint="Выдать МК со ссылкой на контекст ФУ с индексом 1"}
 	 Obj={Mk=68 Mnemo="Neitborder2OutMk" Hint="Выдать МК со ссылкой на контекст ФУ с индексом 2"}
-	 
-	 Obj={Mk=70 Mnemo="PlyNSet" Hint="Установить количество слоев"}
+	 Obj={Mk=70 Mnemo="Mk1Set" Hint="Установить МК для автомата с индексом 1"}
+	 Obj={Mk=71 Mnemo="Mk2Set" Hint="Установить МК для автомата с индексом 2"}
+	 Obj={Mk=72 Mnemo="Mk1Exec" Hint="Выполнить МК для автомта с индексом 1"}
+	 Obj={Mk=73 Mnemo="Mk2Exec" Hint="Выполнить МК для автомта с индексом 2"}	 
+	 Obj={Mk=74 Mnemo="Mk1AllExec" Hint="Выполнить МК для автомта с индексом 1 для всех автоматов сети"}
+	 Obj={Mk=75 Mnemo="Mk1toInd2Exec" Hint="Выполнить первую МК для всех ФУ от индекса 1 до индекса 2 невключительно"}
+	 Obj={Mk=75 Mnemo="Mk1toInd2IncludeExec" Hint="Выполнить первую МК для всех ФУ от индекса 1 до индекса 2 включительно"}
+	 Obj={Mk=80 Mnemo="Ind1N_inOutMk" Hint="Вывести МК с количеством ожидаемых входных данных"}	 
+	 Obj={Mk=81 Mnemo="Ind1InCounterOutMk" Hint="Выдать МК с количеством пришедших входных данных"}	 
+	 Obj={Mk=85 Mnemo="ForExec" Hint="Выполнить цикл (на входе программа для выполнени цикла или количество итераций (тогда выполняется программа по указателю Prog из контекста)"}	 
+	// Obj={Mk=70 Mnemo="PlyNSet" Hint="Установить количество слоев"}
 
 	 Obj={Mk=200 Mnemo="NetGenerate" Hint="Генерация сетки (На вход может подаваться количество ФУ в сетке)"}
 
@@ -6479,8 +6501,8 @@ MnemoTable.Set=
 	>{Mnemo="ABSAlu" ConstInt=-47 Hint="Абсолютное значение в аккумулятор АЛУ"}
 	>{Mnemo="DivIntAlu" ConstInt=-56 Hint="Целочесленное деление аккумулятора АЛУ"}
 	>{Mnemo="ModAlu" ConstInt=-44 Hint="Остаток от деления от аккумулятора АЛУ"}
-	>{Mnemo="OutAlu" ConstInt=-1 Hint="Выдать значение из аккумулятора АЛУ"}
-	>{Mnemo="OutMkAlu" ConstInt=-2 Hint="Выдать МК из аккумулятора АЛУ"}
+	>{Mnemo="OutAlu" ConstInt=-2 Hint="Выдать значение из аккумулятора АЛУ"}
+	>{Mnemo="OutMkAlu" ConstInt=-3 Hint="Выдать МК из аккумулятора АЛУ"}
 	
 MnemoTable.PopMk=Console.MnemoListSet // Ссылка на таблицу мнемоник для консоли
 

@@ -51,6 +51,31 @@ void IntAlu::ProgFU(int MK, LoadPoint Load)
 		MkExec(Load, { Tint, t });
 		break;
 	}
+	case 10: // RandFromSet Установить начальный диапазон генерации случайных чисел
+		RandFrom = Load.toInt();
+		break;
+	case 11: // RandToSet Установить конечный диапазон генерации случайных чисел
+		RandTo = Load.toInt()+1;
+		break;
+	case 12: // RandOut Выдать сгенерированное число, если в Load=nil, то записать в аккумулятор
+		if (Load.Point == nullptr)
+			*Stack.back().AccumulatUk = RandFrom + rand() % (RandFrom - RandTo);
+		else
+			Load.Write(RandFrom + rand()%(RandFrom-RandTo));
+		break;
+	case 13: // RandOutMk Выдать МК со сгенерированным числом, если в Load=nil, то записать в аккумулятор
+	{
+		int t = RandFrom + rand() % (RandFrom - RandTo);
+		if (Load.Point == nullptr)
+			*Stack.back().AccumulatUk = t;
+		else
+			MkExec(Load, { Cint, &t });
+	}
+		break;
+	case 14: // Rand Сгенерировать случайное число в диапазоне от 0 до числа из нагрузки
+		*Stack.back().AccumulatUk = rand() % (Load.toInt()+1);
+		break;
+
 	case 20: // Out
 		Load.Write(*AccumulatUk);
 		*AccumulatUk += AutoInc;
@@ -64,21 +89,27 @@ void IntAlu::ProgFU(int MK, LoadPoint Load)
 		break;
 	case 27: // For Выполнить цикл с началом в аккумуляторе, шагом Autoinc и концом последовательностьи, заданным значением из аккумулятора, тело цикла в prog
 	{
+		int AutoIncArch = AutoInc; // Запомнить автоинкремент
+		AutoInc = 0; // Отключить автоинкрементацию
 		void* t = Prog;
 		if (Load.isDigitBool())
 			Fin = Load.toInt();
 		if (Load.isProg())
 			t = Load.Point;
-		if (AutoInc > 0)
-			for (; *AccumulatUk < Fin; *AccumulatUk += AutoInc)
+		if (AutoIncArch > 0)
+
+			for (; *AccumulatUk < Fin; *AccumulatUk += AutoIncArch)
 				ProgExec(t);
 		else
-			for (; *AccumulatUk > Fin; *AccumulatUk += AutoInc)
+			for (; *AccumulatUk > Fin; *AccumulatUk += AutoIncArch)
 				ProgExec(t);
+		AutoInc = AutoIncArch; // Восстановить значениие автоинкрементации
 		break;
 	}
 	case 28: // ForInclude Выполнить цикл с началом в аккумуляторе, шагом Autoinc и концом последовательности включительно, заданным значением из аккумулятора, тело цикла в prog
 	{	
+		int AutoIncArch = AutoInc; // Запомнить автоинкремент
+		AutoInc = 0; // Отключить автоинкрементацию
 		void* t = Prog;
 		if (Load.isDigitBool())
 			Fin = Load.toInt();
@@ -90,6 +121,7 @@ void IntAlu::ProgFU(int MK, LoadPoint Load)
 		else
 			for (; *AccumulatUk >= Fin; *AccumulatUk += AutoInc)
 				ProgExec(t);
+		AutoInc = AutoIncArch; // Восстановить значениие автоинкрементации
 		break;
 	}
 	case 29: //ForSet Установить значение для цикла for (цикл запускается с помощью МК  for или forInclude без нагрузки)

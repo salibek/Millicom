@@ -15,11 +15,18 @@
 
 using namespace std;
 
-int main()
+int main(int argc, char* argv[])
 {
 	system("chcp 1251");
 	LoadPoint LP = LoadPoint();
 	BusFU Bus;
+	string STR;
+	if (argc > 1)
+	{
+		STR = argv[1];
+		Bus.ProgFU(10, { Cstring, &STR }); //Запуск индексного файла
+		return 0;
+	}
 
 //	int t = 10;
 
@@ -79,14 +86,15 @@ int main()
 //	string STR = "MeanShift.ind";
 //	string STR = "Bag.ind";
 //	string STR = "NetTemperat2.ind";
-//	string STR = "CompileC.ind";
+//	STR = "CompileC.ind";
 //	string STR = "OAGraphOut.ind";
 //	string STR = "MultyList.ind";
 //	string STR = "CompLab.ind";
 //	string STR = "AlU_test.ind";
-	string STR = "TabTest.ind";
+//	string STR = "TabTest.ind";
 //	string STR = "LexTest.ind"; // Имя запускного файла
-//	string STR = "Bag2.ind";
+	STR = "Bag3.ind";
+//	string STR = "ControlAoutomat.ind";
 
 	Bus.ProgFU(10, {Cstring, &STR}); //Запуск индексного файла
 

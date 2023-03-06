@@ -1,0 +1,211 @@
+//NewFU={Mnemo="Main_Bus" MkBegRange=1000 FUType=FUBusNew} // Описание Bus
+
+\\ Для создания индексного файла сначала надо запустить программу !!!!
+ CapsManager.IndexVectCreate=20000
+ CapsManager.IpIcIdOutMk=MainBus.IpIcIdSet
+ CapsManager.IpIcIdOutMk=VariableManager.IpIcIdSet
+ CapsManager.IpIcIdOutMk=ListSyntez.IpIcIdSet
+ MainBus.ModeSet=1
+\\ -------------------------------------- \\
+MainBus.FUTypeCorrectSet=-96 // Корректировка номера типа ФУ для переноса на новую ОА-платформу
+
+NewFU={Mnemo="Manager" FUType=FUCellularAutomatManager}
+NewFU={Mnemo="Console" FUType=FUConsNew}
+NewFU={Mnemo="IntAlu" FUType=FUIntAluNew}
+NewFU={Mnemo="IntAlu1" FUType=FUIntAluNew}
+NewFU={Mnemo="IntAlu2" FUType=FUIntAluNew}
+NewFU={Mnemo="Volume" FUType=FUALUNew}
+NewFU={Mnemo="Price" FUType=FUALUNew}
+NewFU={Mnemo="AluRez" FUType=FUALUNew Hint="АЛУ для сбора результата вычисления"}
+NewFU={Mnemo="Dev" FUType=FUCellularAutomat}
+NewFU={Mnemo="Scheduller" FUType=FUSchedulerNew}
+NewFU={Mnemo="Eventser" FUType=FUEventserNew}
+
+MainBus.PartialResetSet \\ Запомнить число созданных ФУ
+MainBus.ModeSet=2
+
+V#10 // Объём рюкзака
+NItem#10  // Количество предметов для расположения в рюкзаке
+
+IntAlu.Set=NItem
+IntAlu.Mul=V // Вычислить количество узлов в сетке
+IntAlu.OutMk=IntAlu2.Set
+
+IntAlu.OutMk=Manager.NetGenerate // Генерация поля автоматов
+Scheduller.ContextOutMk=Manager.Mk1AllExec // Установить ссылку на планировщика вычислений
+//Manager.Ind1Set=0
+//Scheduller.ContextOutMk=Manager.Mk1Exec
+Scheduller.ContextOutMk=Eventser.SchedulerSet
+
+// Настройк первых ФУ в линии сетки
+Manager.Ind1Set=0
+Manager.Ind2Set=0
+Manager.Step1Set=V
+Manager.Step2Set=0
+Manager.ForExec={ // Установить в 1 количество ожидаемых данных для первых ФУ в начале каждой строки
+ FUCellularAutomatManager.Ind1Exec={FUCellularAutomat.N_InSet=1}
+}
+
+Manager.Ind1Set=0
+Console.LnOutLn="Program start"
+
+Volume.VectCreat // Вектор объёмов предметов
+Volume.Append=3
+Volume.Append=2
+Volume.Append=1
+Volume.Append=2
+Volume.Append=4
+Volume.Append=2
+Volume.Append=3
+Volume.Append=4
+Volume.Append=5
+Volume.Append=4
+
+Price.VectCreat // Вектор цен предметов
+Price.Append=3
+Price.Append=5
+Price.Append=6
+Price.Append=3
+Price.Append=2
+Price.Append=7
+Price.Append=4
+Price.Append=9
+Price.Append=3
+Price.Append=1
+
+Price.IndAutoIncSet=1
+Volume.IndSet=0
+Price.IndSet=0
+
+// Заполнение ссылок в сетке автоматов
+Manager.Step1Set=1 // Настройка автоматическо изменения 1-го индекса
+Manager.Step2Set=1 // Настройка автоматическо изменения 2-го индекса
+
+IntAlu.OutMk=IntAlu.ForSet // Настройка цикла генерации сетки
+IntAlu.StepSet=V // Шаг цикла по строкам
+IntAlu.Set=0
+
+// Горизонтальные связи в сетке
+IntAlu1.Set=V
+IntAlu1.Dec // Количество итераций по одной строке V-1
+Manager.ProgSet={
+  FUCellularAutomatManager.Neitborder1To2Append
+  FUCellularAutomatManager.NeitborderМк1Append=FUCellularAutomat.In_0_Set
+}
+IntAlu.For={
+  IntAlu.OutMk=Manager.Ind1Set=Manager.Ind2Set
+  Manager.Ind2Add=1
+  IntAlu1.OutMk=Manager.ForExec
+  Manager.Neitborder1Append // Добавить нулевую ссылку для последнего ФУ
+  Manager.NeitborderМк1Append=0
+}
+
+// Вертикальные ссылки
+IntAlu.ForOutMk=FUIntAluNew.Set
+IntAlu.Sub=V
+IntAlu.OutMk=FUIntAluNew.ForSet
+IntAlu.Set=0
+Manager.ProgSet={
+  FUCellularAutomatManager.Neitborder1To2Append
+  FUCellularAutomatManager.NeitborderМк1Append=FUCellularAutomat.In_1_Set
+}
+IntAlu.For={
+  IntAlu.OutMk=Manager.Ind1Set=Manager.Ind2Set
+  Manager.Ind2Add=V
+  Manager.ForExec=V
+}
+
+// Установление косых ссылок
+Manager.ProgSet={
+  FUCellularAutomatManager.Neitborder1To2Append
+  FUCellularAutomatManager.NeitborderМк1Append=FUCellularAutomat.In_2_Set
+}
+Volume.IndAutoIncSet=1
+Volume.IndSet=1
+IntAlu.Set=0
+IntAlu.For={
+  Volume.OutMk=IntAlu1.Set
+  IntAlu.OutMk=Manager.Ind1Set=Manager.Ind2Set
+  IntAlu1.OutMk=Manager.Ind2Add // Смещение
+  Manager.Ind2Add=V
+  IntAlu1.Sub=V
+  IntAlu1.Mul=-1 // Вычисление количества итераций
+  IntAlu1.OutMk=Manager.ForExec
+}
+
+// Ссылки на коллектор сбора результата
+IntAlu2.OutMk=IntAlu.ForSet
+Manager.Ind2Set=0 // Обнулить второй индекс, т.к. ранее он вышел за пределы размерности сетки
+IntAlu.OutMk=Manager.Ind1Set
+Manager.ProgSet={
+  AluRez.ContextOutMk=Manager.Neitborder1Append
+  FUCellularAutomatManager.NeitborderМк1Append=FUALUNew.Max
+}
+Manager.ForExec=V
+
+// Программа пересылки вправо пришедшей цены изделия
+Manager.AllExec={ // Программа инициализации каждого исполнительного автомата
+	FUCellularAutomat.IndSet=0 // Индекс устанавливаем в 0 для установки программы при приходе 0-й МК
+	FUCellularAutomat.ReceiveProgSet={
+     FUCellularAutomat.In_0_OutMk=FUCellularAutomat.SendTo_0
+} // Программа Передать вправо цену товара
+}
+
+
+// Установка программы обработки пришедщих данных
+Manager.Mk1Set=FUCellularAutomat.FiringProgSet
+Manager.Mk1AllExec=
+{ // Программа при приходе всех данных
+	SetAlu=0
+	FUCellularAutomat.In_0_OutMk=AddAlu
+	FUCellularAutomat.In_2_OutMk=AddAlu
+	FUCellularAutomat.In_1_OutMk=MaxAlu
+	FUCellularAutomat.AccumOutMk=FUCellularAutomat.SendTo_1=FUCellularAutomat.SendTo_2 // Выдача результата
+}
+
+Manager.Ind1Set=0
+
+Manager.Mk1Set=FUCellularAutomat.SchedulerSet // Настройка моделирования
+// Запуск расчета, сбор результата
+Volume.IndSet=0 // Настроить АЛУ объемов на начало
+Manager.Ind1Set=0
+IntAlu.Set=0
+Manager.Mk1Set=FUCellularAutomat.In_0_Set
+Manager.Step1Set=0
+Manager.Step2Set=0
+Price.IndSet=0
+Manager.Step1Set=0
+IntAlu2.OutMk=IntAlu.ForSet
+IntAlu.ProgSet={
+	IntAlu.OutMk=Manager.Ind1Set
+	Volume.OutMk=IntAlu1.Set
+	IntAlu1.OutMk=Manager.Ind1Add // Запуск цены, начиная с объёма предмета
+	Manager.Ind1Sub=1
+	Manager.Ind1Exec={Price.OutMk=Manager.Mk1Exec} // Переслать цену предмета на автомат в начале строки сетки
+     // Разрыв горизонтальных связей не месте объем текущего предмета
+	IntAlu1.Sub=1
+	IntAlu1.NEQExec={
+		Manager.Ind1Sub=1
+		Manager.Ind1Exec={FUCellularAutomat.Neighbour_0_Set}
+		IntAlu.OutMk=Manager.Ind1Set
+		Manager.Mk1Exec=0
+	}
+}
+IntAlu.For
+
+// Вывод результата
+Console.Out="Rezult: " AluRez.OutMk=Console.OutLn
+
+Manager.Step1Set=1
+Manager.Step2Set=0
+IntAlu2.OutMk=IntAlu.ForSet
+Manager.ProgSet={FUCellularAutomatManager.Ind1Exec={
+  FUCellularAutomatManager.AccumOutMk=Console.Out Console.Out=" " }}
+IntAlu.Set=0
+IntAlu.For={
+	IntAlu.OutMk=Manager.Ind1Set
+	Manager.ForExec=V
+	Console.OutLn
+}
+// Вывод результатов моделирования
+Console.Out="Work time: " Eventser.TimeOutMk=Console.OutLn

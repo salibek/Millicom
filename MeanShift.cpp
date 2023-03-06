@@ -2,7 +2,7 @@
 #include "stdafx.h"
 #include "MeanShift.h"
 #include <string>
-#include <fstream>NExUFCall
+#include <fstream>
 #include <algorithm>
 #include <cmath>
 

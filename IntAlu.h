@@ -14,6 +14,7 @@ private:
 	int * AccumulatUk= &Accumulat; // Указатель на аккумулятор
 	vector <IntContext> Stack; // Стек аккумуляторов
 	int Compare = 0; // Сравинаваемое значение
+	int RandFrom = 0, RandTo = 0; // Диапазон генерируемых случайных значений
 	int* CompareUk = &Compare; // Указатель на стравнваемое значение
 	void* EmptyStackErrProg = nullptr; // Программа обработки ошибки pop из пустого стека
 	void* BiggerProg=nullptr, * LessProg = nullptr, * EQProg = nullptr, * NEQProg = nullptr, * BiggerEQProg = nullptr, * LessEQProg = nullptr;

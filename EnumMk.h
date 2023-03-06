@@ -79,5 +79,5 @@ enum E_MK
 	Compar3Way,				// 71
 	PUSH,					// 72
 	
-	SET = 1,					// 1
+	SET = 26,					// 1
 };

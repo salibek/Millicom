@@ -10,9 +10,17 @@ struct MkFu
 	FU* Fu;
 };
 
+struct RegProg // Парочка регулярного выражения и указателя на обработчика этой выделенной лексемы
+{
+	string Reg;
+	void* Prog = nullptr;
+};
+
 class Lex : public FU {
 private:
 	void LexOut(bool Copy=false, int MK = -1);
+	vector<RegProg> RegVect; // Вектор регулярных выражений для распознания лексем
+	string LexAccum; // Буфер для хранения выделенной лексемы
 	set<int> FinMk; // Множество индексов МК для потребителя, характерных для финального состояния
 	string ABC_templ = "_QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm"; // Алфавит символов
 	string Digit_templ = "0123456789"; // --- Алфавит чисел

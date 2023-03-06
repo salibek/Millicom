@@ -23,7 +23,7 @@ void Console::ProgFU(int MK, LoadPoint Load)
 		cout << prefix;
 		if (MK == 3 || MK == 4) cout << endl;
 		if (Load.Point != nullptr)
-			Load.print(AtrMnemo,"",Sep,End,ArrayBracketStart,ArrayBracketFin);
+			Load.print(AtrMnemo,"",Sep,End, quote, ArrayBracketStart,ArrayBracketFin);
 		if (MK == 2 || MK == 4) cout << endl;
 		break;
 	case 10: // Ln Перевод строки
@@ -40,6 +40,9 @@ void Console::ProgFU(int MK, LoadPoint Load)
 		break;
 	case 18: // ArrayBracketStartSet Установить строку, обозначающую закрывающуюся скобку при вывод вектора
 		ArrayBracketFin = Load.toStr();
+		break;
+	case 19: // QuoteSet Установить символ кавычек при воводе строки или символа
+		quote = Load.toStr();
 		break;
 	case 20: // PrefixSet Установить префикс перед выводом
 		if ((Load.Type) >> 1 == Dstring)
@@ -217,6 +220,27 @@ void Console::ProgFU(int MK, LoadPoint Load)
 
 				Var = { CLoadVect, new int* (intArray) };
 			}
+			// Распознание вектора
+			/*
+			else if (std::regex_match(inStr.c_str(), regular_vector)) {
+				int res1;
+				float res2;
+				std::vector <LoadPoint> Ar;
+				for (sregex_iterator it = sregex_iterator(inStr.begin(), inStr.end(), regular_number);
+					it != sregex_iterator(); it++) {
+					smatch match = *it;
+					if (std::regex_match(match.str(0).c_str(), regular_float)) {
+						res2 = stof(match.str(0));
+						Ar.push_back(res2);
+					}
+					else if (std::regex_match(match.str(0).c_str(), regular_int)) {
+						res1 = stoi(match.str(0));
+						Ar.push_back(res1);
+					}
+				}
+
+			}
+			*/
 			else if (std::regex_match(inStr.c_str(), regular_matrix)) {
 
 				cout << "its matrix";

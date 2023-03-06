@@ -120,7 +120,7 @@ void ALU::ProgFU(int MK, LoadPoint Load)
 			return;
 		}
 
-		if (MK >= 25 && Load.isProg()) // Арифметико-логическсое выражение со ссылкой в нагрузке
+		if (MK >= 25 && MK < 900 && Load.isProg()) // Арифметико-логическсое выражение со ссылкой в нагрузке
 		{
 			LoadDelFlag = true;
 			Stack.push_back({});
@@ -146,7 +146,19 @@ void ALU::ProgFU(int MK, LoadPoint Load)
 			if (Stack.back().accumType >> 1 == Dstring)
 				MkExec(Load, { Stack.back().accumType,&Stack.back().accumStr }, Bus, true);
 			else if (Stack.back().accumType >> 1 == DLoadVect) // вектор
-				MkExec(Load, { Stack.back().accumType, &Stack.back().accumVect }, Bus, true);
+			{
+				if (Stack.back().IndF)
+					if (!(Stack.back().Ind >= 0 && Stack.back().Ind < Stack.back().accumVect.size()))
+					{
+						ProgExec(OutOfRangeErrProg); // Ошибка выхода индекса за пределы диапазона
+						break;
+					}
+					else
+					{
+						MkExec(Load, Stack.back().accumVect.at(Stack.back().Ind), Bus, true);
+						Stack.back().Ind += Stack.back().IndAutoInc;
+					}
+			}
 			else
 				MkExec(Load, { Cdouble,&Stack.back().accum }, Bus, true); // Заглушка!!!
 			break;
@@ -164,7 +176,10 @@ void ALU::ProgFU(int MK, LoadPoint Load)
 					else
 						Load.WriteFromLoad(Stack.back().accumVect.at(Stack.back().Ind));
 				if (Load.Type == TLoadArray || Load.Type == Tvoid)
+				{
 					Load.Write(Stack.back().accumVect);
+					Stack.back().Ind += Stack.back().IndAutoInc;
+				}
 				else
 					;// Сообщение о несоответствии типов
 			}
@@ -312,7 +327,7 @@ void ALU::ProgFU(int MK, LoadPoint Load)
 			fu_log(Load);
 			break;
 		case E_MK::RANDOM:
-			fu_random();
+			fu_random(Load);
 			break;
 		case E_MK::AND:
 			fu_and(Load);
@@ -1925,10 +1940,13 @@ void	ALU::fu_log(LoadPoint Load)
 	}
 }
 
-void	ALU::fu_random()
+void	ALU::fu_random(LoadPoint Load)
 {
 
-	Stack.back().accum = rand();
+	if(Load.Point==nullptr)
+		Stack.back().accum = rand();
+	else
+		Stack.back().accum = rand()%Load.toInt();
 }
 
 void	ALU::getCos(LoadPoint Load)

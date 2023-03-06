@@ -8,8 +8,8 @@ class CellularAutomat : public FU {
 //private:
 public:
 	void ProgFU(int MK, LoadPoint Load) override;
-	CellularAutomat(FU* BusContext, FU* Templ) : FU(BusContext) { FUtype = 18; Bus = BusContext; };
-	CellularAutomat() : FU() { Bus = nullptr; };
+	CellularAutomat(FU* BusContext, FU* Templ) : FU(BusContext) { FUtype = 18; Bus = BusContext; ProgFU(0, { 0,nullptr }); };
+	CellularAutomat() : FU() { Bus = nullptr; ProgFU(0, { 0,nullptr });};
 	void* Manager = nullptr;// Ссылка на менеджера
 	vector<FU*> Neighbours;//Ссылки на соседей
 	vector<int> NeighboursMk;// МК для соседей
@@ -21,11 +21,11 @@ public:
 	vector<double> Vars; // Вектор локальных переменных (используется для хранения промежуточных данных вычислений)
 	bool AutoSend = false; // Флаг автоматической пересылки результатов вычисления
 	vector<bool> RezReady; // Флаг готовности результата (для каждого слоя расчетов)
-	vector<vector<bool>> InComplectF; // Флаг поступления всех входных даных
+	vector<bool> InComplectF; // Флаг поступления всех входных даных
 	vector<int> InCounter = {0}; // Счетчик количества поступивших данных (после вычисления резульатов сбрасывается)
-	int PlyInd = -1; //индекс слоя
+	int PlyInd = 0; //индекс слоя
 	int PlyCurrent = 0; //индекс текушего слоя
-	int ParameterInd = -1;// Индекс текущего параметра
+	int ParameterInd = 0;// Индекс текущего параметра
 	int PlyN = 1; // Максимальное количество слоев для расчета
 	int Ind = 0; // Индекс (индексацая различных векторов Neighbours, NeighboursMk, parameters и т.д.
 	void* FiringProg = nullptr; // Указатель на программу, для вычисления результата при приходе всех входящих данных
@@ -37,6 +37,8 @@ public:
 	int VarInd = -1; // Индекс выдаваемой или устанавливаемой локальной переменной
 	int N_In = 0; // Количество входных данных для срабатывания
 	int State = 0; // Состояние автомата
+	int MkToSet = -1; // Милликоманда по умолчанию для установки ???
+	double ReceiveTime=0, CalcTime=0, SendTime=0, OtherMkTime=0; // Время задержки чтения, вычисления, записи данных
 };
 
 // Менеджер простейшего клеточного автомата (устройство для вычисления сеточных функций)
@@ -45,7 +47,7 @@ class CellularAutomatManager : public FU {
 public:
 	void ProgFU(int MK, LoadPoint Load) override;
 	int NetType = 0;// Тип автоматной сетки 0 - не задано, 1- квадратная, 2 - треугольная, 3 гексагональная
-	CellularAutomatManager(FU* BusContext, FU* Templ) : FU(BusContext) { FUtype = 19; Bus = BusContext; };
+	CellularAutomatManager(FU* BusContext, FU* Templ) : FU(BusContext) { FUtype = 19; Bus = BusContext; ProgFU(0, { 0,nullptr });};
 	CellularAutomatManager() : FU() { Bus = nullptr; };
 	vector<CellularAutomat> Net; //вектор сеточных автоматов
 	int Dim=0; // Размерность поля автоматов (количество ФУ для каждого измерения)
@@ -60,4 +62,5 @@ public:
 	int PlyN = 1; // Максимальное количество слоев для расчета
 	int ContextAddMk=20; // Код МК добавления МК для исполнительного ФУ
 	int MkAddMk=21; // Код МК для добавления МК соседа исполнительного ФУ
+	int AutomataMk1 = -1, AutomataMk2 = -1; // Текущая МК для автомата по индексами 1, 2
 };

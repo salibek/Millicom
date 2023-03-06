@@ -18,7 +18,7 @@
 #include "Gauss.h"
 #include "Bag.h"
 #include "Gauss.h"
-#include "CellularAutomat.h"
+#include "CellularAutomata.h"
 #include "IntAlu.h"
 #include "Router.h"
 #include "RouterSegment.h"

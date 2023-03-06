@@ -20,7 +20,7 @@ private:
 	int StageProgMk = -1;  // МК для установки программы для состояния
 public:
 	void ProgFU(int MK, LoadPoint Load) override;
-	AutomatManager(FU* BusContext, FU* Templ) : FU(BusContext) { Bus = BusContext; ProgFU(0, { 0,0 }); };
+	AutomatManager(FU* BusContext, FU* Templ) : FU(BusContext) { Bus = BusContext;  Template = new vector<ip>; ProgFU(0, { 0,0 }); };
 	AutomatManager() : FU() { Bus = nullptr; };
 };
 /*

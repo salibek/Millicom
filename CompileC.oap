@@ -389,7 +389,7 @@ Console.OutLn="= >"
 >{0 Lex.Stop Console.OutLn="Mk or Var is expected"}
 
 
->{0 Lex.Stop Str_Gen.Stop Console.LnOut="ERR EqualAfter"}
+//>{0 Lex.Stop Str_Gen.Stop Console.LnOut="ERR EqualAfter"}
 
 \**\LoadAfter.Set=
 >{Sep="=" Lex.ReceiverMkSet=EqualAfter.FindAnd
@@ -464,7 +464,7 @@ OAList.RootOutMk=Console.OutLn
   MnemoTable.LastAttach={Lex.CendToReceiver}
 }
 
-ListAfterMnemo.Set=
+\**\ListAfterMnemo.Set=
 >{Sep="{" Lex.ReceiverMkSet=Root.FindAnd
   Stack.LineAdd={Sep="{"}
   MnemoTable.LineCopyAddPrevLoadSet={IC}
@@ -484,20 +484,20 @@ ListAfterMnemo.Set=
 \**\VectNext.Set=
 >{Sep="]" Lex.ReceiverMkSet=Root.FindAnd}
 
-LoadVar.Set=
+\**\LoadVar.Set=
 >{Const Lex.ReceiverMkSet=BrackLoadVar.FindAnd
   FUListNew.ReceivedOutMk=MnemoTable.LastCopyAttach
  MnemoTable.LastLoadConstVarTypeSet
 }
 >{0 Console.OutLn="Var or Const is expected" Lex.Stop}
 
-BrackLoadVar.Set=
+\**\BrackLoadVar.Set=
 >{Sep=")" Lex.ReceiverMkSet=Root.FindAnd}
 >{0 Console.OutLn="'('is expected" Lex.Stop}
 // ---- ALE ----
 
 
-ALEStart.PrefixProgSet={
+\**\ALEStart.PrefixProgSet={
   OAList.LastAttach={Calc}
   OAList.LineCopyAddPrevLoadSet
 }

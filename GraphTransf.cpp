@@ -17,7 +17,7 @@ void GraphTransf::ProgFU(int MK, LoadPoint Load)
 			}
 			break;
 	////////////////////////// Таблица соответствий ////////////////////////////
-		case 1:// Установить ссылку на таблицу преобразования адресов
+		case 1:// TableSet Установить ссылку на таблицу преобразования адресов
 			LTable = (LocatTable*)Load.Point;
 			//Load.print();
 			break;
@@ -272,6 +272,12 @@ void GraphTransf::ProgFU(int MK, LoadPoint Load)
 			break;
 		case 83: // GoToBackIc Бегунок ИК: отойти на одну позицию
 			navigator.CapsPop();
+			break;
+		case 85: // GotoAtr Перейти на ИК, адрес которой находимтся в нагрузке ИП с атрибутом из нагрзуки МК (поиск осуществлется в ИК, на которую указывает бегунок)
+		{
+		//	Searcher.Template = navigator.back();
+		//	if(Searcher.FindAnd({Cint, Load.toInt(),nullptr}));
+		}
 			break;
 	}
 }

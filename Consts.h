@@ -30,7 +30,7 @@ const unsigned int CvoidArray2 = 2001, CboolArray2 = 2003, CcharArray2 = 2005, C
 const unsigned int CIPArray2 = 2015, CICArray2 = 2017, CPPointArray2 = 2019, CGrapgArray2 = 2021, CFUArray2 = 2023, CLoadArray2 = 2025;
 // Общие типы данных (остаток от целочисленного деления на 2 типа переменной или константы)
 const unsigned int Dvoid=0, Dbool = 1, Dchar = 2, Dint = 3, Dfloat = 4, Ddouble = 5, Dstring = 6, DIP = 7,  DIC = 8;
-const unsigned int DPPoint = 9, DGraph = 10, DFU = 11, DLoad = 12, Dmk=13, DLoadVect=14;
+const unsigned int DPPoint = 9, DGraph = 10, DFU = 11, DLoad = 12, DMk=13, DLoadVect=14;
 const unsigned int DCalc = 50; // Cсылка на Арифметический ОА-граф
 const unsigned int DVoidArray = 500, DboolArray = 501, DcharArray = 502, DintArray = 503, DfloatArray = 504, DdoubleArray = 505, DstringArray = 506;
 const unsigned int DIPArray = 507, DICArray = 508, DPPointArray = 509, DGrapgArray = 510, DFUArray = 511, DLoadArray = 512;
@@ -55,59 +55,72 @@ const int ProgExecMk = 990; // МК выполнения программы
 const int FUIndSetMk = 933; // МК установки индекса ФУ
 const int ContextOutMkMk = 999; // МК выдачи МК с контекстом ФУ
 const int ContextOutMk = 995; // МК выдачи контекста ФУ
+const int SchedulerSetMk = 918; // МК установка планировщика вычислений
 bool isIPinIC(void* iP, void* iC); //проверка, что ИК входит в ИП
 
 class FU;
+class LoadPoint;
+class ip;
 
+typedef  vector<vector<ip>*> ICVect;
+typedef  vector<ip>* IC_type;
+typedef  vector<LoadPoint>* LoadVect_type;
+/*
+#define LoadTypeDef 		unsigned int t = Type;\
+if (Ind >= 0)\
+	if (Type >> 1 == DLoadVect)\
+		t = ((LoadVect_type)Point)->at(Ind).Type;\
+	else if (Type >> 1 == DIC)
+
+#define LoadTypeDef2 		unsigned int t = Type;\
+if (Load.Ind >= 0)\
+	if (Load.Type >> 1 == DLoadVect)\
+		t = ((LoadVect_type)Load.Point)->at(Ind).Type;\
+	else if (Type >> 1 == DIC)
+*/
 class LoadPoint
 {
 	void VectorPrint(unsigned int Type, void* P, map<int, string > AtrMnemo, string offset, string Sep, string End, string ArrayBracketStart, string ArrayBracketFin); // Печать вектора
 	void MatrixPrint(unsigned int Type, void* P, map<int, string > AtrMnemo, string offset, string Sep, string End, string ArrayBracketStart, string ArrayBracketFin); // Пачать матрицы
 public:
 	unsigned int Type = 0; // Неизвестный тип
-	void *Point=nullptr;
-	bool isDigit() { int t = Type;  return t >> 1 == Dint || t >> 1 == Dchar || t >> 1 == Dfloat || t >> 1 == Ddouble; }; // 
+	void *Point=nullptr; // Указатель на локацию данных
+	int Ind = -1; // Индекс поля в ИК или векторе  Для ИК по модулю 3. 0 - адрес ИП, 1- адрес Атрибута, 2 - адрес нагрузки
+	bool isDigit(); // Число?}
 	static bool isDigit(unsigned int type) { unsigned int t = type; return t >> 1 == Dint || t >> 1 == Dchar || t >> 1 == Dfloat || t >> 1 == Ddouble; }; // 
-	static bool isDigit(LoadPoint Load) { unsigned int t = Load.Type; return t >> 1 == Dint || t >> 1 == Dchar || t >> 1 == Dfloat || t >> 1 == Ddouble; }; // 
-	bool isDigitBool() { int t = Type; return t >> 1 == Dint || t >> 1 == Dchar || t >> 1 == Dfloat || t >> 1 == Ddouble || t >> 1 == Dbool; }; // Число или булеан?
+	bool isDigitBool(); // Число или булеан?
 	static bool isDigitBool(int type) { unsigned int t = type; return t >> 1 == Dint || t >> 1 == Dchar || t >> 1 == Dfloat || t >> 1 == Ddouble || t >> 1 == Dbool; }; // Число или булеан?
-	static bool isDigitBool(LoadPoint Load) { unsigned int t = Load.Type; return t >> 1 == Dint || t >> 1 == Dchar || t >> 1 == Dfloat || t >> 1 == Ddouble || t >> 1 == Dbool; }; // Число или булеан?
-	bool isBool() { return Type >> 1 == Dbool; }; // булеан?
-	static bool isBool(int type) { return type >> 1 == Dbool; }; // Число или булеан?
-	static bool isBool(LoadPoint Load) { return Load.Type >> 1 == Dbool; }; // Число или булеан?
-	bool isInt() { return Type >> 1 == Dint; }; // булеан?
-	static bool isInt(int type) { return type >> 1 == Dint; }; // Целое число?
-	static bool isInt(LoadPoint Load) { return Load.Type >> 1 == Dint; }; // Целове число?
-	bool isIntBool() { return Type >> 1 == Dint || Type >> 1 == Dbool; }; // булеан или целое число?
-	static bool isIntBool(int type) { return type >> 1 == Dint || type >> 1 == Dbool; }; // Число или булеан?
-	static bool isIntBool(LoadPoint Load) { return Load.Type >> 1 == Dint || Load.Type>>1==Dbool; }; // Число или булеан?
-	bool isFloatDouble() { return Type >> 1 == Ddouble || Type >> 1 == Dfloat; }; // булеан?
-	static bool isFloatDouble(int type) { return type >> 1 == Ddouble || type >> 1 == Dfloat; }; // Число или булеан?
-	static bool isFloatDouble(LoadPoint Load) { return Load.Type >> 1 == Ddouble || Load.Type >> 1 == Dfloat; }; // Число или булеан?
-	bool isFloat() { return Type >> 1 == Dfloat; }; // булеан?
-	static bool isFloat(int type) { return type >> 1 == Dfloat; }; // Число или булеан?
-	static bool isFloat(LoadPoint Load) { return Load.Type >> 1 == Dfloat; }; // Число или булеан?
-	bool isDouble() { return Type >> 1 == Ddouble; }; // булеан?
-	static bool isDoubleInt(int type) { return type >> 1 == Ddouble; }; // Число или булеан?
-	static bool isDouble(LoadPoint Load) { return Load.Type >> 1 == Ddouble; }; // Число или булеан?
+
+	bool isBool(); // булеан?
+	static bool isBool(int type) { unsigned int t = type; return type >> 1 == Dbool; }; // Число или булеан?
+
+	bool isInt(); // Целое число?
+	static bool isInt(int type) { unsigned int t = type; return type >> 1 == Dint; }; // Целое число?
+	bool isIntBool(); // булеан или целое число?
+	static bool isIntBool(int type) { unsigned int t = type; return type >> 1 == Dint || type >> 1 == Dbool; }; // Число или булеан?
+	bool isFloatDouble(); // булеан?
+	static bool isFloatDouble(int type) { unsigned int t = type; return type >> 1 == Ddouble || type >> 1 == Dfloat; }; // булеан
+	bool isFloat(); // Число или булеан?
+	static bool isFloat(int type) { unsigned int t = type; return type >> 1 == Dfloat; }; // Число или булеан?
+	bool isDouble(); // булеан?
+	static bool isDouble(int type) { unsigned int t = type; return type >> 1 == Ddouble; };
+	static bool isDoubleInt(int type) { return type >> 1 == Ddouble || type>>1==Ddouble; }; // Число или булеан?
 	bool isIC(); // Определить указывает ли ссылка на ИК
 	bool isIP(); // Определить указывает ли ссылка на ИП
 	bool IpTest() { return (Type >> 1 == DIP || Type >> 1 == DIC); } // Является ли нагрузка ИП?
 	bool IsConvert(unsigned int T) {}; // Тест на возможность конвертации значения из Point в определенный тип
-	bool isProg() { return Point != nullptr && Type >> 1 == DIC; }; // Определение может ли быть нагрузка программой
-	static bool isProg(LoadPoint Load) { return Load.Point != nullptr && Load.Type >> 1 == DIC; }; // Определение может ли быть нагрузка программой
+	bool isProg(); // Определение может ли быть нагрузка программой
 	static bool isProg(unsigned int type) { return type >> 1 == DIC; }; // Определение может ли быть нагрузка программой
-	bool isStrChar() { return Point != nullptr && (Type >> 1 == Dstring || Type >> 1 == Dchar); }; // Строка или символ?
-	static bool isStrChar(LoadPoint Load) { return Load.Point != nullptr && (Load.Type >> 1 == Dstring || Load.Type >> 1 == Dchar); }; // Строка или символ?
+	bool isStrChar(); // Строка или символ?
 	static bool isStrChar(unsigned int type) { return type >> 1 == Dstring || type >> 1 == Dchar; }; // Строка или символ?
-	bool isStr() { return Point != nullptr && Type >> 1 == Dstring; }; // Строка?
-	static bool isStr(LoadPoint Load) { return Load.Point != nullptr && Load.Type >> 1 == Dstring; }; // Строка?
+	bool isStr(); // Строка?
 	static bool IsStr(unsigned int type) { return type >> 1 == Dstring; }; // Строка?
-	bool isChar() { return Point != nullptr && Type >> 1 == Dchar; }; // символ?
-	static bool isChar(LoadPoint Load) { return Load.Point != nullptr && Load.Type >> 1 == Dchar; }; // символ?
+	bool isChar(); // символ?
 	static bool isChar(unsigned int type) {return type >> 1 == Dchar; }; // символ?
-	bool isVector() {return Type >> 1 == DLoadVect; }; // Вектор ли нагрузка
-	static bool isVector(LoadPoint Load) { return (Load.Point != nullptr &&  Load.Type >> 1) == DLoadVect; }; // Вектор ли нагрузка
+	bool isMk();// Милликоманда?
+	static bool isMk(unsigned int type) { return type >> 1 == DMk; }; // Милликоманда?
+
+	bool isVector(); // Вектор ли нагрузка
 	static bool isVector(unsigned int type) { return (type >> 1) == DLoadVect; }; // Вектор ли нагрузка
 	int Write(int x); // return 0 - корректная запись, 1 - несоотвествие типов
 	int Write(size_t x);
@@ -123,7 +136,8 @@ public:
 	int Write(vector<bool> x);
 	int Write(vector<char> x);
 	int Write(vector<int> x);
-	int Write(vector<LoadPoint> x);
+	int Write(vector<LoadPoint> x); // Копирование вектора нагрузок нагрузку
+	int Write(vector<LoadPoint>* x); // Запись ссылки на вектор нагрузок
 	static LoadPoint TypeMinimizeOut(double x, bool var = false); // Минимизировать тип (возвращается LoadPoint), т.е. было целое число - возвращается int и т.д.
 	static unsigned int  TypeMinimize(double x); // Минимизировать тип, т.е. было целое число - возвращается int и т.д.
 
@@ -150,8 +164,9 @@ public:
 	void VarClear(); // Сброс нагрузки ИП в том числе и с переменной (переменная стирается)
 	void* VarClone(); // Копирование значения нагрузки
 	void VarDel();// Удаление нагрузки ИП
-	void print(map<int, string > AtrMnemo = {}, string offset = "", string Sep = "", string End = "\n", string ArrayBracketStart = "[", string ArrayBracketFin = "]", map<void*, int> *AdrMap = nullptr); // Параметр - указатель на табл. мнемоник атрибутов
+	void print(map<int, string > AtrMnemo = {}, string offset = "", string Sep = "", string End = "\n", string quote = "",  string ArrayBracketStart = "[", string ArrayBracketFin = "]", map<void*, int> *AdrMap = nullptr); // Параметр - указатель на табл. мнемоник атрибутов
 	LoadPoint Clone(); // Дублировать нагрузку
+	static LoadPoint Clone(LoadPoint LP); // // Дублировать нагрузку (вариант с передаваемой в качестве параметра нагрузки)
 	void ConstTypeSet(bool F = true) { if (F)Type |= 1; else VarTypeSet(); }; // Установить тип 'константа'
     // Установить тип 'переменная'
 	void VarTypeSet(bool F = true) {
@@ -230,9 +245,6 @@ public:
 	};
 };
 
-typedef  vector<vector<ip>*> ICVect;
-typedef  vector<ip>* IC_type;
-typedef  vector<LoadPoint>* LoadVect_type;
 
 struct deletedIC //удаленная ИП
 {

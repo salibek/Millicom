@@ -171,13 +171,12 @@
     <ClCompile Include="SchedulerEventser.cpp" />
     <ClCompile Include="Search.cpp" />
     <ClCompile Include="Gauss.cpp" />
-    <ClCompile Include="Simplex.cpp" />
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="StrGen.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ALU.h" />
-    <ClInclude Include="CellularAutomat.h" />
+    <ClInclude Include="CellularAutomata.h" />
     <ClInclude Include="ConfineSimple.h" />
     <ClInclude Include="IntAlu.h" />
     <ClInclude Include="Bag.h" />
@@ -204,7 +203,6 @@
     <ClInclude Include="RouterSegment.h" />
     <ClInclude Include="SchedulerEventser.h" />
     <ClInclude Include="Search.h" />
-    <ClInclude Include="Simplex.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="StrGen.h" />
   </ItemGroup>
