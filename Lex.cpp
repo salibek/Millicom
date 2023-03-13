@@ -275,8 +275,7 @@
 		case 98: // LexReset —бросить настройки лексического анализа
 			S = 0;
 			LexBuf[0].atr = SeperatAtr;
-			ProgLevel = 0; // —четчик табул€ций
-			LexAccum="";
+			ProgLevel = 0; // —четчик табул€ций			LexAccum="";
 			break;
 		case 99: // Stop ќстановить лексический анализ (Ёту ћ  необходимо выполнить при перезапуске лексичекого анализа)
 			Work = false;
@@ -286,8 +285,7 @@
 			ProgLevel = 0; // —четчик табул€ций
 			break;
 		case 100: // Lexing
-		{
-			string str = Load.toStr()+" ";
+		{	string str = Load.toStr()+" ";
 			str += EOL; // ƒабавить символы конца строки
 			S = 0; // --- установка начального состо€ни€ автомата
 			if (Load.Type >> 1 == Dstring && Load.toStr() == "")

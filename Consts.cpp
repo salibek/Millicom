@@ -131,7 +131,7 @@ bool LoadPoint::isProg() {
 			case 1: return true;
 			case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
 		}
-	return t >> 1 == DIC || t>>1 == DCalc;
+	return t >> 1 == DIC || t>>1 == DCalc || t>>1==DProg;
 }; // Определение может ли быть нагрузка программой
 
 bool LoadPoint::isStrChar() {
@@ -217,7 +217,7 @@ bool LoadPoint::isIC() // Определить указывает ли ссылка на ИК
 			case 1: return true;
 			case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
 		}
-	set<unsigned int> IC_Types = {DIC, DCalc}; // Множевство типов ИК и ОА-графов
+	set<unsigned int> IC_Types = {DIC, DCalc, DProg}; // Множевство типов ИК и ОА-графов
 	return IC_Types.count(t>>1);
 }
 
@@ -229,13 +229,46 @@ bool LoadPoint::isIP() // Определить указывает ли ссылка на ИП
 		if (Type >> 1 == DLoadVect)
 			if (((LoadVect_type)Point)->at(Ind).Point == nullptr) return false; else t = ((LoadVect_type)Point)->at(Ind).Type;
 		else if (Type >> 1 == DIC)	switch (Ind % 3) {
-			case 0: return false;
-			case 1: return true;
-			case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
-		}	
+		case 0: return false;
+		case 1: return true;
+		case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
+		}
 	set<unsigned int> IP_Types = { DIP }; // Множевство типов ИК и ОА-графов
 	return IP_Types.count(t >> 1);
 }
+
+bool LoadPoint::isCalc() // Определить указывает ли ссылка на ИК с АЛВ
+{
+	if (Point == nullptr) return false;
+	register unsigned int t = Type;
+	if (Ind >= 0)
+		if (Type >> 1 == DLoadVect)
+			if (((LoadVect_type)Point)->at(Ind).Point == nullptr) return false; else t = ((LoadVect_type)Point)->at(Ind).Type;
+		else if (Type >> 1 == DIC)	switch (Ind % 3) {
+		case 0: return false;
+		case 1: return true;
+		case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
+		}
+	set<unsigned int> IP_Types = { DCalc }; // Множевство типов ИК и ОА-графов
+	return IP_Types.count(t >> 1);
+}
+
+bool LoadPoint::isICSet() // Определить указывает ли ссылка на ИК с неупорядоченным множеством
+{
+	if (Point == nullptr) return false;
+	register unsigned int t = Type;
+	if (Ind >= 0)
+		if (Type >> 1 == DLoadVect)
+			if (((LoadVect_type)Point)->at(Ind).Point == nullptr) return false; else t = ((LoadVect_type)Point)->at(Ind).Type;
+		else if (Type >> 1 == DIC)	switch (Ind % 3) {
+		case 0: return false;
+		case 1: return true;
+		case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
+		}
+	set<unsigned int> IP_Types = { DIC }; // Множевство типов ИК и ОА-графов
+	return IP_Types.count(t >> 1);
+}
+
 
 string LoadPoint::toStr(string define) // Перевод в bool
 {

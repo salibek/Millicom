@@ -542,7 +542,7 @@ void List::ProgFU(int MK, LoadPoint Load)
 	case 189: // LastAtrSet Установить атрибут у последней ИК последней линии 
 	case 199: // LineAtrSet Установить атрибут у последней ИК последней линии 
 	{	IC_type t;
-	if (ListHead.back() == nullptr || ListHead.back()->back().Load.Point == nullptr || ListHead.back()->back().Load.isIC()) break;
+	if (ListHead.back() == nullptr || ListHead.back()->back().Load.Point == nullptr || !ListHead.back()->back().Load.isIC()) break;
 	if (((IC_type)ListHead.back()->back().Load.Point)->size() == 0) break;
 	if (MK < 190)
 		t = ((IC_type)ListHead.back()->back().Load.Point);
