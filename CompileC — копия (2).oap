@@ -24,7 +24,7 @@ NewFU={Mnemo="MkTable" FUType=FUListNew Hint="ФУ для Поиска МК"}
 NewFU={Mnemo="OAList" FUType=FUListNew Hint="ФУ для генерации ОА-графа"}
 NewFU={Mnemo="CreateNewFU" FUType=FUListNew Hint="ФУ для создания нового ФУ"}
 NewFU={Mnemo="ALUG" FUType=FUALUNew Hint="ФУ для создания нового ФУ"}
-NewFU={Mnemo="MkAutom" FUType=FUListNew Hint="Автомат для разбора МК"}
+NewFU={Mnemo="MkAutom" FUType=FUALUNew Hint="Автомат для разбора МК"}
 
 NewFU={Mnemo="Root" FUType=FUListNew Hint="Стартовое состояние"}
 NewFU={Mnemo="EqualWait" FUType=FUListNew Hint="Ожидание знака равно"}
@@ -40,8 +40,11 @@ NewFU={Mnemo="MnemoLoad" FUType=FUListNew Hint="Загрузка мнемоники"}
 //NewFU={Mnemo="ExprWait" FUType=FUListNew Hint="Ожидание выражения"}
 //NewFU={Mnemo="ALEAnalysis" FUType=FUListNew Hint="Анализ выражения"}
 NewFU={Mnemo="FUAfter" FUType=FUListNew Hint="После имени ФУ"}
+NewFU={Mnemo="FUAfter2" FUType=FUListNew Hint="После имени ФУ 2"}
+NewFU={Mnemo="FUAfter3" FUType=FUListNew Hint="После имени ФУ 3"} \* 10.03.2023 *\
 NewFU={Mnemo="MkWait" FUType=FUListNew Hint="Ожидание МК"}
-NewFU={Mnemo="LoadAfter" FUType=FUListNew Hint="Ожидание символов после описания нагрузки"}
+NewFU={Mnemo="MkWait2" FUType=FUListNew Hint="Ожидание МК 2"}
+NewFU={Mnemo="MkWait3" FUType=FUListNew Hint="Ожидание МК 3"} \* 10.03.2023 *\
 NewFU={Mnemo="LoadAfter" FUType=FUListNew Hint="Ожидание символов после описания нагрузки"}
 
 NewFU={Mnemo="LoadMnemoBack" FUType=FUListNew Hint="Ожидание закрывающейся скобки после именованной нагрузки"} \* 15/03.2023 *\
@@ -180,13 +183,15 @@ ListCheckProg // Программа проверки списка
 }
 
 \**\Root.Set=
->{Sep="" Console.OutLn="End of program!!!"}
+>{Sep=""}
 >{FU
-  //Prog=ListCheckProg
-  Lex.ReceiverPush=MkAutom.FindAnd
+  Prog=ListCheckProg
+  Lex.ReceiverPush=FUAfter.FindAnd
+  Lex.CendToReceiver
+//  Lex.ReceiverMkSet=FUAfter.FindAnd
 //  OAList.LastCopyAttach
-Console.OutLn="FU Root"
-  FUListNew.ReceivedOutMk=Lex.CendToReceiver
+Console.OutLn="FU"
+//  FUListNew.ReceivedLoadOutMk=MkCalc.Set
 }
 >{Sep="." Lex.ReceiverMkSet=MkWait.FindAnd
       Stack.FindAndLast={MkBrack}
@@ -269,15 +274,6 @@ OAList.OutMk=Console.OutLn
 >{IC Lex.ReceiverMkSet=AtrRefLoad.FindAnd} \* 05.03.2023 *\
 >{0 Console.OutLn="Error of Root" Lex.Stop FUListNew.ReceivedOutMk=Console.OutLn}
 
-\**\MkAutom.Set=
->{FU 
-Console.OutLn="FU MkAutomat"
-  Lex.ReceiverMkSet=FUAfter.FindAnd
-  Console.OutLn="MkAutom start"
-  FUListNew.ReceivedLoadOutMk=MkCalc.Set
-}
->{0 Console.OutLn="Error" Lex.Stop}
-
 \**\FUAfter.Set=
 >{Sep="." Lex.ReceiverMkSet=MkWait.FindOr
 Console.OutLn="FU."
@@ -288,15 +284,51 @@ Console.OutLn="FU."
 >{0 Console.OutLn="'.' is not found" Lex.Stop FUListNew.ReceivedOutMk=Console.OutLn}
 
 \**\MkWait.Set=
->{Mk
+>{Mk Lex.ReceiverMkSet=EqualWait.FindAnd
   FUListNew.LoadReceivedOutMk=MkCalc.Add
+  MkCalc.OutMk=OAList.LastAtrSet
 Console.OutLn="'.Mk'"
-  MkCalc.AccumREfOut=t Console.OutLn={Mk=t(nil)!}
-  MkCalc.AccumREfOut=t Lex.ReceiverPopCend={Mk=t(nil)!}
-  Lex.UnicAtrSet=Mnemo Lex.UnicMkSet=MnemoTable.FindAnd
-}
+  Lex.UnicAtrSet=Mnemo Lex.UnicMkSet=MnemoTable.FindAnd}
 >{0 Lex.Stop Console.OutLn="Wrong Mk desription"}
 
+
+\**\FUAfter2.Set=
+>{Sep="." Lex.ReceiverMkSet=MkWait2.FindOr
+Console.OutLn="FU2 ."
+  Lex.UnicAtrSet=Mnemo Lex.UnicMkSet=MkTable.FindOr
+  MkTable.SuccessProgSet={FUListNew.LineOutMk=Lex.CendToReceiver}
+}
+>{0 Console.OutLn=" '.' is not found" Lex.Stop Str_Gen.Stop}
+
+\**\MkWait2.Set=
+>{Mk FUListNew.ReceivedLoadOutMk=MkCalc.Add
+//  MkCalc.OutMk=OAList.LastLoadSet
+//  Lex.ReceiverMkSet=Root.FindAnd
+  Lex.UnicAtrSet=Mnemo Lex.UnicMkSet=MnemoTable.FindAnd
+  Lex.ReceiverMkSet=LoadAfter.FindAnd
+Console.OutLn="'.Mk2'"
+}
+>{0 Console.OutLn=" MK is not found" Lex.Stop Str_Gen.Stop}
+
+\**\FUAfter3.Set=
+>{Sep="." Lex.ReceiverMkSet=MkWait3.FindOr
+Console.OutLn="MkWait3"
+  Lex.UnicAtrSet=Mnemo Lex.UnicMkSet=MkTable.FindOr
+  MkTable.SuccessProgSet={FUListNew.LineOutMk=Lex.CendToReceiver}
+}
+>{0 Console.OutLn=" '.' is not found" Lex.Stop Str_Gen.Stop}
+
+\**\MkWait3.Set=
+>{Mk FUListNew.ReceivedLoadOutMk=MkCalc.Add
+  MkCalc.OutMk=OAList.LastLoadSet
+  Lex.UnicAtrSet=Mnemo Lex.UnicMkSet=MnemoTable.FindAnd
+  Lex.ReceiverMkSet=LoadMnemoBack.FindAnd
+  MnemoTable.LineCopyAddPrevLoadSet={Var}
+Console.OutLn="FUAfter3 fin"
+  OAList.LastLoadOutMk=MnemoTable.LastLoadSet
+  MnemoTable.LastPopMk
+}
+>{0 Console.OutLn=" MK is not found" Lex.Stop Str_Gen.Stop}
 
 \**\LoadMnemoBack.Set=
 >{Sep=")" Lex.ReceiverMkSet=LoadEnd.FindAnd Console.OutLn=" "")"" "
@@ -311,8 +343,11 @@ Console.OutLn="'.Mk'"
   EqualAfter.ReceivedLoadOutMk=MnemoTable.FindOr
   MnemoTable.LineDelMk // Удаление описания мнемоники из таблицы мнемоник
 }
+
+>{Sep="" Lex.ReceiverMkSet=Root.FindAnd}
+
 >{0 Lex.ReceiverMkSet=Root.FindAnd Console.OutLn="LoadEnd " Lex.OutMk=Console.OutLn
-  FUListNew.ReceivedOutMk=Lex.CendToReceiver}
+  Lex.CendToReceiver}
 
 \**\ALEAfter.Set=
 >{Sep=")" Lex.ReceiverMkSet=Root.FindAnd}
@@ -380,7 +415,7 @@ FUListNew.ReceivedOutMk=MnemoTable.LastAttach}
 >{0 Console.OutLn="Variable inisialization error" Lex.Stop}
 
 \**\EqualWait.Set=
->{Sep="=" Lex.ReceiverMkSet=EqualAfter.FindAnd Console.OutLn="EqualWait ="}
+>{Sep="=" Lex.ReceiverMkSet=EqualAfter.FindAnd Console.OutLn="="}
 >{Sep="}" Lex.ReceiverMkSet=Root.FindAnd
   Root.FindAnd={Sep="}"} // Перейти в корневое состояние для проверки на '}'
 }
@@ -390,12 +425,9 @@ FUListNew.ReceivedOutMk=MnemoTable.LastAttach}
 
 \**\EqualAfter.Set= \* 10.03.2023 *\
 >{FU
-  //Lex.ReceiverMkSet=FUAfter2.FindAnd
-  Lex.ReceiverPush=MkAutom.FindAnd 
-Console.OutLn="FU2"
-//  FUListNew.ReceivedLoadOutMk=MkCalc.Set
-  FUListNew.ReceivedOutMk=Lex.CendToReceiver
-}
+  Lex.ReceiverMkSet=FUAfter2.FindAnd
+ Console.OutLn="FU2"
+  FUListNew.ReceivedLoadOutMk=MkCalc.Set}
 >{Const Var Vect\* 10.03.2023 *\
   Console.OutLn="EqualAfter Const Var"
   Lex.ReceiverMkSet=ALECheck.FindAnd
@@ -442,7 +474,6 @@ Console.OutLn="LoadAfter ="
 //>{Sep="," Lex.ReceiverMkSet=EqualAfter.FindAnd}
 >{0 Lex.ReceiverMkSet=Root.FindAnd
   MkCalc.OutMk=OAList.LastLoadSet
-  Console.Out="BackClone " BackCloneCounter.OutMk=Console.OutLn
   BackCloneCounter.OutMk=OAList.LastLoadBackSet // Клонирование нагрузок ИП
   BackCloneCounter.Set=0
   FUListNew.ReceivedOutMk=Root.FindAnd
@@ -515,25 +546,16 @@ OAList.RootOutMk=Console.OutLn
 \**\LoadVar.Set=
 >{FU
 //  Prog=ListCheckProg
-  Lex.ReceiverPush=MkAutom.FindAnd
-  FUListNew.ReceivedOutMk=Lex.CendToReceiver
+  Lex.ReceiverMkSet=FUAfter3.FindAnd
 Console.OutLn="FU3"
-//  FUListNew.ReceivedLoadOutMk=MkCalc.Set
-}
->{Mk Lex.ReceiverMkSet=LoadMnemoBack.FindAnd
-  Prog=ListCheckProg
-  FUListNew.ReceivedLoadOutMk=OAList.LastLoadSet
-  MnemoTable.LineCopyAddPrevLoadSet={Var}
-Console.OutLn="FUAfter3 fin"
-  OAList.LastLoadOutMk=MnemoTable.LastLoadSet
-  MnemoTable.LastPopMk
-}
+  FUListNew.ReceivedLoadOutMk=MkCalc.Set}
 >{Const Lex.ReceiverMkSet=ALECheck2.FindAnd \* 10.03.2023 *\
   FUListNew.ReceivedOutMk=MnemoTable.LastCopyAttach
  MnemoTable.LastLoadConstVarTypeSet
 }
 >{Var Lex.ReceiverMkSet=ALECheck2.FindAnd} \* 10.03.2023 *\
 >{Sep="(" Lex.ReceiverMkSet=ALEAfter.FindAnd Lex.ReceiverPush=ALE.FindAnd Lex.CendToReceiver} \* 10.03.2023 *\
+>{FU Lex.ReceiverMkSet=FUAfter3.FindAnd} \* 10.03.2023 *\
 >{0 Console.OutLn="Var or Const is expected" Lex.Stop}
 
 \**\VectWait.Set= \* 05.03.2023 *\
@@ -740,7 +762,7 @@ Lex.ReceiverMkSet=Root.FindAnd
 //Lex.Lexing="NewFU={FUType=FUCons Name=""Cons"" Hint=""Консоль""}  Cons.OutLn= >{Cons.Ln=1}  >{Cons.Ln=11} "
 //Lex.Lexing="NewFU={FUType=FUCons Name=""Cons"" Hint=""Консоль""}  Cons.OutLn= >{Cons.Ln=1}  "
 //Lex.Lexing="NewFU={FUType=FUCons Name=""Cons"" Hint=""Консоль""}  Cons.OutLn=Cons.OutLn=Cons.Out"
-Lex.Lexing="NewFU={FUType=FUCons Name=""Cons"" Hint=""Консоль""}  Cons.OutLn=Cons.OutLn=Cons.OutLn"
+Lex.Lexing="NewFU={FUType=FUCons Name=""Cons"" Hint=""Консоль""}  Cons.OutLn=Cons.OutLn=10"
 //Lex.Lexing="a=10 b=""str"""
 //Lex.Lexing="NewFU={FUType=FUCons Name=""Cons"" Hint=""Консоль""}"
 //Lex.Lexing="NewFU={FUType=FUCons Name=""Cons"" Hint=""Консоль""}  Cons.OutLn=temp(Cons.Out)"
@@ -753,7 +775,7 @@ Stack.FindAndLast={Sep=">"}
 Stack.SuccessExec={OAList.PopMk Stack.LastPopMk Console.OutLn="> out"}
 
 Console.OutLn="***************** MnemoList"
-//MnemoTable.OutMk=Console.OutLn
+MnemoTable.OutMk=Console.OutLn
 
 Console.OutLn="***************** OAList"
 OAList.OutMk=Console.OutLn

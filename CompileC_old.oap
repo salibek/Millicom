@@ -69,7 +69,7 @@ LineAtr*-6 // Метка линии списка
 MkList.FailProgSet={Console.OutLn="MK is not found" Lex.Stop}
 
 AtrCounter.Set=-10000 // Начальный индекс атрибута
-AtrCounter.AutoIncSet=-1
+AtrCounter.StepSet=-1
 MkCalc.NoIntTypeErrProg={ // Ошибка записи нецелого числа в качестве МК
 	Console.OutLn="Integer is expected"
 	Lex.Stop Str_Gen.Stop}
@@ -160,7 +160,7 @@ Console.OutLn="Mk"
   FUListNew.ReceivedLoadOutMk=OAList.LastAtrSet}
 >{Var Lex.ReceiverMkSet=EqualWait2.FindAnd
   Prog=ListCheckProg
-  OAList.LastCopyAttach={ALUG.OutAdrSet}
+  OAList.LastCopyAttach={ALUG.OutAdrAppend}
   FUListNew.ReceivedLoadOutMk=OAList.LastLoadSet
 }
 >{Sep="}" Lex.ReceiverMkSet=Root.FindAnd

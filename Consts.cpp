@@ -494,7 +494,7 @@ int LoadPoint::WriteFromLoad(LoadPoint Load) // Записать величину из нагрузки
 			t = ((LoadVect_type)Point)->at(Ind).Type;
 		}
 		else if (Type == TIC){
-			if (Ind/3 >= ((LoadVect_type)Point)->size()) return 2; // Ошибка индекса
+			if (Ind/3 >= ((IC_type)Point)->size()) return 2; // Ошибка индекса
 			switch (Ind % 3) {
 				case 0: P = &((IC_type)P)->at(Ind / 3); t = TIP; break;
 				case 1: P = &((IC_type)P)->at(Ind / 3).atr; t = Tint; break;
@@ -882,21 +882,21 @@ int LoadPoint::Write(LoadPoint x) // Записать величину из нагрузки
 	register unsigned int t = Type;
 	register void* P = Point;
 	if (Ind >= 0)
+	{
 		if (Type == TLoadVect) {
 			if (Ind >= ((LoadVect_type)Point)->size()) return 2; // Ошибка индекса
-			P = ((LoadVect_type)Point)->at(Ind).Point;
-			t = ((LoadVect_type)Point)->at(Ind).Type;
+			((LoadVect_type)Point)->at(Ind)=x;
+			return 0;
 		}
-		else if (Type == TIC) {
-			if (Ind / 3 >= ((LoadVect_type)Point)->size()) return 2; // Ошибка индекса
-			switch (Ind % 3) {
-			case 0: P = &((IC_type)P)->at(Ind / 3); t = TIP; break;
-			case 1: P = &((IC_type)P)->at(Ind / 3).atr; t = Tint; break;
-			case 2: P = ((IC_type)P)->at(Ind / 3).Load.Point; t = ((IC_type)P)->at(Ind / 3).Load.Type;
+		if (Type == TIC && Ind%3==2) {
+			if (Ind / 3 >= ((IC_type)Point)->size()) return 2; // Ошибка индекса
+			((IC_type)P)->at(Ind / 3).Load=x;
+			return 0;
 			}
 		}
 		else return 2; // Ошибка индекса
 	if (P == nullptr || t % 2 != 0) return 1;
+
 
 	Point = x.Point; Type = x.Type; Ind = x.Ind;
 	return 0;
@@ -1408,6 +1408,7 @@ void LoadPoint::print(map<int, string > AtrMnemo, string offset, string Sep, str
 		}
 		(*AdrMap)[Point] = AdrMap->size(); // Запомнить пройденную ИК для избежания зацикливания
 
+		if (!((IC_type)Point)->size()) return;
 		for (auto i = ((IC_type)Point)->begin(); i != ((IC_type)Point)->end(); i++)
 		{
 			if (i->Load.Type >> 1 == DIP || i->Load.isIC())

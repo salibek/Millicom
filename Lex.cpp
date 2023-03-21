@@ -40,29 +40,39 @@
 			TabErrProg = nullptr;
 			LexAccum="";
 			break;
-		case 2: // ReceiverMkPush Положить адрес приёмника лексемы в стек
+		case 2: // ReceiverPush Положить старые адрес и Мк приёмника лексемы в стек и установить МК для приемника
 			Receiver.push_back(Receiver.back());
-			ReceiverMK.push_back(Load.toInt());
+			if(Load.Point==nullptr)
+				ReceiverMK.push_back(ReceiverMK.back());
+			else
+				ReceiverMK.push_back(Load.toInt());
 			break;
-		case 3: // ReceiverMkPop Вытолкнуть адрес премника из стека и записать его
-			Load.Write(ReceiverMK.back());
-			if (ReceiverMK.size())
+		case 3: // ReceiverPop Вытолкнуть Мк премника из стека и записать ее
 			{
-				ReceiverMK.pop_back();
-				Receiver.pop_back();
-			}
+			int t = ReceiverMK.back();
+			if (!ReceiverMK.size()) break;
+			ReceiverMK.pop_back();
+			Receiver.pop_back();
+			MkExec(Load, {Cint,&t});
 			break;
-		case 4: // ReceiverMkPopMk Вытолкнуть адрес премника из стека и выдать МК с ним
+			}
+		case 4: // ReceiverPopMk Вытолкнуть адрес премника из стека и выдать МК с ней
 		{
-			int t;
-			t= ReceiverMK.back();
-			MkExec(Load, { Cint,&t });
-			if (ReceiverMK.size())
-			{
-				ReceiverMK.pop_back();
-				Receiver.pop_back();
-			}
+			Load.Write(ReceiverMK.back());
+			if (!ReceiverMK.size()) break;
+			ReceiverMK.pop_back();
+			Receiver.pop_back();
 		}
+			break;
+		case 1: // ReceiverPopCend Вытолкнуть Мк премника из стека и выдать Лексему (при нулевой нагрузке выдается текущая лексема)
+			if (!ReceiverMK.size()) break;
+			ReceiverMK.pop_back();
+			Receiver.pop_back();
+			if (Load.Point == nullptr)
+				LexOut();
+				//Receiver.back()->ProgFU(MK, { TIP, &LexBuf[ib] });
+			else
+    			Receiver.back()->ProgFU(ReceiverMK.back(), Load);
 			break;
 		case 5: //ReceiverMKSet Установить МК для приемника лексем 
 			if (Load.Type >> 1 == Dint) ReceiverMK.back() = Load.toInt(); break;
@@ -246,15 +256,44 @@
 			if (Load.Point == nullptr)
 				LexOut();
 			else
-				MkExec(ReceiverMK.back(), Load);
+				Receiver.back()->ProgFU(ReceiverMK.back(), Load);
+
+/*
+			if (Load.Point == nullptr)
+				LexOut();
+			else if(Load.isIC() || Load.isIP())
+			{
+				ib = (ib + 1) % SizeBuf; //увеличение текущего адреса буфера выходных лексем на 1
+				LexBuf[ib].Load.Clear(); //удаление нагрузки ИП
+				if(Load.isIP())
+					LexBuf[ib] = ((ip*)Load.Point)->Copy(); //добавление лексемы в буфер выходных лексем в виде ИП {атрибут, тип, указатель}
+				else
+					LexBuf[ib] = ((IC_type)Load.Point)->begin()->Copy(); //добавление лексемы в буфер выходных лексем в виде ИП {атрибут, тип, указатель}
+
+				LexOut();
+			}
+*/
+
 			break;
 		case 71: // CendCopyToReceiver Переслать копию лексемы из нагрузки получателю (если в нагрузке nil, то посылается текущая лексема)
 			if (Load.Point == nullptr)
 				LexOut(true);
 			else
-				MkExec(ReceiverMK.back(), Load.Copy());
+				Receiver.back()->ProgFU(ReceiverMK.back(), Load.Copy());
+//			MkExec(ReceiverMK.back(), Load.Copy());
 			break;
-
+		case 73: // TempLexSet Установить ссылку на временную лексему
+			tempLex = (ip*)Load.Point;
+			break;
+		case 74: // TempLexLoadSet Установить нагрузку у временной лексемы
+			tempLex->Load = Load;
+			break;
+		case 75: // TempLexCendMk Отправить временную переменную (если нагрузка нулевая, от правляется на текущий приемник)
+			if (Load.isIC() || Load.isIP())
+				Receiver.back()->ProgFU(Load.toInt(), {CIC, tempLex});
+			else
+				Receiver.back()->ProgFU(ReceiverMK.back(), {CIC, tempLex});
+			break;
 		case 85: // RegSet Установить регулярное выражение
 			RegVect.push_back({ Load.toStr(), nullptr});
 			break;

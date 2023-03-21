@@ -158,6 +158,8 @@ void ALU::ProgFU(int MK, LoadPoint Load)
 						MkExec(Load, Stack.back().accumVect.at(Stack.back().Ind), Bus, true);
 						Stack.back().Ind += Stack.back().IndAutoInc;
 					}
+				else
+					MkExec(Load, {TLoadVect, &Stack.back().accumVect });
 			}
 			else
 				MkExec(Load, { Cdouble,&Stack.back().accum }, Bus, true); // Заглушка!!!

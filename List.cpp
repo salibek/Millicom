@@ -21,6 +21,8 @@ void List::ProgFU(int MK, LoadPoint Load)
 		ListHead.push_back(nullptr);
 		break;
 	case 1:	// Set
+		if (ListHead.back() != nullptr && !ListHead.back()->size())
+			delete ListHead.back();
 		ListHead.back() = (IC_type)Load.Point;
 		break;
 	case 2:// Out Выдать ссылку на список
@@ -137,6 +139,20 @@ void List::ProgFU(int MK, LoadPoint Load)
 				MkExec(*((int*)Load.Point), ((IC_type)(Searcher.Obj.Point))->begin()->Load);
 			else if (Searcher.Obj.isIP())
 				MkExec(*((int*)Load.Point), ((ip*)(Searcher.Obj.Point))->Load);
+		break;
+	case 37: // LineCountOut Выдать количество линий в списке
+		if (ListHead.back() == nullptr)
+			Load.Write(0);
+		else
+			Load.Write(ListHead.back()->size());
+		break;
+	case 38: // LineCountOutMK Выдать Мк с количеством линий в списке
+	{
+		int t = 0;
+		if (ListHead.back() != nullptr)
+			t=ListHead.back()->size();
+		MkExec(Load, {Cint, &t});
+	}
 		break;
 
 	case 100: // RezOut Выдача результата сравнения
