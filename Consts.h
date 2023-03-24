@@ -154,7 +154,7 @@ public:
 	void VarClear(); // Сброс нагрузки ИП в том числе и с переменной (переменная стирается)
 	void* VarClone(); // Копирование значения нагрузки
 	void VarDel();// Удаление нагрузки ИП
-	void print(map<int, string > AtrMnemo = {}, string offset = "", string Sep = "", string End = "\n", string quote = "",  string ArrayBracketStart = "[", string ArrayBracketFin = "]", map<void*, int> *AdrMap = nullptr); // Параметр - указатель на табл. мнемоник атрибутов
+	void print(map<int, string > AtrMnemo = {}, string offset = "", string Sep = " ", string End = "\n", string quote = """",  string ArrayBracketStart = "[", string ArrayBracketFin = "]", map<void*, int> *AdrMap = nullptr); // Параметр - указатель на табл. мнемоник атрибутов
 	LoadPoint Clone(); // Дублировать нагрузку
 	static LoadPoint Clone(LoadPoint LP); // // Дублировать нагрузку (вариант с передаваемой в качестве параметра нагрузки)
 	void ConstTypeSet(bool F = true) { if (F)Type |= 1; else VarTypeSet(); }; // Установить тип 'константа'

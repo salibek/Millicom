@@ -21,7 +21,7 @@ private:
 	ofstream fin; // ??
 	FILE* streamOut, *streamIn; // Входной/выходной файлы
 	string Sep = " ", VectSep=",", End = "\n"; // Строка-разделитель и строка в конце вывода
-	string quote = ""; // Символ кавычек при выводе строки
+	string quote = "\""; // Символ кавычек при выводе строки
 	string FloatPoint = "."; // Разделитель дробной части
 	string ArrayBracketStart = "[", ArrayBracketFin = "]"; // Начальная и конечная скобки для вывода вектора
 	vector<string> TrueVar = { "true","True" }; // Вектор значений "правда"

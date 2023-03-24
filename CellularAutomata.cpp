@@ -4,6 +4,7 @@
 // Простейший клеточный автомат (устройство для вычисления сеточных функций)
 void CellularAutomat::ProgFU(int MK, LoadPoint Load)
 {
+	MK %= FUMkRange;
 	// Режим моделирования
 	if (Modeling != nullptr && Modeling->ManualMode && Modeling->scheduler != nullptr && !Modeling->SchedulerFlag)
 	{
@@ -679,6 +680,7 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load)
 
 void CellularAutomatManager::ProgFU(int MK, LoadPoint Load)
 {
+	MK %= FUMkRange;
 	// Доделать буфер ИП с лексемами
 	switch (MK)
 	{

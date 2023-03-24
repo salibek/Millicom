@@ -44,13 +44,20 @@ void ConvIndStrOld(string str, ip &IP, vector<ip*> IpUk, map<int, vector<ip>*> &
 				}
 				break;
 			case 1:// Указатель на атрибут
-				IP.Load.Point = &(IpUk[DInd >> 2]->atr);
-				IP.Load.Type = Tint;
-				break;
+//				IP.Load.Point = &(IpUk[DInd >> 2]->atr);
+//				IP.Load.Type = Tint;
+			{
+				int t;
+				for (t = DInd >> 2; !CapsId.count(t); t--);
+				IP.Load.Point = CapsId[t];
+				IP.Load.Type = TIC;
+				IP.Load.Ind = (((DInd >> 2) - t) << 2) + 1;
+			}
+			break;
 			case 2:// указатель на данные
-				IP.Load.Point = IpUk[DInd >> 2]->Load.Point;
-				IP.Load.Type = IpUk[DInd >> 2]->Load.Type;
-				break;
+//				IP.Load.Point = IpUk[DInd >> 2]->Load.Point;
+//				IP.Load.Type = IpUk[DInd >> 2]->Load.Type;
+//			break;
 			case 3:// Указатель на указатель из ИП
 			//	IP.Load.Point = &(IpUk[DInd >> 2]->Load);
 			//	IP.Load.Type = TLoad;

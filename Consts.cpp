@@ -1100,6 +1100,16 @@ LoadPoint LoadPoint::Clone() // Вернуть клонированную нагрузку
 	case Dchar: return { Type,new char(*(char*)Point) };
 	case Dbool: return { Type,new bool(*(bool*)Point) };
 	case DPPoint: return { Type,new (void*)(*(void**)Point) };
+	case DLoadVect:
+	{
+		if (Ind >= 0)
+			// Клонирование переменной по индексу
+			return ((LoadVect_type)Point)->at(Ind).Clone();
+		vector<LoadPoint> *t = new vector<LoadPoint>;
+		t->resize(((vector<LoadPoint>*)Point)->size());
+		for (auto i = t->begin(), j = ((vector<LoadPoint>*)Point)->begin(); i != t->end(); i++, j++)
+			*i = j->Clone(); // Клонирование каждой нагрузки
+	}
 	case DIC: 
 		if (Ind < 0)
 			return { Type, ICCopy(*this).Point };
@@ -1119,18 +1129,6 @@ LoadPoint LoadPoint::Clone() // Вернуть клонированную нагрузку
 		t->push_back(*((ip*)Point));
 		//		((ip*)Point)->Load.Clone();
 		return { Type, t };
-	}
-	case DLoadVect: // Копирование вектора нагрузок
-	{
-		if (Ind >= 0) 
-			// Клонирование переменной по индексу
-			return ((LoadVect_type)Point)->at(Ind).Clone();
-		else{ // Клонирование по индексу в векторе
-			vector<LoadPoint>* t=new vector<LoadPoint>;
-			for (auto& i : *(vector<LoadPoint>*)Point)
-				t->push_back(i.Clone());
-			return{ Type, t };
-		}
 	}
 	default: return *this;
 	}
@@ -1439,7 +1437,7 @@ void LoadPoint::print(map<int, string > AtrMnemo, string offset, string Sep, str
 		int c = 1;
 		for (auto i : *(vector<LoadPoint>*) Point)
 		{
-			i.print(AtrMnemo, offset, Sep, End, ArrayBracketStart, ArrayBracketFin);
+			i.print(AtrMnemo, offset, Sep, End, quote, ArrayBracketStart, ArrayBracketFin);
 			if(c<((vector<LoadPoint>*) Point)->size()) cout << Sep;
 			c++;
 		}
@@ -1459,6 +1457,7 @@ void LoadPoint::print(map<int, string > AtrMnemo, string offset, string Sep, str
 // Работа с ФУ
 void FU::CommonMk(int Mk, LoadPoint Load)
 {
+	Mk %= FUMkRange;
 	if (Mk < 0) // Команды для АЛУ
 	{
 		

@@ -3,6 +3,7 @@
 
 void ConfineSimple::ProgFU(int MK, LoadPoint Load)
 {
+	MK %= FUMkRange;
 	switch (MK)
 	{
 		

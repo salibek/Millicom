@@ -27,6 +27,7 @@
 	void Lex::ProgFU(int MK, LoadPoint Load)
 	{
 		// Доделать буфер ИП с лексемами
+	//	MK %= FUMkRange;
 		switch (MK)
  		{
 		case 0: // Reset
@@ -282,18 +283,7 @@
 				Receiver.back()->ProgFU(ReceiverMK.back(), Load.Copy());
 //			MkExec(ReceiverMK.back(), Load.Copy());
 			break;
-		case 73: // TempLexSet Установить ссылку на временную лексему
-			tempLex = (ip*)Load.Point;
-			break;
-		case 74: // TempLexLoadSet Установить нагрузку у временной лексемы
-			tempLex->Load = Load;
-			break;
-		case 75: // TempLexCendMk Отправить временную переменную (если нагрузка нулевая, от правляется на текущий приемник)
-			if (Load.isIC() || Load.isIP())
-				Receiver.back()->ProgFU(Load.toInt(), {CIC, tempLex});
-			else
-				Receiver.back()->ProgFU(ReceiverMK.back(), {CIC, tempLex});
-			break;
+
 		case 85: // RegSet Установить регулярное выражение
 			RegVect.push_back({ Load.toStr(), nullptr});
 			break;

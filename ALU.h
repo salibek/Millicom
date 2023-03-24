@@ -14,7 +14,7 @@ public:
 class ALUContext
 {
 public:
-	vector<LoadPoint> accumVect; // Векторный аккумулятор
+	vector<LoadPoint>* accumVect; // Векторный аккумулятор
 	unsigned int accumType = 0; // Тип данных
 	double		accum = 0;		// Скалярный аккумулятор
 	string		accumStr;		// строковой аккулятор
@@ -26,19 +26,13 @@ public:
 		vector<LoadPoint>* accumPoint = nullptr;	// Указатель на аккумулятор (вектор, матрица и т.п.)
 //	vector<int> MkOut; // вектор МК для резульатов
 //	vector<LoadPoint> OutAdr; // вектор адресов для записи результатов
-	vector <MkAdr> OutMkAdr; // Буфер для указания порядка следования выдача векторных результатов вычисления
+	vector <MkAdr> OutMkAdr; // Буфер для указания порядка следования выдачи векторных результатов вычисления
 
 	bool VectOut = false; // Векторная выдача результата
 };
 
 class ALU : FU
 {
-	void		sub(LoadPoint load);
-	void		div(LoadPoint load);
-	void		div_int(LoadPoint load);
-	void		mult(LoadPoint load);
-	void		inc(LoadPoint load);
-	void		dec(LoadPoint load);
 //	bool comp(LoadPoint x, LoadPoint y); // Подпрограмма для сравнения элементов вектора
 public:
 	unsigned int accumType = 0; // Тип данных
@@ -62,6 +56,12 @@ public:
 	void		set(LoadPoint load);
 	void		error_msg(int error_code);
 	void		calc(int MK, LoadPoint load);
+	void		sub(LoadPoint load);
+	void		div(LoadPoint load);
+	void		div_int(LoadPoint load);
+	void		mult(LoadPoint load);
+	void		inc(LoadPoint load);
+	void		dec(LoadPoint load);
 	LoadPoint	get();
 	bool		getLogic();
 	bool		getSign(); // 0 - положительное число, 1 - отрицательное

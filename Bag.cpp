@@ -5,6 +5,7 @@
 
 void BagPoint::ProgFU(int MK, LoadPoint Load)
 {
+	MK %= FUMkRange;
 	if (Modeling != nullptr && Modeling->ManualMode && Modeling->scheduler != nullptr && !Modeling->SchedulerFlag)
 	{
 		Modeling->SchedulerFlag = false;
