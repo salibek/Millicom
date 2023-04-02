@@ -770,6 +770,9 @@
 				//		Debug(*i, S, LexAccum); // --- отладка
 						break;
 					}
+					i--;
+					S = 1;
+					break;
 					Work = false;  //установка флага рабочего режима лексера на false
 					ProgExec(ErrProg); //обработчик ошибок
 					break;

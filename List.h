@@ -19,6 +19,7 @@ public:
 	// 0 - на текущем уровне, 1 - на всех уровнях, 2- только в текущей иерархии
 	int ReceiverMk = 0; // Мк для выдаваемой лексемы
 	int* ReceiverMkUk = &ReceiverMk; // Указатель на Мк для выдаваемой лексемы
+//	int LastIpOffcet = 0; // Смещение относительно последней ИП капсулы для записи
 	// Выделить в контекст
 /*	vector<ip>* ListHead = nullptr; // Указатель на начало списка
 	ip* LineUk=nullptr; // Указатель на найленную строку списка
@@ -39,9 +40,14 @@ public:
 	void *FailProg = nullptr; // Программа, выполняемаЯ в случае неудачного поиска во всем  списке
 	void* SuссessLineProg = nullptr, * SuссessProg = nullptr;
 	vector<ip> *DefProg = nullptr;
+	int Mode = 0; // Режима работы списка 0 - список на основе ИК, 1 - список на основе хеш-таблицы
 
 	List(FU* BusContext, FU* Templ) : FU(BusContext) { ProgFU(0, { 0, nullptr }); Bus = BusContext; Searcher.MainFU = this; FUtype = 5; };
 	List() : FU() { List(nullptr, nullptr); };
+	int HashAtr = 0; // Атрибут для хеширования
+	unordered_map<string, IC_type> Hash; // Хеш-таблица
+	ip HashLineUk; // Псевдосписок для хеш-режима
+	vector<ip> HashListBack = {}; // Превдоконец списка для режима хеширования
 private:
 	int DeepStartSearch = 0; // Стартовый уровень для пописка
 };

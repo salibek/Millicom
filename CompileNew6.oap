@@ -4365,9 +4365,10 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 	FuTypeIndexes.CellSet=99 FuTypeMkTrees.CellSet=
 {
   Obj={Mnemo="ReceiverMkSet" Mk=5 Hint="Установить МК для приемника лексем"}
-  Obj={Mnemo="ReceiverMkPush" Mk=2 Hint="Положить адрес приёмника лексемы в стек"}
-  Obj={Mnemo="ReceiverMkPop" Mk=3 Hint="Вытолкнуть адрес премника из стека и записать его"}
-  Obj={Mnemo="ReceiverMkPopMk" Mk=4 Hint="Вытолкнуть адрес премника из стека и выдать МК с ним"}
+  Obj={Mnemo="ReceiverPush" Mk=2 Hint="Положить адрес приёмника лексемы в стек"}
+  Obj={Mnemo="ReceiverPop" Mk=3 Hint="Вытолкнуть адрес премника из стека и записать его"}
+  Obj={Mnemo="ReceiverPopMk" Mk=4 Hint="Вытолкнуть адрес премника из стека и выдать МК с ним"}
+  Obj={Mnemo="ReceiverPopCend" Mk=1 Hint="Вытолкнуть адрес премника из стека и выдать Лексему (при нулевой нагрузке выдается текущая лексема"}
 
   Obj={Mnemo="FinMkAdd" Mk=6 Hint="Добавить финальную МК"}
   Obj={Mnemo="FinMkClear" Mk=7 Hint="Очистить список фитальных МК"}
@@ -4427,7 +4428,7 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
   Obj={Mnemo="VarSet" Mk=65 Hint="Установить тип переменной для нагрузки последней лексемы"}
   Obj={Mnemo="PrevVarSet" Mk=66 Hint="Установить тип переменной для нагрузки предыдущей лексемы"}
 
-  Obj={Mnemo="CendToReceiver" Mk=70 Hint="Переслать лексему из нагрузки получателю (если в нагрузке nil, то посылается текущая лексема)"}
+  Obj={Mnemo="CendToReceiver" Mk=70 Hint="Переслать лексему из нагрузки получателю"}
   Obj={Mnemo="CendCopyToReceiver" Mk=71 Hint="Переслать копию лексемы из нагрузки получателю"}
 
   Obj={Mnemo="RegSet" Mk=85 Hint="Установить регулярное выражение"}
@@ -4511,7 +4512,7 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
     Obj={Mk=156 Mnemo="LastPopMk" Hint="Выдать ссылку на последнюю линию списка и удалить из списка"}
     Obj={Mk=157 Mnemo="LastDelMk" Hint="Выдать ссылку на последнюю линию списка и удалить ИК"}
     Obj={Mk=158 Mnemo="LastLoadOut" Hint="Выдать нагрузку последней ИП последней линии"}
-    Obj={Mk=163 Mnemo="LastLoadOutMk" Hint="Выдать МК с нагрузкой последней ИП последней линии"}
+    Obj={Mk=169 Mnemo="LastLoadOutMk" Hint="Выдать МК с нагрузкой последней ИП последней линии"}
 
     Obj={Mk=188 Mnemo="LastLoadRefOut" Hint="Выдать МК со ссылкой на нагрузку последней ИП последней линии"}
     Obj={Mk=198 Mnemo="LastLoadRefOutMk" Hint="Выдать МК со ссылкой на нагрузку последней ИП последней линии"}
@@ -4672,6 +4673,9 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
   Obj={Mk=35 Mnemo="ReceivedLoadOut" Hint="Выдать нагрузку входного объекта для поиска"}
   Obj={Mk=36 Mnemo="ReceivedLoadOutMk" Hint="Выдать МК с нагрузкой входного объекта для поиска"}
 
+  Obj={Mk=37 Mnemo="LineCountOut" Hint="Выдать количество линий в списке"}
+  Obj={Mk=38 Mnemo="LineCountOutMK" Hint="Выдать Мк с количеством линий в списке"}
+
   Obj={Mk=100 Mnemo="RezOut" Hint="Выдача результата сравнения"}
   Obj={Mk=101 Mnemo="RezOutMK" Hint="Выдача МК с результатом сравнения"}
   Obj={Mk=105 Mnemo="MkAtrAdd" Hint="Добавить МК"}
@@ -4758,7 +4762,7 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 	 	Obj={Mk=74 Mnemo="BiggerEQProgSet" Hint=""}
 	 	Obj={Mk=75 Mnemo="LessEQProgSet" Hint=""}
 	 }
-	 Obj={Mnemo="Prog execute" Hint="Выполение программ по событиям" Comment
+	 Obj={Mnemo="Prog execution" Hint="Выполение программ по событиям" Comment
 		Obj={Mk=60 Mnemo="EQExec" Hint=""}
 		Obj={Mk=61 Mnemo="NEQExec" Hint=""}
 	 	Obj={Mk=62 Mnemo="BiggerExec" Hint=""}
@@ -5154,6 +5158,11 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
   	Obj={Mk=2 Mnemo="Out" Hint="Выдать значение аккумулятора"}
   	Obj={Mk=3 Mnemo="OutMk" Hint="Выдать МК со значением аккумулятора"}
 
+  	Obj={Mk=13 Mnemo="CopyOut" Hint="Выдать копию аккумулятора"}
+  	Obj={Mk=14 Mnemo="CopyOutMK" Hint="Выдать МК с копией аккумулятора"}
+  	Obj={Mk=18 Mnemo="CopyConstOut" Hint="Выдать копию аккумулятора и сделать значение константой"}
+  	Obj={Mk=19 Mnemo="CopyConstOutMK" Hint="Выдать МК с копией аккумулятора и сделать значение константой"}
+
   	Obj={Mk=72 Mnemo="Push" Hint="Добавить новый аккумулятор (аналог Set, только сначала создается новый аккумулятор)"}
   	Obj={Mk=16 Mnemo="Pop" Hint="Выдать значение аккумулятора и удалить аккмумулятор"}
   	Obj={Mk=17 Mnemo="PopMk" Hint="Выдать МК со значением аккумулятора и удалить аккмумулятор"}
@@ -5161,6 +5170,10 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
   	Obj={Mk=10 Mnemo="OutMkAdrClear" Hint="Очистить буфер МК и адресов для выдачи результата"}
   	Obj={Mk=11 Mnemo="OutMkAppend" Hint="Добавить адрес для выдачи результата вычисления"}
   	Obj={Mk=12 Mnemo="OutAdrAppend" Hint="Добавить адрес для выдачи результатов"}
+
+  	Obj={Mk=73 Mnemo="TernarYes" Hint="Выполнить тернарную конструкций по Истине"}
+  	Obj={Mk=74 Mnemo="TernarNo" Hint="Выполнить тернарную конструкций по Лжи"}
+
 
   Obj={Mnemo="ErrProg" Hint="Установка программ обработки ошибок" Comment
   	Obj={Mk=20 Mnemo="ErrProgSet" Hint="Программа обработки ошибки любого типа"}
@@ -5171,7 +5184,7 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 
   Obj={Mnemo="Ariphmetics" Hint="Арифметические функции" Comment
 //  	Obj={Mk=100 Mnemo="AccumReset" Hint="Сбросить аккумулятор"}
-  	Obj={Mk=1 Mnemo="Set" Hint="Установить значение в аккумулятор"}
+  	Obj={Mk=26 Mnemo="Set" Hint="Установить значение в аккумулятор"}
   	Obj={Mk=25 Mnemo="Get" Hint="Установить значение в аккумулятор"}
   	Obj={Mk=34 Mnemo="Inc" Hint="Декремент (если Load=nil инкремент аккумулятора)"}
   	Obj={Mk=35 Mnemo="Dec" Hint="Инкремент (если Load=nil инкремент аккумулятора)"}
@@ -5292,7 +5305,8 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 	 Obj={Mk=8  Mnemo="ParametrOut" Hint="Выдать МК с параметром по индексу"}
 	 Obj={Mk=9  Mnemo="ParametrOutMk" Hint="Установить ссылку на соседа по индексу"}
 	 Obj={Mk=10 Mnemo="SendTo" Hint="Выдать значение для соседа с индексом по индексу"}
-	 Obj={Mk=11 Mnemo="InSet" Hint="Установить значение для соседа по индексу"}
+	 Obj={Mk=11 Mnemo="MkAdd" Hint="Увеличить значение Мк для соседа"}
+	 Obj={Mk=12 Mnemo="InSet" Hint="Установить значение для соседа по индексу"}
 
 	 Obj={Mk=40 Mnemo="N_In_Out" Hint="Выдать ожидаемое количество операндов"}
 	 Obj={Mk=41 Mnemo="N_In_OutMk" Hint="Выдать МК с ожидаемым количеством операндов"}
@@ -5461,23 +5475,23 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 	 	Obj={Mk=514 Mnemo="SendTo_14" Hint="Выдать 14-му соседу"}
 	 	Obj={Mk=515 Mnemo="SendTo_15" Hint="Выдать 15-ум соседу"}
 	}
-	Obj={Mnemo="AccumSendTo" Hint="Выдать МК с аккумулятором для соседа" Comment
-	 	Obj={Mk=550 Mnemo="AccumSendTo_0_OutMk" Hint="Выдать МКсо 0-м параметром"}
-	 	Obj={Mk=551 Mnemo="AccumSendTo_1_OutMk" Hint="Выдать МК с 1-м параметром"}
-	 	Obj={Mk=552 Mnemo="AccumSendTo_2_OutMk" Hint="Выдать МК со 2-м параметром"}
-	 	Obj={Mk=553 Mnemo="AccumSendTo_3_OutMk" Hint="Выдать МК со 3-м параметром"}
-	 	Obj={Mk=554 Mnemo="AccumSendTo_4_OutMk" Hint="Выдать МК со 4-м параметром"}
-	 	Obj={Mk=555 Mnemo="AccumSendTo_5_OutMk" Hint="Выдать МК со 5-м параметром"}
-	 	Obj={Mk=556 Mnemo="AccumSendTo_6_OutMk" Hint="Выдать МК со 6-м параметром"}
-	 	Obj={Mk=557 Mnemo="AccumSendTo_7_OutMk" Hint="Выдать МК со 7-м параметром"}
-	 	Obj={Mk=558 Mnemo="AccumSendTo_8_OutMk" Hint="Выдать МК со 8-м параметром"}
-	 	Obj={Mk=559 Mnemo="AccumSendTo_9_OutMk" Hint="Выдать МК со 9-м параметром"}
-	 	Obj={Mk=560 Mnemo="AccumSendTo_10_OutMk" Hint="Выдать МК со 10-м параметром"}
-	 	Obj={Mk=561 Mnemo="AccumSendTo_11_OutMk" Hint="Выдать МК со 11-м параметром"}
-	 	Obj={Mk=562 Mnemo="AccumSendTo_12_OutMk" Hint="Выдать МК со 12-м параметром"}
-	 	Obj={Mk=563 Mnemo="AccumSendTo_13_OutMk" Hint="Выдать МК со 13-м параметром"}
-	 	Obj={Mk=564 Mnemo="AccumSendTo_14_OutMk" Hint="Выдать МК со 14-м параметром"}
-	 	Obj={Mk=565 Mnemo="AccumSendTo_15_OutMk" Hint="Выдать МК со 15-м параметром"}
+	Obj={Mnemo="MkAdd" Hint="Выдать МК с аккумулятором для соседа" Comment
+	 	Obj={Mk=550 Mnemo="MkAdd_0" Hint="Выдать МКсо 0-м параметром"}
+	 	Obj={Mk=551 Mnemo="MkAdd_1" Hint="Выдать МК с 1-м параметром"}
+	 	Obj={Mk=552 Mnemo="MkAdd_2" Hint="Выдать МК со 2-м параметром"}
+	 	Obj={Mk=553 Mnemo="MkAdd_3" Hint="Выдать МК со 3-м параметром"}
+	 	Obj={Mk=554 Mnemo="MkAdd_4" Hint="Выдать МК со 4-м параметром"}
+	 	Obj={Mk=555 Mnemo="MkAdd_5" Hint="Выдать МК со 5-м параметром"}
+	 	Obj={Mk=556 Mnemo="MkAdd_6" Hint="Выдать МК со 6-м параметром"}
+	 	Obj={Mk=557 Mnemo="MkAdd_7" Hint="Выдать МК со 7-м параметром"}
+	 	Obj={Mk=558 Mnemo="MkAdd_8" Hint="Выдать МК со 8-м параметром"}
+	 	Obj={Mk=559 Mnemo="MkAdd_9" Hint="Выдать МК со 9-м параметром"}
+	 	Obj={Mk=560 Mnemo="MkAdd_10" Hint="Выдать МК со 10-м параметром"}
+	 	Obj={Mk=561 Mnemo="MkAdd_11" Hint="Выдать МК со 11-м параметром"}
+	 	Obj={Mk=562 Mnemo="MkAdd_12" Hint="Выдать МК со 12-м параметром"}
+	 	Obj={Mk=563 Mnemo="MkAdd_13" Hint="Выдать МК со 13-м параметром"}
+	 	Obj={Mk=564 Mnemo="MkAdd_14" Hint="Выдать МК со 14-м параметром"}
+	 	Obj={Mk=565 Mnemo="MkAdd_15" Hint="Выдать МК со 15-м параметром"}
 	}
       Obj=CommonMkList
 	}

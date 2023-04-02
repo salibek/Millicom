@@ -944,6 +944,15 @@ int LoadPoint::Write(LoadPoint x) // Записать величину из нагрузки
 	return 0;
 	*/
 }
+template <typename T>
+int LoadPoint::WriteByVector(T x) // Запись по нагрузкам в векторе
+{
+	if (Point == nullptr) return 1;
+	if (!isVector()) return 1;
+	for (auto& i : *((vector<LoadPoint>*) Point))
+		Write(i);
+	return 0;
+};
 
 int LoadPoint::Write(vector<LoadPoint>* x)
 {
@@ -1365,17 +1374,17 @@ void LoadPoint::print(map<int, string > AtrMnemo, string offset, string Sep, str
 	switch (Type)
 	{
 	case Tstring:
-	case Cstring: cout << quote << * (string*)Point << quote; break;
+	case Cstring: cout << quote << toStr() << quote; break;
 	case Tint:
-	case Cint:	  cout << *(int*)Point; break;
+	case Cint:	  cout << toInt(); break;
 	case Tfloat:
-	case Cfloat:  cout << *(float*)Point; break;
+	case Cfloat:  cout << toFloat(); break;
 	case Tdouble:
-	case Cdouble: cout << *(double*)Point; break;
+	case Cdouble: cout << toDouble(); break;
 	case Tchar:
-	case Cchar:   cout << *(char*)Point; break;
+	case Cchar:   cout << toChar(); break;
 	case Tbool:
-	case Cbool:   cout << *(bool*)Point; break;
+	case Cbool:   cout << toBool(); break;
 	case TIP:
 	case CIP:
 		if (((ip*)Point)->Load.Type >> 1 == DIP || isIC())

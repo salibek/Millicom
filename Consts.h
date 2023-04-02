@@ -14,7 +14,7 @@
 using namespace std;
 // Типы переменных
 const unsigned int Tvoid = 0, Tbool = 2, Tchar = 4, Tint = 6, Tfloat = 8, Tdouble = 10,  Tstring = 12, TIP = 14, TIC = 16;
-const unsigned int TPPoint = 18, TGraph = 20, TFU = 22, TLoad = 24, Tmk = 26, TLoadVect=28;
+const unsigned int TPPoint = 18, TGraph = 20, TFU = 22, TLoad = 24, Tmk = 26, TLoadVect=28, THashList=30;
 const unsigned int TCalc = 100, TProg=102; // Cсылка на Арифметический ОА-граф, программу
 const unsigned int TvoidArray = 1000, TboolArray = 1002, TCharArray=1004, TintArray = 1006, TfloatArray = 1008, TdoubleArray = 1010, TstringArray = 1012;
 const unsigned int TIPArray = 1014, TICArray = 1016, TPPointArray = 1018, TGrapgArray = 1020, TFUArray = 1022, TLoadArray = 1024;
@@ -22,7 +22,7 @@ const unsigned int TboolArray2 = 2002, TcharArray2 = 2004, TintArray2 = 2006, Tf
 const unsigned int TIPArray2 = 2014, TICArray2 = 2016, TPPointArray2 = 2018, TGrapgArray2 = 2020, TFUArray2 = 2022, TLoadArray2 = 2024;
 // Типы констант
 const unsigned int Cvoid = 1, Cbool = 3, Cchar = 5, Cint = 7, Cfloat = 9, Cdouble = 11, Cstring = 13, CIP = 15, CIC = 17;
-const unsigned int CPPoint = 19, CGraph = 21, CFU = 23, CLoad = 25, Cmk=27, CLoadVect=29;
+const unsigned int CPPoint = 19, CGraph = 21, CFU = 23, CLoad = 25, Cmk=27, CLoadVect=29, CHashList = 31;
 const unsigned int CCalc = 101, CProg=103; // Cсылка на Арифметический ОА-граф, программу
 const unsigned int CvoidArray = 1001, CboolArray=1003, CcharArray = 1005, CintArray = 1007, CfloatArray = 1009, CdoubleArray = 1011, CstringArray = 1013;
 const unsigned int CIPArray = 1015, CICArray = 1017, CPPointArray = 1019, CGrapgArray = 1021, CFUArray = 1023, CLoadArray = 1025;
@@ -30,7 +30,7 @@ const unsigned int CvoidArray2 = 2001, CboolArray2 = 2003, CcharArray2 = 2005, C
 const unsigned int CIPArray2 = 2015, CICArray2 = 2017, CPPointArray2 = 2019, CGrapgArray2 = 2021, CFUArray2 = 2023, CLoadArray2 = 2025;
 // Общие типы данных (остаток от целочисленного деления на 2 типа переменной или константы)
 const unsigned int Dvoid=0, Dbool = 1, Dchar = 2, Dint = 3, Dfloat = 4, Ddouble = 5, Dstring = 6, DIP = 7,  DIC = 8;
-const unsigned int DPPoint = 9, DGraph = 10, DFU = 11, DLoad = 12, DMk=13, DLoadVect=14;
+const unsigned int DPPoint = 9, DGraph = 10, DFU = 11, DLoad = 12, DMk=13, DLoadVect=14, DHashList = 15;
 const unsigned int DCalc = 50, DProg=51; // Cсылка на Арифметический ОА-граф, программу
 const unsigned int DVoidArray = 500, DboolArray = 501, DcharArray = 502, DintArray = 503, DfloatArray = 504, DdoubleArray = 505, DstringArray = 506;
 const unsigned int DIPArray = 507, DICArray = 508, DPPointArray = 509, DGrapgArray = 510, DFUArray = 511, DLoadArray = 512;
@@ -128,6 +128,9 @@ public:
 	int Write(vector<int> x);
 	int Write(vector<LoadPoint> x); // Копирование вектора нагрузок нагрузку
 	int Write(vector<LoadPoint>* x); // Запись ссылки на вектор нагрузок
+	template <typename T>
+	int WriteByVector(T x); // Запись по нагрузкам в векторе
+
 	static LoadPoint TypeMinimizeOut(double x, bool var = false); // Минимизировать тип (возвращается LoadPoint), т.е. было целое число - возвращается int и т.д.
 	static unsigned int  TypeMinimize(double x); // Минимизировать тип, т.е. было целое число - возвращается int и т.д.
 

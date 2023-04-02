@@ -27,6 +27,8 @@ MainBus.ModeSet=2
 V#10 // Объём рюкзака
 NItem#10  // Количество предметов для расположения в рюкзаке
 
+Console.QuoteSet=""
+
 IntAlu.Set=NItem
 IntAlu.Mul=V // Вычислить количество узлов в сетке
 IntAlu.OutMk=IntAlu2.Set

@@ -21,9 +21,16 @@ void List::ProgFU(int MK, LoadPoint Load)
 		ListHead.push_back(nullptr);
 		break;
 	case 1:	// Set
-		if (ListHead.back() != nullptr && !ListHead.back()->size())
-			delete ListHead.back();
-		ListHead.back() = (IC_type)Load.Point;
+		if (Mode == 0) // Режим работы со списком в формате ИК
+		{
+			if (ListHead.back() != nullptr && !ListHead.back()->size())
+				delete ListHead.back();
+			ListHead.back() = (IC_type)Load.Point;
+		}
+		else if (Mode == 1) // Режим хеширования
+		{
+			
+		}
 		break;
 	case 2:// Out Выдать ссылку на список
 			Load.Write(ListHead.back());
@@ -155,6 +162,23 @@ void List::ProgFU(int MK, LoadPoint Load)
 	}
 		break;
 
+	case 40: // ModeSet Установить режим работы списка (0 - список на основе ИК, 1 - список на основе хеш-таблицы)
+		switch (Load.toInt())
+		{
+		case 0:
+			Mode = 0; LineUk = nullptr;
+			break;
+		case 1: 
+			Mode = 1; LineUk = &HashLineUk;
+			ListHead.back() = &HashListBack; // Добавить псевдосписок
+			break;
+		}
+		break;
+	case 41: // HashAtrSet Установить атрибут для хеширования
+		HashAtr = Load.toInt();
+		Mode = 1; LineUk = &HashLineUk;
+		ListHead.back() = &HashListBack; // Добавить псевдосписок
+		break;
 	case 100: // RezOut Выдача результата сравнения
 		if (Load.isBool())
 			Load.Write(Searcher.Rez);
@@ -400,7 +424,7 @@ void List::ProgFU(int MK, LoadPoint Load)
 		ListHead.back()->at(ListHead.back()->size() - 2).Load = ListHead.back()->back().Load;
 		break;
 	}
-	case 163: // LineCopyAddPrevLoadSet
+	case 163: // LineCopyAddPrevLoadSetLoadMov
 	case 159: // LastCopyAddPrevLoadSetLoadMov Добавить копию линии перенести нагрузку в на новую строку и добавить в нагрзуку предыдущей строки ссылку на новую строку 
 	{
 		LoadPoint t = { 0, nullptr };

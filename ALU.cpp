@@ -102,20 +102,31 @@ void ALU::ProgFU(int MK, LoadPoint Load)
 		accumType = Stack.back().accumType; // Записать в выходной аккумулятор
 		accumStr = Stack.back().accumStr; // Записать в выходной аккумулятор
 		for(auto i: Stack.back().OutMkAdr)
-			if(i.Adr.Point==__nullptr)
+			if(i.Adr.Point!=nullptr)
 				i.Adr.Write(Stack.back().accum);
-			else
+			else if(i.Mk>=0)
 	 			MkExec(i.Mk, { Cdouble,  &Stack.back().accum }); // Сделать преобразование типов попозже
 		Stack.back().OutMkAdr.clear(); // Очистить стек выходных МК и адресов
 	}
 	else
 	{
+		if (MK == E_MK::TERNAR_YES || MK == E_MK::TERNAR_NO) // Тернарная конструкция			if (LoadPoint::isDigitBool(Stack.back().accumType) &&
+			if (!LoadPoint::isDigitBool(Stack.back().accumType) ||
+				Stack.back().accum == 0 && MK == E_MK::TERNAR_YES || Stack.back().accum != 0 && MK == E_MK::TERNAR_NO)
+				return; // Выход, если условие тернарной конструкции не совпадает
+			else // Выполнение тернарной конструкции
+			{
+				ProgExec(Load);
+				ProgStop += 1; // Остановить дальнейшее выполнение программы, чтобы за "зацепить" противоположное условие
+				exit;
+			}
+		else
 		if (MK >= 25 && MK < 200 && LoadPoint::isVector(Stack.back().accumType)) // Векторные операции
 		{
 			VectOperation(MK, Load);
 			return;
 		}
-
+		double tt; // Хранилище аккумулятора предыдущего уровня
 		if (MK >= 25 && MK < 900 && Load.isProg()) // Арифметико-логическсое выражение со ссылкой в нагрузке
 		{
 			LoadDelFlag = true;
