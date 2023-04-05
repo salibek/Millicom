@@ -87,10 +87,10 @@ NewFU={Mnemo="EqAfter" FUType=FUListNew Hint="Перечисление переменных 2"}
 NewFU={Mnemo="EqAleAfter" FUType=FUListNew Hint="Ожидание символа после перечисления переменных"}
 NewFU={Mnemo="FuncAfter" FUType=FUListNew Hint="Ожидание функции"}
 NewFU={Mnemo="OperatWait" FUType=FUListNew Hint="Ожидание оператора"}
-NewFU={Mnemo="OpTranslate" FUType=FUListNew Hint="Список операторов для трансляции в ОА-коды"}
-NewFU={Mnemo="AccumEqwList" FUType=FUListNew Hint="Список операций присвоения с накоплением"}
+//NewFU={Mnemo="OperatList" FUType=FUListNew Hint="Список операторов"}
 //NewFU={Mnemo="VectorOperatList" FUType=FUListNew Hint="Список векторных операторов"}
-
+NewFU={Mnemo="OperationTranslate" FUType=FUListNew Hint="Транслирование операций для FUALUNew"} \* 02.04.2023 *\
+NewFU={Mnemo="OpPriority" FUType=FUListNew Hint="Таблица приоритетов операций"} \* 02.04.2023 *\
 
 MainBus.PartialResetSet \\ Запомнить число созданных ФУ
 MainBus.ModeSet=2
@@ -185,7 +185,7 @@ ListCheckProg // Программа проверки списка
 \**\Root.Set=
 >{Sep="" Console.OutLn="End of program!!!"
   Stack.FindAndLast={MkExec}
-  Stack.SuccessExec={Console.OutLn="MkExecSuссess" Stack.LastDelMk Console.OutLn="MkExec" OAList.LastIpPopMk=Main_Bus.MkExec}
+  Stack.SuccessExec={Console.OutLn="MkExecSuссess End" Stack.LastDelMk Console.OutLn="MkExec" OAList.LastIpPopMk=Main_Bus.MkExec}
 }
 >{FU
   //Prog=ListCheckProg
@@ -711,6 +711,40 @@ FUALUNew.Smaller FUALUNew.SmallerEQ FUALUNew.Bigger FUALUNew.BiggerEQ FUALUNew.E
 >{Sep="||" FUALUNew.OrBit}
 >{Sep="="}
 
+\* 23.03.2023 *\
+//OperationTranslate.SuccessLineProgSet={Lex.OutMk=OpPriority.FindAnd Console.OutLn="Priority"}
+OperationTranslate.Set= // FUALU operations
+>{Sep="+" OAList.LastAttach={FUALUNew.Sum}}
+>{Sep="-" OAList.LastAttach={FUALUNew.Sub}}
+>{Sep="*" OAList.LastAttach={FUALUNew.Mul}}
+>{Sep="/" OAList.LastAttach={FUALUNew.Div}}
+>{Sep="//" OAList.LastAttach={FUALUNew.DivInt}}
+>{Sep="%" OAList.LastAttach={FUALUNew.Remainder}}
+>{Sep="**" OAList.LastAttach={FUALUNew.Pow}}
+>{Sep=">>" OAList.LastAttach={FUALUNew.Sub}}
+>{Sep="<<" OAList.LastAttach={FUALUNew.Sub}}
+>{Sep="&" OAList.LastAttach={FUALUNew.And}}
+>{Sep="&&" OAList.LastAttach={FUALUNew.AndBit}}
+>{Sep="|" OAList.LastAttach={FUALUNew.Or}}
+>{Sep="||" OAList.LastAttach={FUALUNew.OrBit}}
+>{Sep="^" OAList.LastAttach={FUALUNew.Xor}}
+>{Sep="^^" OAList.LastAttach={FUALUNew.XorBit}}
+// Accum-assignment operations 
+>{Sep="+=" OAList.LastLoadOut=temp OAList.LastAttach={FUALUNew.Set=temp(nil)! FUALUNew.Sum} OAList.LineCopyAddPrevLoadSet={FUALUNew.Set}}
+>{Sep="-=" OAList.LastLoadOut=temp OAList.LastAttach={FUALUNew.Set=temp(nil)! FUALUNew.Sub} OAList.LineCopyAddPrevLoadSet={FUALUNew.Set}}
+>{Sep="*=" OAList.LastLoadOut=temp OAList.LastAttach={FUALUNew.Set=temp(nil)! FUALUNew.Mul} OAList.LineCopyAddPrevLoadSet={FUALUNew.Set}}
+>{Sep="/=" OAList.LastLoadOut=temp OAList.LastAttach={FUALUNew.Set=temp(nil)! FUALUNew.Div} OAList.LineCopyAddPrevLoadSet={FUALUNew.Set}}
+>{Sep="//=" OAList.LastLoadOut=temp OAList.LastAttach={FUALUNew.Set=temp(nil)! FUALUNew.DivInt} OAList.LineCopyAddPrevLoadSet={FUALUNew.Set}}
+>{Sep="%=" OAList.LastLoadOut=temp OAList.LastAttach={FUALUNew.Set=temp(nil)! FUALUNew.Remainder} OAList.LineCopyAddPrevLoadSet={FUALUNew.Set}}
+>{Sep="**=" OAList.LastLoadOut=temp OAList.LastAttach={FUALUNew.Set=temp(nil)! FUALUNew.Pow} OAList.LineCopyAddPrevLoadSet={FUALUNew.Set}}
+>{Sep=">>=" OAList.LastLoadOut=temp OAList.LastAttach={FUALUNew.Set=temp(nil)! FUALUNew.MlBit} OAList.LineCopyAddPrevLoadSet={FUALUNew.Set}}
+>{Sep="<<=" OAList.LastLoadOut=temp OAList.LastAttach={FUALUNew.Set=temp(nil)! FUALUNew.MrBit} OAList.LineCopyAddPrevLoadSet={FUALUNew.Set}}
+>{Sep="&=" OAList.LastLoadOut=temp OAList.LastAttach={FUALUNew.Set=temp(nil)! FUALUNew.And} OAList.LineCopyAddPrevLoadSet={FUALUNew.Set}}
+>{Sep="&&=" OAList.LastLoadOut=temp OAList.LastAttach={FUALUNew.Set=temp(nil)! FUALUNew.AndBit} OAList.LineCopyAddPrevLoadSet={FUALUNew.Set}}
+>{Sep="|=" OAList.LastLoadOut=temp OAList.LastAttach={FUALUNew.Set=temp(nil)! FUALUNew.Or} OAList.LineCopyAddPrevLoadSet={FUALUNew.Set}}
+>{Sep="||=" OAList.LastLoadOut=temp OAList.LastAttach={FUALUNew.Set=temp(nil)! FUALUNew.OrBit} OAList.LineCopyAddPrevLoadSet={FUALUNew.Set}}
+>{Sep="^=" OAList.LastLoadOut=temp OAList.LastAttach={FUALUNew.Set=temp(nil)! FUALUNew.Xor} OAList.LineCopyAddPrevLoadSet={FUALUNew.Set}}
+>{Sep="^^=" OAList.LastLoadOut=temp OAList.LastAttach={FUALUNew.Set=temp(nil)! FUALUNew.XorBit} OAList.LineCopyAddPrevLoadSet={FUALUNew.Set}}
 
 \**\ALE.Set=
 >{Var Lex.ReceiverMkSet=VarAfter.FindAnd
@@ -727,49 +761,33 @@ FUALUNew.Smaller FUALUNew.SmallerEQ FUALUNew.Bigger FUALUNew.BiggerEQ FUALUNew.E
 //>{0 Lex.ReceiverMkSet=ALEAfter.FindAnd} \* 10.03.2023 *\ \* если после ALECheck2 || LoadVar *\ 
 // >{Vect Lex.ReceiverMkSet=VectAfter.FindAnd}
 
-\**\AccumEqwList.Set= \* 17.03.2023 *\
->{Sep="+=" OAList.LastAtrAttach=FUALUNew.Sum}
->{Sep="-=" OAList.LastAtrAttach=FUALUNew.Sub}
->{Sep="*=" OAList.LastAtrAttach=FUALUNew.Mul}
->{Sep="/=" OAList.LastAtrAttach=FUALUNew.Div}
->{Sep="//=" OAList.LastAtrAttach=FUALUNew.DivInt}
->{Sep="%=" OAList.LastAtrAttach=FUALUNew.Remainder}
->{Sep="**=" OAList.LastAtrAttach=FUALUNew.Pow}
->{Sep="->" OAList.LastAtrAttach=FUALUNew.MlBit}
->{Sep="<-" OAList.LastAtrAttach=FUALUNew.MrBit}
->{Sep="&=" OAList.LastAtrAttach=FUALUNew.And}
->{Sep="&&=" OAList.LastAtrAttach=FUALUNew.AndBit}
->{Sep="|="  OAList.LastAtrAttach=FUALUNew.Or}
->{Sep="||=" OAList.LastAtrAttach=FUALUNew.OrBit}
->{Sep="^="  OAList.LastAtrAttach=FUALUNew.Xor}
->{Sep="^^=" OAList.LastAtrAttach=FUALUNew.XorBit}
-
 \**\VarAfter.Set=
 >{Sep="," Lex.ReceiverMkSet=EqAleWait3.FindAnd} \* 05.03.2023 *\ 
 >{Sep="=" Lex.ReceiverMkSet=EqAfter.FindAnd Console.OutLn="ALEAfter ="}
->{Sep="++" Console.OutLn="++" Stack.LastCopyAttach={FUALUNew.Sum=1} Stack.LastOutMk=FUALUNew.Calc \* 22.03.2023 *\ 
+>{Sep="++" Console.OutLn="++" OAList.LastCopyAttach={FUALUNew.Sum=1} OAList.LastOutMk=FUALUNew.Calc \* 02.04.2023 *\ 
   Lex.ReceiverPopCend 
   Lex.ReceiverMkSet=End.FindAnd} 
->{Sep="--" Console.OutLn="--" Stack.LastCopyAttach={FUALUNew.Sub=1} Stack.LastOutMk=FUALUNew.Calc \* 22.03.2023 *\
+>{Sep="--" Console.OutLn="--" OAList.LastCopyAttach={FUALUNew.Sub=1} OAList.LastOutMk=FUALUNew.Calc \* 02.04.2023 *\
   Lex.ReceiverPopCend 
   Lex.ReceiverMkSet=End.FindAnd} 
 >{Sep="+=" Sep="-=" Sep="*=" Sep="/="  \* 16.03.2023 *\
     Sep="//=" Sep="%="
+  Lex.OutMk=OperationTranslate.FindAnd \* 02.04.2023 *\
   Lex.ReceiverMkSet=EqAleAfter.FindAnd 
   OAList.LastAtrAttach=FUALUNew.Set
   ALE.ReceivedLoadOutMk=OAList.LastLoadSet
-  FUListNew.ReceivedOutMk=AccumEqwList.FindAnd // Передать лексему на разбор в AccumEqwList
+  FUListNew.ReceivedOutMk=OperationTranslate.FindAnd // Передать лексему на разбор в OperationTranslate
   OAList.LineCopyAddPrevLoadSet
-  Stack.LineCopyAdd={AleStackUp}
+  Stack.LineCopyAdd={AleStackUp} 
 }
 >{0 Lex.Stop Console.OutLn="Assignment/Accum assignment/Increment/Decrement were expected"}
 
 \**\VectAfter.Set=
 >{Sep="[" Lex.ReceiverMkSet=EqAleAfter.FindAnd}
->{Sep="++" Console.OutLn="++" Stack.LastCopyAttach={FUALUNew.Sum=1} Stack.LastOutMk=FUALUNew.Calc \* 22.03.2023 *\ 
+>{Sep="++" Console.OutLn="++" OAList.LastCopyAttach={FUALUNew.Sum=1} OAList.LastOutMk=FUALUNew.Calc \* 22.03.2023 *\ 
   Lex.ReceiverPopCend 
   Lex.ReceiverMkSet=End.FindAnd} 
->{Sep="--" Console.OutLn="--" Stack.LastCopyAttach={FUALUNew.Sub=1} Stack.LastOutMk=FUALUNew.Calc \* 22.03.2023 *\
+>{Sep="--" Console.OutLn="--" OAList.LastCopyAttach={FUALUNew.Sub=1} OAList.LastOutMk=FUALUNew.Calc \* 22.03.2023 *\
   Lex.ReceiverPopCend 
   Lex.ReceiverMkSet=End.FindAnd} 
 >{0 Lex.Stop Console.OutLn="Vector open bracket was expected"}
@@ -779,22 +797,40 @@ FUALUNew.Smaller FUALUNew.SmallerEQ FUALUNew.Bigger FUALUNew.BiggerEQ FUALUNew.E
 Sep="/" Sep="//" Sep="%" Sep="**" Sep="&" 
 Sep="&&" Sep="|" Sep="||" Sep="^" Sep="^^" 
 Lex.ReceiverMkSet=EqAleAfter.FindAnd} \* 16.03.2023 *\ 
-//>{Sep=">>" Sep="<<" Lex.ReceiverMkSet=EgAleAfter.FindAnd} \* 16.03.2023 *\ 
+//>{Sep=">>" Sep="<<" Lex.ReceiverMkSet=EqAleAfter.FindAnd} \* 16.03.2023 *\ 
 >{0 Lex.Stop Console.OutLn="Vector open bracket or operator were expected"}
 
 \**\EqAleAfter.Set=
 >{Vect Lex.ReceiverMkSet=VectAfter2.FindAnd \* 05.03.2023 *\
   FUListNew.ReceivedLoadOutMk=OAList.LastLoadSet	
 }
->{Var Const Lex.ReceiverMkSet=OperatWait.FindAnd \* 05.03.2023 *\
+>{Var Const 
+  //Lex.ReceiverMkSet=OperatWait.FindAnd \* 05.03.2023 *\
+  //FUListNew.ReceivedLoadOutMk=OAList.LastLoadSet
+  //Console.OutLn="EqAleAfter Var Const"
+  //OAList.OutMk=Console.OutLn
+  \* 02.04.2023 *\
+  Lex.ReceiverMkSet=OperatWait.FindAnd 
   FUListNew.ReceivedLoadOutMk=OAList.LastLoadSet
-Console.OutLn="EqAleAfter Var Const"
-  OAList.OutMk=Console.OutLn
+  OAList.LastCopyAttach={FUALUNew.Set}
+  OpPriority.FindAnd={FUALUNew.Set}
+  Lex.LoadOutMk=OAList.LastLoadSet
+  Console.OutLn="EqAleAfter Var Const"
+  OAList.LastOutMk=Console.OutLn
 }
 >{Sep="(" Lex.ReceiverMkSet=EqAleAfter.FindAnd
+  //Stack.LineCopyAdd={AleSep="("}
+  //OAList.LineCopyAddPrevLoadSet={FUALUNew.Set}
+  \* 02.04.2023 *\	
+  Lex.ReceiverMkSet=EqAleAfter.FindAnd
   Stack.LineCopyAdd={AleSep="("}
+  FUList.SubProg=OpenBracket{
+  OAList.LastCopyAttach={FUALUNew.Set}
   OAList.LineCopyAddPrevLoadSet={FUALUNew.Set}
-}
+  OpPriority.FindAnd={FUALUNew.Set}
+  OAList.LastMarkAtrSet=BracketAtr
+  Console.OutLn="EqAleAfter ("
+}}
 >{Func Lex.ReceiverMkSet=FuncAfter.FindAnd} \* 05.03.2023 *\
 >{Mnemo="if" Lex.ReceiverMkSet=EqAleAfter.FindAnd
   Stack.LineCopyAdd={Ternar}
@@ -834,95 +870,63 @@ Console.OutLn="EqAleAfter Var Const"
 >{Vect Lex.ReceiverMkSet=OperatWait.FindAnd}\*
 >{0 Lex.Stop Console.OutLn="Var/Const/Vector/Open ariphmetic bracket were expected"}
 
-\**\OpPriority.Set= // Приоритет АЛ операций
->{Sep="+" Sep="-" FUALUNew.Sum FUALUNew.Sub}
->{Sep="*" Sep="/" Sep="//" FUALUNew.Mul FUALUNew.Div FUALUNew.DivInt}
->{Sep="%" Sep="**" FUALUNew.Remainder FUALUNew.Pow}
->{Sep="="} // Для сбороса приоритетов АЛ операций
-
-\**\OpTranslate.Set= // Таблица трансляции оперторов
-//>{Sep="=" Lex.ReceiverMkSet=EqAleAfter.FindAnd}
->{Sep="+" OAList.LastAtrAttach=FUALUNew.Sum}
->{Sep="-" OAList.LastAtrAttach=FUALUNew.Sub}
->{Sep="*" OAList.LastAtrAttach=FUALUNew.Mul}
->{Sep="/" OAList.LastAtrAttach=FUALUNew.Div}
->{Sep="//" OAList.LastAtrAttach=FUALUNew.DivInt}
->{Sep="%" OAList.LastAtrAttach=FUALUNew.Remainder}
->{Sep="**" OAList.LastAtrAttach=FUALUNew.Pow}
->{Sep="<-" OAList.LastAtrAttach=FUALUNew.MlBit}
->{Sep="->" OAList.LastAtrAttach=FUALUNew.MrBit}
->{Sep="&"  OAList.LastAtrAttach=FUALUNew.And}
->{Sep="&&" OAList.LastAtrAttach=FUALUNew.AndBit}
->{Sep="|"  OAList.LastAtrAttach=FUALUNew.Or}
->{Sep="||" OAList.LastAtrAttach=FUALUNew.OrBit}
->{Sep="^"  OAList.LastAtrAttach=FUALUNew.Xor}
->{Sep="^^" OAList.LastAtrAttach=FUALUNew.XorBit}
-
-
 \**\OperatWait.Set= \* 17.03.2023 *\
 //>{Sep=")" Sep="]" Sep=":" Sep="," Lex.ReceiverMkSet=OperatWait.FindAnd}
 >{Sep=")" Lex.ReceiverMkSet=OperatWait.FindAnd \* 02.04.2023 *\
-  Stack.FindAndLast={AleStackUp}
-  Stack.SuccessExec=AleStackUpDel{ // Удаление приоритетов операций
-    FUListNew.LastDelMk
-    OAList.LastPopMk
-    FUListNew.FindAndLast={AleStackUp}
-    FUListNew.SuccessExec=AleStackUpDel!
-  }
-  OAList.LastIpOutMk=OpPriority.FindAnd
   Stack.FindAndLast={AleSep="("}
   Stack.FailExec={Lex.Stop Console.OutLn="'(' is missing"}
   Stack.LastDelMk
-  OAList.LastPopMk
-  OAList.LastIpOutMk=OpPriority.FindAnd // Сброс приоритетов
-Console.OutLn="ALE )"
-OAList.OutMk=Console.OutLn
-FUListNew.ReceivedOutMk=Console.OutLn
+  Console.OutLn="ALE )"
+  OAList.OutMk=Console.OutLn
+  OAList.PopMk
 }
->{Sep="+" Sep="-" Sep="*" Sep="/" Sep="//" Sep="%" Sep="**" Sep="->" Sep="->"
-  Sep="&" Sep="&&" Sep="|" Sep="||" Sep="^" Sep="^^"
-Console.OutLn="ALE Operatipon"
+>{Sep="=" 
+  \* 02.04.2023 *\
   Lex.ReceiverMkSet=EqAleAfter.FindAnd
-  FUListNew.ReceivedOutMk=OpPriority.FindAnd
-  OpPriority.BiggerExec={ // Обработка операции с высоким приоритетом
-    OAList.LastLoadOut=t
-    OAList.LineCopyAddPrevLoadSet={FUALUNew.Set=t(nil)!}
-    Stack.LineCopyAdd={AleStackUp}
- Console.OutLn="AleStackUp"
+  OAList.LastCopyAttach={FUALUNew.Out} 
+  MnemoTable.LineLoadOutMk=OAList.LastLoadSet
+}
+\* 02.04.2023 *\
+>{Sep="+" Sep="-" Sep="*" Sep="**" Sep="%" Sep="/" Sep="//" Sep="%" Sep=">>" Sep="<<" Sep="&" Sep="^" Sep="^^" Sep="|" Sep="||"
+  Console.OutLn="Operat Wait Operation"
+  Lex.OutMk=Console.OutLn
+  Lex.OutMk=OpPriority.FindAnd
+  Lex.ReceiverMkSet=EqAleAfter.FindAnd
+  OpPriority.SmallerExec={
+    Console.OutLn="Small Operation"
+    OAList.LineCopyAddPrevLoadSetLoadMov={FUALUNew.Set}
+    Console.OutLn="SmallerExec"
   }
-  OpPriority.SmallerExec=LessProg{ // Обработка операции с более низким приоритетом
-    Stack.FindAndLast={AleStackUp}
-    Stack.SuccessExec={
-      Stack.LastDelMk
-      OAList.LastPopMk
-	 OAList.LastIpOutMk=OpPriority.FindAnd
-      OperatWait.ReceivedOutMk=OpPriority.FindAnd
-	 OpPriority.SmallerExec=LessProg!
+  OpPriority.BiggerExec={
+    OAList.ProgSet={OpPriority.ProgStopAll}
+    OAList.ElseProgSet
+    OAList.OneLineExec
+    OAList.LastMarkAtrEQExec=BracketAtr
+    OAList.LastMarkAtrBiggerExec
+    Console.OutLn="Big Operation"
+
+    OAList.LastPopMk
+    OAList.LastIpOutMk=OpPriority.FindAnd
+    Lex.OutMk=OpPriority.FindAnd
+    RepeatProg
     }
-    
-  }
-  FUListNew.ReceivedOutMk=OpTranslate.FindAnd
+    Lex.OutMk=OperationTranslate.FindAnd
 }
 >{0 Lex.ReceiverPopMk
   OAList.LastPopMk
-  Stack.FindAndLast={AleStackUp}
-  Stack.SuccessExec=AleStackUpProg{ // Программа отработки всех приоритетов операций
-    Stack.LastDelMk
-    OAList.LastPopMk
-    Stack.FindAndLast={AleStackUp}
-    Stack.SuccessExec=AleStackUpProg!
-  }
+ // Stack.LineCopyAdd={MkExec}
 Console.OutLn="OperatWait else"
-  FUListNew.ReceivedOutMk=Console.OutLn
-  FUListNew.ReceivedOutMk=Lex.CendToReceiver} \* 23.03.2023 *\
+//OAList.OutMk=Console.OutLn
+//  OAList.LastIpPopMk=Main_Bus.MkExec
+  FUListNew.ReceivedOutMk=Lex.CendToReceiver \* 23.03.2023 *\
+}
 
 \**\EqAfter.Set= \* 22.03.2023 *\
 >{Mk Lex.ReceiverMkSet=EqAleWait4.FindAnd} 
 >{Var Lex.ReceiverMkSet=EqAleWait4.FindAnd} 
 >{0 Lex.ReceiverMkSet=EqAleAfter.FindAnd
   OAList.LastAttach={FUALUNew.Set}
-  OpPriority.FindAnd={Sep="="} // Сброс таблица приоритетов АЛ операторов
-Console.OutLn="EqAfter else"
+  Console.OutLn="EqAfter else"
   FUListNew.ReceivedOutMk=EqAleAfter.FindAnd
 }
 
@@ -975,8 +979,7 @@ Lex.ReceiverMkSet=Root.FindAnd
 //Lex.Lexing="NewFU={FUType=FUCons Name=""Cons"" Hint=""Консоль""}  Cons.OutLn=temp(Cons.Out)"
 //Lex.Lexing="NewFU={FUType=FUCons Name=""Cons"" Hint=""Консоль""} V=[1 5 ""End""]  Cons.OutLn=V"
 //Lex.Lexing="a=[]}  Cons.OutLn=Cons.OutLn=Cons.OutLn"
-Lex.Lexing="x=0 x=3+2*(2+4)+3 Cons.OutLn=x"
-
+Lex.Lexing="x=13 x=1*(2+2) Cons.OutLn=x"
 
 Lex.CendToReceiver={Sep=""} // Конечный символ после трансляции всего кода программы
 

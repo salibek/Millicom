@@ -371,7 +371,7 @@ void List::ProgFU(int MK, LoadPoint Load)
 	case 151: //LastPop Выдать ссылку на последнюю линию списка и удалить из списка
 	case 152: //LastDel Выдать ссылку на последнюю линию списка и удалить из ИК
 		if (Load.Type == Tvoid)	//!!! Сделать функцию isVoid
-			*(void**)Load.Point = (void*)ListHead.back()->back().Load.Point;
+			Load.Write(ListHead.back()->back().Load);
 		if (MK == 152) ICDel((void*)ListHead.back()->back().Load.Point);
 		if (MK == 151 || MK == 152)
 			ListHead.back()->pop_back();
@@ -796,7 +796,7 @@ void List::ProgFU(int MK, LoadPoint Load)
 				LineCount++;
 				if (LineCount == 1)
 				{
-					if (MK % 2 == 1)
+					if (MK % 231 == 1)
 						LineNum = ListHead.back()->size() - 1;
 					else
 					{

@@ -391,7 +391,8 @@
 						//Debug(*i, S, LexAccum); // --- отладка
 						break;
 					}
-					if ((*i == '+' || *i == '-') && (LexBuf[(ib + SizeBuf) % SizeBuf].atr == SeperatAtr)) // символ (+,-); 0 -> 10
+					if ((*i == '+' || *i == '-') && (i==str.begin() ||
+						(LexBuf[(ib + SizeBuf) % SizeBuf].atr == SeperatAtr) && *(i-1)!=')')) // символ (+,-); 0 -> 10
 					{
 						LexAccum = *i; //запись в буферную переменную
 						S = 10; //переход в состояние 10

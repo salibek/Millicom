@@ -129,7 +129,7 @@ void ALU::ProgFU(int MK, LoadPoint Load)
 		double tt; // Хранилище аккумулятора предыдущего уровня
 		if (MK >= 25 && MK < 900 && Load.isProg()) // Арифметико-логическсое выражение со ссылкой в нагрузке
 		{
-			LoadDelFlag = true;
+			//LoadDelFlag = true;
 			Stack.push_back({});
 			ProgExec(Load);
 			if (LoadPoint::isVector(Stack.back().accumType))
