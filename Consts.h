@@ -14,7 +14,7 @@
 using namespace std;
 // Типы переменных
 const unsigned int Tvoid = 0, Tbool = 2, Tchar = 4, Tint = 6, Tfloat = 8, Tdouble = 10,  Tstring = 12, TIP = 14, TIC = 16;
-const unsigned int TPPoint = 18, TGraph = 20, TFU = 22, TLoad = 24, Tmk = 26, TLoadVect=28, THashList=30;
+const unsigned int TPPoint = 18, TGraph = 20, TFU = 22, TLoad = 24, Tmk = 26, TLoadVect = 28, TLoadVectInd = 30, THashList=32;
 const unsigned int TCalc = 100, TProg=102; // Cсылка на Арифметический ОА-граф, программу
 const unsigned int TvoidArray = 1000, TboolArray = 1002, TCharArray=1004, TintArray = 1006, TfloatArray = 1008, TdoubleArray = 1010, TstringArray = 1012;
 const unsigned int TIPArray = 1014, TICArray = 1016, TPPointArray = 1018, TGrapgArray = 1020, TFUArray = 1022, TLoadArray = 1024;
@@ -22,7 +22,7 @@ const unsigned int TboolArray2 = 2002, TcharArray2 = 2004, TintArray2 = 2006, Tf
 const unsigned int TIPArray2 = 2014, TICArray2 = 2016, TPPointArray2 = 2018, TGrapgArray2 = 2020, TFUArray2 = 2022, TLoadArray2 = 2024;
 // Типы констант
 const unsigned int Cvoid = 1, Cbool = 3, Cchar = 5, Cint = 7, Cfloat = 9, Cdouble = 11, Cstring = 13, CIP = 15, CIC = 17;
-const unsigned int CPPoint = 19, CGraph = 21, CFU = 23, CLoad = 25, Cmk=27, CLoadVect=29, CHashList = 31;
+const unsigned int CPPoint = 19, CGraph = 21, CFU = 23, CLoad = 25, Cmk=27, CLoadVect = 29, CLoadVectInd = 31, CHashList = 33;
 const unsigned int CCalc = 101, CProg=103; // Cсылка на Арифметический ОА-граф, программу
 const unsigned int CvoidArray = 1001, CboolArray=1003, CcharArray = 1005, CintArray = 1007, CfloatArray = 1009, CdoubleArray = 1011, CstringArray = 1013;
 const unsigned int CIPArray = 1015, CICArray = 1017, CPPointArray = 1019, CGrapgArray = 1021, CFUArray = 1023, CLoadArray = 1025;
@@ -30,7 +30,7 @@ const unsigned int CvoidArray2 = 2001, CboolArray2 = 2003, CcharArray2 = 2005, C
 const unsigned int CIPArray2 = 2015, CICArray2 = 2017, CPPointArray2 = 2019, CGrapgArray2 = 2021, CFUArray2 = 2023, CLoadArray2 = 2025;
 // Общие типы данных (остаток от целочисленного деления на 2 типа переменной или константы)
 const unsigned int Dvoid=0, Dbool = 1, Dchar = 2, Dint = 3, Dfloat = 4, Ddouble = 5, Dstring = 6, DIP = 7,  DIC = 8;
-const unsigned int DPPoint = 9, DGraph = 10, DFU = 11, DLoad = 12, DMk=13, DLoadVect=14, DHashList = 15;
+const unsigned int DPPoint = 9, DGraph = 10, DFU = 11, DLoad = 12, DMk=13, DLoadVect = 14, DLoadVectInd = 15, DHashList = 16;
 const unsigned int DCalc = 50, DProg=51; // Cсылка на Арифметический ОА-граф, программу
 const unsigned int DVoidArray = 500, DboolArray = 501, DcharArray = 502, DintArray = 503, DfloatArray = 504, DdoubleArray = 505, DstringArray = 506;
 const unsigned int DIPArray = 507, DICArray = 508, DPPointArray = 509, DGrapgArray = 510, DFUArray = 511, DLoadArray = 512;
@@ -56,6 +56,10 @@ const int FUIndSetMk = 933; // МК установки индекса ФУ
 const int ContextOutMkMk = 999; // МК выдачи МК с контекстом ФУ
 const int ContextOutMk = 995; // МК выдачи контекста ФУ
 const int SchedulerSetMk = 918; // МК установка планировщика вычислений
+const int MkGlobalRangeSet = 949; // Установить глобальный адрес МК для ФУ
+const int MkGlobalRangeOutMk = 948; // Выдать глобальный адрес МК для ФУ
+const int MkGlobalRangeOutMkMK = 947; // Выдать МК с глобальным адресом МК для ФУ
+
 bool isIPinIC(void* iP, void* iC); //проверка, что ИК входит в ИП
 
 class FU;
@@ -104,14 +108,17 @@ public:
 	bool isStrChar(); // Строка или символ?
 	static bool isStrChar(unsigned int type) { return type >> 1 == Dstring || type >> 1 == Dchar; }; // Строка или символ?
 	bool isStr(); // Строка?
-	static bool IsStr(unsigned int type) { return type >> 1 == Dstring; }; // Строка?
+	static bool isStr(unsigned int type) { return type >> 1 == Dstring; }; // Строка?
 	bool isChar(); // символ?
 	static bool isChar(unsigned int type) {return type >> 1 == Dchar; }; // символ?
 	bool isMk();// Милликоманда?
 	static bool isMk(unsigned int type) { return type >> 1 == DMk; }; // Милликоманда?
+	bool isVectInd() { unsigned int t = Type; return t >> 1 == DLoadVectInd; }; // Индексированный элемент вектора нагрузок
+	bool isVectIndVectInd(); // Индексированный элемент вектора нагрузок от индексированного вектора нагрузок
+	static bool isVectInd(int type) { unsigned int t = type; return t >> 1 == DLoadVectInd; }; //Индексированный элемент вектора нагрузок
 
-	bool isVector(); // Вектор ли нагрузка
-	static bool isVector(unsigned int type) { return (type >> 1) == DLoadVect; }; // Вектор ли нагрузка
+	bool isVect(); // Вектор ли нагрузка
+	static bool isVect(unsigned int type) { return (type >> 1) == DLoadVect; }; // Вектор ли нагрузка
 	int Write(int x); // return 0 - корректная запись, 1 - несоотвествие типов
 	int Write(size_t x);
 	int Write(double x);
@@ -276,6 +283,7 @@ public:
 
 	FU *Bus; // Ссылка на контекст Шины
 	int FUMkRange = 1000; // Диапазон МК для каждого ФУ
+	int FUMkGloabalRange = 0; // Начало глобального диапазона ФУ (Т.е. дипазон МК, который относится к данном)
 	int ProgStop = 0; // Флаг остановки программы, выполняемой ProgExec
 	int CycleStop = 0; // Флаг остановки цикла программы, выполняемой ProgExec
 	bool ProgStopAll = false; // Флаг остановки всех запущенных на выполнение миллипрограммы для данного ФУ
@@ -290,6 +298,12 @@ public:
 private:
 //	int ProgSetFaze = 0; // Фаза для установки программы ProgSet, ElseProgSet
 };
+
+LoadPoint LoadCreate(int t); //Создание нагрузки от перененной
+LoadPoint LoadCreate(double t); //Создание нагрузки от перененной
+LoadPoint LoadCreate(bool t); //Создание нагрузки от перененной
+LoadPoint LoadCreate(string t); //Создание нагрузки от перененной
+LoadPoint LoadCreate(float t); //Создание нагрузки от перененной
 
 //void GraphDel(void* Uk, LocatTable* Table = nullptr); // Удаление ОА-графа
 void ICDel(void* Uk);// Удаление ИК

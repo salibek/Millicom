@@ -190,7 +190,7 @@ bool LoadPoint::isMk() {
 	return Point != nullptr && t >> 1 == DMk;
 }; // Милликоманда?
 
-bool LoadPoint::isVector() {
+bool LoadPoint::isVect() {
 	if (Point == nullptr) return false;
 	register unsigned int t = Type;
 	if (Ind >= 0)
@@ -204,6 +204,24 @@ bool LoadPoint::isVector() {
 	return t >> 1 == DLoadVect;
 }; // Вектор ли нагрузка
 
+
+bool LoadPoint::isVectIndVectInd()  // Индексированный элемент вектора нагрузок от индексированного вектора нагрузок
+{
+	if (Point == nullptr) return false;
+	register unsigned int t = Type;
+	if(Type>>1==DIC and Ind >= 0)
+		switch (Ind % 3) {
+		case 0: return false;
+		case 1: return true;
+		case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
+		}
+	else if(Type >> 1 == DLoadVectInd)
+
+	if (Type >> 1 != DLoadVectInd) return false;
+		if (((LoadVect_type)Point)->at(Ind).Point == nullptr) return false; else t = ((LoadVect_type)Point)->at(Ind).Type;
+	return t >> 1 == DLoadVectInd;
+
+}
 
 bool LoadPoint::isIC() // Определить указывает ли ссылка на ИК
 {
@@ -948,7 +966,7 @@ template <typename T>
 int LoadPoint::WriteByVector(T x) // Запись по нагрузкам в векторе
 {
 	if (Point == nullptr) return 1;
-	if (!isVector()) return 1;
+	if (!isVect()) return 1;
 	for (auto& i : *((vector<LoadPoint>*) Point))
 		Write(i);
 	return 0;
@@ -980,7 +998,7 @@ int LoadPoint::Write(vector<LoadPoint>* x)
 
 int LoadPoint::Write(vector<LoadPoint> x) // Копирование вектора нагрузок нагрузку
 {
-	if (Point == nullptr || !isVector() || Type%2!=0)
+	if (Point == nullptr || !isVect() || Type%2!=0)
 		return 1;
 	register unsigned int t = Type;
 	register void* P = Point;
@@ -1558,7 +1576,7 @@ void FU::CommonMk(int Mk, LoadPoint Load)
 	case 992: // FUIndOut Выдать индекс ФУ
 		Load.Write(FUInd);
 		break;
-	case 993L: //FUIndOutMk Выдать милликоманду с индексом ФУ
+	case 993: //FUIndOutMk Выдать милликоманду с индексом ФУ
 		MkExec(Load, { Cint, &FUInd });
 		break;
 	case CalcMk: // 927 Calc вычислить АЛВ
@@ -1650,6 +1668,15 @@ void FU::CommonMk(int Mk, LoadPoint Load)
 	case ContextOutMkMk: // 999 ContextOutMK Выдать милликоманду с указателем на контекст ФУ
 		if (Load.Type >> 1 == Dint)
 			Bus->ProgFU(*(int*)Load.Point, { TFU, this });
+		break;
+	case MkGlobalRangeSet: // Установить глобальный адрес МК для ФУ
+		FUMkGloabalRange = Load.toInt();
+		break;
+	case MkGlobalRangeOutMk:  // Выдать глобальный адрес МК для ФУ
+		Load.Write(FUMkGloabalRange);
+		break;
+	case MkGlobalRangeOutMkMK: // Выдать МК с глобальным адресом МК для ФУ
+		MkExec(Load, {Cint, &FUMkGloabalRange });
 		break;
 	}
 }
@@ -2067,31 +2094,24 @@ void* MakeLoadFromDouble(double x, unsigned int Type) // Создать нагрузку из тип
 	}
 };
 
-/*
-function <LoadPoint(LoadPoint, LoadPoint) > Add = [](LoadPoint x, LoadPoint y)->LoadPoint // Сложение
+LoadPoint LoadCreate(int t) //Создание нагрузки от перененной
 {
-	if (x.IsStrChar() && y.IsStrChar()) // Две строки
-		return {Tstring,new string(x.ToStr()+y.ToStr())};
-
-	if(!(x.isDigitBool() && y.isDigitBool())) // Два числа
-		return { 0, nullptr }; // Не числа
-	double t = x.ToDouble() + y.ToDouble();
-	switch (max(x.Type,y.Type)>>1)
-	{
-	case Dbool:
-		return { Tbool,(void*)new bool((bool)t) };
-		break;
-	case Dint:
-		return { Tint,(void*)new int((int)t) };
-		break;
-	case Dfloat:
-		return { Tfloat,(void*)new float((float)t) };
-		break;
-	case Ddouble:
-		return { Tdouble,(void*)new double(t)};
-		break;
-	}
-	return { 0,nullptr };
-};
-*/
+	return { Cint, (void*)&t };
+}
+LoadPoint LoadCreate(double t) //Создание нагрузки от перененной
+{
+	return { Cdouble, (void*)&t };
+}
+LoadPoint LoadCreate(bool t) //Создание нагрузки от перененной
+{
+	return { Cbool, (void*)&t };
+}
+LoadPoint LoadCreate(string t) //Создание нагрузки от перененной
+{
+	return { Cstring, (void*)&t };
+}
+LoadPoint LoadCreate(float t) //Создание нагрузки от перененной
+{
+	return { Cfloat, (void*)&t };
+}
 

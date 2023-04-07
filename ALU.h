@@ -39,6 +39,7 @@ public:
 	double		accum = 0;		// Скалярный выходной аккумулятор (из него другие ФУ могут считать значение аккумулятора по ссылке)
 	string		accumStr;		// строковой аккулятор
 	void* accumVect = nullptr;	// Указатель на аккумулятор (вектор, матрица и т.п.)
+	int Ind = -1; // Индекс вектора или ИК
 
 	vector<ALUContext> Stack = {};
 	ALU(FU* parent, FU* Templ = nullptr) { Bus = (FU*)parent; Parent = parent; FUtype = 17; ProgFU(0, { 0, nullptr }); };
@@ -48,6 +49,7 @@ public:
 	void		add(LoadPoint load);
 	void		Clear();
 	void* VarNew(LoadPoint load); // New value of accum
+	int   MKExt=-1, MkOutExt; // Внешняя МК для выполнения
 	void* ErrProg = nullptr; // Программа ошибки вычислений
 	void* VectErrProg = nullptr; // Программа ошибки векторной операции
 	void* OutOfRangeErrProg = nullptr; // Программа ошибки Выход индекса за пределы разрешенного диапазона

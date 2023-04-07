@@ -89,8 +89,9 @@ NewFU={Mnemo="FuncAfter" FUType=FUListNew Hint="Ожидание функции"}
 NewFU={Mnemo="OperatWait" FUType=FUListNew Hint="Ожидание оператора"}
 NewFU={Mnemo="OpTranslate" FUType=FUListNew Hint="Список операторов для трансляции в ОА-коды"}
 NewFU={Mnemo="AccumEqwList" FUType=FUListNew Hint="Список операций присвоения с накоплением"}
+NewFU={Mnemo="FuncALE1ArgAfter" FUType=FUListNew Hint="Ожидание операнда после АЛ функции с одним аргументом"}
+NewFU={Mnemo="FuncALEAfter" FUType=FUListNew Hint="Ожидание операнда после АЛ функции"}
 //NewFU={Mnemo="VectorOperatList" FUType=FUListNew Hint="Список векторных операторов"}
-
 
 MainBus.PartialResetSet \\ Запомнить число созданных ФУ
 MainBus.ModeSet=2
@@ -116,6 +117,10 @@ LineAtr*-6 // Метка линии списка
 AleSep*-309 // Разделитель для АЛВ
 AleStackUp*-310 // Подняться на одну позицию вверх по стеку в АЛВ 
 Ternar*-311 // Маркер тернарной конструкции в стеке
+//Func*-78
+Func1Arg* -312 // Функция с одним алгументом
+FuncALE* -313  // Функция для АЛУ
+FuncALE1Arg*-314 // Одноаргументная функция для ФУ ФЛУ
 
 // FU*-100
 //Hint*=-42
@@ -156,6 +161,7 @@ MnemoTable.FailProgSet={FUListNew.ReceivedOutMk=Lex.CendToReceiver Console.OutLn
 >{Mnemo="NewFU" Stack.LineCopyAdd={MkExec} Lex.CendToReceiver={Mk=CreateNewFU.FindOr}
 	Console.Out="NewFU " Console.OutLn=CreateNewFU.FindOr
   }
+>{Mnemo="sin" Lex.CendToReceiver={FuncALE1Arg=FUALUNew.Sin} }
 >{Mnemo="ConsOut" Lex.CendToReceiver={Mk=Console.OutLn}}
 >{Mnemo="Atr"    Lex.CendToReceiver={Atr=Atr}}
 >{Mnemo="Mnemo"  Lex.CendToReceiver={Atr=Mnemo}}
@@ -795,7 +801,28 @@ Console.OutLn="EqAleAfter Var Const"
   Stack.LineCopyAdd={AleSep="("}
   OAList.LineCopyAddPrevLoadSet={FUALUNew.Set}
 }
->{Func Lex.ReceiverMkSet=FuncAfter.FindAnd} \* 05.03.2023 *\
+>{Sep="[" Lex.ReceiverMkSet=EqAleAfter.FindAnd \*07.04.2023*\
+  Stack.LineCopyAdd={Sep="["}
+  OAList.LineCopyAddPrevLoadSet={FUALUNew.VectCreat FUALUNew.Append}
+  OAList.LineCopyAddPrevLoadSet={FUALUNew.Set}
+}
+>{Func Lex.ReceiverMkSet=FuncAfter.FindAnd \* 07.04.2023 *\
+	Console.OutLn="Func"
+}
+>{FuncALE Lex.ReceiverMkSet=FuncAfter.FindAnd \* 07.04.2023 *\
+ OAList.LineCopyAddPrevLoadSet
+ EqAleAfter.ReceivedLoadOutMk=OAList.LastAtrAttach
+	Console.OutLn="Func"
+}
+>{FuncALE1Arg Lex.ReceiverMkSet=FuncALE1ArgAfter.FindAnd
+ OAList.LineCopyAddPrevLoadSet
+ EqAleAfter.ReceivedLoadOutMk=OAList.LastAtrAttach
+	Console.OutLn="ALEFunc1Arg"
+} \* 07.04.2023 *\
+>{Func1Arg Lex.ReceiverMkSet=FuncALE1ArgAfter.FindAnd
+	Console.OutLn="Func1Arg"
+} \* 07.04.2023 *\
+
 >{Mnemo="if" Lex.ReceiverMkSet=EqAleAfter.FindAnd
   Stack.LineCopyAdd={Ternar}
   OAList.LineCopyAddPrevLoadSet={FUALUNew.Set}
@@ -825,13 +852,40 @@ Console.OutLn="EqAleAfter Var Const"
   OAList.LastPopMk
   OAList.LastPopMk
 }  
->{0 Lex.Stop Console.OutLn="Var/Const/Vector/Open ariphmetic bracket were expected"}
+>{0 Lex.Stop Console.OutLn="Var/Const/Vector/Open ariphmetic bracket were expected"
+	FUListNew.ReceivedLoadOutMk=Console.OutLn
+}
+
+\**\FuncALEAfter.Set=
+>{Sep="(" Lex.ReceiverMkSet=EqAleAfter.FindAnd
+
+}
+
+\**\FuncALE1ArgAfter.Set=
+>{Sep="(" Lex.ReceiverMkSet=EqAleAfter.FindAnd
+	Stack.LineCopyAdd={Sep="("}
+	Stack.LineCopyAdd={FuncALE1Arg}
+}
+>{Sep="[" Lex.ReceiverMkSet=EqAleAfter.FindAnd
+  Stack.LineCopyAdd={FuncALE1Arg}
+  Stack.LineCopyAdd={Sep="["}
+  OAList.LineCopyAddPrevLoadSet={FUALUNew.VectCreat FUALUNew.Append}
+  OAList.LineCopyAddPrevLoadSet={FUALUNew.Set}
+}
+>{Var Const Vect Lex.ReceiverMkSet=OperatWait.FindAnd // Прописать один аргумент
+Console.OutLn="Func1ArgAfter Var Const Vect" 
+ FUListNew.ReceivedLoadOutMk=OAList.LastLoadSet
+ OAList.LastPopMk 
+}
+>{0 Lex.Stop Console.OutLn="Wrong function description"}
 
 \**\FuncAfter.Set=
->{Sep="(" Lex.ReceiverMkSet=EqAleAfter.FindAnd} 
->{Var Lex.ReceiverMkSet=OperatWait.FindAnd} 
->{Const Lex.ReceiverMkSet=OperatWait.FindAnd}
->{Vect Lex.ReceiverMkSet=OperatWait.FindAnd}\*
+>{Sep="(" Lex.ReceiverMkSet=EqAleAfter.FindAnd
+  Stack.LineCopyAdd={Func}
+} 
+//>{Var Lex.ReceiverMkSet=OperatWait.FindAnd} 
+//>{Const Lex.ReceiverMkSet=OperatWait.FindAnd}
+//>{Vect Lex.ReceiverMkSet=OperatWait.FindAnd}\*
 >{0 Lex.Stop Console.OutLn="Var/Const/Vector/Open ariphmetic bracket were expected"}
 
 \**\OpPriority.Set= // Приоритет АЛ операций
@@ -975,7 +1029,9 @@ Lex.ReceiverMkSet=Root.FindAnd
 //Lex.Lexing="NewFU={FUType=FUCons Name=""Cons"" Hint=""Консоль""}  Cons.OutLn=temp(Cons.Out)"
 //Lex.Lexing="NewFU={FUType=FUCons Name=""Cons"" Hint=""Консоль""} V=[1 5 ""End""]  Cons.OutLn=V"
 //Lex.Lexing="a=[]}  Cons.OutLn=Cons.OutLn=Cons.OutLn"
-Lex.Lexing="x=0 x=3+2*(2+4)+3 Cons.OutLn=x"
+Lex.Lexing="x=1.5 x=sin x Cons.OutLn=x"
+//Lex.Lexing="x=0 x=2+(2+4)*2+3 Cons.OutLn=x"
+//Lex.Lexing="x=0 x=3+2*(2+4)+3 Cons.OutLn=x"
 
 
 Lex.CendToReceiver={Sep=""} // Конечный символ после трансляции всего кода программы

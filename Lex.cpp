@@ -795,7 +795,8 @@
 						//Debug(*i, S, LexAccum); // --- отладка
 						break;
 					}
-					if (Seps.count(str.substr(distance(str.begin(), i), 1)) || *i == ' ') //разделитель; 10 -> 0
+					if (Seps.count(str.substr(distance(str.begin(), i), 1)) || *i == ' ' || //разделитель; 10 -> 0
+					  ABC.count(*i));
 					{
 						i--; // Для обработки сепаратора
 						string* sep = new string;
