@@ -8,13 +8,31 @@
 
 using namespace std;
 
+unsigned int LoadPoint::getType() // Выдать тип нагрузки
+{
+	if (Type >> 1 == DLoadVectInd)
+		return ((LoadVect_type)Point)->at(Ind).Type;
+	if (Type >> 1 != DICInd)
+		return Type;
+	else
+		switch (Ind % 3) {
+		case 0: return TIP;
+		case 1: return Tint;
+		case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return -1; return ((IC_type)Point)->at(Ind / 3).Load.Type;
+		}
+}
+
 bool LoadPoint::isDigit() {
 	if (Point == nullptr) return false;
 	register unsigned int t = Type;
-	if (Ind >= 0)
-		if (Type >> 1 == DLoadVect)
-			if (((LoadVect_type)Point)->at(Ind).Point == nullptr) return false; else t = ((LoadVect_type)Point)->at(Ind).Type;
-		else if (Type >> 1 == DIC)	switch (Ind % 3) {
+	if (Type >> 1 == DLoadVectInd){
+		register int N = ((LoadVect_type)Point)->size();
+		if (N  <= Ind || N  < -Ind || ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Point == nullptr) return false;
+		t = ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Type;
+	}
+	else if (Type >> 1 == DICInd)
+		if (Ind < 0 || Ind/3>= ((IC_type)Point)->size()) return false;
+		else switch (Ind % 3) {
 			case 0: return false;
 			case 1: return true;
 			case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point==nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
@@ -25,13 +43,17 @@ bool LoadPoint::isDigit() {
 bool LoadPoint::isDigitBool() {
 	if (Point == nullptr) return false;
 	register unsigned int t = Type;
-	if (Ind >= 0)
-		if (Type >> 1 == DLoadVect)
-			if (((LoadVect_type)Point)->at(Ind).Point == nullptr) return false; else t = ((LoadVect_type)Point)->at(Ind).Type;
-		else if (Type >> 1 == DIC)	switch (Ind % 3) {
-			case 0: return false;
-			case 1: return true;
-			case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
+	if (Type >> 1 == DLoadVectInd) {
+		register int N = ((LoadVect_type)Point)->size();
+		if (N <= Ind || N < -Ind || ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Point == nullptr) return false;
+		t = ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Type;
+	}
+	else if (Type >> 1 == DICInd)
+		if (Ind < 0 || Ind / 3 >= ((IC_type)Point)->size()) return false;
+		else switch (Ind % 3) {
+		case 0: return false;
+		case 1: return true;
+		case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
 		}
 	return t >> 1 == Dint || t >> 1 == Dchar || t >> 1 == Dfloat || t >> 1 == Ddouble || t >> 1 == Dbool;
 }; // Число или булеан?
@@ -39,13 +61,17 @@ bool LoadPoint::isDigitBool() {
 bool LoadPoint::isBool() {
 	if (Point == nullptr) return false;
 	register unsigned int t = Type;
-	if (Ind >= 0)
-		if (Type >> 1 == DLoadVect)
-			if (((LoadVect_type)Point)->at(Ind).Point == nullptr) return false; else t = ((LoadVect_type)Point)->at(Ind).Type;
-		else if (Type >> 1 == DIC)	switch (Ind % 3) {
-			case 0: return false;
-			case 1: return true;
-			case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
+	if (Type >> 1 == DLoadVectInd) {
+		register int N = ((LoadVect_type)Point)->size();
+		if (N <= Ind || N < -Ind || ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Point == nullptr) return false;
+		t = ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Type;
+	}
+	else if (Type >> 1 == DICInd)
+		if (Ind < 0 || Ind / 3 >= ((IC_type)Point)->size()) return false;
+		else switch (Ind % 3) {
+		case 0: return false;
+		case 1: return false;
+		case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
 		}
 	return t >> 1 == Dbool;
 }; // булеан?
@@ -53,13 +79,17 @@ bool LoadPoint::isBool() {
 bool LoadPoint::isInt() {
 	if (Point == nullptr) return false;
 	register unsigned int t = Type;
-	if (Ind >= 0)
-		if (Type >> 1 == DLoadVect)
-			if (((LoadVect_type)Point)->at(Ind).Point == nullptr) return false; else t = ((LoadVect_type)Point)->at(Ind).Type;
-		else if (Type >> 1 == DIC)	switch (Ind % 3) {
-			case 0: return false;
-			case 1: return true;
-			case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
+	if (Type >> 1 == DLoadVectInd) {
+		register int N = ((LoadVect_type)Point)->size();
+		if (N <= Ind || N < -Ind || ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Point == nullptr) return false;
+		t = ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Type;
+	}
+	else if (Type >> 1 == DICInd)
+		if (Ind < 0 || Ind / 3 >= ((IC_type)Point)->size()) return false;
+		else switch (Ind % 3) {
+		case 0: return false;
+		case 1: return true;
+		case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
 		}
 	return t >> 1 == Dint;
 }; // Целое число?
@@ -67,13 +97,17 @@ bool LoadPoint::isInt() {
 bool LoadPoint::isIntBool() {
 	if (Point == nullptr) return false;
 	register unsigned int t = Type;
-	if (Ind >= 0)
-		if (Type >> 1 == DLoadVect)
-			if (((LoadVect_type)Point)->at(Ind).Point == nullptr) return false; else t = ((LoadVect_type)Point)->at(Ind).Type;
-		else if (Type >> 1 == DIC)	switch (Ind % 3) {
-			case 0: return false;
-			case 1: return true;
-			case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
+	if (Type >> 1 == DLoadVectInd) {
+		register int N = ((LoadVect_type)Point)->size();
+		if (N <= Ind || N < -Ind || ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Point == nullptr) return false;
+		t = ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Type;
+	}
+	else if (Type >> 1 == DICInd)
+		if (Ind < 0 || Ind / 3 >= ((IC_type)Point)->size()) return false;
+		else switch (Ind % 3) {
+		case 0: return false;
+		case 1: return true;
+		case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
 		}
 	return t >> 1 == Dint || t >> 1 == Dbool;
 }; // булеан или целое число?
@@ -81,13 +115,17 @@ bool LoadPoint::isIntBool() {
 bool LoadPoint::isFloatDouble() {
 	if (Point == nullptr) return false;
 	register unsigned int t = Type;
-	if (Ind >= 0)
-		if (Type >> 1 == DLoadVect)
-			if (((LoadVect_type)Point)->at(Ind).Point == nullptr) return false; else t = ((LoadVect_type)Point)->at(Ind).Type;
-		else if (Type >> 1 == DIC)	switch (Ind % 3) {
-			case 0: return false;
-			case 1: return true;
-			case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
+	if (Type >> 1 == DLoadVectInd) {
+		register int N = ((LoadVect_type)Point)->size();
+		if (N <= Ind || N < -Ind || ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Point == nullptr) return false;
+		t = ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Type;
+	}
+	else if (Type >> 1 == DICInd)
+		if (Ind < 0 || Ind / 3 >= ((IC_type)Point)->size()) return false;
+		else switch (Ind % 3) {
+		case 0: return false;
+		case 1: return false;
+		case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
 		}
 	return t >> 1 == Ddouble || t >> 1 == Dfloat;
 };
@@ -95,13 +133,17 @@ bool LoadPoint::isFloatDouble() {
 bool LoadPoint::isFloat() {
 	if (Point == nullptr) return false;
 	register unsigned int t = Type;
-	if (Ind >= 0)
-		if (Type >> 1 == DLoadVect)
-			if (((LoadVect_type)Point)->at(Ind).Point == nullptr) return false; else t = ((LoadVect_type)Point)->at(Ind).Type;
-		else if (Type >> 1 == DIC)	switch (Ind % 3) {
-			case 0: return false;
-			case 1: return true;
-			case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
+	if (Type >> 1 == DLoadVectInd) {
+		register int N = ((LoadVect_type)Point)->size();
+		if (N <= Ind || N < -Ind || ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Point == nullptr) return false;
+		t = ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Type;
+	}
+	else if (Type >> 1 == DICInd)
+		if (Ind < 0 || Ind / 3 >= ((IC_type)Point)->size()) return false;
+		else switch (Ind % 3) {
+		case 0: return false;
+		case 1: return false;
+		case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
 		}
 	return t >> 1 == Dfloat;
 };
@@ -109,27 +151,35 @@ bool LoadPoint::isFloat() {
 bool LoadPoint::isDouble() {
 	if (Point == nullptr) return false;
 	register unsigned int t = Type;
-	if (Ind >= 0)
-		if (Type >> 1 == DLoadVect)
-			if (((LoadVect_type)Point)->at(Ind).Point == nullptr) return false; else t = ((LoadVect_type)Point)->at(Ind).Type;
-		else if (Type >> 1 == DIC)	switch (Ind % 3) {
-			case 0: return false;
-			case 1: return true;
-			case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
+	if (Type >> 1 == DLoadVectInd) {
+		register int N = ((LoadVect_type)Point)->size();
+		if (N <= Ind || N < -Ind || ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Point == nullptr) return false;
+		t = ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Type;
+	}
+	else if (Type >> 1 == DICInd)
+		if (Ind < 0 || Ind / 3 >= ((IC_type)Point)->size()) return false;
+		else switch (Ind % 3) {
+		case 0: return false;
+		case 1: return false;
+		case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
 		}
 	return t >> 1 == Ddouble;
 };
 
 bool LoadPoint::isProg() {
 	if (Point == nullptr) return false;
-	unsigned int t = Type;
-	if (Ind >= 0)
-		if (Type >> 1 == DLoadVect)
-			if (((LoadVect_type)Point)->at(Ind).Point == nullptr) return false; else t = ((LoadVect_type)Point)->at(Ind).Type;
-		else if (Type >> 1 == DIC)	switch (Ind % 3) {
-			case 0: return false;
-			case 1: return true;
-			case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
+	register unsigned int t = Type;
+	if (Type >> 1 == DLoadVectInd) {
+		register int N = ((LoadVect_type)Point)->size();
+		if (N <= Ind || N < -Ind || ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Point == nullptr) return false;
+		t = ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Type;
+	}
+	else if (Type >> 1 == DICInd)
+		if (Ind < 0 || Ind / 3 >= ((IC_type)Point)->size()) return false;
+		else switch (Ind % 3) {
+		case 0: return false;
+		case 1: return false;
+		case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
 		}
 	return t >> 1 == DIC || t>>1 == DCalc || t>>1==DProg;
 }; // Определение может ли быть нагрузка программой
@@ -137,13 +187,17 @@ bool LoadPoint::isProg() {
 bool LoadPoint::isStrChar() {
 	if (Point == nullptr) return false;
 	register unsigned int t = Type;
-	if (Ind >= 0)
-		if (Type >> 1 == DLoadVect)
-			if (((LoadVect_type)Point)->at(Ind).Point == nullptr) return false; else t = ((LoadVect_type)Point)->at(Ind).Type;
-		else if (Type >> 1 == DIC)	switch (Ind % 3) {
-			case 0: return false;
-			case 1: return true;
-			case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
+	if (Type >> 1 == DLoadVectInd) {
+		register int N = ((LoadVect_type)Point)->size();
+		if (N <= Ind || N < -Ind || ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Point == nullptr) return false;
+		t = ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Type;
+	}
+	else if (Type >> 1 == DICInd)
+		if (Ind < 0 || Ind / 3 >= ((IC_type)Point)->size()) return false;
+		else switch (Ind % 3) {
+		case 0: return false;
+		case 1: return false;
+		case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
 		}
 	return Point != nullptr && (t >> 1 == Dstring || t >> 1 == Dchar);
 }; // Строка или символ?
@@ -151,26 +205,34 @@ bool LoadPoint::isStrChar() {
 bool LoadPoint::isStr() {
 	if (Point == nullptr) return false;
 	register unsigned int t = Type;
-	if (Ind >= 0)
-		if (Type >> 1 == DLoadVect)
-			if (((LoadVect_type)Point)->at(Ind).Point == nullptr) return false; else t = ((LoadVect_type)Point)->at(Ind).Type;
-		else if (Type >> 1 == DIC)	switch (Ind % 3) {
-			case 0: return false;
-			case 1: return true;
-			case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
+	if (Type >> 1 == DLoadVectInd) {
+		register int N = ((LoadVect_type)Point)->size();
+		if (N <= Ind || N < -Ind || ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Point == nullptr) return false;
+		t = ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Type;
+	}
+	else if (Type >> 1 == DICInd)
+		if (Ind < 0 || Ind / 3 >= ((IC_type)Point)->size()) return false;
+		else switch (Ind % 3) {
+		case 0: return false;
+		case 1: return false;
+		case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
 		}
 	return Point != nullptr && t >> 1 == Dstring;
 }; // Строка?
 
 bool LoadPoint::isChar() {
 	if (Point == nullptr) return false;
-	unsigned int t = Type;
-	if (Ind >= 0)
-		if (Type >> 1 == DLoadVect)
-			if (((LoadVect_type)Point)->at(Ind).Point == nullptr) return false; else t = ((LoadVect_type)Point)->at(Ind).Type;
-		else if (Type >> 1 == DIC)	switch (Ind % 3) {
+	register unsigned int t = Type;
+	if (Type >> 1 == DLoadVectInd) {
+		register int N = ((LoadVect_type)Point)->size();
+		if (N <= Ind || N < -Ind || ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Point == nullptr) return false;
+		t = ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Type;
+	}
+	else if (Type >> 1 == DICInd)
+		if (Ind < 0 || Ind / 3 >= ((IC_type)Point)->size()) return false;
+		else switch (Ind % 3) {
 		case 0: return false;
-		case 1: return true;
+		case 1: return false;
 		case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
 		}
 	return Point != nullptr && t >> 1 == Dchar;
@@ -178,13 +240,17 @@ bool LoadPoint::isChar() {
 
 bool LoadPoint::isMk() {
 	if (Point == nullptr) return false;
-	unsigned int t = Type;
-	if (Ind >= 0)
-		if (Type >> 1 == DLoadVect)
-			if (((LoadVect_type)Point)->at(Ind).Point == nullptr) return false; else t = ((LoadVect_type)Point)->at(Ind).Type;
-		else if (Type >> 1 == DIC)	switch (Ind % 3) {
+	register unsigned int t = Type;
+	if (Type >> 1 == DLoadVectInd) {
+		register int N = ((LoadVect_type)Point)->size();
+		if (N <= Ind || N < -Ind || ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Point == nullptr) return false;
+		t = ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Type;
+	}
+	else if (Type >> 1 == DICInd)
+		if (Ind < 0 || Ind / 3 >= ((IC_type)Point)->size()) return false;
+		else switch (Ind % 3) {
 		case 0: return false;
-		case 1: return true;
+		case 1: return (Ind / 3 >= ((IC_type)Point)->at(Ind / 3).atr >= 0) ? true: false; // Если атрибут неотрицательный, то он считается милликомандой
 		case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
 		}
 	return Point != nullptr && t >> 1 == DMk;
@@ -193,47 +259,55 @@ bool LoadPoint::isMk() {
 bool LoadPoint::isVect() {
 	if (Point == nullptr) return false;
 	register unsigned int t = Type;
-	if (Ind >= 0)
-		if (Type >> 1 == DLoadVect)
-			if (((LoadVect_type)Point)->at(Ind).Point == nullptr) return false; else t = ((LoadVect_type)Point)->at(Ind).Type;
-		else if (Type >> 1 == DIC)	switch (Ind % 3) {
-			case 0: return false;
-			case 1: return true;
-			case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
+	if (Type >> 1 == DLoadVectInd) {
+		register int N = ((LoadVect_type)Point)->size();
+		if (N <= Ind || N < -Ind || ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Point == nullptr) return false;
+		t = ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Type;
+	}
+	else if (Type >> 1 == DICInd)
+		if (Ind < 0 || Ind / 3 >= ((IC_type)Point)->size()) return false;
+		else switch (Ind % 3) {
+		case 0: return false;
+		case 1: return false;
+		case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
 		}
 	return t >> 1 == DLoadVect;
-}; // Вектор ли нагрузка
-
+}; // Вектор ?
 
 bool LoadPoint::isVectIndVectInd()  // Индексированный элемент вектора нагрузок от индексированного вектора нагрузок
 {
 	if (Point == nullptr) return false;
 	register unsigned int t = Type;
-	if(Type>>1==DIC and Ind >= 0)
-		switch (Ind % 3) {
+	if (Type >> 1 == DLoadVectInd) {
+		register int N = ((LoadVect_type)Point)->size();
+		if (N <= Ind || N < -Ind || ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Point == nullptr) return false;
+		t = ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Type;
+	}
+	else if (Type >> 1 == DICInd)
+		if (Ind < 0 || Ind / 3 >= ((IC_type)Point)->size()) return false;
+		else switch (Ind % 3) {
 		case 0: return false;
-		case 1: return true;
+		case 1: return false;
 		case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
 		}
-	else if(Type >> 1 == DLoadVectInd)
-
-	if (Type >> 1 != DLoadVectInd) return false;
-		if (((LoadVect_type)Point)->at(Ind).Point == nullptr) return false; else t = ((LoadVect_type)Point)->at(Ind).Type;
 	return t >> 1 == DLoadVectInd;
-
 }
 
 bool LoadPoint::isIC() // Определить указывает ли ссылка на ИК
 {
 	if (Point == nullptr) return false;
 	register unsigned int t = Type;
-	if (Ind >= 0)
-		if (Type >> 1 == DLoadVect)
-			if (((LoadVect_type)Point)->at(Ind).Point == nullptr) return false; else t = ((LoadVect_type)Point)->at(Ind).Type;
-		else if (Type >> 1 == DIC)	switch (Ind % 3) {
-			case 0: return false;
-			case 1: return true;
-			case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
+	if (Type >> 1 == DLoadVectInd) {
+		register int N = ((LoadVect_type)Point)->size();
+		if (N <= Ind || N < -Ind || ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Point == nullptr) return false;
+		t = ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Type;
+	}
+	else if (Type >> 1 == DICInd)
+		if (Ind < 0 || Ind / 3 >= ((IC_type)Point)->size()) return false;
+		else switch (Ind % 3) {
+		case 0: return false;
+		case 1: return false;
+		case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
 		}
 	set<unsigned int> IC_Types = {DIC, DCalc, DProg}; // Множевство типов ИК и ОА-графов
 	return IC_Types.count(t>>1);
@@ -243,12 +317,16 @@ bool LoadPoint::isIP() // Определить указывает ли ссылка на ИП
 {
 	if (Point == nullptr) return false;
 	register unsigned int t = Type;
-	if (Ind >= 0)
-		if (Type >> 1 == DLoadVect)
-			if (((LoadVect_type)Point)->at(Ind).Point == nullptr) return false; else t = ((LoadVect_type)Point)->at(Ind).Type;
-		else if (Type >> 1 == DIC)	switch (Ind % 3) {
-		case 0: return false;
-		case 1: return true;
+	if (Type >> 1 == DLoadVectInd) {
+		register int N = ((LoadVect_type)Point)->size();
+		if (N <= Ind || N < -Ind || ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Point == nullptr) return false;
+		t = ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Type;
+	}
+	else if (Type >> 1 == DICInd)
+		if (Ind < 0 || Ind / 3 >= ((IC_type)Point)->size()) return false;
+		else switch (Ind % 3) {
+		case 0: return true;
+		case 1: return false;
 		case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
 		}
 	set<unsigned int> IP_Types = { DIP }; // Множевство типов ИК и ОА-графов
@@ -259,12 +337,16 @@ bool LoadPoint::isCalc() // Определить указывает ли ссылка на ИК с АЛВ
 {
 	if (Point == nullptr) return false;
 	register unsigned int t = Type;
-	if (Ind >= 0)
-		if (Type >> 1 == DLoadVect)
-			if (((LoadVect_type)Point)->at(Ind).Point == nullptr) return false; else t = ((LoadVect_type)Point)->at(Ind).Type;
-		else if (Type >> 1 == DIC)	switch (Ind % 3) {
+	if (Type >> 1 == DLoadVectInd) {
+		register int N = ((LoadVect_type)Point)->size();
+		if (N <= Ind || N < -Ind || ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Point == nullptr) return false;
+		t = ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Type;
+	}
+	else if (Type >> 1 == DICInd)
+		if (Ind < 0 || Ind / 3 >= ((IC_type)Point)->size()) return false;
+		else switch (Ind % 3) {
 		case 0: return false;
-		case 1: return true;
+		case 1: return false;
 		case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
 		}
 	set<unsigned int> IP_Types = { DCalc }; // Множевство типов ИК и ОА-графов
@@ -275,12 +357,16 @@ bool LoadPoint::isICSet() // Определить указывает ли ссылка на ИК с неупорядочен
 {
 	if (Point == nullptr) return false;
 	register unsigned int t = Type;
-	if (Ind >= 0)
-		if (Type >> 1 == DLoadVect)
-			if (((LoadVect_type)Point)->at(Ind).Point == nullptr) return false; else t = ((LoadVect_type)Point)->at(Ind).Type;
-		else if (Type >> 1 == DIC)	switch (Ind % 3) {
+	if (Type >> 1 == DLoadVect) {
+		register int N = ((LoadVect_type)Point)->size();
+		if (N <= Ind || N < -Ind || ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Point == nullptr) return false;
+		t = ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Type;
+	}
+	else if (Type >> 1 == DICInd)
+		if (Ind < 0 || Ind / 3 >= ((IC_type)Point)->size()) return false;
+		else switch (Ind % 3) {
 		case 0: return false;
-		case 1: return true;
+		case 1: return false;
 		case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
 		}
 	set<unsigned int> IP_Types = { DIC }; // Множевство типов ИК и ОА-графов
@@ -292,26 +378,25 @@ string LoadPoint::toStr(string define) // Перевод в bool
 {
 	if (Point == nullptr)
 		return define;
-	register void* P = Point; register unsigned int t = Type;
-	if (Ind >= 0) // Значение по индексу
-		if(Type>>1==DLoadVect){
-			if (Ind >= ((LoadVect_type)Point)->size()) return define;
-			P = ((LoadVect_type)Point)->at(Ind).Point;
-			t = ((LoadVect_type)Point)->at(Ind).Type;
+	LoadPoint LP=*this;
+	if (Type >> 1 == DLoadVectInd) {
+		register int N = ((LoadVect_type)Point)->size();
+		if (N <= Ind || N < -Ind || ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Point == nullptr) return "";
+		LP = ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind);
+	}
+	else if (Type >> 1 == DICInd)
+		if (Ind < 0 || Ind / 3 >= ((IC_type)Point)->size()) return define;
+		else switch (Ind % 3) {
+		case 0: return define;
+		case 1: return to_string(*(int*)((IC_type)Point)->at(Ind / 3).Load.Point);
+		case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return ""; LP = ((IC_type)Point)->at(Ind / 3).Load;
 		}
-		else if (Type >> 1 == DIC) {
-			if (Ind/3>= ((IC_type)Point)->size()) return define;
-			switch (Ind % 3) {
-			case 0: return define;
-			case 1: return to_string(*(int*)P);
-			case 2: P = ((IC_type)Point)->at(Ind / 3).Load.Point; t = ((IC_type)Point)->at(Ind / 3).Load.Type; break;
-			}}
-	switch (t >> 1){
-		case Dstring: return *((string*)P);
-		case Ddouble: return to_string(*(double*)P); break;
-		case Dfloat: return to_string(*(float*)P); break;
-		case Dint: return to_string(*(int*)P); break;
-		case Dbool: return to_string(*(bool*)P); break;
+	switch (LP.Type >> 1){
+		case Dstring: return *((string*)LP.Point);
+		case Ddouble: return to_string(*(double*)LP.Point); break;
+		case Dfloat: return to_string(*(float*)LP.Point); break;
+		case Dint: return to_string(*(int*)LP.Point); break;
+		case Dbool: return to_string(*(bool*)LP.Point); break;
 		default:
 			return define;
 			break;
@@ -322,27 +407,26 @@ bool LoadPoint::toBool(bool define) // Перевод в bool (по умолчания false)
 {
 	if (Point == nullptr)
 		return define;
-	register void* P = Point; register unsigned int t = Type;
-	if (Ind >= 0) // Значение по индексу
-		if (Type >> 1 == DLoadVect) {
-			if (Ind >= ((LoadVect_type)Point)->size()) return define;
-			P = ((LoadVect_type)Point)->at(Ind).Point;
-			t = ((LoadVect_type)Point)->at(Ind).Type;
+	LoadPoint LP = *this;
+	if (Type >> 1 == DLoadVectInd) {
+		register int N = ((LoadVect_type)Point)->size();
+		if (N <= Ind || N < -Ind || ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Point == nullptr) return define;
+		LP = ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind);
+	}
+	else if (Type >> 1 == DICInd)
+		if (Ind < 0 || Ind / 3 >= ((IC_type)Point)->size()) return define;
+		else switch (Ind % 3) {
+		case 0: return define;
+		case 1: return define;
+		case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return define; LP = ((IC_type)Point)->at(Ind / 3).Load;
 		}
-		else if (Type >> 1 == DIC) {
-			if (Ind / 3 >= ((IC_type)Point)->size()) return define;
-			switch (Ind % 3) {
-				case 0: return define;
-				case 1: return *(int*)P;
-				case 2: P = ((IC_type)Point)->at(Ind / 3).Load.Point; t = ((IC_type)Point)->at(Ind / 3).Load.Type; break;
-		}}
-	switch (t >> 1)
+	switch (LP.Type >> 1)
 	{
-	case Ddouble: return *(double*)P;
-	case Dfloat: return *(float*)P;
-	case Dint: return *(int*)P;
-	case Dbool: return *(bool*)P;
-	case Dstring: return !((*(string*)P) == "");
+	case Ddouble: return *(double*)LP.Point;
+	case Dfloat: return *(float*)LP.Point;
+	case Dint: return *(int*)LP.Point;
+	case Dbool: return *(bool*)LP.Point;
+	case Dstring: return !((*(string*)LP.Point) == "");
 	default:
 		return define;
 	}
@@ -351,27 +435,26 @@ bool LoadPoint::toBool(bool define) // Перевод в bool (по умолчания false)
 int LoadPoint::toInt(int define) { // Перевод в integer
 	if (Point == nullptr)
 		return define;
-	register void* P = Point; register unsigned int t = Type;
-	if (Ind >= 0) // Значение по индексу
-		if (Type >> 1 == DLoadVect) {
-			if (Ind >= ((LoadVect_type)Point)->size()) return define;
-			P = ((LoadVect_type)Point)->at(Ind).Point;
-			t = ((LoadVect_type)Point)->at(Ind).Type;
+	LoadPoint LP = *this;
+	if (Type >> 1 == DLoadVectInd) {
+		register int N = ((LoadVect_type)Point)->size();
+		if (N <= Ind || N < -Ind || ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Point == nullptr) return define;
+		LP = ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind);
+	}
+	else if (Type >> 1 == DICInd)
+		if (Ind < 0 || Ind / 3 >= ((IC_type)Point)->size()) return define;
+		else switch (Ind % 3) {
+		case 0: return define;
+		case 1: return ((IC_type)Point)->at(Ind / 3).atr;
+		case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return define; LP = ((IC_type)Point)->at(Ind / 3).Load;
 		}
-		else if (Type >> 1 == DIC){
-			if (Ind / 3 >= ((IC_type)Point)->size()) return define;
-			switch (Ind % 3) {
-				case 0: return define;
-				case 1: return *(int*)P;
-				case 2: P = ((IC_type)Point)->at(Ind / 3).Load.Point; t = ((IC_type)Point)->at(Ind / 3).Load.Type; break;
-		}}
-	switch (t >> 1)
+	switch (LP.Type >> 1)
 	{
-	case Ddouble: return (int)*(double*)P; break;
-	case Dfloat: return (int)*(float*)P; break;
-	case Dint: return *(int*)P; break;
-	case Dbool: return *(bool*)P; break;
-	case Dstring: return atoi((*(string*)Point).c_str());
+	case Ddouble: return (int)*(double*)LP.Point; break;
+	case Dfloat: return (int)*(float*)LP.Point; break;
+	case Dint: return *(int*)LP.Point; break;
+	case Dbool: return *(bool*)LP.Point; break;
+	case Dstring: return atoi((*(string*)LP.Point).c_str());
 	default:
 		return define;
 		break;
@@ -380,27 +463,26 @@ int LoadPoint::toInt(int define) { // Перевод в integer
 double LoadPoint::toDouble(double define) {// Перевод в integer
 	if (Point == nullptr)
 		return define;
-	register void* P = Point; register unsigned int t = Type;
-	if (Ind >= 0) // Значение по индексу
-		if (Type >> 1 == DLoadVect) {
-			if (Ind >= ((LoadVect_type)Point)->size()) return define;
-			P = ((LoadVect_type)Point)->at(Ind).Point;
-			t = ((LoadVect_type)Point)->at(Ind).Type;
+	LoadPoint LP = *this;
+	if (Type >> 1 == DLoadVectInd) {
+		register int N = ((LoadVect_type)Point)->size();
+		if (N <= Ind || N < -Ind || ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Point == nullptr) return define;
+		LP = ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind);
+	}
+	else if (Type >> 1 == DICInd)
+		if (Ind < 0 || Ind / 3 >= ((IC_type)Point)->size()) return define;
+		else switch (Ind % 3) {
+		case 0: return define;
+		case 1: return ((IC_type)Point)->at(Ind / 3).atr;
+		case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return define; LP = ((IC_type)Point)->at(Ind / 3).Load;
 		}
-		else if (Type >> 1 == DIC) {
-			if (Ind / 3 >= ((IC_type)Point)->size()) return define;
-			switch (Ind % 3) {
-				case 0: return define;
-				case 1: return *(int*)P;
-				case 2: P = ((IC_type)Point)->at(Ind / 3).Load.Point; t = ((IC_type)Point)->at(Ind / 3).Load.Type; break;
-			}}
-	switch (t >> 1)
+	switch (LP.Type >> 1)
 	{
-	case Ddouble: return *(double*)P; break;
-	case Dfloat: return *(float*)P; break;
-	case Dint: return *(int*)P; break;
-	case Dbool: return *(bool*)P; break;
-	case Dstring: return atof((*(string*)P).c_str());
+	case Ddouble: return *(double*)LP.Point; break;
+	case Dfloat: return *(float*)LP.Point; break;
+	case Dint: return *(int*)LP.Point; break;
+	case Dbool: return *(bool*)LP.Point; break;
+	case Dstring: return atof((*(string*)LP.Point).c_str());
 	default:
 		return define;
 		break;
@@ -410,27 +492,26 @@ double LoadPoint::toDouble(double define) {// Перевод в integer
 float LoadPoint::toFloat(float define) {// Перевод в integer
 	if (Point == nullptr)
 		return define;
-	register void* P = Point; register unsigned int t = Type;
-	if (Ind >= 0) // Значение по индексу
-		if (Type >> 1 == DLoadVect) {
-			if (Ind >= ((LoadVect_type)Point)->size()) return define;
-			P = ((LoadVect_type)Point)->at(Ind).Point;
-			t = ((LoadVect_type)Point)->at(Ind).Type;
+	LoadPoint LP = *this;
+	if (Type >> 1 == DLoadVectInd) {
+		register int N = ((LoadVect_type)Point)->size();
+		if (N <= Ind || N < -Ind || ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Point == nullptr) return define;
+		LP = ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind);
+	}
+	else if (Type >> 1 == DICInd)
+		if (Ind < 0 || Ind / 3 >= ((IC_type)Point)->size()) return define;
+		else switch (Ind % 3) {
+		case 0: return define;
+		case 1: return ((IC_type)Point)->at(Ind / 3).atr;
+		case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return define; LP = ((IC_type)Point)->at(Ind / 3).Load;
 		}
-		else if (Type >> 1 == DIC) {
-			if (Ind / 3 >= ((IC_type)Point)->size()) return define;
-			switch (Ind % 3) {
-			case 0: return define;
-			case 1: return *(int*)P;
-			case 2: P = ((IC_type)Point)->at(Ind / 3).Load.Point; t = ((IC_type)Point)->at(Ind / 3).Load.Type; break;
-			}}
-	switch (t >> 1)
+	switch (LP.Type >> 1)
 	{
-	case Ddouble: return *(double*)P; break;
-	case Dfloat: return *(float*)P; break;
-	case Dint: return *(int*)P; break;
-	case Dbool: return *(bool*)P; break;
-	case Dstring: return atof((*(string*)P).c_str());
+	case Ddouble: return *(double*)LP.Point; break;
+	case Dfloat: return *(float*)LP.Point; break;
+	case Dint: return *(int*)LP.Point; break;
+	case Dbool: return *(bool*)LP.Point; break;
+	case Dstring: return atof((*(string*)LP.Point).c_str());
 	default:
 		return define;
 		break;
@@ -501,6 +582,57 @@ int  LoadPoint::Write(vector<int> x) // Копирование вектора
 
 int LoadPoint::WriteFromLoad(LoadPoint Load) // Записать величину из нагрузки
 {
+	if (Point == nullptr) return 1;
+	LoadPoint LP = *this;
+	if (Type >> 1 == DLoadVectInd) {
+		register int N = ((LoadVect_type)Point)->size();
+		if (N <= Ind || N < -Ind || ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Point == nullptr) return 2; // Ошибка индекса
+		LP = ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind);
+	}
+	else if (Type >> 1 == DICInd)
+		if (Ind < 0 || Ind / 3 >= ((IC_type)Point)->size()) return 2; // Ошибка индекса
+		else switch (Ind % 3) {
+		case 0: LP = { TIP, &((IC_type)Point)->at(Ind / 3) }; break;
+		case 1: LP = { Tint, &((IC_type)Point)->at(Ind / 3).atr }; break;
+		case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return 1; LP = ((IC_type)Point)->at(Ind / 3).Load;
+		}
+	switch (LP.Type)
+	{
+	case Tdouble:
+		*((double*)LP.Point) = Load.toDouble();
+		break;
+	case Tfloat:
+		*((float*)LP.Point) = Load.toFloat();
+		break;
+	case Tint:
+		*((int*)LP.Point) = Load.toInt();
+		break;
+	case Tbool:
+		*((bool*)LP.Point) = Load.toBool();
+		break;
+	case Tchar:
+		*((char*)LP.Point) = Load.toChar();
+		break;
+	case Tstring:
+		*((string*)LP.Point) = Load.toStr();
+		break;
+	case TIP:
+		//...
+		break;
+	case TIC:
+		//...
+		break;
+	default: // Перезапись указателя
+		if (Type % 2 != 0) // Если тип переменной
+			return 2; // Ошибка: попытка запись в константу
+		else
+			if (Type >> 1 != Load.Type >> 1)
+				return 1; // Ошибка: несоотвествие типов
+			else
+				Point = Load.Point;
+	}
+	return 0;
+/*
 	if (Point == nullptr)
 		return 1;
 	register unsigned int t = Type;
@@ -550,50 +682,45 @@ int LoadPoint::WriteFromLoad(LoadPoint Load) // Записать величину из нагрузки
 			else
 				Point = Load.Point;
 	}
+	*/
 	return 0;
 }
 
 int LoadPoint::Write(size_t x)
 {
-	if (Point == nullptr)
-		return 1;
-	register unsigned int t = Type;
-	register void* P = Point;
-	if (Ind >= 0)
-		if (Type == TLoadVect) {
-			if (Ind >= ((LoadVect_type)Point)->size()) return 2; // Ошибка индекса
-			P = ((LoadVect_type)Point)->at(Ind).Point;
-			t = ((LoadVect_type)Point)->at(Ind).Type;
+	if (Point == nullptr) return 1;
+	LoadPoint LP = *this;
+	if (Type >> 1 == DLoadVectInd) {
+		register int N = ((LoadVect_type)Point)->size();
+		if (N <= Ind || N < -Ind || ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Point == nullptr) return 2; // Ошибка индекса
+		LP = ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind);
+	}
+	else if (Type >> 1 == DICInd)
+		if (Ind < 0 || Ind / 3 >= ((IC_type)Point)->size()) return 2; // Ошибка индекса
+		else switch (Ind % 3) {
+		case 0: LP = { TIP, &((IC_type)Point)->at(Ind / 3) }; break;
+		case 1: LP = { Tint, &((IC_type)Point)->at(Ind / 3).atr }; break;
+		case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return 1; LP = ((IC_type)Point)->at(Ind / 3).Load;
 		}
-		else if (Type == TIC) {
-			if (Ind / 3 >= ((LoadVect_type)Point)->size()) return 2; // Ошибка индекса
-			switch (Ind % 3) {
-			case 0: P = &((IC_type)P)->at(Ind / 3); t = TIP; break;
-			case 1: P = &((IC_type)P)->at(Ind / 3).atr; t = Tint; break;
-			case 2: P = ((IC_type)P)->at(Ind / 3).Load.Point; t = ((IC_type)P)->at(Ind / 3).Load.Type;
-			}
-		}
-		else return 2; // Ошибка индекса
-	if (P == nullptr || t % 2 != 0) return 1;
-	switch (t)
+	switch (LP.Type)
 	{
 	case Tdouble:
-		*((double*)P) = x;
+		*((double*)LP.Point) = x;
 		break;
 	case Tfloat:
-		*((float*)P) = x;
+		*((float*)LP.Point) = x;
 		break;
 	case Tint:
-		*((int*)P) = x;
+		*((int*)LP.Point) = x;
 		break;
 	case Tbool:
-		*((bool*)P) = x;
+		*((bool*)LP.Point) = x;
 		break;
 	case Tchar:
-		*((char*)P) = x;
+		*((char*)LP.Point) = x;
 		break;
 	case Tstring:
-		*((string*)P) = to_string(x);
+		*((string*)LP.Point) = to_string(x);
 		break;
 
 	default:
@@ -604,48 +731,42 @@ int LoadPoint::Write(size_t x)
 
 int LoadPoint::Write(int x)
 {
-	if (Point == nullptr)
-		return 1;
-	register unsigned int t = Type;
-	register void* P = Point;
-	if (Ind >= 0)
-		if (Type == TLoadVect) {
-			if (Ind >= ((LoadVect_type)Point)->size()) return 2; // Ошибка индекса
-			P = ((LoadVect_type)Point)->at(Ind).Point;
-			t = ((LoadVect_type)Point)->at(Ind).Type;
+	if (Point == nullptr) return 1;
+	LoadPoint LP = *this;
+	if (Type >> 1 == DLoadVectInd) {
+		register int N = ((LoadVect_type)Point)->size();
+		if (N <= Ind || N < -Ind || ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Point == nullptr) return 2; // Ошибка индекса
+		LP = ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind);
+	}
+	else if (Type >> 1 == DICInd)
+		if (Ind < 0 || Ind / 3 >= ((IC_type)Point)->size()) return 2; // Ошибка индекса
+		else switch (Ind % 3) {
+		case 0: LP = { TIP, &((IC_type)Point)->at(Ind / 3) }; break;
+		case 1: LP = { Tint, &((IC_type)Point)->at(Ind / 3).atr }; break;
+		case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return 1; LP = ((IC_type)Point)->at(Ind / 3).Load;
 		}
-		else if (Type == TIC) {
-			if (Ind / 3 >= ((LoadVect_type)Point)->size()) return 2; // Ошибка индекса
-			switch (Ind % 3) {
-			case 0: P = &((IC_type)P)->at(Ind / 3); t = TIP; break;
-			case 1: P = &((IC_type)P)->at(Ind / 3).atr; t = Tint; break;
-			case 2: P = ((IC_type)P)->at(Ind / 3).Load.Point; t = ((IC_type)P)->at(Ind / 3).Load.Type;
-			}
-		}
-		else return 2; // Ошибка индекса
-	if (P == nullptr || t % 2 != 0) return 1;
-	switch (t)
+	switch (LP.Type)
 	{
 	case Tdouble:
-		*((double*)P) = x;
+		*((double*)LP.Point) = x;
 		break;
 	case Tfloat:
-		*((float*)P) = x;
+		*((float*)LP.Point) = x;
 		break;
 	case Tint:
-		*((int*)P) = x;
+		*((int*)LP.Point) = x;
 		break;
 	case Tbool:
-		*((bool*)P) = x;
+		*((bool*)LP.Point) = x;
 		break;
 	case Tchar:
 		if (x >= 0 && x < 256)
-			*((char*)Point) = x;
+			*((char*)LP.Point) = x;
 		else
 			return 1; // Несоответствие типов
 		break;
 	case Tstring:
-		*((string*)P) = to_string(x);
+		*((string*)LP.Point) = to_string(x);
 		break;
 	default:
 		return 1; // Несоответствие типов
@@ -655,45 +776,39 @@ int LoadPoint::Write(int x)
 
 int LoadPoint::Write(double x)
 {
-	if (Point == nullptr)
-		return 1;
-	register unsigned int t = Type;
-	register void* P = Point;
-	if (Ind >= 0)
-		if (Type == TLoadVect) {
-			if (Ind >= ((LoadVect_type)Point)->size()) return 2; // Ошибка индекса
-			P = ((LoadVect_type)Point)->at(Ind).Point;
-			t = ((LoadVect_type)Point)->at(Ind).Type;
+	if (Point == nullptr) return 1;
+	LoadPoint LP = *this;
+	if (Type >> 1 == DLoadVectInd) {
+		register int N = ((LoadVect_type)Point)->size();
+		if (N <= Ind || N < -Ind || ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Point == nullptr) return 2; // Ошибка индекса
+		LP = ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind);
+	}
+	else if (Type >> 1 == DICInd)
+		if (Ind < 0 || Ind / 3 >= ((IC_type)Point)->size()) return 2; // Ошибка индекса
+		else switch (Ind % 3) {
+		case 0: LP = { TIP, &((IC_type)Point)->at(Ind / 3) }; break;
+		case 1: LP = { Tint, &((IC_type)Point)->at(Ind / 3).atr }; break;
+		case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return 1; LP = ((IC_type)Point)->at(Ind / 3).Load;
 		}
-		else if (Type == TIC) {
-			if (Ind / 3 >= ((LoadVect_type)Point)->size()) return 2; // Ошибка индекса
-			switch (Ind % 3) {
-			case 0: P = &((IC_type)P)->at(Ind / 3); t = TIP; break;
-			case 1: P = &((IC_type)P)->at(Ind / 3).atr; t = Tint; break;
-			case 2: P = ((IC_type)P)->at(Ind / 3).Load.Point; t = ((IC_type)P)->at(Ind / 3).Load.Type;
-			}
-		}
-		else return 2; // Ошибка индекса
-	if (P == nullptr || t % 2 != 0) return 1;
-	switch (t)
+	switch (LP.Type)
 	{
 	case Tdouble:
-		*((double*)P) = x;
+		*((double*)LP.Point) = x;
 		break;
 	case Tfloat:
-		*((float*)P) = x;
+		*((float*)LP.Point) = x;
 		break;
 	case Tint:
-		*((int*)P) = x;
+		*((int*)LP.Point) = x;
 		break;
 	case Tbool:
-		*((bool*)P) = x;
+		*((bool*)LP.Point) = x;
 		break;
 	case Tchar:
-		*((char*)P) = x;
+		*((char*)LP.Point) = x;
 		break;
 	case Tstring:
-		*((string*)P) = to_string(x);
+		*((string*)LP.Point) = to_string(x);
 		break;
 	defoult:
 		return 1; // Несоответствие типов
@@ -703,45 +818,39 @@ int LoadPoint::Write(double x)
 
 int LoadPoint::Write(float x)
 {
-	if (Point == nullptr)
-		return 1;
-	register unsigned int t = Type;
-	register void* P = Point;
-	if (Ind >= 0)
-		if (Type == TLoadVect) {
-			if (Ind >= ((LoadVect_type)Point)->size()) return 2; // Ошибка индекса
-			P = ((LoadVect_type)Point)->at(Ind).Point;
-			t = ((LoadVect_type)Point)->at(Ind).Type;
+	if (Point == nullptr) return 1;
+	LoadPoint LP = *this;
+	if (Type >> 1 == DLoadVectInd) {
+		register int N = ((LoadVect_type)Point)->size();
+		if (N <= Ind || N < -Ind || ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Point == nullptr) return 2; // Ошибка индекса
+		LP = ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind);
+	}
+	else if (Type >> 1 == DICInd)
+		if (Ind < 0 || Ind / 3 >= ((IC_type)Point)->size()) return 2; // Ошибка индекса
+		else switch (Ind % 3) {
+		case 0: LP = { TIP, &((IC_type)Point)->at(Ind / 3) }; break;
+		case 1: LP = { Tint, &((IC_type)Point)->at(Ind / 3).atr }; break;
+		case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return 1; LP = ((IC_type)Point)->at(Ind / 3).Load;
 		}
-		else if (Type == TIC) {
-			if (Ind / 3 >= ((LoadVect_type)Point)->size()) return 2; // Ошибка индекса
-			switch (Ind % 3) {
-			case 0: P = &((IC_type)P)->at(Ind / 3); t = TIP; break;
-			case 1: P = &((IC_type)P)->at(Ind / 3).atr; t = Tint; break;
-			case 2: P = ((IC_type)P)->at(Ind / 3).Load.Point; t = ((IC_type)P)->at(Ind / 3).Load.Type;
-			}
-		}
-		else return 2; // Ошибка индекса
-	if (P == nullptr || t % 2 != 0) return 1;
-	switch (t)
+	switch (LP.Type >> 1)
 	{
 	case Tdouble:
-		*((double*)P) = x;
+		*((double*)LP.Point) = x;
 		break;
 	case Tfloat:
-		*((float*)P) = x;
+		*((float*)LP.Point) = x;
 		break;
 	case Tint:
-		*((int*)P) = x;
+		*((int*)LP.Point) = x;
 		break;
 	case Tbool:
-		*((bool*)P) = x;
+		*((bool*)LP.Point) = x;
 		break;
 	case Tchar:
-		*((char*)P) = x;
+		*((char*)LP.Point) = x;
 		break;
 	case Tstring:
-		*((string*)P) = to_string(x);
+		*((string*)LP.Point) = to_string(x);
 		break;
 	defoult:
 		return 1; // Несоответствие типов
@@ -751,45 +860,39 @@ int LoadPoint::Write(float x)
 
 int LoadPoint::Write(bool x)
 {
-	if (Point == nullptr)
-		return 1;
-	register unsigned int t = Type;
-	register void* P = Point;
-	if (Ind >= 0)
-		if (Type == TLoadVect) {
-			if (Ind >= ((LoadVect_type)Point)->size()) return 2; // Ошибка индекса
-			P = ((LoadVect_type)Point)->at(Ind).Point;
-			t = ((LoadVect_type)Point)->at(Ind).Type;
+	if (Point == nullptr) return 1;
+	LoadPoint LP = *this;
+	if (Type >> 1 == DLoadVectInd) {
+		register int N = ((LoadVect_type)Point)->size();
+		if (N <= Ind || N < -Ind || ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Point == nullptr) return 2; // Ошибка индекса
+		LP = ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind);
+	}
+	else if (Type >> 1 == DICInd)
+		if (Ind < 0 || Ind / 3 >= ((IC_type)Point)->size()) return 2; // Ошибка индекса
+		else switch (Ind % 3) {
+		case 0: LP = { TIP, &((IC_type)Point)->at(Ind / 3) }; break;
+		case 1: LP = { Tint, &((IC_type)Point)->at(Ind / 3).atr }; break;
+		case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return 1; LP = ((IC_type)Point)->at(Ind / 3).Load;
 		}
-		else if (Type == TIC) {
-			if (Ind / 3 >= ((LoadVect_type)Point)->size()) return 2; // Ошибка индекса
-			switch (Ind % 3) {
-			case 0: P = &((IC_type)P)->at(Ind / 3); t = TIP; break;
-			case 1: P = &((IC_type)P)->at(Ind / 3).atr; t = Tint; break;
-			case 2: P = ((IC_type)P)->at(Ind / 3).Load.Point; t = ((IC_type)P)->at(Ind / 3).Load.Type;
-			}
-		}
-		else return 2; // Ошибка индекса
-	if (P == nullptr || t % 2 != 0) return 1;
-	switch (t)
+	switch (LP.Type)
 	{
 	case Tdouble:
-		*((double*)P) = x;
+		*((double*)LP.Point) = x;
 		break;
 	case Tfloat:
-		*((float*)P) = x;
+		*((float*)LP.Point) = x;
 		break;
 	case Tint:
-		*((int*)P) = x;
+		*((int*)LP.Point) = x;
 		break;
 	case Tbool:
-		*((bool*)P) = x;
+		*((bool*)LP.Point) = x;
 		break;
 	case Tchar:
-		*((char*)P) = x;
+		*((char*)LP.Point) = x;
 		break;
 	case Tstring:
-		*((string*)P) = to_string(x);
+		*((string*)LP.Point) = to_string(x);
 		break;
 	defoult:
 		return 1; // Несоответствие типов
@@ -799,45 +902,39 @@ int LoadPoint::Write(bool x)
 
 int LoadPoint::Write(char x)
 {
-	if (Point == nullptr)
-		return 1;
-	register unsigned int t = Type;
-	register void* P = Point;
-	if (Ind >= 0)
-		if (Type == TLoadVect) {
-			if (Ind >= ((LoadVect_type)Point)->size()) return 2; // Ошибка индекса
-			P = ((LoadVect_type)Point)->at(Ind).Point;
-			t = ((LoadVect_type)Point)->at(Ind).Type;
+	if (Point == nullptr) return 1;
+	LoadPoint LP = *this;
+	if (Type >> 1 == DLoadVectInd) {
+		register int N = ((LoadVect_type)Point)->size();
+		if (N <= Ind || N < -Ind || ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Point == nullptr) return 2; // Ошибка индекса
+		LP = ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind);
+	}
+	else if (Type >> 1 == DICInd)
+		if (Ind < 0 || Ind / 3 >= ((IC_type)Point)->size()) return 2; // Ошибка индекса
+		else switch (Ind % 3) {
+		case 0: LP = { TIP, &((IC_type)Point)->at(Ind / 3) }; break;
+		case 1: LP = { Tint, &((IC_type)Point)->at(Ind / 3).atr }; break;
+		case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return 1; LP = ((IC_type)Point)->at(Ind / 3).Load;
 		}
-		else if (Type == TIC) {
-			if (Ind / 3 >= ((LoadVect_type)Point)->size()) return 2; // Ошибка индекса
-			switch (Ind % 3) {
-			case 0: P = &((IC_type)P)->at(Ind / 3); t = TIP; break;
-			case 1: P = &((IC_type)P)->at(Ind / 3).atr; t = Tint; break;
-			case 2: P = ((IC_type)P)->at(Ind / 3).Load.Point; t = ((IC_type)P)->at(Ind / 3).Load.Type;
-			}
-		}
-		else return 2; // Ошибка индекса
-	if (P == nullptr || t % 2 != 0) return 1;
-	switch (t)
+	switch (LP.Type)
 	{
 	case Tdouble:
-		*((double*)P) = x;
+		*((double*)LP.Point) = x;
 		break;
 	case Tfloat:
-		*((float*)P) = x;
+		*((float*)LP.Point) = x;
 		break;
 	case Tint:
-		*((int*)P) = x;
+		*((int*)LP.Point) = x;
 		break;
 	case Tbool:
-		*((bool*)P) = x;
+		*((bool*)LP.Point) = x;
 		break;
 	case Tchar:
-		*((char*)P) = x;
+		*((char*)LP.Point) = x;
 		break;
 	case Tstring:
-		*((string*)P) = x;
+		*((string*)LP.Point) = x;
 		break;
 	defoult:
 		return 1; // Несоответствие типов
@@ -847,45 +944,39 @@ int LoadPoint::Write(char x)
 
 int LoadPoint::Write(string x)
 {
-	if (Point == nullptr)
-		return 1;
-	register unsigned int t = Type;
-	register void* P = Point;
-	if (Ind >= 0)
-		if (Type == TLoadVect) {
-			if (Ind >= ((LoadVect_type)Point)->size()) return 2; // Ошибка индекса
-			P = ((LoadVect_type)Point)->at(Ind).Point;
-			t = ((LoadVect_type)Point)->at(Ind).Type;
+	if (Point == nullptr) return 1;
+	LoadPoint LP = *this;
+	if (Type >> 1 == DLoadVectInd) {
+		register int N = ((LoadVect_type)Point)->size();
+		if (N <= Ind || N < -Ind || ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Point == nullptr) return 2; // Ошибка индекса
+		LP = ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind);
+	}
+	else if (Type >> 1 == DICInd)
+		if (Ind < 0 || Ind / 3 >= ((IC_type)Point)->size()) return 2; // Ошибка индекса
+		else switch (Ind % 3) {
+		case 0: LP = { TIP, &((IC_type)Point)->at(Ind / 3) }; break;
+		case 1: LP = { Tint, &((IC_type)Point)->at(Ind / 3).atr }; break;
+		case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return 1; LP = ((IC_type)Point)->at(Ind / 3).Load;
 		}
-		else if (Type == TIC) {
-			if (Ind / 3 >= ((LoadVect_type)Point)->size()) return 2; // Ошибка индекса
-			switch (Ind % 3) {
-			case 0: P = &((IC_type)P)->at(Ind / 3); t = TIP; break;
-			case 1: P = &((IC_type)P)->at(Ind / 3).atr; t = Tint; break;
-			case 2: P = ((IC_type)P)->at(Ind / 3).Load.Point; t = ((IC_type)P)->at(Ind / 3).Load.Type;
-			}
-		}
-		else return 2; // Ошибка индекса
-	if (P == nullptr || t % 2 != 0) return 1;
-	switch (t)
+	switch (LP.Type)
 	{
 	case Tdouble:
-		*((double*)P) = atof(x.c_str());
+		*((double*)LP.Point) = atof(x.c_str());
 		break;
 	case Tfloat:
-		*((float*)P) = atof(x.c_str());
+		*((float*)LP.Point) = atof(x.c_str());
 		break;
 	case Tint:
-		*((int*)P) = atoi(x.c_str());
+		*((int*)LP.Point) = atoi(x.c_str());
 		break;
 	case Tbool:
-		*((bool*)P) = atoi(x.c_str());
+		*((bool*)LP.Point) = atoi(x.c_str());
 		break;
 	case Tchar:
-		*((char*)P) = atoi(x.c_str());
+		*((char*)LP.Point) = atoi(x.c_str());
 		break;
 	case Tstring:
-		*((string*)P) = x;
+		*((string*)LP.Point) = x;
 		break;
 	defoult:
 		return 1; // Несоответствие типов
@@ -895,72 +986,25 @@ int LoadPoint::Write(string x)
 
 int LoadPoint::Write(LoadPoint x) // Записать величину из нагрузки
 {
-	if (Point == nullptr)
-		return 1;
-	register unsigned int t = Type;
-	register void* P = Point;
-	if (Ind >= 0)
-	{
-		if (Type == TLoadVect) {
-			if (Ind >= ((LoadVect_type)Point)->size()) return 2; // Ошибка индекса
-			((LoadVect_type)Point)->at(Ind)=x;
-			return 0;
-		}
-		if (Type == TIC && Ind%3==2) {
-			if (Ind / 3 >= ((IC_type)Point)->size()) return 2; // Ошибка индекса
-			((IC_type)P)->at(Ind / 3).Load=x;
-			return 0;
-			}
-		}
-		else return 2; // Ошибка индекса
-	if (P == nullptr || t % 2 != 0) return 1;
-
-
-	Point = x.Point; Type = x.Type; Ind = x.Ind;
-	return 0;
-/*
-	switch (t)
-	{
-	case TLoad:
-		if (x.Type >> 1 != DLoad)
-			return 1;
-		*(LoadPoint*)P = *(LoadPoint*)x.Point;
-		break;
-	case Tstring:
-		if (x.Type >> 1 != Dstring)
-			return 1;
-		*(string*)P = *(string*)x.Point;	
-	case Tdouble:
-		if (!x.isDigitBool())
-			return 1;
-		*((double*)P) = x.toDouble();
-		break;
-	case Tfloat:
-		if (!x.isDigitBool())
-			return 1;
-		*((float*)P) = x.toFloat();
-		break;
-	case Tint:
-		if(x.Type>>1==Dint || x.Type >> 1 == Dbool || x.Type >> 1 == Dchar)
-			*((int*)Point) = x.toInt();
-		else return 1;
-		break;
-	case Tbool:
-		if (!x.isDigitBool() || x.Type >> 1 == Dstring)
-			*((bool*)Point) = x.toBool();
-		else return 1;
-		break;
-	case Tchar:
-		if(x.Type >> 1 == Dchar || x.Type >> 1 == Dbool ||
-			x.Type >> 1 == Dint && *(int*)x.Point>=0 && *(int*)x.Point <256)
-		*((char*)P) = x.toChar();
-		break;
-
-	defoult:
-		WriteFromLoad(x); // Попытка записать по нагрузке
+	if (Point == nullptr) return 1;
+	LoadPoint LP = *this;
+	if (Type >> 1 == DLoadVectInd) {
+		register int N = ((LoadVect_type)Point)->size();
+		if (N <= Ind || N < -Ind || ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Point == nullptr) return 2; // Ошибка индекса
+		((LoadVect_type)Point)->at(N * (Ind < 0) + Ind) = x; return 0;
 	}
-	return 0;
-	*/
+	else if (Type >> 1 == DICInd) {
+		if (Ind < 0 || Ind / 3 >= ((IC_type)Point)->size()) return 2; // Ошибка индекса
+		if (Ind % 3 != 2)
+			return 1;
+		else
+		{
+			((IC_type)Point)->at(Ind / 3).Load = x.Clone();
+ 			return 0;
+		}
+	}
+		LP=x.Clone();
+		return 0;
 }
 template <typename T>
 int LoadPoint::WriteByVector(T x) // Запись по нагрузкам в векторе

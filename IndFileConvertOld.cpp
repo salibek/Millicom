@@ -34,13 +34,17 @@ void ConvIndStrOld(string str, ip &IP, vector<ip*> IpUk, map<int, vector<ip>*> &
 			case 0:// Указатель на ИП
 				if (CapsId.count(DInd >> 2) == 0)
 				{
-					IP.Load.Point = IpUk[DInd >> 2];
-					IP.Load.Type = TIP;
+					int t;
+					for (t = DInd >> 2; !CapsId.count(t); t--);
+					IP.Load.Point = CapsId[t];
+					IP.Load.Type = TICInd;
+					IP.Load.Ind = DInd >> 2;
 				}
 				else
 				{
 					IP.Load.Point = CapsId[DInd >> 2];
 					IP.Load.Type = TIC;
+					IP.Load.Ind = -1;
 				}
 				break;
 			case 1:// Указатель на атрибут
@@ -50,7 +54,7 @@ void ConvIndStrOld(string str, ip &IP, vector<ip*> IpUk, map<int, vector<ip>*> &
 				int t;
 				for (t = DInd >> 2; !CapsId.count(t); t--);
 				IP.Load.Point = CapsId[t];
-				IP.Load.Type = TIC;
+				IP.Load.Type = TICInd;
 				IP.Load.Ind = (((DInd >> 2) - t) << 2) + 1;
 			}
 			break;
@@ -65,7 +69,7 @@ void ConvIndStrOld(string str, ip &IP, vector<ip*> IpUk, map<int, vector<ip>*> &
 					int t;
 					for (t = DInd >> 2; !CapsId.count(t); t--);
 					IP.Load.Point = CapsId[t];
-					IP.Load.Type = TIC;
+					IP.Load.Type = TICInd;
 					IP.Load.Ind = (((DInd >> 2) - t) << 2) + 2;
 				}
 				break;

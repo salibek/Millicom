@@ -159,7 +159,7 @@ void ALU::ProgFU(int MK, LoadPoint Load)
 			MkExec(MKExt, Load);
 			break;
 		case 502: // MkOutExtExec Выполнить внешнюю Мк для выдачи данных (на вход внешней команды автоматически дается Мк установки значения аккумулятора
-			MkExec(Load, LoadCreate(MkOutExt));
+			MkExec(Load, LoadCreate(FUMkGloabalRange + E_MK::SET));
 			break;
 		case 0: // Reset
 			Stack.clear();
@@ -171,31 +171,28 @@ void ALU::ProgFU(int MK, LoadPoint Load)
 		case 2: // Out Выдать значение аккумулятора
 		case 3: // OutMk Выдать МК со значением аккумулятора
 		{
-			if (LoadPoint::isVect(Stack.back().accumType)) // вектор
+			if (LoadPoint::isVectInd(Stack.back().accumType))
 			{
-				if (!Stack.back().IndF)
-					if(MK==3) MkExec(Load, { Stack.back().accumType, Stack.back().accumVect }); // Выдать вектор
-					else Load.Write(Stack.back().accumVect);
-				else
-				{
-					int Ind = Stack.back().Ind;
-					if (Ind < 0) Ind = Stack.back().accumVect->size() + Ind;
-					if (!(Ind >= 0 && Ind < Stack.back().accumVect->size()))
-					{
-						ProgExec(OutOfRangeErrProg); // Ошибка выхода индекса за пределы диапазона
-						break;
-					}
-					else
-					{
-						if (MK == 3) MkExec(Load, Stack.back().accumVect->at(Ind), Bus);
-						else Load.WriteFromLoad(Stack.back().accumVect->at(Stack.back().Ind));
-						Stack.back().Ind += Stack.back().IndAutoInc;
-					}
+				int Ind = Stack.back().Ind;
+				if (Ind < 0) Ind = Stack.back().accumVect->size() + Ind;
+				if (!(Ind >= 0 && Ind < Stack.back().accumVect->size())){
+					ProgExec(OutOfRangeErrProg); // Ошибка выхода индекса за пределы диапазона
+					break;
+				}
+				else{
+					if (MK == 3) MkExec(Load, Stack.back().accumVect->at(Ind), Bus);
+					else Load.WriteFromLoad(Stack.back().accumVect->at(Stack.back().Ind));
+					Stack.back().Ind += Stack.back().IndAutoInc;
+					break;
 				}
 			}
 			else
 				switch (Stack.back().accumType >> 1)
 				{
+				case DLoadVect:
+					if (MK == 3)MkExec(Load, { Stack.back().accumType, Stack.back().accumVect }, Bus);
+					else Load.Write(Stack.back().accum);
+					break;
 				case Ddouble:
 					if (MK == 3)MkExec(Load, { Stack.back().accumType, &Stack.back().accum }, Bus);
 					else Load.Write(Stack.back().accum);
@@ -681,7 +678,7 @@ void ALU::ProgFU(int MK, LoadPoint Load)
 			else
 				ProgFU(E_MK::PUSH, (Stack.end() - 2)->accumVect->at(Load.toInt())); // Добавить значение из элемента вектора
 			break;
-		case 280: // VectCreat Создать новый вектор
+		case 280: // VectCNew Создать новый вектор
 			emptyvect();
 			break;
 		case 281: // VectDel Удалить вектор
@@ -1208,7 +1205,7 @@ void		ALU::set(LoadPoint Load) // Установить значение в ак�
 		Stack.back().accumType = Cint;
 		Stack.back().accum = 0;
 	}
-	else if (Load.Type >> 1 == Dstring)
+	else if (Load.isStr())
 	{
 		Stack.back().accumType = Load.Type;
 		Stack.back().accumStr = Load.toStr();

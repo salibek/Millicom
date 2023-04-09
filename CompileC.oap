@@ -215,7 +215,7 @@ Console.OutLn="FU Root"
   OAList.OutMk=Console.OutLn
   Prog=ListCheckProg
   OAList.LastCopyAttach
-Console.Out="Mk " FUListNew.ReceivedLoadOutMk=Console.OutLn
+Console.Out="Mk+ " FUListNew.ReceivedLoadOutMk=Console.OutLn
   FUListNew.ReceivedLoadOutMk=OAList.LastAtrSet
   Console.OutLn="OAList:"
   OAList.OutMk=Console.OutLn
@@ -398,7 +398,7 @@ Console.OutLn="MnemoAnalysis ="
 >{Vect Lex.ReceiverMkSet=Root.FindAnd
 FUListNew.ReceivedOutMk=MnemoTable.LastAttach}
 >{Sep="[" Lex.ReceiverMkSet=VectWait.FindAnd
-  ALUG.VectCreat
+  ALUG.VectNew
   MnemoTable.LineCopyAddPrevLoadSet={Vect}
     Console.OutLn="Vect ini"
   ALUG.OutMk=Console.OutLn
@@ -694,6 +694,7 @@ Console.OutLn="FUAfter3 fin"
 >{0
   Console.OutLn="ALECheck else"
   Lex.ReceiverMkSet=Root.FindAnd
+ EqualAfter.ReceivedOutMk=Console.OutLn
   EqualAfter.ReceivedLoadOutMk=OAList.LastLoadSet
   FUListNew.ReceivedOutMk=Lex.CendToReceiver}
 
@@ -803,7 +804,7 @@ Console.OutLn="EqAleAfter Var Const"
 }
 >{Sep="[" Lex.ReceiverMkSet=EqAleAfter.FindAnd \*07.04.2023*\
   Stack.LineCopyAdd={Sep="["}
-  OAList.LineCopyAddPrevLoadSet={FUALUNew.VectCreat FUALUNew.Append}
+  OAList.LineCopyAddPrevLoadSet={FUALUNew.VectNew FUALUNew.Append}
   OAList.LineCopyAddPrevLoadSet={FUALUNew.Set}
 }
 >{Func Lex.ReceiverMkSet=FuncAfter.FindAnd \* 07.04.2023 *\
@@ -869,7 +870,7 @@ Console.OutLn="EqAleAfter Var Const"
 >{Sep="[" Lex.ReceiverMkSet=EqAleAfter.FindAnd
   Stack.LineCopyAdd={FuncALE1Arg}
   Stack.LineCopyAdd={Sep="["}
-  OAList.LineCopyAddPrevLoadSet={FUALUNew.VectCreat FUALUNew.Append}
+  OAList.LineCopyAddPrevLoadSet={FUALUNew.VectNew FUALUNew.Append}
   OAList.LineCopyAddPrevLoadSet={FUALUNew.Set}
 }
 >{Var Const Vect Lex.ReceiverMkSet=OperatWait.FindAnd // Прописать один аргумент

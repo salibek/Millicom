@@ -19,9 +19,9 @@ void IntAlu::ProgFU(int MK, LoadPoint Load)
 		if (!Load.isInt()) ProgExec(NoIntTypeErrProg);
 		if (!Load.isIntBool()) ProgExec(NoBoolIntTypeErrProg);
 		break;
-	case 2: // AccumulatREfOut Выдать ссылку на аккумулятор
+	case 2: // AccumREfOut Выдать ссылку на аккумулятор
 		{
-			LoadPoint t = { Tint, AccumulatUk };
+			LoadPoint t = { Cint, AccumulatUk };
 			Load.Write(t);
 		}
 		break;
