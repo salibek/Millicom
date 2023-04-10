@@ -34,10 +34,30 @@ bool Search::null_check()// Проверка на нуль (false, если всё в порядке)
 	}
 }
 
+// Доработать, чтобы программа выдавалась с помощью ProgExec !!!!!!!!!!!!
 void  Search::MkAtrExec() // Выполнить Милликоманды из ИК-шаблона
 {
+
 	if (Template.Point == nullptr || Template.Type>>1!=DIC) return;
-	for (auto i=((IC_type)Template.Point)->begin();i<((IC_type)Template.Point)->end();i++)
+	MainFU->ProgStopAll = false;
+/*
+	if (MkMode)
+	{
+		auto i = ((IC_type)Template.Point)->begin();
+		for (; i < ((IC_type)Template.Point)->end(); i++)
+			if (i->atr > 0) break;
+		if(i!= ((IC_type)Template.Point)->end())
+			MainFU->ProgExec(Template, 0, nullptr, &i);
+	}
+	else
+		for (auto i = ((IC_type)Template.Point)->begin(); i < ((IC_type)Template.Point)->end(); i++)
+			if (MkAtr.count(i->atr))
+				MainFU->MkExec(i->atr, i->Load);
+*/
+	for (auto i = ((IC_type)Template.Point)->begin(); i < ((IC_type)Template.Point)->end(); i++)
+		if (MainFU->ProgStopAll)
+			break;
+		else
 		if (MkMode)
 		{
 			if (i->atr == ProgAtr && i->Load.Point==nullptr)

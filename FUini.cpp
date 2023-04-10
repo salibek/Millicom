@@ -21,7 +21,7 @@
 #include "CellularAutomata.h"
 #include "IntAlu.h"
 #include "Router.h"
-#include "RouterSegment.h"
+#include "Gateway.h"
 
 using namespace std;
 
@@ -130,7 +130,7 @@ FU* RouterIni(FU* BusContext, FU* TEmpl)
 	return (FU*) new Router(BusContext, TEmpl);
 }
 
-FU* RouterSegmentIni(FU* BusContext, FU* TEmpl)
+FU* GatewayIni(FU* BusContext, FU* TEmpl)
 {
-	return (FU*) new RouterSegment(BusContext, TEmpl);
+	return (FU*) new Gateway(BusContext, TEmpl);
 }

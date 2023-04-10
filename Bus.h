@@ -15,7 +15,7 @@ public:
 	FU* (*FUTypes[NFUTypes])(FU*, FU*) = {BusIni, ConsIni, StrGenIni, LexIni, FindIni, 
 		ListIni, GraphTrasfIni, IntAluIni, InOutIni, AutomatManagerIni, NeuroIni,
 		NetManagerIni,SchedulerIni,EventserIni, MeanShiftIni, BagIni, GaussIni, ALUIni,
-		CellularAutomatIni, CellularAutomatManagerIni, RouterIni, RouterSegmentIni};
+		CellularAutomatIni, CellularAutomatManagerIni, RouterIni, GatewayIni};
 	vector <FU *> FUs; // Вектор указателей на контексты ФУ
 	FU * FUTempl = nullptr; // Указатель на контекст шаблона ФУ
 	int FUMkRange = 1000; // Диапазон МК для каждого ФУ

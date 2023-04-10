@@ -1845,7 +1845,8 @@ void FU::ProgExec(void* UK, unsigned int CycleMode, FU* ProgBus, vector<ip>::ite
 						return;
 					}
 			if (ProgStop > 0) { ProgStop--; return; }
-			if (ProgStopAll) { return; } // Внеочередной выход из подпрограммы
+			if (ProgStopAll) 
+			   { return; } // Внеочередной выход из подпрограммы
 		}
 	} while (RepeatF || CycleMode>0);
 }

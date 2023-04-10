@@ -47,6 +47,7 @@ void BusFU::ProgFU(int MK, LoadPoint Load)
 			if(ipVect->size()>0) ProgExec( (*ipVect)[0], 0, this,nullptr);
 			break;
 		case 20: // NFUOut
+
 			Load.Write((int)FUs.size());
 			break;
 		case 21: // NFUOutMk

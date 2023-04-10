@@ -127,26 +127,46 @@ void ALU::ProgFU(int MK, LoadPoint Load)
 			VectOperation(MK, Load);
 			return;
 		}
-		double tt=0; // Хранилище аккумулятора предыдущего уровня
+		double tt_double=0; // Хранилище аккумулятора предыдущего уровня
+		int tt_int = 0;
+		float tt_float = 0;
+		bool tt_bool = 0;
+		char tt_char = 0;
+		string tt_str = "";
 		if (MK >= 25 && MK < 500 && Load.isProg()) // Арифметико-логическсое выражение со ссылкой в нагрузке
 		{
 			//LoadDelFlag = true;
 			Stack.push_back({});
 			ProgExec(Load);
-			if (LoadPoint::isVect(Stack.back().accumType))
-				if (!Stack.back().IndF)
-					Load = { CLoadVect,&Stack.back().accumVect };
-				else
-					;
-			else if (LoadPoint::isStr(Stack.back().accumType))
-			{
-				string tt = Stack.back().accumStr;
-				Load = { Stack.back().accumType, &tt, Stack.back().Ind }; // Запомнить значение вычисленного аккумулятора
+			if (LoadPoint::isVect(Stack.back().accumType)){
+				//vector<LoadPoint> tt=
+				Load = { CLoadVect,Stack.back().accumVect };
 			}
-			else {
-				double tt = Stack.back().accum;
-				Load = { Stack.back().accumType, &tt, Stack.back().Ind }; // Запомнить значение вычисленного аккумулятора
+			else if (LoadPoint::isStr(Stack.back().accumType)){
+				tt_str = Stack.back().accumStr;
+				Load = { Stack.back().accumType | 1, &tt_str}; // Запомнить значение вычисленного аккумулятора
 			}
+			if (LoadPoint::isDouble(Stack.back().accumType)){
+				tt_double = Stack.back().accum;
+				Load = { Stack.back().accumType | 1, &tt_double }; // Запомнить значение вычисленного аккумулятора
+			}
+			else if (LoadPoint::isFloat(Stack.back().accumType)){
+				tt_float = Stack.back().accum;
+				Load = { Stack.back().accumType | 1, &tt_float }; // Запомнить значение вычисленного аккумулятора
+			}
+			else if (LoadPoint::isInt(Stack.back().accumType)){
+				tt_int = Stack.back().accum;
+					Load = { Stack.back().accumType | 1, &tt_int }; // Запомнить значение вычисленного аккумулятора
+			}
+			else if (LoadPoint::isBool(Stack.back().accumType))	{
+				tt_bool = Stack.back().accum;
+				Load = { Stack.back().accumType | 1, &tt_bool }; // Запомнить значение вычисленного аккумулятора
+			}
+			else if (LoadPoint::isChar(Stack.back().accumType))	{
+				tt_float = Stack.back().accum;
+				Load = { Stack.back().accumType | 1, &tt_char }; // Запомнить значение вычисленного аккумулятора
+			}
+
 			// Доделать очищение память для вектора
 			Stack.pop_back(); // Удалить аккумулятор из стека
 		}
@@ -507,6 +527,7 @@ void ALU::ProgFU(int MK, LoadPoint Load)
 				}
 				Stack.back().accum = Max;
 				Stack.back().accumType = Type;
+				Stack.back().Ind = -1;
 			}
 			break;
 		case E_MK::MIN_VECT:
@@ -678,8 +699,11 @@ void ALU::ProgFU(int MK, LoadPoint Load)
 			else
 				ProgFU(E_MK::PUSH, (Stack.end() - 2)->accumVect->at(Load.toInt())); // Добавить значение из элемента вектора
 			break;
-		case 280: // VectCNew Создать новый вектор
+		case 280: // VectNew Создать новый вектор (в нагрузке может быть первый элемент
 			emptyvect();
+		case 290: // Append Добавить элемент в вектор
+			if (Load.Point != nullptr)
+				append(Load);
 			break;
 		case 281: // VectDel Удалить вектор
 			Stack.back().accumVect->resize(0); // Добавить удаление каждого элемента вектора!!!
@@ -712,9 +736,6 @@ void ALU::ProgFU(int MK, LoadPoint Load)
 			if (Stack.back().accumVect == nullptr)
 				Stack.back().accumVect = new vector<LoadPoint>;
 			Stack.back().accumVect->clear();
-			break;
-		case 290: // Append Добавить элемент в вектор
-			append(Load.Clone());
 			break;
 
 			// Реализация поэлементных векторных операций

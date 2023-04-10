@@ -452,7 +452,7 @@ Bus={FuTypeIndexes.RowSet=300 FuTypeIndexes.ColSet=1 FuTypeIndexes.Create=10000 
 	FuTypeMkTrees.RowSet=300 FuTypeMkTrees.ColSet=1 FuTypeMkTrees.Create=nil FuTypeMkTrees.IndexModeSet=2
 	FuTypeMkList.RowSet=300 FuTypeMkList.ColSet=1 FuTypeMkList.Create=nil FuTypeMkList.IndexModeSet=2
 }
-// Дырки: 958-970 919-949
+// Дырки: 958-970 919-946
 CommonMkList{
  	Mnemo="Common Mk" Hint="Общие милликоманды для всех типов ФУ" Comment
 
@@ -551,6 +551,10 @@ CommonMkList{
 	Obj={Mnemo="ContextPop" Mk=995 Hint="Выдать указатель на контекст ФУ"}
 	Obj={Mnemo="ContextPopMk" Mk=999 Hint="Выдать милликоманду с указателем на контекст ФУ"}
 	Obj={Mnemo="ContextOut" Mk=995 Hint="Выдать указатель на контекст ФУ"}
+
+	Obj={Mnemo="ContextPop" Mk=995 Hint="Выдать указатель на контекст ФУ"}
+	Obj={Mnemo="ContextPopMk" Mk=999 Hint="Выдать милликоманду с указателем на контекст ФУ"}
+	Obj={Mnemo="ContextOut" Mk=995 Hint="Выдать указатель на контекст ФУ"}
 	Obj={Mnemo="ContextOutMk" Mk=999 Hint="Выдать милликоманду с указателем на контекст ФУ"}
  
 	Obj={Mnemo="FUTypePop" Mk=906 Hint="Выдать тип ФУ"}
@@ -568,6 +572,10 @@ CommonMkList{
 	Obj={Mnemo="FUIndOut" Mk=992 Hint="Выдать индекс ФУ"}
 	Obj={Mnemo="FUIndPopMk" Mk=993 Hint="Выдать милликоманду с индексом ФУ"}
 	Obj={Mnemo="FUIndOutMk" Mk=993 Hint="Выдать милликоманду с индексом ФУ"}
+
+	Obj={Mnemo="MkGlobalRangeSet" Mk=949 Hint="Установить глобальный адрес МК для ФУ"}
+	Obj={Mnemo="MkGlobalRangeOut" Mk=948 Hint="Выдать глобальный адрес МК для ФУ"}
+	Obj={Mnemo="MkGlobalRangeOutMk" Mk=947 Hint="Выдать МК с глобальным адресом МК для ФУ"}
 
 	Obj={Mnemo="FUCommentAdd" Mk=994 Hint="Добавить строку комментария к ФУ"}
 }
@@ -4749,7 +4757,9 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 	 Obj={Mk=12 Mnemo="RandOut" Hint="Выдать сгенерированное число, если в Load=nil, то записать в аккумулятор"}
 	 Obj={Mk=13 Mnemo="RandOutMk" Hint="Выдать МК со сгенерированным числом, если в Load=nil, то записать в аккумулятор"}
 	 Obj={Mk=14 Mnemo="Rand" Hint="Сгенерировать случайное число в диапазоне от 0 до числа из нагрузки"}
-
+	 Obj={Mk=500 Mnemo="MkExtSet" Hint="Установить внешнюю МК"}
+	 Obj={Mk=501 Mnemo="MkExtExec" Hint="Выполнить внешнюю МК"}
+	
       Obj={Mnemo="Programming" Hint="Программирование" Comment
 		Obj={Mk=50 Mnemo="NoCorrectTypeErrProgSet" Hint="Программа для ошибки записи некорректного (нечислового типа)"}
 		Obj={Mk=51 Mnemo="NoIntTypeErrProg" Hint="Программа для ошибки записи нецелого типа"}
@@ -5240,7 +5250,12 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
   	Obj={Mk=52 Mnemo="Random" Hint=""}
   }
   Obj={Mnemo="Vector" Hint="Манипуляции с вектором" Comment
-  	Obj={Mk=280 Mnemo="VectCreat" Hint="Создать новый вектор"}
+	Obj={Mk=75 Mnemo="SumVect" Hint="Сумма элементов вектора"}
+	Obj={Mk=76 Mnemo="MaxVect" Hint="Максимум по элементам вектора"}
+	Obj={Mk=77 Mnemo="MinVect" Hint="Минимум по элементам вектора"}
+  	
+
+	Obj={Mk=280 Mnemo="VectNew" Hint="Создать новый вектор"}
   	Obj={Mk=285 Mnemo="VectClear" Hint="Очистить вектор"}
   	Obj={Mk=290 Mnemo="Append" Hint="Добавить элемент в вектор"}
 
@@ -5558,27 +5573,50 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 // Router Маршрутизатор
      FuTypeIndexes.CellSet=116 FuTypeMkTrees.CellSet=
 	{
+	 Obj={Mk=2 Mnemo="RoutingSimulat" Hint="Эмуляция прихода МК для маршрутизации"}	 
 	 Obj={Mk=1 Mnemo="ChCreate" Hint="Создать новый канал (на входе МК нижняя граница диапазона)"}
-	 Obj={Mk=3 Mnemo="ChClear" Hint="Сбросить настройки каналов"}
-	 Obj={Mk=5 Mnemo="DelayTimeSet" Hint="Установить время передачи МК"}
-	 Obj={Mk=8 Mnemo="ErrRoutingProgset" Hint="Ссылка на программу обработки ошибки 'Не найден маршрут'"}
-	 Obj={Mk=9 Mnemo="ReceiverMkDefaultSet" Hint="Установить значение МК для приемника по умолчанию"}
-	 Obj={Mk=10 Mnemo="ReceiverSet" Hint="Установить адрес ФУ-приемника"}
-	 Obj={Mk=11 Mnemo="ReceiverMkSet" Hint="Установить МК ФУ-приемника"}
-	 Obj={Mk=15 Mnemo="RangeUpSet" Hint="становить верхний диапазон адресов"}
-	 Obj={Mk=20 Mnemo="RangeDownSet" Hint="становить нижний диапазон адресов"}
-	 Obj={Mk=25 Mnemo="MkCountOut" Hint="Выдать количество переданных МК"}
-	 Obj={Mk=30 Mnemo="MkCountOutMk" Hint="Выдать МК с количеством переданных МК"}
-	 Obj={Mk=35 Mnemo="MaxMkQeueOut" Hint="Выдать макс длину очереди МК"}
-	 Obj={Mk=40 Mnemo="MaxMkQeueOutMk" Hint="Выдать МК с макс длиной очереди МК"}
-	 Obj={Mk=45 Mnemo="EverageMkQeueOut" Hint="Выдать среднюю длину очереди МК"}
-	 Obj={Mk=50 Mnemo="EverageMkQeueOutMk" Hint="Выдать МК со средней длиной очереди МК"}
-	 Obj={Mk=200 Mnemo="Routing" Hint="Произвести марштуризацию MK"}
+	 Obj={Mk=3 Mnemo="IndSet" Hint="Установить индекс текущего канала роутера"}
+	 Obj={Mk=5 Mnemo="RangeSet" Hint="Установить верхний диапазон МК для роутера (нижний диапазон подразумевается, как верхний плюс диапазон МК)"}
+	 Obj={Mk=6 Mnemo="RouterTimeSet" Hint="Установить время маршрутизации"}
+	 Obj={Mk=9 Mnemo="ChRangeUpSet" Hint="Установить верхний диапазон адресов канала"}
+	 Obj={Mk=10 Mnemo="ChRangeDownSet" Hint="Установить нижний диапазон адресов канала"}
+	 Obj={Mk=11 Mnemo="ChGatewaySet" Hint="Установить ссылку на шлюз для текущего канала связи"}
+	 Obj={Mk=15 Mnemo="ChNumOut" Hint="Выдать количество каналов на роутере"}
+	 Obj={Mk=20 Mnemo="ChNumOutMk" Hint="Выдать МК с количеством каналов на роутере"}
+	 Obj={Mk=25 Mnemo="ChGatewayOut" Hint="Выдать указатель на шлюз для текущего канала"}
+	 Obj={Mk=30 Mnemo="ChGatewayOutMk" Hint="Выдать МК с указателем на шлюз для текущего канала"}
+	 Obj={Mk=35 Mnemo="ChRangeUpOut" Hint="Выдать верхний диапазон адресов для текущего канала"}
+	 Obj={Mk=40 Mnemo="ChRangeUpOutMk" Hint="Выдать МК с верхним диапазоном адресов для текущего канала"}
+	 Obj={Mk=45 Mnemo="ChRangeDownOut" Hint="Выдать нижний диапазон для текущего канала"}
+	 Obj={Mk=50 Mnemo="ChRangeDownOutMk" Hint="Выдать МК с нижним диапазоном для текущего канала"}
+	 Obj={Mk=55 Mnemo="RoutingProgSet" Hint="Установить ссылку на программу маршрутизации"}
+	 Obj={Mk=60 Mnemo="OverflowProgSet" Hint="Установить ссылку на подпрограмму реакции на переполнение буфера для хранения данных"}
+	 Obj={Mk=61 Mnemo="MkOverflowProgSet" Hint="Установить ссылку на подпрограмму реакции на переполнение буфера МК"}
+	 Obj={Mk=65 Mnemo="RoutingAttributeOut" Hint="Выдать атрибут пришедшей для маршрутизации МК"}
+	 Obj={Mk=70 Mnemo="RoutingAttributeOutMk" Hint="Выдать МК с атрибутом пришедшей для маршрутизации МК"}
+	 Obj={Mk=85 Mnemo="ChRoutingMkOut" Hint="Выдать канал, по которому пришла последняя МК для маршрутизации"}
+	 Obj={Mk=90 Mnemo="ChRoutingMkOutMk" Hint="Выдать МК с каналом, по которому пришла последняя МК для маршрутизации"}
+	 Obj={Mk=120 Mnemo="ReceiveIndOut" Hint="Выдать индекс канала, на который пришел пакет для маршрутизации"}
+	 Obj={Mk=125 Mnemo="ReceiveIndOutMk" Hint="Выдать МК с индексом канала, на который пришел пакет для маршрутизации"}
+	 Obj={Mk=320 Mnemo="RouterStatsClear" Hint="Сбросить блок статистики переданных данных через роутер"}
+	 Obj={Mk=325 Mnemo="RouterDataInCountOut" Hint="Выдать объем переданных данных через роутер"}
+	 Obj={Mk=330 Mnemo="RouterDataInCountOutMk" Hint="Выдать МК с объемом переданных данных через роутер"}
+	 Obj={Mk=335 Mnemo="ChDataInCountOut" Hint="Выдать объем переданных данных через текущий канал (по индексу текущего канала)"}
+	 Obj={Mk=340 Mnemo="ChDataInCountOutMk" Hint="Выдать МК с объемом переданных данных через канал"}
+	 Obj={Mk=345 Mnemo="RouterMkCountOut" Hint="Выдать количество переданных МК через роутер"}
+	 Obj={Mk=350 Mnemo="RouterMkCountOutMk" Hint="Выдать МК с количеством переданных МК через роутер"}
+	 Obj={Mk=355 Mnemo="ChMkInCountOut" Hint="Выдать количество переданных МК через канал"}
+	 Obj={Mk=360 Mnemo="ChMkInCountOutMk" Hint="Выдать МК с количеством переданных МК через канал"}
+	 Obj={Mk=365 Mnemo="RouterMaxMkQueueOut" Hint="Выдать макс длину очереди МК на роутере"}
+	 Obj={Mk=370 Mnemo="RouterMaxMkQueueOutMk" Hint="Выдать МК с макс длиной очереди МК на роутере"}
+	 Obj={Mk=375 Mnemo="RouterAverageMkQueueOut" Hint="Выдать среднюю длину очереди МК на роутере"}
+	 Obj={Mk=380 Mnemo="RouterAverageMkQueueOuMk" Hint="Выдать МК со средней длиной очереди МК на роутере"}
+	 Obj={Mk=395 Mnemo="ReceiveProgSet" Hint="Установить ссылку на программу, активизирующуюся при приходе МК для маршрутизации (для реализации автоматического сбора статистики)"}
 
       Obj=CommonMkList
 	}
 
-// RouterSegment Маршрутизатор
+// Gateway Маршрутизатор
      FuTypeIndexes.CellSet=117 FuTypeMkTrees.CellSet=
 	{
       Obj={Mk=3 Mnemo="ChClear" Hint="Очистить список каналов"}
@@ -7005,8 +7043,8 @@ Bus={FuTypeMkList.RowSet=FUBus; FuTypeMkList.CellPop=temp
  	FUType=116 FUTypeDef=116 Hint="Маршрутизатор милликоманд"}
 
      FuTypeMkList.CellPop=temp FuTypeMkTrees.CellPop=temp2
- 	MnemoServiceTable.LineAdd={Mnemo="FURouterSegment" TreeParentLevelAtr=1 MkList=temp(nil)! MkTree=temp2(nil)!
- 	FUType=117 FUTypeDef=117 Hint="Сегментный маршрутизатор (маршрутизация непосредставенно черзе ФУ)"}
+ 	MnemoServiceTable.LineAdd={Mnemo="FUGateway" TreeParentLevelAtr=1 MkList=temp(nil)! MkTree=temp2(nil)!
+ 	FUType=117 FUTypeDef=117 Hint="Сетевой шлюз"}
 
 }
 FuTypeMkList.IndexModeSet=1

@@ -1,5 +1,9 @@
-\\ Для создания индексного файла сначала надо запустить программу !!!!
+// - обозначение переведенных в комментарии старых ФУ
+\* date *\ //- последняя дата изменения или добавления строк и ФУ
 
+NewFU={Mnemo="Main_Bus" MkBegRange=1000 FUType=FUBusNew} // Описание Bus
+
+\\ Для создания индексного файла сначала надо запустить программу !!!!
  CapsManager.IndexVectCreate=20000
  CapsManager.IpIcIdOutMk=MainBus.IpIcIdSet
  CapsManager.IpIcIdOutMk=VariableManager.IpIcIdSet
@@ -8,23 +12,23 @@
 \\ -------------------------------------- \\
 MainBus.FUTypeCorrectSet=-96 // Корректировка номера типа ФУ для переноса на новую ОА-платформу
 
+NewFU={Mnemo="Console" FUType=FUConsNew Hint="Консоль для вывода логов"}
+NewFU={Mnemo="Console2" FUType=FUConsNew Hint="Консоль для вывода логов"}
 NewFU={Mnemo="Router" FUType=FURouter}
-NewFU={Mnemo="Console" FUType=FUConsNew}
-NewFU={Mnemo="Console2" FUType=FUConsNew}
+NewFU={Mnemo="Gateway" FUType=FUGateway}
 
 MainBus.PartialResetSet \\ Запомнить число созданных ФУ
 MainBus.ModeSet=2
 
-Console2.PrefixSet="FU2 "
-Console.PrefixSet="FU1 "
+Console.PrefixSet="Console: "
+Console2.PrefixSet="Console2: "
 
-Router.ChCreate=Console.Reset
-//Router.ReceiverMkSet=FUConsNew.OutLn
-Console.ContextOutMk=Router.ReceiverSet
+Router.ChCreate=10000
+Console.ContextOutMk=Router.ChGatewaySet
 
-Router.ChCreate=Console2.Reset
-//Router.ReceiverMkSet=FUConsNew.OutLn
-Console2.ContextOutMk=Router.ReceiverSet
+Router.ChCreate=11000
+Console2.ContextOutMk=Router.ChGatewaySet
 
-Router.Routing={Console.OutLn="Hellow"}
-Router.Routing={Console2.OutLn="Hellow"}
+Router.RoutingSimulat={10002=13}
+ 
+Router.ChNumOutMk=Console.OutLn

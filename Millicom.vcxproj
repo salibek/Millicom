@@ -167,7 +167,6 @@
     <ClCompile Include="NetModeling.cpp" />
     <ClCompile Include="Neuro.cpp" />
     <ClCompile Include="Router.cpp" />
-    <ClCompile Include="RouterSegment.cpp" />
     <ClCompile Include="SchedulerEventser.cpp" />
     <ClCompile Include="Search.cpp" />
     <ClCompile Include="Gauss.cpp" />
@@ -200,7 +199,6 @@
     <ClInclude Include="NetModeling.h" />
     <ClInclude Include="Neuro.h" />
     <ClInclude Include="Router.h" />
-    <ClInclude Include="RouterSegment.h" />
     <ClInclude Include="SchedulerEventser.h" />
     <ClInclude Include="Search.h" />
     <ClInclude Include="stdafx.h" />

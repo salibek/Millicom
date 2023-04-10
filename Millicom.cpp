@@ -57,7 +57,8 @@ int main(int argc, char* argv[])
 //	string STR = "Bag.ind";
 //	string STR = "NetTemperat2.ind";
 	STR = "CompileC.ind";
-//	string STR = "OAGraphOut.ind";
+//	STR = "Router.ind";
+	//	string STR = "OAGraphOut.ind";
 //	string STR = "MultyList.ind";
 //	STR = "CompLab.ind";
 //	string STR = "AlU_test.ind";

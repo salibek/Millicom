@@ -99,9 +99,6 @@
     <ClCompile Include="Router.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="RouterSegment.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ALU.h">
@@ -189,9 +186,6 @@
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="Router.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="RouterSegment.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>
