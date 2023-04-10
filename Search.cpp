@@ -57,6 +57,10 @@ void  Search::MkAtrExec() // Выполнить Милликоманды из ИК-шаблона
 	for (auto i = ((IC_type)Template.Point)->begin(); i < ((IC_type)Template.Point)->end(); i++)
 		if (MainFU->ProgStopAll)
 			break;
+		else if (MainFU->ProgStop > 0){
+			MainFU->ProgStop--;
+			break;
+		}
 		else
 		if (MkMode)
 		{

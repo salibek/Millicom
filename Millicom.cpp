@@ -13,6 +13,7 @@
 #include "Bag.h"
 #include "ALU.h"
 
+
 using namespace std;
 
 int main(int argc, char* argv[])
@@ -21,6 +22,7 @@ int main(int argc, char* argv[])
 	BusFU Bus;
 	string STR;
 	/*
+	* 
 	if (argc == 1)
 	{
 		cout << "File name is not found in comand line\n";

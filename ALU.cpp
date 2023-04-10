@@ -1439,7 +1439,10 @@ void	ALU::fu_sin(LoadPoint Load)
 			}
 		}
 		else			if (Load.isDigitBool(Stack.back().accumType))
+		{
 			Stack.back().accum = sin(Stack.back().accum);
+			Stack.back().accumType=Cdouble;
+		}
 	return;
 	}
 	if (Load.isDigitBool())
