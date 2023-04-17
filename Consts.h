@@ -45,8 +45,8 @@ const int ProgAtr = -100, Atr = -60, SubObj = -6, GotoAtr=-99;
 const int ListLine = -80, ListSub = -90; // Атрибуты линии списка и подсписка
 // Общие МК
 const int ProgMk=958, ProgCycleMk = 959, ProgPostCycleMk = 960;
-const int YesMk = 961, YesCycleMk = 962, YesPostCycleMk = 963;
-const int NoMk = 964, NoCycleMk = 965, NoPostCycleMk = 966;
+const int YesMk = 961, YesCycleMk = 962, YesPostCycleMk = 963, YesBreakMk =967;
+const int NoMk = 964, NoCycleMk = 965, NoPostCycleMk = 966, NoBreakMk =968;
 const int CalcMk = 927; // Милликоманда вычисления АЛВ
 const int BreakMk = 909, NextMk = 910; // МК прерывания программы и продолжения цикла
 const int RepeatMk=911; // Начать выполнение ИК заново
@@ -215,9 +215,6 @@ public:
 
 	ip Copy() // Копирование ИП
 	{
-//		ip ip_new;
-//		ip_new.copy(*this);
-//		return ip_new;
 		return { atr,Load.Clone() };
 	};
 

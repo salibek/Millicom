@@ -97,7 +97,6 @@ void ALU::ProgFU(int MK, LoadPoint Load)
 	if (MK == ProgExecMk || MK == CalcMk) // выполнение программы
 	{
 		ProgExec(Load);
-		//if (Stack.size() == 1)
 		accum = Stack.back().accum; // Записать в выходной аккумулятор
 		accumType = Stack.back().accumType; // Записать в выходной аккумулятор
 		accumStr = Stack.back().accumStr; // Записать в выходной аккумулятор
@@ -105,8 +104,46 @@ void ALU::ProgFU(int MK, LoadPoint Load)
 		for(auto i: Stack.back().OutMkAdr)
 			if(i.Adr.Point!=nullptr)
 				i.Adr.Write(Stack.back().accum);
-			else if(i.Mk>=0)
-	 			MkExec(i.Mk, { Cdouble,  &Stack.back().accum }); // Сделать преобразование типов попозже
+			else if (i.Mk >= 0)
+			{
+				double tt_double = 0; // Хранилище аккумулятора предыдущего уровня
+				int tt_int = 0;
+				float tt_float = 0;
+				bool tt_bool = 0;
+				char tt_char = 0;
+				string tt_str = "";
+				if (LoadPoint::isVectInd(Stack.back().accumType)) {
+					MkExec(i.Mk, { CLoadVectInd, Stack.back().accumVect, Stack.back().Ind }); // Сделать преобразование типов попозже
+				}
+		        else if (LoadPoint::isVect(Stack.back().accumType)) {
+					MkExec(i.Mk, { CLoadVect,Stack.back().accumVect }); // Сделать преобразование типов попозже
+				}
+				else if (LoadPoint::isStr(Stack.back().accumType)) {
+					string tt_str = Stack.back().accumStr;
+					MkExec(i.Mk, { Stack.back().accumType | 1, &tt_str }); // Сделать преобразование типов попозже
+				}
+				if (LoadPoint::isDouble(Stack.back().accumType)) {
+					double tt_double = Stack.back().accum;
+					MkExec(i.Mk, { Stack.back().accumType | 1, &tt_double }); // Сделать преобразование типов попозже
+				}
+				else if (LoadPoint::isFloat(Stack.back().accumType)) {
+					float tt_float = Stack.back().accum;
+					MkExec(i.Mk, { Stack.back().accumType | 1, &tt_float }); // Сделать преобразование типов попозже
+				}
+				else if (LoadPoint::isInt(Stack.back().accumType)) {
+					int tt_int = Stack.back().accum;
+					MkExec(i.Mk, { Stack.back().accumType | 1, &tt_int }); // Сделать преобразование типов попозже
+				}
+				else if (LoadPoint::isBool(Stack.back().accumType)) {
+					bool tt_bool = Stack.back().accum;
+					MkExec(i.Mk, { Stack.back().accumType | 1, &tt_bool }); // Сделать преобразование типов попозже
+				}
+				else if (LoadPoint::isChar(Stack.back().accumType)) {
+					char tt_float = Stack.back().accum;
+					MkExec(i.Mk, { Stack.back().accumType | 1, &tt_char }); // Сделать преобразование типов попозже
+				}
+
+			}
 		Stack.back().OutMkAdr.clear(); // Очистить стек выходных МК и адресов
 	}
 	else
@@ -122,7 +159,7 @@ void ALU::ProgFU(int MK, LoadPoint Load)
 				exit;
 			}
 		else
-		if (MK >= 25 && MK < 200 && LoadPoint::isVect(Stack.back().accumType)) // Векторные операции
+		if (MK >= 30 && MK < 200 && LoadPoint::isVect(Stack.back().accumType) && !LoadPoint::isVectInd(Stack.back().accumType)) // Векторные операции
 		{
 			VectOperation(MK, Load);
 			return;
@@ -133,14 +170,15 @@ void ALU::ProgFU(int MK, LoadPoint Load)
 		bool tt_bool = 0;
 		char tt_char = 0;
 		string tt_str = "";
-		if (MK >= 25 && MK < 500 && Load.isProg()) // Арифметико-логическсое выражение со ссылкой в нагрузке
+		if (MK >= 30 && MK < 500 && Load.isProg()) // Арифметико-логическсое выражение со ссылкой в нагрузке
 		{
-			//LoadDelFlag = true;
 			Stack.push_back({});
 			ProgExec(Load);
 			if (LoadPoint::isVect(Stack.back().accumType)){
-				//vector<LoadPoint> tt=
 				Load = { CLoadVect,Stack.back().accumVect };
+			}
+			else if(LoadPoint::isVectInd(Stack.back().accumType)){
+				Load = { CLoadVect, Stack.back().accumVect, Stack.back().Ind};
 			}
 			else if (LoadPoint::isStr(Stack.back().accumType)){
 				tt_str = Stack.back().accumStr;
@@ -244,32 +282,6 @@ void ALU::ProgFU(int MK, LoadPoint Load)
 				}
 			break; 
 		}
-/*
-		case 2: // Out Выдать значение аккумулятора
-			if (accumType >> 1 == Dstring)
-				Load.Write(Stack.back().accumStr);
-			else if (Stack.back().accumType >> 1 == DLoadArray) // Вектор
-			{
-				if (Stack.back().IndF)
-					if (!(Stack.back().Ind >= 0 && Stack.back().Ind < Stack.back().accumVect->size()))
-					{
-						ProgExec(OutOfRangeErrProg); // Ошибка выхода индекса за пределы диапазона
-						break;
-					}
-					else
-						Load.WriteFromLoad(Stack.back().accumVect->at(Stack.back().Ind));
-				if (Load.Type == TLoadArray || Load.Type == Tvoid)
-				{
-					Load.Write(Stack.back().accumVect);
-					Stack.back().Ind += Stack.back().IndAutoInc;
-				}
-				else
-					;// Сообщение о несоответствии типов
-			}
-			else
-				Load.Write(Stack.back().accum);
-			break;
-*/
 		case E_MK::PUSH: //  Push Сделать еще один уровень аккумулятора
 			Stack.push_back({});
 			ProgFU(E_MK::SET, Load);
@@ -310,8 +322,6 @@ void ALU::ProgFU(int MK, LoadPoint Load)
 					MkExec(Load, LoadPoint::TypeMinimizeOut(Stack.back().accum, Stack.back().accumType | 1));
 				else if (Load.isStrChar() && Load.isDigitBool(Stack.back().accumType))
 					MkExec(Load, { Stack.back().accumType,&Stack.back().accumStr });
-				else
-					Load.Write(Stack.back().accumVect);
 			}
 			if (Stack.size() > 1)
 				Stack.pop_back();
@@ -1226,6 +1236,12 @@ void		ALU::set(LoadPoint Load) // Установить значение в ак�
 		Stack.back().accumType = Cint;
 		Stack.back().accum = 0;
 	}
+	else if (Load.isVect() or Load.isVectInd())
+	{
+		Stack.back().accumVect = (vector<LoadPoint>*) Load.Point;
+		Stack.back().accumType = Load.Type;
+		Stack.back().Ind = Load.Ind;
+	}
 	else if (Load.isStr())
 	{
 		Stack.back().accumType = Load.Type;
@@ -1234,11 +1250,6 @@ void		ALU::set(LoadPoint Load) // Установить значение в ак�
 	else if (Load.isDigitBool())
 	{
 		Stack.back().accum = Load.toDouble();
-		Stack.back().accumType = Load.Type;
-	}
-	else if (Load.Type >> 1 == DLoadVect)
-	{
-		Stack.back().accumVect = (vector<LoadPoint>*) Load.Point;
 		Stack.back().accumType = Load.Type;
 	}
 	else {

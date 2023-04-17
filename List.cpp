@@ -572,7 +572,47 @@ void List::ProgFU(int MK, LoadPoint Load)
 	case 179: // LineCopyGrahpAttach
 		// ....
 		break;
-
+	case 184: // LastIndSet Установить индекс нагрузки в последней ИП последней строки
+	{
+		if (ListHead.back() == nullptr || ListHead.back()->back().Load.Point == nullptr || !ListHead.back()->back().Load.isIC()) break;
+		IC_type t = ((IC_type)ListHead.back()->back().Load.Point);
+		if (t->size() == 0) break;
+		if (t->back().Load.isVect())
+			if (((LoadVect_type)t->back().Load.Point)->size() > abs(Load.toInt()) or -Load.toInt() == ((LoadVect_type)t->back().Load.Point)->size())
+			{
+				if (t->back().Load.Type == TLoadVect)
+					t->back().Load.Type = TLoadVectInd;
+				else 
+					t->back().Load.Type == CLoadVectInd;
+				t->back().Load.Ind = Load.toInt();
+			}
+			else if (((IC_type)ListHead.back()->back().Load.Point)->back().Load.isIC())
+				if (Load.toInt() >= 0 and Load.toInt() < ((IC_type)ListHead.back()->back().Load.Point)->size() * 3) {
+					if (ListHead.back()->back().Load.Type == TIC)ListHead.back()->back().Load.Type == TICInd;
+					else ListHead.back()->back().Load.Type == CICInd;
+					ListHead.back()->back().Load.Ind = Load.toInt();
+				}
+		break;
+	}
+	case 183: // LineIndSet Установить индекс нагрузки в последней ИП текушей строки
+		if (ListHead.back() == nullptr || ListHead.back()->back().Load.Point == nullptr || !ListHead.back()->back().Load.isIC()) break;
+		if (((IC_type)ListHead.back()->back().Load.Point)->size() == 0) break;
+		if (LineUk == nullptr) break;
+		if (!LineUk->Load.isIC()) break;
+		if (!((IC_type)LineUk->Load.Point)->size())break;
+		if (((IC_type)LineUk->Load.Point)->back().Load.isVect())
+			if (((LoadVect_type)LineUk->Load.Point)->size() > abs(Load.toInt()) or -Load.toInt() == ((LoadVect_type)LineUk->Load.Point)->size()){
+				if (((IC_type)(LineUk->Load.Point))->back().Load.Type == TLoadVect) ((IC_type)(LineUk->Load.Point))->back().Load.Type == TLoadVectInd;
+				else ((IC_type)(LineUk->Load.Point))->back().Load.Type == CLoadVectInd;
+				((IC_type)(LineUk->Load.Point))->back().Load.Ind = Load.toInt();
+			}
+		if (((IC_type)LineUk->Load.Point)->back().Load.isVect())
+			if (Load.toInt() >= 0 and Load.toInt() < ((IC_type)LineUk->Load.Point)->size() * 3) {
+			if (((IC_type)(LineUk->Load.Point))->back().Load.Type == TIC) ((IC_type)(LineUk->Load.Point))->back().Load.Type == TICInd;
+			else ListHead.back()->back().Load.Type == CICInd;
+			ListHead.back()->back().Load.Ind = Load.toInt();
+		}
+		break;
 	case 185: // LastLoadSet Записать адрес в нагрузку последней ИП последней строки
 	case 195: // LineLoadSet Записать адрес в нагрузку последней ИП последней строки
 	case 186: // LastLoadCopySet Записать адрес в нагрузку последней ИП последней строки

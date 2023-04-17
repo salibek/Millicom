@@ -40,7 +40,9 @@ void  Search::MkAtrExec() // Выполнить Милликоманды из ИК-шаблона
 
 	if (Template.Point == nullptr || Template.Type>>1!=DIC) return;
 	MainFU->ProgStopAll = false;
-/*
+	MainFU->ProgStop = 0;
+	MainFU->CycleStop = 0;
+
 	if (MkMode)
 	{
 		auto i = ((IC_type)Template.Point)->begin();
@@ -53,7 +55,7 @@ void  Search::MkAtrExec() // Выполнить Милликоманды из ИК-шаблона
 		for (auto i = ((IC_type)Template.Point)->begin(); i < ((IC_type)Template.Point)->end(); i++)
 			if (MkAtr.count(i->atr))
 				MainFU->MkExec(i->atr, i->Load);
-*/
+/*
 	for (auto i = ((IC_type)Template.Point)->begin(); i < ((IC_type)Template.Point)->end(); i++)
 		if (MainFU->ProgStopAll)
 			break;
@@ -71,6 +73,7 @@ void  Search::MkAtrExec() // Выполнить Милликоманды из ИК-шаблона
 		else
 			if (MkAtr.count(i->atr))
 				MainFU->MkExec(i->atr, i->Load);
+*/
 }
 
 bool Search::FindIPObj(LoadPoint Templ, LoadPoint obj, bool XOR) // Поиск, если obj является ИП (Для Or And)

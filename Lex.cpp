@@ -392,7 +392,7 @@
 						break;
 					}
 					if ((*i == '+' || *i == '-') && (i==str.begin() ||
-						(LexBuf[(ib + SizeBuf) % SizeBuf].atr == SeperatAtr) && *(i-1)!=')')) // символ (+,-); 0 -> 10
+						(LexBuf[(ib + SizeBuf) % SizeBuf].atr == SeperatAtr) && *(i - 1) != ')') && *(i - 1) != '}') // символ (+,-); 0 -> 10
 					{
 						LexAccum = *i; //запись в буферную переменную
 						S = 10; //переход в состояние 10
@@ -630,9 +630,19 @@
 						//Debug(*i, S, LexAccum); // --- отладка
 						break;
 					}
-					Work = false;  //установка флага рабочего режима лексера на false
-					ProgExec(ErrProg, 0, Bus, nullptr); //обработчик ошибок
-					break;
+					{
+						string* t=new string(LexAccum);
+						ib = (ib + 1) % SizeBuf;
+						LexBuf[ib].Load.Clear(); // Удаляем нагрузку ИП
+						LexBuf[ib] = { SeperatAtr,Cstring , new string(*t) };
+						LexOut();
+						i--;
+						S = 0;
+
+						//					Work = false;  //установка флага рабочего режима лексера на false
+						//					ProgExec(ErrProg, 0, Bus, nullptr); //обработчик ошибок
+						break;
+					}
 				//Обработка многострочного комментария
 				case 6:
 					if (*i != '/') //любой символ кроме (/); 6 -> 6

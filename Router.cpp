@@ -24,7 +24,7 @@ void Router::ProgFU(int MK, LoadPoint Load)
 
 		ProgExec(ReceiveProg); // Запустить программу по приходу данных
 		MKCount++;
-		LaslMkIp = {MK,Load}; // Запоминание последней пришедшей для маршрутизации МК
+		LaslMkIp = { MK,Load }; // Запоминание последней пришедшей для маршрутизации МК
 		if (RoutingProg != nullptr)
 		{
 			ProgExec(RoutingProg); // Запуск програмы ручного управления
@@ -32,9 +32,11 @@ void Router::ProgFU(int MK, LoadPoint Load)
 		}
 		// Стандартная программа машрутизации
 		SendInd = -1;
-		for (auto i=Channels.begin(); i!=Channels.end(); i++)
-			if (i->Up <= MK < i->Down)
+		for (auto i = Channels.begin(); i != Channels.end(); i++)
+			if (i->Up <= MK && MK < (i->Down)){
 				SendInd = distance(Channels.begin(), i);
+				break;
+			}
 		if (SendInd >= 0) // Стандартная маршрутизация
 		{
 			Channels[SendInd].MkOutCount++; // Посчитали МК
@@ -120,7 +122,10 @@ void Router::ProgFU(int MK, LoadPoint Load)
 	case 61: // MkOverflowProgSet Установить ссылку на подпрограмму реакции на переполнение буфера МК
 		MkOverflowProg = Load.Point;
 		break;
-	//
+	case 62: // RoutindErrProgSet Установить ссылку на программу обработки события адрес МК для маршрутизации не найден в таблице маршрутизации
+		RoutingErrProg = Load.Point;
+		break;
+		//
 	// «Ручное» управление
 	case 65: // RoutingAttributeOut Выдать атрибут пришедшей для маршрутизации МК
 		Load.Write(LaslMkIp.atr);
@@ -142,12 +147,6 @@ void Router::ProgFU(int MK, LoadPoint Load)
 //		break;
 	case 105: // Переслать последнюю МК в канал с номером (номер канала в нагрузке МК для роутера)
 		Channels[Load.toInt()].Receiver->ProgFU(LaslMkIp.atr, LaslMkIp.Load);
-		break;
-	case 110: // Установить ссылку на программу, обрабатывающую событие «переполнение буфера памяти»
-//
-		break;
-	case 115: // Установить ссылку на программу обработки события адрес МК для маршрутизации не найден в таблице маршрутизации
-//
 		break;
 //	case 120: // ReceiveIndOut
 //		Load.Write(SendInd);

@@ -28,5 +28,7 @@ public:
 	Gateway(FU* BusContext, FU* Templ)
 	{
 		Bus = BusContext;
+		FUtype = 21;
+		ProgFU(0, { 0, nullptr });
 	};
 };

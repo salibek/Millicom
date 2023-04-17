@@ -1505,7 +1505,7 @@ void LoadPoint::print(map<int, string > AtrMnemo, string offset, string Sep, str
 	case CLoadVect: // Вектор нагрузок
 	{
 		cout << ArrayBracketStart;
-		int c = 1;
+		register int c = 1;
 		for (auto i : *(vector<LoadPoint>*) Point)
 		{
 			i.print(AtrMnemo, offset, Sep, End, quote, ArrayBracketStart, ArrayBracketFin);
@@ -1513,6 +1513,15 @@ void LoadPoint::print(map<int, string > AtrMnemo, string offset, string Sep, str
 			c++;
 		}
 		cout << ArrayBracketFin << endl;
+		break;
+	}
+	case TLoadVectInd:
+	case CLoadVectInd: // Вектор нагрузок
+	{
+		register int i= Ind;
+		cout << "Vect Ind[" << Ind << "] ";
+		if (((LoadVect_type)Point)->size() > abs(i) or -i == ((LoadVect_type)Point)->size())
+			((LoadVect_type)Point)->at(i).print(AtrMnemo, offset, Sep, End, quote, ArrayBracketStart, ArrayBracketFin);
 		break;
 	}
 	default:
@@ -1562,31 +1571,44 @@ void FU::CommonMk(int Mk, LoadPoint Load)
 	case YesMk: //961 YesProg Вызов подпрограммы по ДА
 	case YesCycleMk: //962 YesCycleProg Вызов цикла по ДА
 	case YesPostCycleMk: //963 YesPostCycleProg Вызов пост цикла по ДА
+	case YesBreakMk: //967 YesProgBreak Вызов подпрограммы по ДА с последующим прерыванием основной программы
 		if (Accum.toBool())
 		{
+			int PB = Mk == YesBreakMk;
 			if (Alu != nullptr)
 				((ALU*)Alu)->Stack.push_back({}); //Буферизиация текущего стека
+			if (Mk == YesBreakMk){
+				Mk = YesMk;
+			}
 			if (Load.Point == nullptr)
 				ProgExec(Prog, Mk - YesMk);
 			else
 				ProgExec(Load.Point, Mk - YesMk);
 			if (Alu != nullptr)
 				((ALU*)Alu)->Stack.pop_back(); // Отмена буферизации текущего стека
+			ProgStop += PB; // Выйти из главной программы
 		}
 		break;
 	case NoMk: //964 NoProg Вызов подпрограммы по НЕТ
 	case NoCycleMk: //965 NoCycleProg Вызов цикла по НЕТ
 	case NoPostCycleMk: //966 NoPostCycleProg Вызов пост цикла по НЕТ
-		if (Accum.toBool())
+	case NoBreakMk: //968 NoProgBreak Вызов подпрограммы по НЕТ с последующим прерыванием основной программы
+		if (!Accum.toBool())
 		{
+			int PB = Mk == NoBreakMk;
 			if (Alu != nullptr)
 				((ALU*)Alu)->Stack.push_back({}); //Буферизиация текущего стека
+			if (Mk == NoBreakMk) {
+				ProgStop += 1;
+				Mk = NoMk;
+			}
 			if (Load.Point == nullptr)
 				ProgExec(Prog, Mk - NoMk);
 			else
 				ProgExec(Load.Point, Mk - NoMk);
 			if (Alu != nullptr)
 				((ALU*)Alu)->Stack.pop_back(); // Отмена буферизации текущего стека
+			ProgStop += PB; // Выйти из главной программы
 		}
 		break;
 	case 919: // AccumPointerSet Установить ссылку на аккумулятор
@@ -1799,7 +1821,7 @@ void FU::ProgExec(void* UK, unsigned int CycleMode, FU* ProgBus, vector<ip>::ite
 				if (i->atr == RepeatAtr) { // Запустить программу заново
 					RepeatF = true; break;
 				}
-
+/*
 				if (i->atr == ProgMkAtr || // Переход к подрограмме
 					i->atr == YesAtr && Accum.toBool() ||
 					i->atr == NoAtr && !Accum.toBool()) {
@@ -1827,7 +1849,7 @@ void FU::ProgExec(void* UK, unsigned int CycleMode, FU* ProgBus, vector<ip>::ite
 					((ALU*)Alu)->accum = ((ALU*)Alu)->Stack.back().accum;
 					continue;
 				}
-
+*/
 				ProgFU(i->atr, i->Load); // Выполнение команды
 			}
 

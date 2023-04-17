@@ -42,10 +42,12 @@ public:
 	int Ind = -1; // Индекс вектора или ИК
 
 	vector<ALUContext> Stack = {};
-	ALU(FU* parent, FU* Templ = nullptr) { Bus = (FU*)parent; Parent = parent; FUtype = 17; ProgFU(0, { 0, nullptr }); };
+	ALU(FU* parent, FU* Templ = nullptr) { Bus = (FU*)parent; Parent = parent; FUtype = 17; ProgFU(0, { 0, nullptr }); 
+	Alu = (FU*)this; // Настроить ссылку на АЛУ на самого себя
+	ALUCreating = false;
+	};
 	void ProgFU(int MK, LoadPoint Load) override;
 	void VectOperation(int MK, LoadPoint Load); // Реализацая векторных операций
-//	void* Parent = nullptr;
 	void		add(LoadPoint load);
 	void		Clear();
 	void* VarNew(LoadPoint load); // New value of accum
