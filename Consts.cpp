@@ -2,9 +2,11 @@
 #include "Consts.h"
 #include <iostream>
 #include <string>
+#include <stdlib.h>
 #include "LocationTable.h"
 #include "ALU.h"
 #include "IntAlu.h"
+#include "FUini.h"
 
 using namespace std;
 
@@ -20,6 +22,46 @@ unsigned int LoadPoint::getType() // Выдать тип нагрузки
 		case 1: return Tint;
 		case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return -1; return ((IC_type)Point)->at(Ind / 3).Load.Type;
 		}
+}
+
+int LoadPoint::DataSize() // Выдать размер данных в нагрузке
+{
+	LoadPoint LP = *this;
+	while (LP.Type>>1==DLoadVectInd || LP.Type>>1 == DICInd)
+	{
+		if (LP.Type >> 1 == DLoadVectInd)
+			LP = ((LoadVect_type)Point)->at(LP.Ind);
+		else
+			if (LP.Ind < 0 || LP.Ind / 3 >= ((IC_type)LP.Point)->size()) return 2; // Ошибка индекса
+			else switch (LP.Ind % 3) {
+			case 0: LP = { TIP, &((IC_type)LP.Point)->at(Ind / 3) }; break;
+			case 1: LP = { Tint, &((IC_type)LP.Point)->at(Ind / 3).atr }; break;
+			case 2: if (((IC_type)LP.Point)->at(Ind / 3).Load.Point == nullptr) return 1; LP = ((IC_type)LP.Point)->at(Ind / 3).Load;
+			}
+	}
+	switch (Type>>1)
+	{
+	Dbool: return 1;
+	Dchar: return 2;
+	Dint:
+	Dfloat: return 4;
+	Ddouble: return 8;
+	DFU: return SizeOfFUType(((FU*)Point)->FUtype);
+	DIP: return 4 + ((ip*)Point)->Load.DataSize();
+	DLoadVect:
+	{
+		register int s=0, t=sizeof(LoadPoint);
+		for (auto& i : *((LoadVect_type)Point))
+			s += t + i.DataSize();
+	}
+	DIC:
+	{
+		register int s = 0, t = sizeof(ip);
+		for (auto& i : *((IC_type)Point))
+			s += t + i.Load.DataSize();
+	}
+	}
+	return 0;
 }
 
 bool LoadPoint::isDigit() {

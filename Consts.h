@@ -79,6 +79,7 @@ public:
 	void *Point=nullptr; // Указатель на локацию данных
 	int Ind = -1; // Индекс поля в ИК или векторе  Для ИК по модулю 3. 0 - адрес ИП, 1- адрес Атрибута, 2 - адрес нагрузки
 	unsigned int getType(); // Выдать тип нагрузки
+	int DataSize(); // Выдать размер данных в нагрузке
 	bool isDigit(); // Число?}
 	static bool isDigit(unsigned int type) { unsigned int t = type; return t >> 1 == Dint || t >> 1 == Dchar || t >> 1 == Dfloat || t >> 1 == Ddouble; }; // 
 	bool isDigitBool(); // Число или булеан?
