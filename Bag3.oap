@@ -18,11 +18,13 @@ NewFU={Mnemo="Volume" FUType=FUALUNew}
 NewFU={Mnemo="Price" FUType=FUALUNew}
 NewFU={Mnemo="AluRez" FUType=FUALUNew Hint="АЛУ для сбора результата вычисления"}
 NewFU={Mnemo="Dev" FUType=FUCellularAutomat}
-NewFU={Mnemo="Scheduller" FUType=FUSchedulerNew}
+NewFU={Mnemo="Scheduler" FUType=FUSchedulerNew}
 NewFU={Mnemo="Eventser" FUType=FUEventserNew}
 
 MainBus.PartialResetSet \\ Запомнить число созданных ФУ
 MainBus.ModeSet=2
+
+Eventser.ContextOutMk=Scheduler.EventserSet
 
 V#10 // Объём рюкзака
 NItem#10  // Количество предметов для расположения в рюкзаке
@@ -34,10 +36,10 @@ IntAlu.Mul=V // Вычислить количество узлов в сетке
 IntAlu.OutMk=IntAlu2.Set
 
 IntAlu.OutMk=Manager.NetGenerate // Генерация поля автоматов
-Scheduller.ContextOutMk=Manager.Mk1AllExec // Установить ссылку на планировщика вычислений
+//Scheduler.ContextOutMk=Manager.Mk1AllExec // Установить ссылку на планировщика вычислений
 //Manager.Ind1Set=0
 //Scheduller.ContextOutMk=Manager.Mk1Exec
-Scheduller.ContextOutMk=Eventser.SchedulerSet
+Scheduler.ContextOutMk=Eventser.SchedulerSet
 
 // Настройк первых ФУ в линии сетки
 Manager.Ind1Set=0
@@ -51,7 +53,7 @@ Manager.ForExec={ // Установить в 1 количество ожидаемых данных для первых ФУ в 
 Manager.Ind1Set=0
 Console.LnOutLn="Program start"
 
-Volume.VectCreat // Вектор объёмов предметов
+Volume.VectNew // Вектор объёмов предметов
 Volume.Append=3
 Volume.Append=2
 Volume.Append=1
@@ -63,7 +65,7 @@ Volume.Append=4
 Volume.Append=5
 Volume.Append=4
 
-Price.VectCreat // Вектор цен предметов
+Price.VectNew // Вектор цен предметов
 Price.Append=3
 Price.Append=5
 Price.Append=6
@@ -155,19 +157,34 @@ Manager.AllExec={ // Программа инициализации каждого исполнительного автомата
 
 
 // Установка программы обработки пришедщих данных
+Manager.Mk1Set=SetAlu
+Manager.Mk1AllExec=0
+
 Manager.Mk1Set=FUCellularAutomat.FiringProgSet
 Manager.Mk1AllExec=
 { // Программа при приходе всех данных
-	SetAlu=0
+//	SetAlu=0
 	FUCellularAutomat.In_0_OutMk=AddAlu
+//FUCellularAutomat.AccumOutMk=Console.OutLn
+    // FUCellularAutomat.AccumOutMk=Console.OutLn
 	FUCellularAutomat.In_2_OutMk=AddAlu
 	FUCellularAutomat.In_1_OutMk=MaxAlu
 	FUCellularAutomat.AccumOutMk=FUCellularAutomat.SendTo_1=FUCellularAutomat.SendTo_2 // Выдача результата
 }
 
+Scheduler.NCoresSet=3
+
+Manager.Mk1Set=FUCellularAutomat.ReceiveTimeSet
+Manager.Mk1AllExec=1
+Manager.Mk1Set=FUCellularAutomat.SendTimeSet
+Manager.Mk1AllExec=1
+Manager.Mk1Set=FUCellularAutomat.OtherMkTimeSet
+Manager.Mk1AllExec=1
+
 Manager.Ind1Set=0
 
 Manager.Mk1Set=FUCellularAutomat.SchedulerSet // Настройка моделирования
+Scheduler.ContextOutMk=Manager.Mk1AllExec
 // Запуск расчета, сбор результата
 Volume.IndSet=0 // Настроить АЛУ объемов на начало
 Manager.Ind1Set=0

@@ -1155,45 +1155,49 @@ LoadPoint LoadPoint::Clone(LoadPoint LP) // Дублировать нагрузку (вариант с пере
 	return LP.Clone();
 }
 
-LoadPoint LoadPoint::Clone() // Вернуть клонированную нагрузку
+LoadPoint LoadPoint::Clone(bool All) // Вернуть клонированную нагрузку
 {
 	if (Point == nullptr)
 		return { 0,nullptr };
-	if (Type % 2 == 0) // Если переменная, то возвращаем указатель
+	if (Type % 2 == 0 && !All) // Если переменная, то возвращаем указатель
 		return *this;
-	
-	switch (Type >> 1)
+
+	LoadPoint LP = *this;
+	while (LP.Point != nullptr && (Type >> 1 == DLoadVectInd || Type >> 1 == DICInd))
+		if (Type >> 1 == DLoadVectInd)
+			if (Type == TLoadVectInd && !All)
+				return LP;
+			else
+				LP = ((LoadVect_type)Point)->at(Ind);
+		else if (LP.Type >> 1 == DICInd)
+			if (LP.Ind < 0 || LP.Ind / 3 >= ((IC_type)Point)->size()) return {}; // Ошибка индекса
+			else if (LP.Type == CICInd && !All)
+				return LP;
+			else switch (Ind % 3) {
+			case 0: LP = { TIP, &((IC_type)Point)->at(Ind / 3) }; break;
+			case 1: LP = { Tint, &((IC_type)Point)->at(Ind / 3).atr }; break;
+			case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return {}; LP = ((IC_type)Point)->at(Ind / 3).Load;
+			}
+	switch (LP.Type >> 1)
 	{
-	case Dstring: return { Type, new string(*(string*)Point) };
-	case Dint: return { Type, new int(*(int*)Point) };
-	case Dfloat: return { Type, new float(*(float*)Point) };
-	case Ddouble: return { Type,new double(*(double*)Point) };
-	case Dchar: return { Type,new char(*(char*)Point) };
-	case Dbool: return { Type,new bool(*(bool*)Point) };
-	case DPPoint: return { Type,new (void*)(*(void**)Point) };
+	case Dstring: return { LP.Type, new string(*(string*)LP.Point) };
+	case Dint: return { LP.Type, new int(*(int*)LP.Point) };
+	case Dfloat: return { LP.Type, new float(*(float*)LP.Point) };
+	case Ddouble: return { LP.Type,new double(*(double*)LP.Point) };
+	case Dchar: return { LP.Type,new char(*(char*)LP.Point) };
+	case Dbool: return { LP.Type,new bool(*(bool*)LP.Point) };
+	case DPPoint: return { LP.Type,new (void*)(*(void**)LP.Point) };
 	case DLoadVect:
 	{
-		if (Ind >= 0)
-			// Клонирование переменной по индексу
-			return ((LoadVect_type)Point)->at(Ind).Clone();
 		vector<LoadPoint> *t = new vector<LoadPoint>;
 		t->resize(((vector<LoadPoint>*)Point)->size());
 		for (auto i = t->begin(), j = ((vector<LoadPoint>*)Point)->begin(); i != t->end(); i++, j++)
 			*i = j->Clone(); // Клонирование каждой нагрузки
+		return { CLoadVect, t };
 	}
-	case DIC: 
-		if (Ind < 0)
-			return { Type, ICCopy(*this).Point };
-		else // Клонирование по индексу в ИК
-			switch (Ind % 3)
-			{
-				case 0: // ИП
-					return LoadPoint::Clone({TIP + Type%2, &((IC_type)Point)->at(Ind/3),-1});
-				case 1: // Атрибут
-					return LoadPoint::Clone({ TIP + Type % 2, &((IC_type)Point)->at(Ind / 3).atr,-1 });
-				case 2: // Нагрузка
-					return LoadPoint::Clone(((IC_type)Point)->at(Ind / 3).Load);
-			}
+	case DIC:
+
+		break;
 	case DIP: //return { Type, (*(ip*)Point).Сlone() };
 	{
 		vector<ip>* t = new vector<ip>;
@@ -1232,16 +1236,16 @@ void LoadPoint::VarDel() // Удаление нагрузки ИП
 {
 	if (Point == nullptr)
 		return;
-	switch (Type >> 1)
+	switch (Type)
 	{
-	case Dstring: delete (string*)Point; break;
-	case Dint: delete (int*)Point; break;
-	case Dfloat: delete (float*)Point; break;
-	case Ddouble: delete (double*)Point; break;
-	case Dchar: delete (char*)Point; break;
-	case Dbool: delete (bool*)Point; break;
-	case DPPoint: delete (void**)Point; break;
-	case DLoadVect: ((vector<LoadPoint>*)Point)->resize(0); delete ((vector<LoadPoint>*)Point); break;
+	case Cstring: delete (string*)Point; break;
+//	case Cint: delete (int*)Point; break;
+	case Cfloat: delete (float*)Point; break;
+//	case Cdouble: delete (double*)Point; break;
+	case Cchar: delete (char*)Point; break;
+	case Cbool: delete (bool*)Point; break;
+	case CPPoint: delete (void**)Point; break;
+	case CLoadVect: ((vector<LoadPoint>*)Point)->resize(0); delete ((vector<LoadPoint>*)Point); break;
 	}
 	Point = nullptr; Type = 0;
 }
@@ -1505,7 +1509,7 @@ void LoadPoint::print(map<int, string > AtrMnemo, string offset, string Sep, str
 	case CLoadVect: // Вектор нагрузок
 	{
 		cout << ArrayBracketStart;
-		int c = 1;
+		register int c = 1;
 		for (auto i : *(vector<LoadPoint>*) Point)
 		{
 			i.print(AtrMnemo, offset, Sep, End, quote, ArrayBracketStart, ArrayBracketFin);
@@ -1513,6 +1517,15 @@ void LoadPoint::print(map<int, string > AtrMnemo, string offset, string Sep, str
 			c++;
 		}
 		cout << ArrayBracketFin << endl;
+		break;
+	}
+	case TLoadVectInd:
+	case CLoadVectInd: // Вектор нагрузок
+	{
+		register int i= Ind;
+		cout << "Vect Ind[" << Ind << "] ";
+		if (((LoadVect_type)Point)->size() > abs(i) or -i == ((LoadVect_type)Point)->size())
+			((LoadVect_type)Point)->at(i).print(AtrMnemo, offset, Sep, End, quote, ArrayBracketStart, ArrayBracketFin);
 		break;
 	}
 	default:
@@ -1535,6 +1548,7 @@ void FU::CommonMk(int Mk, LoadPoint Load)
 		if (Alu == nullptr) // Если еще не создан АЛУ
 		{ // Создать АЛУ
 			Alu = (FU*)new ALU(Bus);
+//			cout << "FUType: " << FUtype << endl;
 			Alu->ProgFU(0, { 0,nullptr });
 			((FU*)Alu)->Parent = this;
 			Accum = { Cdouble, &((ALU*)Alu)->accum };
@@ -1562,31 +1576,44 @@ void FU::CommonMk(int Mk, LoadPoint Load)
 	case YesMk: //961 YesProg Вызов подпрограммы по ДА
 	case YesCycleMk: //962 YesCycleProg Вызов цикла по ДА
 	case YesPostCycleMk: //963 YesPostCycleProg Вызов пост цикла по ДА
+	case YesBreakMk: //967 YesProgBreak Вызов подпрограммы по ДА с последующим прерыванием основной программы
 		if (Accum.toBool())
 		{
+			int PB = Mk == YesBreakMk;
 			if (Alu != nullptr)
 				((ALU*)Alu)->Stack.push_back({}); //Буферизиация текущего стека
+			if (Mk == YesBreakMk){
+				Mk = YesMk;
+			}
 			if (Load.Point == nullptr)
 				ProgExec(Prog, Mk - YesMk);
 			else
 				ProgExec(Load.Point, Mk - YesMk);
 			if (Alu != nullptr)
 				((ALU*)Alu)->Stack.pop_back(); // Отмена буферизации текущего стека
+			ProgStop += PB; // Выйти из главной программы
 		}
 		break;
 	case NoMk: //964 NoProg Вызов подпрограммы по НЕТ
 	case NoCycleMk: //965 NoCycleProg Вызов цикла по НЕТ
 	case NoPostCycleMk: //966 NoPostCycleProg Вызов пост цикла по НЕТ
-		if (Accum.toBool())
+	case NoBreakMk: //968 NoProgBreak Вызов подпрограммы по НЕТ с последующим прерыванием основной программы
+		if (!Accum.toBool())
 		{
+			int PB = Mk == NoBreakMk;
 			if (Alu != nullptr)
 				((ALU*)Alu)->Stack.push_back({}); //Буферизиация текущего стека
+			if (Mk == NoBreakMk) {
+				ProgStop += 1;
+				Mk = NoMk;
+			}
 			if (Load.Point == nullptr)
 				ProgExec(Prog, Mk - NoMk);
 			else
 				ProgExec(Load.Point, Mk - NoMk);
 			if (Alu != nullptr)
 				((ALU*)Alu)->Stack.pop_back(); // Отмена буферизации текущего стека
+			ProgStop += PB; // Выйти из главной программы
 		}
 		break;
 	case 919: // AccumPointerSet Установить ссылку на аккумулятор
@@ -1799,7 +1826,7 @@ void FU::ProgExec(void* UK, unsigned int CycleMode, FU* ProgBus, vector<ip>::ite
 				if (i->atr == RepeatAtr) { // Запустить программу заново
 					RepeatF = true; break;
 				}
-
+/*
 				if (i->atr == ProgMkAtr || // Переход к подрограмме
 					i->atr == YesAtr && Accum.toBool() ||
 					i->atr == NoAtr && !Accum.toBool()) {
@@ -1827,7 +1854,7 @@ void FU::ProgExec(void* UK, unsigned int CycleMode, FU* ProgBus, vector<ip>::ite
 					((ALU*)Alu)->accum = ((ALU*)Alu)->Stack.back().accum;
 					continue;
 				}
-
+*/
 				ProgFU(i->atr, i->Load); // Выполнение команды
 			}
 

@@ -35,6 +35,7 @@ class Router : public FU
 	void* OverflowProg = nullptr; // Нехватка оперативной памяти для пересылаемых данных
 	void* MkOverflowProg = nullptr; //
 	void* ReceiveProg = nullptr; // Программа реакции на приход данных для машрутизации (например, для обработки статистики)
+	void* RoutingErrProg = nullptr; // Программа реакции на ошибку маршрутизации (атрибут МК не попадает ни в один из диапазонов маршрутизации)
 	//
 	// Блок характеристик роутера
 	int MaxMemorySize = 0; // Макс. объем памяти

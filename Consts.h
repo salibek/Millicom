@@ -45,8 +45,8 @@ const int ProgAtr = -100, Atr = -60, SubObj = -6, GotoAtr=-99;
 const int ListLine = -80, ListSub = -90; // Атрибуты линии списка и подсписка
 // Общие МК
 const int ProgMk=958, ProgCycleMk = 959, ProgPostCycleMk = 960;
-const int YesMk = 961, YesCycleMk = 962, YesPostCycleMk = 963;
-const int NoMk = 964, NoCycleMk = 965, NoPostCycleMk = 966;
+const int YesMk = 961, YesCycleMk = 962, YesPostCycleMk = 963, YesBreakMk =967;
+const int NoMk = 964, NoCycleMk = 965, NoPostCycleMk = 966, NoBreakMk =968;
 const int CalcMk = 927; // Милликоманда вычисления АЛВ
 const int BreakMk = 909, NextMk = 910; // МК прерывания программы и продолжения цикла
 const int RepeatMk=911; // Начать выполнение ИК заново
@@ -166,7 +166,7 @@ public:
 	void* VarClone(); // Копирование значения нагрузки
 	void VarDel();// Удаление нагрузки ИП
 	void print(map<int, string > AtrMnemo = {}, string offset = "", string Sep = " ", string End = "\n", string quote = """",  string ArrayBracketStart = "[", string ArrayBracketFin = "]", map<void*, int> *AdrMap = nullptr); // Параметр - указатель на табл. мнемоник атрибутов
-	LoadPoint Clone(); // Дублировать нагрузку
+	LoadPoint Clone(bool All=false); // Дублировать нагрузку (All - флаг копирования любых нагрузок, в том числе и переменных)
 	static LoadPoint Clone(LoadPoint LP); // // Дублировать нагрузку (вариант с передаваемой в качестве параметра нагрузки)
 	void ConstTypeSet(bool F = true) { if (F)Type |= 1; else VarTypeSet(); }; // Установить тип 'константа'
     // Установить тип 'переменная'
@@ -266,6 +266,7 @@ public:
 	bool ALUCreating = false; // Флаг создания АЛУ
 	FU* Parent = nullptr; // Ссылка на родительский ФУ
 	int FUInd = -1; // Индекс ФУ
+	int  FUMkGlobalRange = 0; // Глобальный адрес ФУ
 
 	FUModeling *Modeling=nullptr; // Моделирование
 

@@ -15,7 +15,7 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load)
 			((Scheduler*)(Modeling->scheduler))->Scheduling(this, OtherMkTime);
 		else
 		{
-			switch(MK/50)
+			switch((MK-100)/50)
 				{
 			case 0: // In_0_Set
 				((Scheduler*)(Modeling->scheduler))->Scheduling(this, ReceiveTime);
@@ -125,6 +125,16 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load)
 		break;
 	case 38: // IndOutMk Выдать МК с индексом
 		MkExec(Load, {Cint, &Ind});
+		break;
+
+	case 50: // SendTimeSet Установить время передачи сообщения для имитацинного моделирования
+		SendTime = Load.toDouble();
+		break;
+	case 51: // ReceiveTimeSet Установить время приема сообщения для имитацинного моделирования
+		SendTime = Load.toDouble();
+		break;
+	case 52: // OtherMkTimeSet Установить время время выполнения других операций для имитацинного моделирования
+		SendTime = Load.toDouble();
 		break;
 
 	case 700: // IndSet Установить индекс
@@ -392,8 +402,16 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load)
 		InCounter[PlyCurrent]++;
 		if (InCounter[PlyCurrent] == Neighbours.size()) // Набрался полный комплект
 		{
+			bool ModelingFlag = false;
 			InComplectF[PlyCurrent] = true;
+
+			if(Modeling!=nullptr){
+				ModelingFlag = Modeling->ManualMode; // Отменить режим моделирования
+				Modeling->ManualMode = false;}
 			ProgExec(FiringProg);
+			if (Modeling != nullptr)
+				Modeling->ManualMode= ModelingFlag; // Восстановить режим моделирования
+
 			RezReady[PlyCurrent] = true;
 			if (AutoSend) ProgFU(890, { 0, nullptr });
 			PlyCurrent++;
@@ -637,6 +655,7 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load)
 			if (MK % 50 >= Neighbours.size()) break;
 			if (Neighbours[MK % 50] == nullptr) break;
 			Neighbours[MK % 50]->ProgFU(NeighboursMk[MK % 50], Load);
+			//cout << Load.toDouble() << endl;
 			break;
 		case 9: //MkAdd_N Прибавить смещение к МК
 			if (MK % 50 >= Neighbours.size()) break;
@@ -650,6 +669,8 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load)
 			else
 				Plys[PlyCurrent][MK % 50].Clear();
 			Plys[PlyCurrent][MK % 50] = Load.Clone();
+
+//			cout << Plys[PlyCurrent][MK % 50].toDouble() << endl;
 			//InCounter[PlyCurrent]++;
 			if (MK % 50 >= 0 && MK % 50 < ReceiveProgs.size())
 				ProgExec(ReceiveProgs[MK%50]);
@@ -657,8 +678,16 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load)
 //			if (InCounter[PlyCurrent] == Neighbours.size()) // Набрался полный комплект
 			if (InCounter[PlyCurrent] == Plys[PlyCurrent].size()) // Набрался полный комплект
 				{
+				bool ModelingFlag = false;
 //				InComplectF[PlyCurrent]= true;
+				if (Modeling != nullptr) {
+					ModelingFlag = Modeling->ManualMode; // Отменить режим моделирования
+					Modeling->ManualMode = false;
+				}
 				ProgExec(FiringProg);
+				if (Modeling != nullptr)
+					Modeling->ManualMode = ModelingFlag; // Восстановить режим моделирования
+
 				RezReady[PlyCurrent] = true;
 				if (AutoSend) ProgFU(890, { 0, nullptr });
 				PlyCurrent++;

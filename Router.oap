@@ -13,6 +13,7 @@ NewFU={Mnemo="Main_Bus" MkBegRange=1000 FUType=FUBusNew} // Описание Bus
 MainBus.FUTypeCorrectSet=-96 // Корректировка номера типа ФУ для переноса на новую ОА-платформу
 
 NewFU={Mnemo="Console" FUType=FUConsNew Hint="Консоль для вывода логов"}
+NewFU={Mnemo="Console1" FUType=FUConsNew Hint="Консоль для вывода логов"}
 NewFU={Mnemo="Console2" FUType=FUConsNew Hint="Консоль для вывода логов"}
 NewFU={Mnemo="Router" FUType=FURouter}
 NewFU={Mnemo="Gateway" FUType=FUGateway}
@@ -20,15 +21,18 @@ NewFU={Mnemo="Gateway" FUType=FUGateway}
 MainBus.PartialResetSet \\ Запомнить число созданных ФУ
 MainBus.ModeSet=2
 
-Console.PrefixSet="Console: "
+Console.QuoteSet=""
+
+Console1.PrefixSet="Console: "
 Console2.PrefixSet="Console2: "
 
 Router.ChCreate=10000
-Console.ContextOutMk=Router.ChGatewaySet
+Console1.ContextOutMk=Router.ChGatewaySet
 
 Router.ChCreate=11000
 Console2.ContextOutMk=Router.ChGatewaySet
 
 Router.RoutingSimulat={10002=13}
+Router.RoutingSimulat={11002=17}
  
-Router.ChNumOutMk=Console.OutLn
+Console.Out="ChNum: " Router.ChNumOutMk=Console.OutLn

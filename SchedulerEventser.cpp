@@ -9,6 +9,7 @@ void Eventser::Eventsing(FU* Context, double tay) // Запланиовать событие (tay -
 		if (work && !start)// ProgFU(1, { 0,nullptr });
 			start = true;
 			while (Events.size()!=0 && work) {
+	//			cout << CurrentTime << endl;
 				CurrentTime = Events.begin()->first;
 				Events.begin()->second->Scheduling();
 				Events.erase(Events.begin());
