@@ -125,7 +125,6 @@ void Router::ProgFU(int MK, LoadPoint Load)
 	case 62: // RoutindErrProgSet Установить ссылку на программу обработки события адрес МК для маршрутизации не найден в таблице маршрутизации
 		RoutingErrProg = Load.Point;
 		break;
-		//
 	// «Ручное» управление
 	case 65: // RoutingAttributeOut Выдать атрибут пришедшей для маршрутизации МК
 		Load.Write(LaslMkIp.atr);

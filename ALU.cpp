@@ -208,6 +208,7 @@ void ALU::ProgFU(int MK, LoadPoint Load)
 			// Доделать очищение память для вектора
 			Stack.pop_back(); // Удалить аккумулятор из стека
 		}
+
 		switch (MK)
 		{
 		case 500: // MkExtSet Установить внешнюю МК

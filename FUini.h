@@ -2,6 +2,8 @@
 #pragma once
 #include "Consts.h"
 
+int SizeOfFUType(unsigned int Type); // Объём данных, занимаемый ФУ определенного типа
+
 FU *BusIni(FU *BusContext, FU *TEmpl);
 FU *ConsIni(FU *BusContext, FU *TEmpl);
 FU *LexIni(FU *BusContext, FU *TEmpl);

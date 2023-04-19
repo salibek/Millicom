@@ -146,7 +146,6 @@
   <ItemGroup>
     <ClCompile Include="ALU.cpp" />
     <ClCompile Include="CellularAutomata.cpp" />
-    <ClCompile Include="ConfineSimple.cpp" />
     <ClCompile Include="IntAlu.cpp" />
     <ClCompile Include="Bag.cpp" />
     <ClCompile Include="Bus.cpp" />
@@ -176,7 +175,6 @@
   <ItemGroup>
     <ClInclude Include="ALU.h" />
     <ClInclude Include="CellularAutomata.h" />
-    <ClInclude Include="ConfineSimple.h" />
     <ClInclude Include="IntAlu.h" />
     <ClInclude Include="Bag.h" />
     <ClInclude Include="Bus.h" />

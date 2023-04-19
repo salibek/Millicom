@@ -5,7 +5,7 @@
 #include <iostream>
 using namespace std;
 
-void StrGenContext::ProgFU(int MK, LoadPoint Load)
+void StrGen::ProgFU(int MK, LoadPoint Load)
 {
 /*	switch (MK)
 	{

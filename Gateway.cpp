@@ -13,6 +13,7 @@ void Gateway::ProgFU(int MK, LoadPoint Load)
 		GatewayFriend->ProgFU(MK, Load); // Передать сообщение на парный шлюз
 	}
 	else
+
 	switch (MK%FUMkRange)
 	{
 	case 0: // Reset 
