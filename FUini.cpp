@@ -25,6 +25,37 @@
 
 using namespace std;
 
+
+int SizeOfFUType(unsigned int Type) // Объём данных, занимаемый ФУ определенного типа
+{
+	switch (Type)
+	{
+	case 1: return sizeof(BusFU);
+	case 2: return sizeof(Console);
+	case 3: return sizeof(StrGen);
+	case 4: return sizeof(Lex);
+	case 5: return sizeof(Find);
+	case 6: return sizeof(List);
+	case 7: return sizeof(GraphTransf);
+	case 8: return sizeof(IntAlu);
+	case 9: return sizeof(InOut);
+	case 10: return sizeof(AutomatManager);
+	case 11: return sizeof(Neuro);
+	case 12: return sizeof(NetManager);
+	case 13: return sizeof(Scheduler);
+	case 14: return sizeof(Eventser);
+	case 15: return sizeof(MeanShift);
+	case 16: return sizeof(Bag);
+	case 17: return sizeof(Gauss);
+	case 18: return sizeof(ALU);
+	case 19: return sizeof(CellularAutomata);
+	case 20: return sizeof(CellularAutomatManager);
+	case 21: return sizeof(Router);
+	case 22: return sizeof(Gateway);
+	}
+}
+
+
 FU *ConsIni(FU *Bus, FU *TEmpl)
 {
  	return (FU*)new Console(Bus, TEmpl);
@@ -41,7 +72,7 @@ FU *LexIni(FU *BusContext, FU *TEmpl)
 }
 FU *StrGenIni(FU *BusContext, FU *TEmpl)
 {
-	return (FU*)new StrGenContext(BusContext, TEmpl);
+	return (FU*)new StrGen(BusContext, TEmpl);
 }
 
 FU *FindIni(FU *BusContext, FU *TEmpl)
@@ -112,7 +143,7 @@ FU* GaussIni(FU* BusContext, FU* TEmpl)
 
 FU* CellularAutomatIni(FU* BusContext, FU* TEmpl)
 {
-	return (FU*) new CellularAutomat(BusContext, TEmpl);
+	return (FU*) new CellularAutomata(BusContext, TEmpl);
 }
 
 FU* CellularAutomatManagerIni(FU* BusContext, FU* TEmpl)

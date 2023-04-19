@@ -4,7 +4,7 @@
 #include <string>
 #include <fstream>
 using namespace std;
-class StrGenContext : public FU {
+class StrGen : public FU {
 private:
 	int LineCount = 0;
 	void *Receiver = nullptr;
@@ -21,6 +21,6 @@ private:
 	string finStr = ""; // Строка, выдаваемая при окончании геренации строк
 public:
 	void ProgFU(int MK, LoadPoint Load) override;
-	StrGenContext(FU* BusContext, FU* Templ) : FU(BusContext) { ProgFU(0, { 0, nullptr }); Bus = BusContext; FUtype = 2; };
-	StrGenContext(): FU() { StrGenContext(nullptr, nullptr); };
+	StrGen(FU* BusContext, FU* Templ) : FU(BusContext) { ProgFU(0, { 0, nullptr }); Bus = BusContext; FUtype = 2; };
+	StrGen(): FU() { StrGen(nullptr, nullptr); };
 };

@@ -10,10 +10,8 @@ public:
 	FU* Receiver = nullptr; // Приемник данных
 	int ReceiverMk = -1; // МК для приемника данных
 
-	int MkInCount = 0; // Счетчик принятых МК в канал
-	int DataInCount = 0; // Счетчик количества принятых данных в канал
-	int MkOutCount = 0; // Счетчик переданных МК через канал
-	int DataOutCount = 0; // Счетчик количества переданных данных через канал
+	int MkCount = 0; // Счетчик принятых МК в канал
+	int DataCount = 0; // Счетчик количества принятых данных в канал
 };
 
 class Router : public FU
@@ -43,6 +41,7 @@ class Router : public FU
 	// 
 	// Блок статистики передачи
 	int MKCount = 0; // Количество прошедших через роутер МК
+	int DataCount = 0; // Объем переданной информации через роутер
 	int MaxMKQueue = 0; // Максимальная длина очереди
 	double AverageMKQueue = 0; // Средняя длина очереди
 	//

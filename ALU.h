@@ -48,7 +48,6 @@ public:
 	};
 	void ProgFU(int MK, LoadPoint Load) override;
 	void VectOperation(int MK, LoadPoint Load); // Реализацая векторных операций
-//	void* Parent = nullptr;
 	void		add(LoadPoint load);
 	void		Clear();
 	void* VarNew(LoadPoint load); // New value of accum
