@@ -170,7 +170,7 @@ void ALU::ProgFU(int MK, LoadPoint Load)
 		bool tt_bool = 0;
 		char tt_char = 0;
 		string tt_str = "";
-		if (MK >= 26 && MK < 500 && Load.isProg()) // Арифметико-логическсое выражение со ссылкой в нагрузке
+		if (MK >= 30 && MK < 500 && Load.isProg()) // Арифметико-логическсое выражение со ссылкой в нагрузке
 		{
 			Stack.push_back({});
 			ProgExec(Load);
@@ -284,6 +284,32 @@ void ALU::ProgFU(int MK, LoadPoint Load)
 				}
 			break; 
 		}
+/*
+		case 2: // Out Выдать значение аккумулятора
+			if (accumType >> 1 == Dstring)
+				Load.Write(Stack.back().accumStr);
+			else if (Stack.back().accumType >> 1 == DLoadArray) // Вектор
+			{
+				if (Stack.back().IndF)
+					if (!(Stack.back().Ind >= 0 && Stack.back().Ind < Stack.back().accumVect->size()))
+					{
+						ProgExec(OutOfRangeErrProg); // Ошибка выхода индекса за пределы диапазона
+						break;
+					}
+					else
+						Load.WriteFromLoad(Stack.back().accumVect->at(Stack.back().Ind));
+				if (Load.Type == TLoadArray || Load.Type == Tvoid)
+				{
+					Load.Write(Stack.back().accumVect);
+					Stack.back().Ind += Stack.back().IndAutoInc;
+				}
+				else
+					;// Сообщение о несоответствии типов
+			}
+			else
+				Load.Write(Stack.back().accum);
+			break;
+*/
 		case E_MK::PUSH: //  Push Сделать еще один уровень аккумулятора
 			Stack.push_back({});
 			ProgFU(E_MK::SET, Load);

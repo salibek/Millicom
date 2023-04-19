@@ -142,7 +142,7 @@ FU* GaussIni(FU* BusContext, FU* TEmpl)
 
 FU* CellularAutomatIni(FU* BusContext, FU* TEmpl)
 {
-	return (FU*) new CellularAutomat(BusContext, TEmpl);
+	return (FU*) new CellularAutomata(BusContext, TEmpl);
 }
 
 FU* CellularAutomatManagerIni(FU* BusContext, FU* TEmpl)

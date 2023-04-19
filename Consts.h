@@ -215,9 +215,6 @@ public:
 
 	ip Copy() // Копирование ИП
 	{
-//		ip ip_new;
-//		ip_new.copy(*this);
-//		return ip_new;
 		return { atr,Load.Clone() };
 	};
 
