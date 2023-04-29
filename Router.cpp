@@ -24,6 +24,13 @@ void Router::ProgFU(int MK, LoadPoint Load)
 
 		ProgExec(ReceiveProg); // Запустить программу по приходу данных
 		MKCount++;
+		DataCount += Load.DataSize() + 4;
+		if (Modeling != nullptr)
+		{
+			MaxMKQueue = max(MaxMKQueue, (int)Modeling->qmk.size()); // Вычисление максимальной длины очереди
+			MaxDataSize =max(MaxDataSize, DataSize); // Вычисление максимального объема данных в буфере
+			DataSize -= Load.DataSize() + 4; // Обработка МК
+		}
 		LaslMkIp = {MK,Load}; // Запоминание последней пришедшей для маршрутизации МК
 		if (RoutingProg != nullptr)
 		{
@@ -41,7 +48,10 @@ void Router::ProgFU(int MK, LoadPoint Load)
 		{
 			Channels[SendInd].MkCount++; // Посчитали МК
 			Channels[SendInd].DataCount += Load.DataSize();
-			((FU*) Channels[SendInd].Receiver)->ProgFU(MK,Load);
+			if(Modeling==nullptr)
+				((FU*) Channels[SendInd].Receiver)->ProgFU(MK,Load);
+//			else
+//				Eventser->Eventsing(Context, DTime + SchedulingTime);
 		}
 
 	}
@@ -126,6 +136,9 @@ void Router::ProgFU(int MK, LoadPoint Load)
 	case 62: // RoutindErrProgSet Установить ссылку на программу обработки события адрес МК для маршрутизации не найден в таблице маршрутизации
 		RoutingErrProg = Load.Point;
 		break;
+	case 63: //EventserSet Установить указатель на контроллер событий
+		eventser = (Eventser *) Load.Point;
+		break;
 	// «Ручное» управление
 	case 65: // RoutingAttributeOut Выдать атрибут пришедшей для маршрутизации МК
 		Load.Write(LaslMkIp.atr);
@@ -159,7 +172,7 @@ void Router::ProgFU(int MK, LoadPoint Load)
 	case 320: // RouterStatsClear Сбросить блок статистики переданных данных через роутер
 		MKCount = 0;
 		MaxMKQueue = 0;
-		AverageMKQueue = 0;
+		//AverageMKQueue = 0;
 		for (auto i = Channels.begin(); i != Channels.end(); i++)
 		{
 			i->MkCount = 0;
@@ -207,10 +220,13 @@ void Router::ProgFU(int MK, LoadPoint Load)
 		MkExec(Load, { Cint, &MaxMKQueue });
 		break;
 	case 375: // RouterAverageMkQueueOut Выдать среднюю длину очереди МК на роутере
-		Load.Write(AverageMKQueue);
+		Load.Write((double) DataCount / MKCount);
 		break;
 	case 380: // RouterAverageMkQueueOuMk Выдать МК со средней длиной очереди МК на роутере
-		MkExec(Load, { Cint, &AverageMKQueue });
+	{
+		double t = (double)DataCount / MKCount;
+		MkExec(Load, { Cdouble, &t });
+	}
 		break;
 	case 395: // ReceiveProgSet Установить ссылку на программу, активизирующуюся при приходе МК для маршрутизации (для реализации автоматического сбора статистики)
 		ReceiveProg = Load.Point;

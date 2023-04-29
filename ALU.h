@@ -41,8 +41,11 @@ public:
 	void* accumVect = nullptr;	// Указатель на аккумулятор (вектор, матрица и т.п.)
 	int Ind = -1; // Индекс вектора или ИК
 
-	vector<ALUContext> Stack = {};
-	ALU(FU* parent, FU* Templ = nullptr) { Bus = (FU*)parent; Parent = parent; FUtype = 17; ProgFU(0, { 0, nullptr }); 
+	vector<ALUContext> Stack = {}; // Стек аккумуляторов
+	vector<int> Anses = {}; // Стек ans (хранятся индексы уровней аккумулятора, которые являютс ans-ами
+	vector<LoadVect_type> VectStore = {}; // Вектор временных векторных аккумуляторов
+
+	ALU(FU* parent, FU* Templ = nullptr) { Bus = (FU*)parent; Parent = parent; FUtype = 17; ProgFU(0, { 0, nullptr });
 	Alu = (FU*)this; // Настроить ссылку на АЛУ на самого себя
 	ALUCreating = false;
 	};
@@ -87,6 +90,9 @@ public:
 	void		fu_floor(LoadPoint Load);
 	void		fu_round(LoadPoint Load);
 	void		fu_log(LoadPoint Load);
+	void		fu_log10(LoadPoint Load);
+	void		fu_log2(LoadPoint Load);
+	void		fu_exp(LoadPoint Load);
 	void		fu_random(LoadPoint Load);
 	void		fu_inverse(LoadPoint load);
 	void		fu_and(LoadPoint load);

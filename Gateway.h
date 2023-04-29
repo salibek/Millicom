@@ -11,7 +11,7 @@ class Gateway : public FU
 	void* GatewayProg = nullptr; // Программа ручного управления для передачи данных
 	void* ReceiveProg = nullptr; // Программа обработки события прихода данных для передачи (например обработка статистики)
 	void* OverflowProg = nullptr; // Программа обработка события переполнения буфера данных
-	void* MkOverflowProg = nullptr; // рограмма обработка события переполнения буфера МК
+	void* MkOverflowProg = nullptr; // Программа обработка события переполнения буфера МК
 	int Mode = 0; // 0 - дуплекс, 1 - симплекс от шлюза, 2 - симплекс к шлюзу, 3 - полудуплекс
 	// Блок характеристик роутера
 	double TranslTime = 0; // Время передачи единицы данных
@@ -23,6 +23,8 @@ class Gateway : public FU
 	int DataCount = 0, MkCount=0; // Объем данных и количество МК переденных через шлюз
 	int MaxMKQueue = 0; // Максимальная длина очереди
 	double AverageMKQueue = 0; // Средняя длина очереди
+	int DataSize = 0, MaxDataSize = 0; // Текущий объем занятого буфера и максимальный объем занятого буфера
+	FU* Eventser = nullptr; // Ссылка на контроллер событий
 public:
 	void ProgFU(int MK, LoadPoint Load) override;
 	Gateway(FU* BusContext, FU* Templ)

@@ -17,7 +17,7 @@ int i;
 vector<vector<void*>> BackRec; // вектор адресов для обратной записи адреса
 vector<int> BackRecInd; // вектор индексов для обратной записи адреса
 
-void ConvIndStrOld(string str, ip &IP, vector<ip*> IpUk, map<int, vector<ip>*> &CapsId, int Count) // Возвращает номер следующей ИК
+void ConvIndStrOld(string str, ip &IP, vector<ip*> IpUk, map<int, vector<ip>*> &CapsId, vector<pair<int, int>> IpId, ICVect* ipVect, int Count) // Возвращает номер следующей ИК
 {
 	IP.atr = atoi(str.substr(0, str.find(' ')).c_str());
 	str = str.substr(str.find(' ') + 1, string::npos);
@@ -34,11 +34,12 @@ void ConvIndStrOld(string str, ip &IP, vector<ip*> IpUk, map<int, vector<ip>*> &
 			case 0:// Указатель на ИП
 				if (CapsId.count(DInd >> 2) == 0)
 				{
-					int t;
+					IP.Load = { TICInd, ipVect->at(IpId[DInd >> 2].first), IpId[DInd >> 2].second * 3};
+/*					int t;
 					for (t = DInd >> 2; !CapsId.count(t); t--);
 					IP.Load.Point = CapsId[t];
 					IP.Load.Type = TICInd;
-					IP.Load.Ind = DInd >> 2;
+					IP.Load.Ind = DInd >> 2; */
 				}
 				else
 				{
@@ -51,11 +52,14 @@ void ConvIndStrOld(string str, ip &IP, vector<ip*> IpUk, map<int, vector<ip>*> &
 //				IP.Load.Point = &(IpUk[DInd >> 2]->atr);
 //				IP.Load.Type = Tint;
 			{
-				int t;
+				IP.Load = { TICInd, ipVect->at(IpId[DInd >> 2].first), IpId[DInd >> 2].second * 3 + 1 };
+/*				int t;
 				for (t = DInd >> 2; !CapsId.count(t); t--);
 				IP.Load.Point = CapsId[t];
 				IP.Load.Type = TICInd;
-				IP.Load.Ind = (((DInd >> 2) - t) << 2) + 1;
+				IP.Load.Ind = ((DInd >> 2) - t) * 3 + 1;
+//				IP.Load.Ind = (((DInd >> 2) - t) << 2) + 1;
+*/
 			}
 			break;
 			case 2:// указатель на данные
@@ -66,11 +70,15 @@ void ConvIndStrOld(string str, ip &IP, vector<ip*> IpUk, map<int, vector<ip>*> &
 			//	IP.Load.Point = &(IpUk[DInd >> 2]->Load);
 			//	IP.Load.Type = TLoad;
 				{
+				IP.Load = { TICInd, ipVect->at(IpId[DInd >> 2].first), IpId[DInd >> 2].second * 3 + 2 };
+				/*
 					int t;
 					for (t = DInd >> 2; !CapsId.count(t); t--);
 					IP.Load.Point = CapsId[t];
 					IP.Load.Type = TICInd;
-					IP.Load.Ind = (((DInd >> 2) - t) << 2) + 2;
+					IP.Load.Ind = ((DInd >> 2) - t) * 3 + 2;
+				//	IP.Load.Ind = (((DInd >> 2) - t) << 2) + 2;
+				*/
 				}
 				break;
 			}
@@ -133,10 +141,11 @@ void ConvIndStrOld(string str, ip &IP, vector<ip*> IpUk, map<int, vector<ip>*> &
 
 ICVect* ConvIndOld(string FileName)
 {
-	ICVect *ipVect = new ICVect;
+	ICVect *icVect = new ICVect;
 	ifstream in(FileName);
 	map<int, vector<ip>* > CapsId; // Номера ИП, с которых начинается ИК
-	if (!in) return ipVect;
+	vector<pair<int, int>> IpId; // Номера ИП в ИК
+	if (!in) { cout << "File is not found\n"; return icVect; }
 	int N;
 	in >> N;
 	vector<ip*> IpUk; // Указатели на ИП
@@ -159,6 +168,7 @@ ICVect* ConvIndOld(string FileName)
 		getline(in, str);
 		str = str.substr(0, str.rfind(' '));
 
+		IpId.push_back({ LIC_Current, LIC[LIC_Current] }); // Запомнить номер ИК и индекс ИП
 		LIC[LIC_Current]++;
 		if (str.substr(str.rfind(' ') + 1, string::npos) == "-1") // Конец ИК?
 			if (LIC_Ind.begin()->first == i + 1)
@@ -193,14 +203,14 @@ ICVect* ConvIndOld(string FileName)
 	}
 	LIC.pop_back();
 	NIC.pop_back();
-	ipVect->resize(LIC.size());
+	icVect->resize(LIC.size());
 
 	for (int i = 0; i < NIC.size(); i++)// Формирование таблицы индентификаторов ИК
 										// и списка ИК
 	{
-		(*ipVect)[i] = new vector<ip>();
-		(*ipVect)[i]->resize(LIC[i]);
-		CapsId[NIC[i]] = (ipVect->at(i));
+		(*icVect)[i] = new vector<ip>();
+		(*icVect)[i]->resize(LIC[i]);
+		CapsId[NIC[i]] = (icVect->at(i));
 	}
 	// Формирование списка ссыллок на ИП
 	LIC_Current = 0;
@@ -218,7 +228,7 @@ ICVect* ConvIndOld(string FileName)
 	{
 		getline(in, str);
 		str = str.substr(0, str.rfind(' '));
-		*_IpUk = &(*ipVect->at(LIC_Current))[LIC[LIC_Current]];
+		*_IpUk = &(*icVect->at(LIC_Current))[LIC[LIC_Current]];
 		LIC[LIC_Current]++;
 		if (str.substr(str.rfind(' ') + 1, string::npos) == "-1") // Конец ИК?
 			if (LIC_Ind.begin()->first == i + 1)
@@ -254,7 +264,7 @@ ICVect* ConvIndOld(string FileName)
 	}
 	LIC.pop_back();
 	//	NIC.pop_back();
-	ipVect->resize(LIC.size());
+	icVect->resize(LIC.size());
 
 	in.seekg(0, ios::beg); // переход в начало файла
 	getline(in, str);
@@ -262,7 +272,7 @@ ICVect* ConvIndOld(string FileName)
 	for (auto &i : IpUk)
 	{
 		getline(in, str);
-		ConvIndStrOld(str, *i, IpUk, CapsId, t++);
+		ConvIndStrOld(str, *i, IpUk, CapsId, IpId, icVect, t++);
 	}
 
 	IpUk.clear();
@@ -270,5 +280,5 @@ ICVect* ConvIndOld(string FileName)
 	LIC.clear();
 
 	in.close();
-	return ipVect;
+	return icVect;
 }

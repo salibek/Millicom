@@ -29,11 +29,11 @@ void List::ProgFU(int MK, LoadPoint Load)
 		}
 		else if (Mode == 1) // Режим хеширования
 		{
-			
+
 		}
 		break;
 	case 2:// Out Выдать ссылку на список
-			Load.Write(ListHead.back());
+		Load.Write(ListHead.back());
 		break;
 	case 3:// OutMk Выдать МК со ссылкой на список
 		if (!ListHead.size())
@@ -42,7 +42,7 @@ void List::ProgFU(int MK, LoadPoint Load)
 			MkExec(Load, { TIC,(void*)ListHead.back() });
 		break;
 	case 4: // RootOutMk Выдать МК с указателем на корневой список
-		if(!ListHead.size())
+		if (!ListHead.size())
 			MkExec(Load, { 0,nullptr });
 		else
 			MkExec(Load, { TIC,(void*)*ListHead.begin() });
@@ -60,7 +60,7 @@ void List::ProgFU(int MK, LoadPoint Load)
 		Searcher.CalcMode = Load.toBool(true);
 		break;
 	case 27: // CalcMkSet Установить МК для вычисления АЛВ
-		Searcher._CalcMk=Load.toInt();
+		Searcher._CalcMk = Load.toInt();
 		break;
 	case 8:// EmptyProgExec Выполнить программу, если список пуст
 	case 9:// FullExec Выполнить программу, если список не пуст
@@ -123,29 +123,35 @@ void List::ProgFU(int MK, LoadPoint Load)
 		if (Load.Type == TPPoint)
 			(*(LoadPoint*)Load.Point) = Searcher.Obj;
 		break;
-	case 30: // BackOutMk Вылаить МК со входным объектом для поиска
+	case 30: // ReceivedOutMk Вылаить МК со входным объектом для поиска
 		MkExec(Load, Searcher.Obj);
 		break;
-	case 31: // BackOut Вылать входной объект для поиска
-		if (Load.Type == TPPoint)
-			(*(LoadPoint*)Load.Point) = Searcher.Obj.Clone();
+	case 31: // ReceivedCopyOut Вылать входной объект для поиска
+		Load.Write(Searcher.Obj.Clone());
+		//if (Load.Type == TPPoint)
+		//	(*(LoadPoint*)Load.Point) = Searcher.Obj.Clone();
 		break;
-	case 32: // CopyBackOutMk Вылаить МК со входным объектом для поиска
+	case 32: // ReceivedCopyOutMk Вылаить МК со входным объектом для поиска
 		MkExec(Load, Searcher.Obj.Clone());
 		break;
 
-	case 35: // LoadBackOut Выдать нагрузку входного объекта для поиска
+	case 35: // ReceivedLoadOut Выдать нагрузку входного объекта для поиска
 		if (Searcher.Obj.isIC())
-			Load.Point = ((IC_type)(Searcher.Obj.Point))->begin()->Load.Point;
+			Load.Write(((IC_type)(Searcher.Obj.Point))->begin()->Load);
 		else if (Searcher.Obj.isIP())
-			Load.Point = ((ip*)(Searcher.Obj.Point))->Load.Point;
+			Load.Write(((ip*)Searcher.Obj.Point)->Load);
+//		cout <<"Type: " << ((IC_type)(Searcher.Obj.Point))->begin()->Load.Type;
+//		if (Searcher.Obj.isIC())
+//			Load.Point = ((IC_type)(Searcher.Obj.Point))->begin()->Load.Point;
+//		else if (Searcher.Obj.isIP())
+//			Load.Point = ((ip*)(Searcher.Obj.Point))->Load.Point;
 		break;
-	case 36: // LoadBackOutMk Выдать МК с нагрузкой входного объекта для поиска
+	case 36: // ReceivedLoadOutMk Выдать МК с нагрузкой входного объекта для поиска
 		if (Load.isInt())
 			if (Searcher.Obj.isIC())
-				MkExec(*((int*)Load.Point), ((IC_type)(Searcher.Obj.Point))->begin()->Load);
+				MkExec(Load, ((IC_type)(Searcher.Obj.Point))->begin()->Load);
 			else if (Searcher.Obj.isIP())
-				MkExec(*((int*)Load.Point), ((ip*)(Searcher.Obj.Point))->Load);
+				MkExec(Load, ((ip*)(Searcher.Obj.Point))->Load);
 		break;
 	case 37: // LineCountOut Выдать количество линий в списке
 		if (ListHead.back() == nullptr)
@@ -157,10 +163,10 @@ void List::ProgFU(int MK, LoadPoint Load)
 	{
 		int t = 0;
 		if (ListHead.back() != nullptr)
-			t=ListHead.back()->size();
-		MkExec(Load, {Cint, &t});
+			t = ListHead.back()->size();
+		MkExec(Load, { Cint, &t });
 	}
-		break;
+	break;
 
 	case 40: // ModeSet Установить режим работы списка (0 - список на основе ИК, 1 - список на основе хеш-таблицы)
 		switch (Load.toInt())
@@ -168,7 +174,7 @@ void List::ProgFU(int MK, LoadPoint Load)
 		case 0:
 			Mode = 0; LineUk = nullptr;
 			break;
-		case 1: 
+		case 1:
 			Mode = 1; LineUk = &HashLineUk;
 			ListHead.back() = &HashListBack; // Добавить псевдосписок
 			break;
@@ -192,6 +198,26 @@ void List::ProgFU(int MK, LoadPoint Load)
 		break;
 	case 106: // MkAtrClear Очистить список МК
 		Searcher.MkAtrClear();
+		break;
+
+	case 115: //MarkLastOut Выдать маркер последней строки
+		if (!ListHead.size() || ListHead.back() == nullptr || !ListHead.back()->size()) break;
+		Load.Write(&ListHead.back()->back());
+		break;
+	case 116: //MarkLastOutMk Выдать МК с маркой последней строки
+		if (!ListHead.size() || ListHead.back() == nullptr || !ListHead.back()->size()) break;
+		MkExec(Load, { TIP, &ListHead.back()->back() });
+		break;
+	case 117: //MarkPreLastOut Выдать маркер предпоследней строки
+		if (!ListHead.size() || ListHead.back() == nullptr || ListHead.back()->size()<2) break;
+		Load.Write((ip*)(ListHead.back()->end() -2)._Ptr);
+		break;
+	case 118: //MarPrekLastOutMk Выдать МК с маркой предпоследней строки
+		if (!ListHead.size() || ListHead.back() == nullptr || ListHead.back()->size()<2) break;
+		MkExec(Load, { TIP, (void*) (ListHead.back()->end() - 2)._Ptr});
+		break;
+	case 119: //MarkSet Установить текущую марку
+		LineUk = (ip*)Load.Point;
 		break;
 
 	case 120: // MarkAtrSet Установить атрибут текущей строки
@@ -370,8 +396,8 @@ void List::ProgFU(int MK, LoadPoint Load)
 	case 150: //LastOut Выдать ссылку на последнюю линию списка
 	case 151: //LastPop Выдать ссылку на последнюю линию списка и удалить из списка
 	case 152: //LastDel Выдать ссылку на последнюю линию списка и удалить из ИК
-		if (Load.Type == Tvoid)	//!!! Сделать функцию isVoid
-			Load.Write(ListHead.back()->back().Load);
+		//if (Load.Type == Tvoid)	//!!! Сделать функцию isVoid
+		Load.Write(ListHead.back()->back().Load);
 		if (MK == 152) ICDel((void*)ListHead.back()->back().Load.Point);
 		if (MK == 151 || MK == 152)
 			ListHead.back()->pop_back();
@@ -398,6 +424,85 @@ void List::ProgFU(int MK, LoadPoint Load)
 	case 169: // LastLoadOutMk Выдать МК с нагрузкой последней ИП последней линии
 		MkExec(Load, ((IC_type)(ListHead.back()->back().Load.Point))->back().Load);
 		break;
+	case 285: // LastAtrOut Выдать атрибут последней ИП последней линии
+		if (!ListHead.size() || !ListHead.back()->size() || ListHead.back()->back().Load.Point==nullptr || !ListHead.back()->back().Load.IC()->size()) break;
+		Load.Write(ListHead.back()->back().Load.IC()->back().atr);
+		break;
+	case 286: // LastAtrOutMk Выдать МК с атрибутом последней ИП последней линии
+		if (!ListHead.size() || !ListHead.back()->size() || ListHead.back()->back().Load.Point == nullptr || !ListHead.back()->back().Load.IC()->size()) break;
+		MkExec(Load, { Tint, &ListHead.back()->back().Load.IC()->back().atr });
+		break;
+	case 287: // LineAtrOut Выдать атрибут последней ИП текущей линии
+		if (LineUk == nullptr || LineUk->Load.Point == nullptr || LineUk->Load.IC()->size() < 2) break;
+		Load.Write(ListHead.back()->back().Load.IC()->back().atr);
+		break;
+	case 288: // LineAtrOutMk Выдать МК с атрибутом последней ИП текущей линии
+		if (LineUk == nullptr || LineUk->Load.Point == nullptr || LineUk->Load.IC()->size() < 2) break;
+		MkExec(Load, { Tint, &ListHead.back()->back().Load.IC()->back().atr });
+		break;
+
+	case 275: // LineIpTailToHead Переместить последнюю ИП в начало ИК в текущей линии
+		if (LineUk == nullptr || LineUk->Load.Point == nullptr || LineUk->Load.IC()->size() < 2) break;
+		LineUk->Load.IC()->insert(ListHead.back()->back().Load.IC()->begin(), ListHead.back()->back().Load.IC()->back());
+		LineUk->Load.IC()->erase(LineUk->Load.IC()->end() - 1);
+		break;
+	case 276: // LastIpTailToHead Переместить последнюю ИП в начало ИК в последней линии
+		if (!ListHead.size() || !ListHead.back()->size() || ListHead.back()->back().Load.Point == nullptr || ListHead.back()->back().Load.IC()->size() < 2) break;
+		ListHead.back()->back().Load.IC()->insert(ListHead.back()->back().Load.IC()->begin(), ListHead.back()->back().Load.IC()->back());
+		ListHead.back()->back().Load.IC()->erase(ListHead.back()->back().Load.IC()->end()-1);
+		break;
+	case 277: // LineIpHeadToTail Переместить первую ИП в конец ИК в текущей линии
+		if (LineUk == nullptr || LineUk->Load.Point == nullptr || LineUk->Load.IC()->size() < 2) break;
+		LineUk->Load.IC()->push_back(LineUk->Load.IC()->front());
+		LineUk->Load.IC()->erase(LineUk->Load.IC()->begin());
+		break;
+	case 278: // LastIpHeadToTail Переместить Первую ИП в конец ИК в последней линии
+		if (!ListHead.size() || !ListHead.back()->size() || ListHead.back()->back().Load.Point == nullptr || ListHead.back()->back().Load.IC()->size() < 2) break;
+		  ListHead.back()->back().Load.IC()->push_back( ListHead.back()->back().Load.IC()->front());
+		  ListHead.back()->back().Load.IC()->erase(ListHead.back()->back().Load.IC()->begin());
+		break;
+	case 149: // LastIpSwap Поменять местами две последние ИП последней линии
+		if (!ListHead.size() || !ListHead.back()->size() || ListHead.back()->back().Load.Point == nullptr || ListHead.back()->back().Load.IC()->size() < 2) break;
+		swap(*(ListHead.back()->back().Load.IC()->back().Load.IC()->end() - 1), *(ListHead.back()->back().Load.IC()->back().Load.IC()->end() - 2));
+		break;
+	case 279: // LineIpSwap Поменять местами две последние ИП текущей линии
+		if (LineUk == nullptr || LineUk->Load.Point==nullptr || LineUk->Load.IC()->size() < 2) break;
+		swap(*(LineUk->Load.IC()->end() - 1), *(LineUk->Load.IC()->end() - 2));
+		break;
+	case 280: // LineLoadAppend Добавить элемент в вектор в нагрузке последней ИП текущей строки
+		if (LineUk == nullptr || LineUk->Load.IC()->back().Load.Point == nullptr || LineUk->Load.IC()->back().Load.IC()->size()) break;
+		if (LineUk->Load.IC()->back().Load.Point == nullptr)
+			LineUk->Load.IC()->back().Load.Point = new vector<LoadPoint>;
+		if (!LineUk->Load.IC()->back().Load.isVect()) break;
+		LineUk->Load.IC()->back().Load.Vect()->push_back(Load);
+		break;
+	case 281: // LastLoadAppend Добавить элкскет в вектор в нагрузке последней ИП последней строки
+		if (!ListHead.size() || !ListHead.back()->size() || ListHead.back()->back().Load.Point == nullptr ||
+			ListHead.back()->back().Load.Point == nullptr || !ListHead.back()->back().Load.IC()->size()) break;
+		if (ListHead.back()->back().Load.IC()->back().Load.Point == nullptr)
+			ListHead.back()->back().Load.IC()->back().Load.Point = new vector<LoadPoint>;
+		if (!ListHead.back()->back().Load.IC()->back().Load.isVect()) break;
+		ListHead.back()->back().Load.IC()->back().Load.Vect()->push_back(Load);
+		break;
+	case 282: // LineToLoadVectWrite Записать нагрузку во все элементы вектора из нагрузки последней ИП текущей линии
+		if (LineUk == nullptr || LineUk->Load.IC()->back().Load.Point == nullptr || LineUk->Load.IC()->back().Load.IC()->size()) break;
+		if (LineUk->Load.IC()->back().Load.Point == nullptr)
+			LineUk->Load.IC()->back().Load.Point = new vector<LoadPoint>;
+		if (!LineUk->Load.IC()->back().Load.isVect()) break;
+		for (auto& i : *LineUk->Load.IC()->back().Load.Vect())
+			i.WriteFromLoad(Load);
+		break;
+	case 283: // LastToLoadVectWrite Записать нагрузку во все элементы вектора из нагрузки последней ИП последней линии
+		if (!ListHead.size() || !ListHead.back()->size() || ListHead.back()->back().Load.Point == nullptr ||
+			ListHead.back()->back().Load.Point == nullptr || !ListHead.back()->back().Load.IC()->size()) break;
+		if (ListHead.back()->back().Load.IC()->back().Load.Point == nullptr)
+			ListHead.back()->back().Load.IC()->back().Load.Point = new vector<LoadPoint>;
+		if (!ListHead.back()->back().Load.IC()->back().Load.isVect()) break;
+		for (auto& i : *ListHead.back()->back().Load.IC()->back().Load.Vect())
+			i.WriteFromLoad(Load);
+		break;
+
+
 	case 188: // LastLoadRefOut Выдать ссылку на Load последней ИП последней строки списка
 		// Load.Write(&(IC_type)(ListHead.back()->back().Load.Point))->back().Load);
 		break;
@@ -452,9 +557,10 @@ void List::ProgFU(int MK, LoadPoint Load)
 	    ListHead.back()->push_back({ LineAtr, Load });
 		break;
 	case 161: // LineCopyAdd Добавить копию строки
+	case 162: // LineTreeCopyAdd Добавить копию ОА-графа
 		if (ListHead.back() == nullptr) ListHead.back() = new vector<ip>;
 		if (Load.Point != nullptr)
-			ListHead.back()->push_back({ LineAtr, TIC, ICCopy(Load).Point });
+			ListHead.back()->push_back({ LineAtr, TIC, ICCopy(Load, MK == 162).Point }); // Копирование ИК при МК = 162
 		else
 			ListHead.back()->push_back({ LineAtr, TIC, new vector<ip> }); // Создание пустой строки
 		break;
@@ -467,10 +573,6 @@ void List::ProgFU(int MK, LoadPoint Load)
 		//		if (ListHead.back()->size() > 1)
 		//			((IC_type)ListHead.back()->at(ListHead.back()->size() - 2).Load.Point)->back().Load = ListHead.back()->back().Load;
 		//		break;
-	case 162: // LineCopyTreeAdd Добавить копию ОА-графа
-		if (ListHead.back() == nullptr) ListHead.back() = new vector<ip>;
-		// ....
-		break;
 	case 164: // LineLoadOutMk Выдать МК с нагрузкой последней ИП текущей линии
 		MkExec(Load, ((IC_type)(LineUk->Load.Point))->back().Load);
 		break;
@@ -503,6 +605,9 @@ void List::ProgFU(int MK, LoadPoint Load)
 			}
 		}
 		break;
+	case 270: // LineUpDown Сместить указатель текущей строки (в нагрузке величина спещения, при отрицательно смещении движение вверх; по умолчанию движение вверх на одну позицию)
+		
+		break;
 	case 174: // LastConstVarTypeSet Установить тип константа/переменная для последней нагрузки (по умолчанию переменная)
 	if (ListHead.size() && ListHead.back() != nullptr)
 	{
@@ -512,7 +617,7 @@ void List::ProgFU(int MK, LoadPoint Load)
 	break;
 	}
 	case 170: // LastAttach Конкатенация ИК к последней линии списка
-	case 171: // LastCopyAttach Конкатенация копии ИК к последней линии списка
+	case 171: // LastTreeCopyAttach Конкатенация копии ИК к последней линии списка
 	case 172: // LastCopyAttachLoadMove Добавить ИК и переписать последнюю нагрузку
 	{
 		if (ListHead.back() == nullptr)
@@ -525,7 +630,8 @@ void List::ProgFU(int MK, LoadPoint Load)
 			ListHead.back()->push_back( {LineAtr, TIC, new vector<ip> }); // Добавить пустую строку в список
 		if (Load.Point == nullptr)
 			((IC_type)ListHead.back()->back().Load.Point)->push_back({ 0,0, nullptr }); // Добавить пустую ИП, если Load==nil
-		else if (Load.isIP() || Load.isIC())
+//		else if (Load.isIP() || Load.isIC())
+		else if (Load.isIP())
 		{
 			if (Load.isIP())
 			{
@@ -536,7 +642,7 @@ void List::ProgFU(int MK, LoadPoint Load)
 			{
 				for (auto i : *(IC_type)Load.Point)
 					((IC_type)ListHead.back()->back().Load.Point)->push_back(i);
-				if (MK == 170 && Load.Type == CIP) { delete (ip*)Load.Point; Load.Point = nullptr; Load.Type = 0; }
+			//	if (MK == 170 && Load.Type == CIP) { delete (ip*)Load.Point; Load.Point = nullptr; Load.Type = 0; }
 			}
 		}
 		else
@@ -544,7 +650,16 @@ void List::ProgFU(int MK, LoadPoint Load)
 			if (Load.isIC())
 			{
 				copy(((IC_type)Load.Point)->begin(), ((IC_type)Load.Point)->end(), inserter(*((IC_type)ListHead.back()->back().Load.Point), ((IC_type)ListHead.back()->back().Load.Point)->end()));
-				if (MK == 170 && Load.Type == CIP) { ICDel(Load.Point); Load.Point = nullptr; Load.Type = 0; };
+				// if (MK == 170 && Load.Type == CIP) { ICDel(Load.Point); Load.Point = nullptr; Load.Type = 0; }; // ???
+				if (MK == 171) // Копирование дерева
+				{
+					for (auto i = ListHead.back()->back().Load.IC()->begin() + ListHead.back()->back().Load.IC()->size() - Load.IC()->size(); i != ListHead.back()->back().Load.IC()->end(); i++)
+					{
+						i->Load.Copy(i->Load);
+						if (i->Load.isIC() && ((i->Load.Type & 1) == 0 || MK == 171)) // Ссылка на ИС как переменная (ее будем копировать)
+							i->Load = ICCopy(i->Load, true);
+					}
+				}
 			}
 		}
 		break;
@@ -670,6 +785,18 @@ void List::ProgFU(int MK, LoadPoint Load)
 			break;
 		((IC_type)ListHead.back()->back().Load.Point)->back().Load.VarTypeSet(Load.toBool(true));
 		break;
+
+	case 193: //LastClear Очистить последниюю строку списка
+		if (!ListHead.size() || ListHead.back() == nullptr || ListHead.back()->back().Load.Point == 0) break;
+		//ICDel(ListHead.back()->back().Load.Point);
+		ListHead.back()->back().Load.IC()->clear();
+		break;
+	case 194: //LineClear Очистить текущую строку списка
+		if (LineUk == nullptr || LineUk->Load.Point == nullptr) break;
+		//ICDel(LineUk->Load.Point);
+		LineUk->Load.IC()->clear();
+		break;
+
 	case 190: // LastLoadIcEmptySet Установить ссылку на пустую ИК в нагрузке последней ИП последней строки
 		if (ListHead.back() != nullptr && !ListHead.size() && ((IC_type)ListHead.back()->back().Load.isIC()))
 			((IC_type)ListHead.back()->back().Load.Point)->back().Load = { TIC, new vector<ip> };
@@ -730,6 +857,10 @@ void List::ProgFU(int MK, LoadPoint Load)
 			uk->Load = ((IC_type)LineUk->Load.Point)->back().Load.Clone();
 		break;
 	}
+	case 219: // Receive Установить входной объект без его поиска
+		Searcher.Obj = Load;
+		break;
+
 	case 220: //FindOrLast
 		//if(ListHead!=nullptr)
 		Searcher.Template = { 0,nullptr };
@@ -994,7 +1125,27 @@ void List::ProgFU(int MK, LoadPoint Load)
 			ListHead.push_back((IC_type)t->Load.Point);
 		}
 		break;
-
+	case 290: // CopyAdrCorrectOriginalSet Установить адрес оригинальной ИК для коррекции адресов скопированного ОА-графа
+		CopyAdrCorrectOriginal = Load;
+		break;
+	case 291: // CopyAdrCorrectCopylSet Установить адрес копированной ИК для коррекции адресов скопированного ОА-графа
+		CopyAdrCorrectCopy = Load;
+		break;
+	case 292: // CopyAdrCorrectAdrSet Установить адрес для коррекции адресов скопированного ОА-графа
+		AdrToCorrect = Load;
+		break;
+	case 293: // CopyAdrCorrectAdrOut Выдать скорретированный адрес скопированного ОА-графа
+		Load.Write(CopyAdrCorrect(CopyAdrCorrectOriginal, CopyAdrCorrectCopy, AdrToCorrect, {}));
+		break;
+	case 294: // CopyAdrCorrectAdrOutMk Выдать МК со скорретированным адресом скопированного ОА-графа
+		MkExec(Load, CopyAdrCorrect(CopyAdrCorrectOriginal, CopyAdrCorrectCopy, AdrToCorrect, {}));
+		break;
+	case 295: // LastCopyAdrCorrectAdrSet Устаовить адрес для коррекции скопированного ОА-графа для последней строки
+		break;
+	case 296: // LineСopyAdrCorrectSet Устаовить адрес для коррекции скопированного ОА-графа для текущей строки
+		break;
+	case 397: // LineСopyAdrCorrectClear Очистить переменную для копирования
+		break;
 	case 400: // LineOutMk Выдать МК с найденной линией
 		if(LineUk==nullptr)
 			MkExec(Load, {0,nullptr});

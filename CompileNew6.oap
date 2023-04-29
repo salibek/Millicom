@@ -472,12 +472,14 @@ CommonMkList{
 		Obj={Mnemo="CycleProg" Mk=959 Hint="Вызов цикла"}
 		Obj={Mnemo="PostCycleProg" Mk=960 Hint="Вызов пост цикла"}
 		Obj={Mnemo="YesProg" Mk=961 Hint="Вызов подпрограммы по ДА"}
+		Obj={Mnemo="YesProgBreak" Mk=967 Hint="Вызов подпрограммы по ДА с последующим прерыванием основной программы"}
 		Obj={Mnemo="YesCycleProg" Mk=962 Hint="Вызов цикла по ДА"}
 		Obj={Mnemo="YesPostCycleProg" Mk=963 Hint="Вызов пост цикла по ДА"}
 		Obj={Mnemo="NoProg" Mk=964 Hint="Вызов подпрограммы по НЕТ"}
+		Obj={Mnemo="NoProgBreak" Mk=968 Hint="Вызов подпрограммы по НЕТ с последующим прерыванием основной программы"}
 		Obj={Mnemo="NoCycleProg" Mk=965 Hint="Вызов цикла по НЕТ"}
-
 		Obj={Mnemo="NoPostCycleProg" Mk=966 Hint="Вызов пост цикла по НЕТ"}
+
 		Obj={Mnemo="Break" Mk=967 Hint="Выход из подпрограммы (в нагрузке количество уровней подъема (по умолчанию 0))"}
 		Obj={Mnemo="Next" Mk=968 Hint="Продолжение цикла (в нагрузке количество уровней подъема (по умолчанию 0))"}
 		Obj={Mnemo="YesContinue" Mk=969 Hint="Продлжение цикла по да"}
@@ -4491,6 +4493,7 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
     Obj={Mk=231 Mnemo="FindAndSource" Hint="Поиск И в источнике"}
     Obj={Mk=226 Mnemo="FindAndSourceLast" Hint="Поиск И в источнике в последней строке"}
     Obj={Mk=227 Mnemo="FindAndSourceLine" Hint="Поиск И в источнике в текущей строке"}
+    Obj={Mk=219 Mnemo="Receive" Hint="Получить входной объект без его поиска"}
 
     Obj={Mk=401 Mnemo="LineOut" Hint="Выдать найденную линию"}
     Obj={Mk=400 Mnemo="LineOutMk" Hint="Выдать МК с найденной линией"}
@@ -4513,6 +4516,15 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
   }
 
   Obj={Mnemo="Line modification" Hint="Изменение строк списка" Comment
+    Obj={Mk=193 Mnemo="LastClear" Hint="Очистить последниюю строку списка"}
+    Obj={Mk=194 Mnemo="LineClear" Hint="Очистить текущую строку списка"}
+
+    Obj={Mk=290 Mnemo="CopyAdrCorrectOriginalSet" Hint="Установить адрес оригинальной ИК для коррекции адресов ОА-графа"}
+    Obj={Mk=291 Mnemo="CopyAdrCorrectCopylSet" Hint="Установить адрес копированной ИК для коррекции адресов ОА-графа"}
+    Obj={Mk=292 Mnemo="CopyAdrCorrectAdrSet" Hint="Установить адрес для коррекции адресов ОА-графа"}
+    Obj={Mk=293 Mnemo="CopyAdrCorrectAdrOut" Hint="Выдать скорретированный адрес ОА-графа"}
+    Obj={Mk=294 Mnemo="CopyAdrCorrectAdrOutMk" Hint="Выдать МК со скорретированным адресом ОА-графа"}
+
     Obj={Mk=150 Mnemo="LastOut" Hint="Выдать ссылку на последнюю линию списка"}
     Obj={Mk=151 Mnemo="LastPop" Hint="Выдать ссылку на последнюю линию списка и удалить из списка"}
     Obj={Mk=152 Mnemo="LastDel" Hint="Выдать ссылку на последнюю линию списка и удалить из ИК"}
@@ -4521,15 +4533,19 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
     Obj={Mk=157 Mnemo="LastDelMk" Hint="Выдать ссылку на последнюю линию списка и удалить ИК"}
     Obj={Mk=158 Mnemo="LastLoadOut" Hint="Выдать нагрузку последней ИП последней линии"}
     Obj={Mk=169 Mnemo="LastLoadOutMk" Hint="Выдать МК с нагрузкой последней ИП последней линии"}
-
     Obj={Mk=188 Mnemo="LastLoadRefOut" Hint="Выдать МК со ссылкой на нагрузку последней ИП последней линии"}
     Obj={Mk=198 Mnemo="LastLoadRefOutMk" Hint="Выдать МК со ссылкой на нагрузку последней ИП последней линии"}
+    Obj={Mk=285 Mnemo="LastAtrOut" Hint="Выдать атрибут последней ИП последней линии"}
+    Obj={Mk=286 Mnemo="LastAtrOutMk" Hint="Выдать МК с атрибутом последней ИП последнеий линии"}
+    Obj={Mk=287 Mnemo="LineAtrOut" Hint="Выдать атрибут последней ИП текущей линии"}
+    Obj={Mk=288 Mnemo="LineAtrOutMk" Hint="Выдать МК с атрибутом последней ИП текущей линии"}
 
     Obj={Mk=153 Mnemo="LastIpOutMk" Hint="Выдать ссылку на последнюю ИП последней линии"}
     Obj={Mk=154 Mnemo="LastIpCopyOutMk" Hint="Выдать МК со ссылкой на последнюю ИП последней линии"}
     
     Obj={Mk=160 Mnemo="LineAdd" Hint="Добавить строку"}
     Obj={Mk=161 Mnemo="LineCopyAdd" Hint="Добавить копию строки"}
+    Obj={Mk=162 Mnemo="LineTreeCopyAdd" Hint="Добавить копию ОА-графа"}
     Obj={Mk=192 Mnemo="LineCopyAddPrevSet" Hint="Добавить копию строки и установить ссылку на нее в предыдущую линию"}
     Obj={Mk=163 Mnemo="LineCopyAddPrevLoadSet" Hint="Добавить линию в список и поместить ссылку на нее в нагрузку последней ИП последней строки"}
     Obj={Mk=159 Mnemo="LineCopyAddPrevLoadSetLoadMov" Hint="Добавить копию линии перенести нагрузку в на новую строку и добавить в нагрзуку предыдущей строки ссылку на новую строку"}
@@ -4546,7 +4562,8 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 
     Obj={Mk=174 Mnemo="LastLoadConstVarTypeSet" Hint="Установить тип константа/переменная для последней нагрузки (по умолчанию переменная)"}
     Obj={Mk=170 Mnemo="LastAttach" Hint="Конкатенация ИК к последней линии списка"}
-    Obj={Mk=171 Mnemo="LastCopyAttach" Hint="Конкатенация копии ИК к последней линии списка"}
+    Obj={Mk=171 Mnemo="LastTreeCopyAttach" Hint="Конкатенация копии ИК к последней линии списка и копирование ОА-графа"}
+//    Obj={Mk=171 Mnemo="LastCopyAttach" Hint="Конкатенация копии ИК к последней линии списка"}
     Obj={Mk=175 Mnemo="LineAttach" Hint="Конкатенация ИК к текущей линии списка"}
 //    Obj={Mk=176 Mnemo="LineCopyAttach" Hint="Конкатенация копии ИК к текущей линии списка"}
     Obj={Mk=180 Mnemo="LineVarTypeSet" Hint="Установить тип 'переменная' в последней ИП текущей линии"}
@@ -4560,11 +4577,19 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
     Obj={Mk=196 Mnemo="LineLoadCopySet" Hint="Добавить ссылку на копию ИК в указатель текущей ИК текущей строки"}
     Obj={Mk=189 Mnemo="LastAtrSet" Hint="Установить атрибут последний ИК последней строки"}
     Obj={Mk=199 Mnemo="LineAtrSet" Hint="Установить атрибут последний ИК текущей строки"}
+    Obj={Mk=184 Mnemo="LastIndSet" Hint="Установить индекс нагрузки в последней ИП последней строки"}
+    Obj={Mk=183 Mnemo="LineIndSet" Hint="Установить индекс нагрузки в последней ИП текушей строки"}
     Obj={Mk=190 Mnemo="LastLoadIcEmptySet" Hint="Установить ссылку на пустую ИК в нагрузке последней ИП последней строки"}
     Obj={Mk=191 Mnemo="LineLoadIcEmptySet" Hint="Установить ссылку на пустую ИК в нагрузке последней ИП текущей строки"}
   }
   
   Obj={Mnemo="Line Mark" Hint="Работа с атрибутом линии" Comment
+    Obj={Mk=115 Mnemo="MarkLastOut" Hint="Выдать маркер последней строки"}
+    Obj={Mk=116 Mnemo="MarkLastOutMk" Hint="Выдать МК с маркой последней строки"}
+    Obj={Mk=117 Mnemo="MarkPreLastOut" Hint="Выдать маркер предпоследней строки"}
+    Obj={Mk=118 Mnemo="MarkPreLastOutMk" Hint="Выдать МК с маркой предпоследней строки"}
+    Obj={Mk=119 Mnemo="MarkSet" Hint="Установить текущую марку"}
+
     Obj={Mk=120 Mnemo="MarkAtrSet" Hint="Установить атрибут текущей строки"}
     Obj={Mk=121 Mnemo="LastMarkAtrSet" Hint="Установить атрибут последней строки"}
 
@@ -4633,6 +4658,13 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
     Obj={Mk=211 Mnemo="LineAtrAttach" Hint="Прикрепить к текущей строке ИП с атрибутом из нагрзуки"}
     Obj={Mk=215 Mnemo="LastLoadBackSet" Hint="Записать нагрзуку последней ИП последний строки в предыдущие ИП (на входе количество обратных записей)"}
     Obj={Mk=216 Mnemo="LineLoadBackSet" Hint="Записать нагрзуку последней ИП некущей строки в предыдущие ИП (на входе количество обратных записей)"}
+
+    Obj={Mk=279 Mnemo="LineIpSwap" Hint="Поменять местами две последние ИП текущей линии"}
+    Obj={Mk=149 Mnemo="LastIpSwap" Hint="Поменять местами две последние ИП последней линии"}
+    Obj={Mk=278 Mnemo="LastFirstIpToTail" Hint="Переместить последнюю ИП в начало ИК в последней линии"}
+    Obj={Mk=277 Mnemo="LineFirstIpToTail" Hint="Переместить gервую ИП в конец ИК в текущей линии"}
+    Obj={Mk=276 Mnemo="LastTailIpToFirst" Hint="Переместить последнюю ИП в начало ИК в последней линии"}
+    Obj={Mk=275 Mnemo="LineFirstIpToTail" Hint="Переместить последнюю ИП в начало ИК в текущей линии"}
   }
   Obj={Mk=1 Mnemo="Set" Hint="Установить указатель на список"}
   Obj={Mk=2 Mnemo="Out" Hint="Выдать ссылку на список"}
@@ -5168,6 +5200,11 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
   	Obj={Mk=2 Mnemo="Out" Hint="Выдать значение аккумулятора"}
   	Obj={Mk=3 Mnemo="OutMk" Hint="Выдать МК со значением аккумулятора"}
 
+	Obj={Mk=7 Mnemo="PushExec" Hint="Создать новый уровень аккумулятора и выполнить программу"}
+	Obj={Mk=8 Mnemo="PushCycleExec" Hint="Создать новый уровень аккумулятора и выполнить циклическую программу"}
+	Obj={Mk=9 Mnemo="PushPostCycleExec" Hint="Создать новый уровень аккумулятора и выполнить программу с постциклом"}
+  	Obj={Mk=20 Mnemo="VectToIndSet" Hint="Установить ссылку на вектор, при этом прежнее значение аккумулятора становится индексом вектора"}
+
   	Obj={Mk=13 Mnemo="CopyOut" Hint="Выдать копию аккумулятора"}
   	Obj={Mk=14 Mnemo="CopyOutMK" Hint="Выдать МК с копией аккумулятора"}
   	Obj={Mk=18 Mnemo="CopyConstOut" Hint="Выдать копию аккумулятора и сделать значение константой"}
@@ -5182,8 +5219,11 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
   	Obj={Mk=12 Mnemo="OutAdrAppend" Hint="Добавить адрес для выдачи результатов"}
 
   	Obj={Mk=73 Mnemo="TernarYes" Hint="Выполнить тернарную конструкций по Истине"}
-  	Obj={Mk=74 Mnemo="TernarNo" Hint="Выполнить тернарную конструкций по Лжи"}
+  	Obj={Mk=74 Mnemo="TernarNo" Hint="Выполнить тернарную конструкций по лжи"}
 
+  	Obj={Mk=505 Mnemo="AnsFix" Hint="Зафиксировать текущий уровень аккумулятора как ans"}
+  	Obj={Mk=506 Mnemo="AnsOut" Hint="Выдать Ans"}
+  	Obj={Mk=507 Mnemo="AnsOutMk" Hint="Mk Выдать МК с Ans"}
 
   Obj={Mnemo="ErrProg" Hint="Установка программ обработки ошибок" Comment
   	Obj={Mk=20 Mnemo="ErrProgSet" Hint="Программа обработки ошибки любого типа"}
@@ -5250,6 +5290,9 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
   	Obj={Mk=52 Mnemo="Random" Hint=""}
   }
   Obj={Mnemo="Vector" Hint="Манипуляции с вектором" Comment
+	Obj={Mk=610 Mnemo="VectIndOkExec" Hint="Выполнить при удачной тестировании диапазона индекса вектора"}
+	Obj={Mk=611 Mnemo="VectIndErrExec" Hint="ыполнить при неудачной тестировании диапазона индекса вектора"}
+
 	Obj={Mk=75 Mnemo="SumVect" Hint="Сумма элементов вектора"}
 	Obj={Mk=76 Mnemo="MaxVect" Hint="Максимум по элементам вектора"}
 	Obj={Mk=77 Mnemo="MinVect" Hint="Минимум по элементам вектора"}
@@ -5592,6 +5635,7 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 	 Obj={Mk=55 Mnemo="RoutingProgSet" Hint="Установить ссылку на программу маршрутизации"}
 	 Obj={Mk=60 Mnemo="OverflowProgSet" Hint="Установить ссылку на подпрограмму реакции на переполнение буфера для хранения данных"}
 	 Obj={Mk=61 Mnemo="MkOverflowProgSet" Hint="Установить ссылку на подпрограмму реакции на переполнение буфера МК"}
+	 Obj={Mk=62 Mnemo="RoutindErrProgSet" Hint="Установить ссылку на программу обработки события адрес МК для маршрутизации не найден в таблице маршрутизации"}
 	 Obj={Mk=65 Mnemo="RoutingAttributeOut" Hint="Выдать атрибут пришедшей для маршрутизации МК"}
 	 Obj={Mk=70 Mnemo="RoutingAttributeOutMk" Hint="Выдать МК с атрибутом пришедшей для маршрутизации МК"}
 	 Obj={Mk=85 Mnemo="ChRoutingMkOut" Hint="Выдать канал, по которому пришла последняя МК для маршрутизации"}
@@ -6528,9 +6572,11 @@ MnemoTable.Set=
 	>{Mnemo="CycleProg" Atr=959 Hint="Вызов цикла"}
 	>{Mnemo="PostCycleProg" Atr=960 Hint="Вызов пост цикла"}
 	>{Mnemo="YesProg" Atr=961 Hint="Вызов подпрограммы по ДА"}
-	>{Mnemo="YesCycleProg" Atr=962 Hint="Вызов цикла по ДА"}
+	>{Mnemo="YesProgBreak" Atr=967 Hint="Вызов подпрограммы по ДА"}
+	>{Mnemo="YesCycleProg" Atr=962 Hint="Вызов цикла по ДА и выход из программы"}
 	>{Mnemo="YesPostCycleProg" Atr=963 Hint="Вызов пост цикла по ДА"}
 	>{Mnemo="NoProg" Atr=964 Hint="Вызов подпрограммы по НЕТ"}
+	>{Mnemo="NoProgBreak" Atr=968 Hint="Вызов подпрограммы по НЕТ и выход из программы"}
 	>{Mnemo="NoCycleProg" Atr=965 Hint="Вызов цикла по НЕТ"}
 	>{Mnemo="NoPostCycleProg" Atr=966 Hint="Вызов пост цикла по НЕТ"}
 		

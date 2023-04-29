@@ -117,7 +117,13 @@ public:
 	static bool isMk(unsigned int type) { return type >> 1 == DMk; }; // Милликоманда?
 	bool isVectInd() { return Type >> 1 == DLoadVectInd; }; // Индексированный элемент вектора нагрузок
 	static bool isVectInd(int type) { unsigned int t = type; return t >> 1 == DLoadVectInd; }; //Индексированный элемент вектора нагрузок
-	bool isVectIndVectInd(); // Индексированный элемент вектора нагрузок от индексированного вектора нагрузок
+	bool isICInd() { return Type >> 1 == DICInd; }; // Индексированный элемент ИК
+	static bool isICInd(int type) { unsigned int t = type; return t >> 1 == DICInd; }; //Индексированный элемент ИК
+	bool isInd() { return Type >> 1 == DICInd || Type >> 1 == DLoadVectInd; }; // Индексированный элемент
+	static bool isInd(int type) { unsigned int t = type; return t >> 1 == DICInd || t >> 1 == DLoadVectInd; }; // Индексированный элемент
+	LoadPoint IndLoadReturn(); // Возвратить указатель на нагрузку индексированного элемента
+	bool isVectIndVectInd();  // Индексированный элемент вектора нагрузок от индексированного вектора нагрузок
+	static LoadPoint IndLoadReturn(LoadPoint LP); // Возвратить указатель на нагрузку индексированного элемента
 
 	bool isVect(); // Вектор ли нагрузка
 	static bool isVect(unsigned int type) { return (type >> 1) == DLoadVect; }; // Вектор ли нагрузка
@@ -149,10 +155,10 @@ public:
 	void WriteVar(LoadPoint x) { Point = x.Point; Type = x.Type; Type |= 1; Type--; }; //Записать ссылку и сделать ее переменной
 	void WriteConst(LoadPoint x) {Point = x.Point; Type = x.Type; Type |= 1;}; // Записать ссылку и сделать ее константой
 	vector<LoadPoint>* LoadVect() { return (vector<LoadPoint>*)Point; }; // Вернуть ссылку на вектор нагрузок
-	LoadPoint Operation(function <LoadPoint(LoadPoint, LoadPoint) > F, LoadPoint y) // Операция (на вход передается лямбда-функция)
-	{
-		return F(*this, y);
-	};
+//	LoadPoint Operation(function <LoadPoint(LoadPoint, LoadPoint) > F, LoadPoint y) // Операция (на вход передается лямбда-функция)
+//	{
+//		return F(*this, y);
+//	};
 
 	string toStr(string define=""); // Первод в string
 	bool toBool(bool define = false); // Перевод в bool
@@ -176,9 +182,11 @@ public:
 	LoadPoint IpOut() // Возвращается указатель на ИП или на первую ИП из ИК, иначе null
 	{
 		if (Type >> 1 == DIP) return *this;
+		if (isIC()) return {TIC, IC()->begin()._Ptr };
 	};
+	LoadVect_type Vect(); // Возвращает укаазатель на вектор
+	IC_type IC();
 };
-
 
 // struct TAtrMnemo
 
@@ -299,19 +307,19 @@ private:
 //	int ProgSetFaze = 0; // Фаза для установки программы ProgSet, ElseProgSet
 };
 
-LoadPoint LoadCreate(int t); //Создание нагрузки от перененной
-LoadPoint LoadCreate(double t); //Создание нагрузки от перененной
-LoadPoint LoadCreate(bool t); //Создание нагрузки от перененной
-LoadPoint LoadCreate(string t); //Создание нагрузки от перененной
-LoadPoint LoadCreate(float t); //Создание нагрузки от перененной
-
+LoadPoint LoadNew(int t); //Создание нагрузки от перененной
+LoadPoint LoadNew(double t); //Создание нагрузки от перененной
+LoadPoint LoadNew(bool t); //Создание нагрузки от перененной
+LoadPoint LoadNew(string t); //Создание нагрузки от перененной
+LoadPoint LoadNew(float t); //Создание нагрузки от перененной
 //void GraphDel(void* Uk, LocatTable* Table = nullptr); // Удаление ОА-графа
 void ICDel(void* Uk);// Удаление ИК
 void ICDel(LoadPoint &Uk);// Удаление ИК
 
-LoadPoint ICCopy(LoadPoint uk);// Копирование ИК
+LoadPoint ICCopy(LoadPoint uk, bool Copy=false); // Копирование ИК (Copy - флаг принудительного копирования всех ИК в ОА-графе)
 void ICCopyConcat(void* uk, void* uk2); // Конкатенация двух ИК
 int ICLen(void* uk); // Определитель длины ИК
+LoadPoint CopyAdrCorrect(LoadPoint Adr, LoadPoint OriginalIC, LoadPoint CopyIC, set<void*> buf); // Корректировка адреса в копированной ИК  (Переборный алгоритм)
 
 //void ProgExec(void *Uk, FU* Bus, vector<ip>::iterator *Start=nullptr); // Исполнение программы из ИК
 

@@ -146,11 +146,11 @@
   <ItemGroup>
     <ClCompile Include="ALU.cpp" />
     <ClCompile Include="CellularAutomata.cpp" />
+    <ClCompile Include="Consts.cpp" />
     <ClCompile Include="IntAlu.cpp" />
     <ClCompile Include="Bag.cpp" />
     <ClCompile Include="Bus.cpp" />
     <ClCompile Include="Console.cpp" />
-    <ClCompile Include="Consts.cpp" />
     <ClCompile Include="Find.cpp" />
     <ClCompile Include="FUini.cpp" />
     <ClCompile Include="Gateway.cpp" />

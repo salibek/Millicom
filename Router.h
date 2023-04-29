@@ -2,6 +2,8 @@
 #pragma once
 
 #include "FUini.h"
+#include "SchedulerEventser.h"
+
 
 class channel // Канал передачи данных
 {
@@ -23,7 +25,9 @@ class Router : public FU
 
 //	int RouterMkRange = 0; // Диапазон МК для роутера
 
-	int DelayTime = 0; // Время задержки передачи данных
+	Eventser* eventser = nullptr; // Ссылка на контроллер событий
+	double DelayTime = 0; // Время задержки передачи данных
+	double RepeatTime = 0; // Время повторной передачи данных при ошибке передачи
 	vector<FU*> Queue; // Очередь ожидания отправки (очередь МК)
 	void* RoutingProg = nullptr; // Ссылка на программу маршрутизации
 	// Ссылки на программы обработки исключительных ситуаций 
@@ -34,18 +38,15 @@ class Router : public FU
 	void* MkOverflowProg = nullptr; //
 	void* ReceiveProg = nullptr; // Программа реакции на приход данных для машрутизации (например, для обработки статистики)
 	void* RoutingErrProg = nullptr; // Программа реакции на ошибку маршрутизации (атрибут МК не попадает ни в один из диапазонов маршрутизации)
-	//
 	// Блок характеристик роутера
 	int MaxMemorySize = 0; // Макс. объем памяти
 	double RoutingTime = 0; // Время обработки
-	// 
 	// Блок статистики передачи
 	int MKCount = 0; // Количество прошедших через роутер МК
 	int DataCount = 0; // Объем переданной информации через роутер
 	int MaxMKQueue = 0; // Максимальная длина очереди
-	double AverageMKQueue = 0; // Средняя длина очереди
-	//
-
+	int DataSize = 0, MaxDataSize = 0; // Текущий объем занятого буфера и максимальный объем занятого буфера
+	//	double AverageMKQueue = 0; // Средняя длина очереди
 public:
 	void ProgFU(int MK, LoadPoint Load) override;
 	Router(FU* BusContext, FU* Templ)

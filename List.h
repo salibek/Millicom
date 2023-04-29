@@ -9,6 +9,7 @@ public:
 	void ProgFU(int MK, LoadPoint Load) override;
 	vector<IC_type> ListHead; // Ссылка на голову списка (вектор, т.к. список может быть многоуровневым)
 
+//	ip* LineUk = nullptr; // Указатель на найленную строку списка
 	ip* LineUk = nullptr; // Указатель на найленную строку списка
 	int LineNum = -1, LineNumOld = -1; // Номер первой совпадающей линии, номер предыдущей совпадающей линии
 	int LineCount = 0; // Количество найденных строк
@@ -48,6 +49,7 @@ public:
 	unordered_map<string, IC_type> Hash; // Хеш-таблица
 	ip HashLineUk; // Псевдосписок для хеш-режима
 	vector<ip> HashListBack = {}; // Превдоконец списка для режима хеширования
+	LoadPoint CopyAdrCorrectOriginal = {}, CopyAdrCorrectCopy = {}, AdrToCorrect = {}; // ИК и ее копия для коррекции адресов
 private:
 	int DeepStartSearch = 0; // Стартовый уровень для пописка
 };

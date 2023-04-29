@@ -7,7 +7,7 @@ using namespace std;
 
 void StrGen::ProgFU(int MK, LoadPoint Load)
 {
-/*	switch (MK)
+	switch (MK)
 	{
 	case 0: //Reset
 //		str_buf.clear();
@@ -30,8 +30,8 @@ void StrGen::ProgFU(int MK, LoadPoint Load)
 		break;
 	case 3: // Start Начать генерацию
 		work = true;
-		ProgExec(StartProg,Bus);// Выполнить стартовую программу
-//		TimeStart = clock();
+		ProgExec(StartProg);// Выполнить стартовую программу
+		TimeStart = clock();
 		TimeLong = 0;
 		if (Load.Point != nullptr)
 		{
@@ -64,55 +64,52 @@ void StrGen::ProgFU(int MK, LoadPoint Load)
 		}
 		Source.close();
 		TimeLong = clock() - TimeStart;
-		ProgExec(FinProg, Bus);// Выполнить завершающую программу
+		ProgExec(FinProg);// Выполнить завершающую программу
 		break;
 	case 4: // Stop	
 		work = false;
-		ProgExec(StopProg, Bus);// Выполнить программу по прерыванию генерации строк
+		ProgExec(StopProg);// Выполнить программу по прерыванию генерации строк
 		break;
 	case 5: // Pause
 		work = false;
 		break;
-	case 6: // Continue
+	case 6: // Continue ???
 	{work = true;
 	ProgFU(3, { 0, nullptr }); }
 	break;
 	case 9: // ModeSet
-
 		break;
 	case 10: // SourceReset
-
 		break;
-
 	case 11: // LogMkOut
 		break;
 
 	case 15: // TimeOut	Выдать время компиляции в секундах
-		if (Load.Type == Tdouble)
-			*(double*)Load.Point = (double) TimeLong/ CLOCKS_PER_SEC;
-		if (Load.Type == Tfloat)
-			*(float*)Load.Point = (float) TimeLong / CLOCKS_PER_SEC;
+		Load.Write(TimeLong);
 		break;
 	case 30: // TimeMkOut Выдать МК со времем компиляции в секундах
-		MkExec(*(int*)(Load.Point), { Cdouble , new double((double)TimeLong / CLOCKS_PER_SEC) });
+	{
+		double t = TimeLong / CLOCKS_PER_SEC;
+		MkExec(Load, { Cdouble , &t });
 		break;
+	}
 	case 35: // LineBufSizeSet Установить размер буфера строк
-		str_buf_size = *(int*)Load.Point;
+		str_buf_size =Load.toInt();
 		str_bufCount = 0;
 		str_buf.resize(str_buf_size);
 		break;
 	case 40: // LogOut
 		break;
 	case 50: // LineCountOutMk
-		MkExec(*(int*)Load.Point, { Tint, &LineCount });
+		MkExec(Load, { Tint, &LineCount });
 		break;
 	case 51: // LastLineBufOutMk Выдать МК с последней строкой из буфера
-		MkExec(*(int*)Load.Point, { Tstring, &str_buf[str_bufCount] });
+		MkExec(Load, { Tstring, &str_buf[str_bufCount] });
 		break;
 	case 52: // LineBufOutMk // Выдать МК со строками из буфера
 		for (int i = 0; i < str_buf_size; i++)
 		{
-			MkExec(*(int*)Load.Point, { Tstring, &str_buf[str_bufCount] });
+			MkExec(Load, { Tstring, &str_buf[str_bufCount] });
 			str_bufCount = (str_bufCount + 1) % str_buf_size;
 		}
 		break;
@@ -130,5 +127,4 @@ void StrGen::ProgFU(int MK, LoadPoint Load)
 		CommonMk(MK, Load);
 		break;
 	}
-	*/
 }

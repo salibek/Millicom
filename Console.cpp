@@ -26,6 +26,12 @@ void Console::ProgFU(int MK, LoadPoint Load)
 			Load.print(AtrMnemo,"",Sep,End, quote, ArrayBracketStart,ArrayBracketFin);
 		if (MK == 2 || MK == 4) cout << endl;
 		break;
+	case 5: // LoadInfoOut Вывести сведения о нагрузке
+		cout << "LoadInfo : Type " << Load.Type << " Ind " << Load.Ind;
+		if (Load.Point == nullptr) cout << " Point=null";
+		else cout << Load.Type % 2 ? " Const" : "Var";
+		cout << endl;
+		break;
 	case 10: // Ln Перевод строки
 		cout << endl;
 		break;

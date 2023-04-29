@@ -239,10 +239,10 @@
 			LexBuf[(ib - 1 + SizeBuf) % SizeBuf].Load = Load;
 			break;
 		case 57: // LoadCopySet Установить копию нагрзузки у последней лексемы
-			LexBuf[ib].Load.Copy(Load);
+			LexBuf[ib].Load.Clone(Load);
 			break;
 		case 58: // PrevLoadCopySet Установить копию нагрзузки у предыдущей лексемы
-			LexBuf[(ib - 1 + SizeBuf) % SizeBuf].Load.Copy(Load);
+			LexBuf[(ib - 1 + SizeBuf) % SizeBuf].Load.Clone(Load);
 			break;
 		case 65: // VarSet Установить тип переменной для нагрузки последней лексемы
 			LexBuf[ib].Load.Type |= 1;
@@ -280,7 +280,7 @@
 			if (Load.Point == nullptr)
 				LexOut(true);
 			else
-				Receiver.back()->ProgFU(ReceiverMK.back(), Load.Copy());
+				Receiver.back()->ProgFU(ReceiverMK.back(), Load.Clone());
 //			MkExec(ReceiverMK.back(), Load.Copy());
 			break;
 
@@ -630,7 +630,7 @@
 						//Debug(*i, S, LexAccum); // --- отладка
 						break;
 					}
-					{
+					{//
 						string* t=new string(LexAccum);
 						ib = (ib + 1) % SizeBuf;
 						LexBuf[ib].Load.Clear(); // Удаляем нагрузку ИП
