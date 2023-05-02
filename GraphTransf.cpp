@@ -5,7 +5,7 @@
 
 using namespace std;
 
-void GraphTransf::ProgFU(int MK, LoadPoint Load)
+void GraphTransf::ProgFU(int MK, LoadPoint Load, FU* Sender)
 {
 	switch (MK)
 	{
@@ -279,5 +279,7 @@ void GraphTransf::ProgFU(int MK, LoadPoint Load)
 		//	if(Searcher.FindAnd({Cint, Load.toInt(),nullptr}));
 		}
 			break;
+		default:
+			CommonMk(MK, Load, Sender);
 	}
 }

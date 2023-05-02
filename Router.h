@@ -12,8 +12,10 @@ public:
 	FU* Receiver = nullptr; // Приемник данных
 	int ReceiverMk = -1; // МК для приемника данных
 
-	int MkCount = 0; // Счетчик принятых МК в канал
-	int DataCount = 0; // Счетчик количества принятых данных в канал
+	int MkOutCount = 0; // Счетчик отправленных МК их канала
+	int DataOutCount = 0; // Счетчик количества отправленных данных из канал
+	int MkInCount = 0; // Счетчик принятых МК в канал
+	int DataInCount = 0; // Счетчик количества принятых данных в канал
 };
 
 class Router : public FU
@@ -48,7 +50,7 @@ class Router : public FU
 	int DataSize = 0, MaxDataSize = 0; // Текущий объем занятого буфера и максимальный объем занятого буфера
 	//	double AverageMKQueue = 0; // Средняя длина очереди
 public:
-	void ProgFU(int MK, LoadPoint Load) override;
+	void ProgFU(int MK, LoadPoint Load, FU* Sender=nullptr) override;
 	Router(FU* BusContext, FU* Templ)
 	{
 		Bus = BusContext;

@@ -5,13 +5,13 @@
 
 using namespace std;
 
-void Gateway::ProgFU(int MK, LoadPoint Load)
+void Gateway::ProgFU(int MK, LoadPoint Load, FU* Sender)
 {
 	if (!(MK < FUMkRange || MK >= GatewayMkRange && MK < GatewayMkRange + FUMkRange))
 	{
 		MkCount++; // Посчитать количетво МК, переданных через шлюз
 		DataCount += Load.DataSize(); // Подсчет объема переданных данных
-		GatewayFriend->ProgFU(MK, Load); // Передать сообщение на парный шлюз
+		GatewayFriend->ProgFU(MK, Load, this); // Передать сообщение на парный шлюз
 		if (Modeling != nullptr)
 		{
 			MaxMKQueue = max(MaxMKQueue, (int)Modeling->qmk.size()); // Вычисление максимальной длины очереди

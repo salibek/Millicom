@@ -1,6 +1,6 @@
 #include "IntAlu.h"
 
-void IntAlu::ProgFU(int MK, LoadPoint Load)
+void IntAlu::ProgFU(int MK, LoadPoint Load, FU* Sender)
 {
 	switch (MK)
 	{
@@ -240,7 +240,7 @@ void IntAlu::ProgFU(int MK, LoadPoint Load)
 		*AccumulatUk %= Load.toInt();
 		break;
 	default:
-		CommonMk(MK, Load);
+		CommonMk(MK, Load, Sender);
 		break;
 	}
 

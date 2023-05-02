@@ -61,7 +61,7 @@ void MeanShiftCluster::MoveToPoint(MeanShiftPoint* CenterStart) // Метод установ
 	}	
 }
 
-void MeanShiftCluster::ProgFU(int MK, LoadPoint Load) // Область для поиска максимума концентрации
+void MeanShiftCluster::ProgFU(int MK, LoadPoint Load, FU* Sender) // Область для поиска максимума концентрации
 {
 	switch (MK)
 	{
@@ -109,7 +109,7 @@ double  MeanShiftPoint::dist(vector<double> &a, vector<double> &b) // Вычисление
 	return D;
 }
 
-void MeanShiftPoint::ProgFU(int MK, LoadPoint Load) // Поведение точки фазового пространства
+void MeanShiftPoint::ProgFU(int MK, LoadPoint Load, FU* Sender) // Поведение точки фазового пространства
 {
 	switch (MK)
 	{
@@ -233,7 +233,7 @@ void MeanShiftPoint::ProgFU(int MK, LoadPoint Load) // Поведение точки фазового 
 
 }
 
-void MeanShift::ProgFU(int MK, LoadPoint Load) // Поведение ФУ MeanShift
+void MeanShift::ProgFU(int MK, LoadPoint Load, FU* Sender) // Поведение ФУ MeanShift
 {
 	switch (MK)
 	{
@@ -498,7 +498,7 @@ void MeanShift::ProgFU(int MK, LoadPoint Load) // Поведение ФУ MeanShift
 			MkExec(Load, { Cdouble,&Clusters[ClusterID].Mass });
 		break;
 	default:
-		CommonMk(MK, Load);
+		CommonMk(MK, Load, Sender);
 		break;
 	}
 }

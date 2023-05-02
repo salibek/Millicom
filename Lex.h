@@ -42,7 +42,7 @@ private:
 	void* ErrProg = nullptr; // Программа, запускаемая при ошибке
 	bool TabMode = false; // Режим расстановки скобок по знакам табуляции
 public:
-	void ProgFU(int MK, LoadPoint Load);
+	void ProgFU(int MK, LoadPoint Load, FU* Sender=nullptr);
 	Lex(FU *BusContext=nullptr, FU *Templ=nullptr);
 	Lex() ;
 	vector<FU*> Receiver = { nullptr }; // Стек указаталей не ФУ-приемники

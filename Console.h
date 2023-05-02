@@ -37,7 +37,7 @@ private:
 	string inStr; // Последняя введенная строка
 	void* InputFormatErrProg = nullptr; // Программа ошибки формата входных данных
 public:
-	void ProgFU(int MK, LoadPoint Load) override;
+	void ProgFU(int MK, LoadPoint Load, FU* Sender = nullptr) override;
 	Console(FU* BusContext, FU* Templ) : FU(BusContext) { Bus = BusContext; FUtype = 1; };
 	Console() : FU() { Bus = nullptr; };
 private:

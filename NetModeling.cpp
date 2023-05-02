@@ -2,7 +2,7 @@
 #include "SchedulerEventser.h"
 
 // Формат входного токена:
-void TemperatEx::ProgFU(int MK, LoadPoint Load)
+void TemperatEx::ProgFU(int MK, LoadPoint Load, FU* Sender)
 {
 	if (Modeling!=nullptr && Modeling->ManualMode && Modeling->scheduler != nullptr && !Modeling->SchedulerFlag)
 	{
@@ -62,7 +62,7 @@ void TemperatEx::ProgFU(int MK, LoadPoint Load)
 	if(SchedulerFlag)
 		((Scheduler*)Modeling->scheduler)->CoreFree();
 }
-void NetManager::ProgFU(int MK, LoadPoint Load)
+void NetManager::ProgFU(int MK, LoadPoint Load, FU* Sender)
 {
 	switch (MK)
 	{
@@ -140,7 +140,7 @@ void NetManager::ProgFU(int MK, LoadPoint Load)
 				if(NetScheduler!=nullptr)
 				 {
 					Items[i][j]->Modeling = new FUModeling();
-					Items[i][j]->Modeling->scheduler = (void*)NetScheduler;
+					Items[i][j]->Modeling->scheduler = (FU*)NetScheduler;
 					if (NetScheduler != nullptr)Items[i][j]->Modeling->ManualMode = true;
 				}
 			}
@@ -253,7 +253,7 @@ void NetManager::ProgFU(int MK, LoadPoint Load)
 		NetScheduler = (FU*)Load.Point;
 		break;
 	default:
-		CommonMk(MK, Load);
+		CommonMk(MK, Load, Sender);
 		break;
 	}
 }

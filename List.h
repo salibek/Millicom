@@ -6,7 +6,7 @@
 class List : public FU
 {
 public:
-	void ProgFU(int MK, LoadPoint Load) override;
+	void ProgFU(int MK, LoadPoint Load, FU* Sender=nullptr) override;
 	vector<IC_type> ListHead; // —сылка на голову списка (вектор, т.к. список может быть многоуровневым)
 
 //	ip* LineUk = nullptr; // ”казатель на найленную строку списка

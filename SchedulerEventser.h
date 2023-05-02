@@ -3,15 +3,15 @@
 
 class Eventser: public FU
 {
-	multimap<double, FU*> Events; // События
+	multimap<double, Event> Events; // События
 	bool work = false; // Флаг процесса моделирования
 	bool start = false; // Флаг запуска процесса моделирования
 	double CurrentTime = 0; // Текущее время моделирования
 	void* FinProg = nullptr; // Программа, запускаемая по завершении моделирования
 	int EventCount = 0; // Счетчик событий
 public:
-	void ProgFU(int MK, LoadPoint Load) override;
-	void Eventsing(FU* Context, double tay);
+	void ProgFU(int MK, LoadPoint Load, FU* Sender = nullptr) override;
+	void Eventsing(FU* Context, double tay, bool SchedulerFlag=true);
 	Eventser(FU* BusContext, FU* Templ)
 	{
 		Bus = BusContext;
@@ -36,7 +36,7 @@ class Scheduler : FU
 	int  MaxMkQueue = 0; // Максимальная длина очереди МК ко всем ФУ, подключенным к данному планировщику
 public:
 	void* SchedulingProg = nullptr;
-	void ProgFU(int MK, LoadPoint Load) override;
+	void ProgFU(int MK, LoadPoint Load, FU* Sender = nullptr) override;
 	void Scheduling(FU*, double DTime, bool CoreContinue=false); // CoreContinue - флаг удержания вычислительного ядра
 	void CoreFree(); // Освободить ядро
 		Scheduler(FU* BusContext, FU* Templ)

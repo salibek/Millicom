@@ -26,7 +26,7 @@ class Gateway : public FU
 	int DataSize = 0, MaxDataSize = 0; // Текущий объем занятого буфера и максимальный объем занятого буфера
 	FU* Eventser = nullptr; // Ссылка на контроллер событий
 public:
-	void ProgFU(int MK, LoadPoint Load) override;
+	void ProgFU(int MK, LoadPoint Load, FU* Sender = nullptr) override;
 	Gateway(FU* BusContext, FU* Templ)
 	{
 		Bus = BusContext;

@@ -7,7 +7,7 @@
 class CellularAutomat : public FU {
 //private:
 public:
-	void ProgFU(int MK, LoadPoint Load) override;
+	void ProgFU(int MK, LoadPoint Load, FU* Sender = nullptr) override;
 	CellularAutomat(FU* BusContext, FU* Templ) : FU(BusContext) { FUtype = 18; Bus = BusContext; ProgFU(0, { 0,nullptr }); };
 	CellularAutomat() : FU() { Bus = nullptr; ProgFU(0, { 0,nullptr });};
 	void* Manager = nullptr;// Ссылка на менеджера
@@ -45,7 +45,7 @@ public:
 class CellularAutomatManager : public FU {
 	//private:
 public:
-	void ProgFU(int MK, LoadPoint Load) override;
+	void ProgFU(int MK, LoadPoint Load, FU* Sender = nullptr) override;
 	int NetType = 0;// Тип автоматной сетки 0 - не задано, 1- квадратная, 2 - треугольная, 3 гексагональная
 	CellularAutomatManager(FU* BusContext, FU* Templ) : FU(BusContext) { FUtype = 19; Bus = BusContext; ProgFU(0, { 0,nullptr });};
 	CellularAutomatManager() : FU() { Bus = nullptr; };

@@ -1589,7 +1589,7 @@ void LoadPoint::print(map<int, string > AtrMnemo, string offset, string Sep, str
 }
 
 // Работа с ФУ
-void FU::CommonMk(int Mk, LoadPoint Load)
+void FU::CommonMk(int Mk, LoadPoint Load, FU* Sender)
 {
 	Mk %= FUMkRange;
 	if (Mk < 0) // Команды для АЛУ
@@ -1599,11 +1599,11 @@ void FU::CommonMk(int Mk, LoadPoint Load)
 		{ // Создать АЛУ
 			Alu = (FU*)new ALU(Bus);
 			//			cout << "FUType: " << FUtype << endl;
-			Alu->ProgFU(0, { 0,nullptr });
+			Alu->ProgFU(0, { 0,nullptr }, this);
 			((FU*)Alu)->Parent = this;
 			Accum = { Cdouble, &((ALU*)Alu)->accum };
 		}
-		Alu->ProgFU(-Mk, Load);
+		Alu->ProgFU(-Mk, Load, this);
 		return;
 	}
 	switch (Mk)
@@ -1710,7 +1710,7 @@ void FU::CommonMk(int Mk, LoadPoint Load)
 			AccumCreating = false;
 			ALUCreating = true;
 		}
-		((FU*)Alu)->ProgFU(ProgExecMk, Load);
+		((FU*)Alu)->ProgFU(ProgExecMk, Load, this);
 		break;
 		if (Mk == 929 && Accum.toBool() || Mk == 930 && !Accum.toBool())
 			ProgStop = 1; // Выход из программы
@@ -1719,10 +1719,10 @@ void FU::CommonMk(int Mk, LoadPoint Load)
 		Accum = { Tint, &((IntAlu*)Alu)->Accum };
 		AccumCreating = false;
 		ALUCreating = true;
-		((FU*)Alu)->ProgFU(ProgExecMk, Load);
+		((FU*)Alu)->ProgFU(ProgExecMk, Load, this);
 		break;
 	case 989: // ProgStop Остановка программы (в нагрузке количество уровней выхода; если нагрузка nil, то присваивается 1)
-		ProgStop = Load.toInt(1);
+		ProgStop = Load.toInt(2);
 		break;
 	case 988: // ProgStopAll Остановка всех запущенных на выполнение миллипрограммы для данного ФУ
 		ProgStopAll = Load.toBool(true);
@@ -1788,7 +1788,15 @@ void FU::CommonMk(int Mk, LoadPoint Load)
 		break;
 	case ContextOutMkMk: // 999 ContextOutMK Выдать милликоманду с указателем на контекст ФУ
 		if (Load.Type >> 1 == Dint)
-			Bus->ProgFU(*(int*)Load.Point, { TFU, this });
+			Bus->ProgFU(*(int*)Load.Point, { TFU, this }, this);
+		break;
+	case BreakMk: //Выход из циклов
+	    CycleStop = Load.toInt(1);
+		if (CycleStop < 0) CycleStop = 0;
+		break;
+	case NextMk: // Продолжение циклов
+		CycleStop = - Load.toInt(1); // При CycleStop < 0 выполняется оператор Continue
+		if (CycleStop > 0) CycleStop = 0;
 		break;
 	case MkGlobalRangeSet: // Установить глобальный адрес МК для ФУ
 		FUMkGloabalRange = Load.toInt();
@@ -1824,22 +1832,9 @@ void FU::ProgExec(void* UK, unsigned int CycleMode, FU* ProgBus, vector<ip>::ite
 				return;
 			}
 			if (i->atr >= FUMkRange)
-				ProgBus->ProgFU(i->atr, i->Load); // Если диапазон МК не принадлежит ФУ (выдаем на Bus)
+				ProgBus->ProgFU(i->atr, i->Load, this); // Если диапазон МК не принадлежит ФУ (выдаем на Bus)
 			else // МК для данного ФУ
 			{
-				if (i->atr == BreakAtr) { ProgStop = i->Load.toInt() - 1; return; } // Прервать программу
-				if (i->atr == NextAtr)
-					if (!i->Load.toInt())
-					{
-						i = Uk->begin();  // Продолжение текущего цикла
-						continue;
-					}
-					else
-					{
-						CycleStop = i->Load.toInt();
-						return;
-					} // Переход к следующим итерациям циклов
-				// Выход из цикла по условию
 				if (i->atr == YesContinueAtr || i->atr == NoContinueAtr)
 				{
 					if (CycleMode == 2) // Проверка цикла с постусловием (пропускаем первую проверку)
@@ -1876,56 +1871,27 @@ void FU::ProgExec(void* UK, unsigned int CycleMode, FU* ProgBus, vector<ip>::ite
 				if (i->atr == RepeatAtr) { // Запустить программу заново
 					RepeatF = true; break;
 				}
-				/*
-								if (i->atr == ProgMkAtr || // Переход к подрограмме
-									i->atr == YesAtr && Accum.toBool() ||
-									i->atr == NoAtr && !Accum.toBool()) {
-									((ALU*)Alu)->Stack.push_back(((ALU*)Alu)->Stack.back());
-									ProgExec(i->Load, 0, ProgBus);
-									((ALU*)Alu)->Stack.pop_back();
-									((ALU*)Alu)->accum = ((ALU*)Alu)->Stack.back().accum;
-									continue;
-								}
-								if (i->atr == YesCycleAtr && Accum.toBool() || // Переход к циклу с постусловием
-									i->atr == NoCycleAtr && !Accum.toBool() ||
-									i->atr == ProgCycleAtr) {
-									((ALU*)Alu)->Stack.push_back(((ALU*)Alu)->Stack.back());
-									ProgExec(i->Load, 1, ProgBus);
-									((ALU*)Alu)->Stack.pop_back();
-									((ALU*)Alu)->accum = ((ALU*)Alu)->Stack.back().accum;
-									continue;
-								}
-								if (i->atr == YesPostCycleAtr && Accum.toBool() || // Переход к циклу
-									i->atr == NoPostCycleAtr && !Accum.toBool() ||
-									i->atr == ProgPostCycleAtr) {
-									((ALU*)Alu)->Stack.push_back(((ALU*)Alu)->Stack.back());
-									ProgExec(i->Load, 2, ProgBus);
-									((ALU*)Alu)->Stack.pop_back();
-									((ALU*)Alu)->accum = ((ALU*)Alu)->Stack.back().accum;
-									continue;
-								}
-				*/
-				ProgFU(i->atr, i->Load); // Выполнение команды
+				ProgFU(i->atr, i->Load, this); // Выполнение команды
 			}
 
 			if (CycleStop != 0) // Остановка циклов
 				if (!CycleMode) // Если не в режиме цикла, то просто выходим из уровня
 					return;
-				else
+				else {
 					if (CycleStop > 0)
+					{
 						CycleStop--; // уменьшение счетчика выходов из цикла
+						if(!CycleStop) return;
+					}
 					else
 					{
-						CycleStop++;
-						if (!CycleStop) // уменьшение счетчика выходов из цикла
-							i = Uk->begin(); // Продолжение цикла
-						return;
+						CycleStop++; // уменьшение счетчика выходов из цикла
+						if (CycleStop) 
+							return;
 					}
+				}
 			if (ProgStop > 0) { ProgStop--; return; }
-			if (ProgStopAll)
-			{
-				return;
-			} // Внеочередной выход из подпрограммы
+			if (ProgStopAll) { return; } // Внеочередной выход из подпрограммы
 		}
 	} while (RepeatF || CycleMode > 0);
 }
@@ -1940,12 +1906,12 @@ void FU::ProgExec(LoadPoint Uk, unsigned int CycleMode, FU* Bus, vector<ip>::ite
 void FU::MkExec(int MK, LoadPoint Load, FU* BusContext, bool Ext) // Выдача МК с нагрузкой
 {
 	if (MK < FUMkRange && !Ext) // Если МК адресована сомому ФУ
-		ProgFU(MK, Load);
+		ProgFU(MK, Load, this);
 	else
 		if (BusContext != nullptr)
-			BusContext->ProgFU(MK, Load);
+			BusContext->ProgFU(MK, Load, this);
 		else
-			Bus->ProgFU(MK, Load);
+			Bus->ProgFU(MK, Load, this);
 }
 
 void FU::MkExec(LoadPoint Mk, LoadPoint Load, FU* BusContext, bool Ext) // Выдача МК с нагрузкой
@@ -1954,28 +1920,28 @@ void FU::MkExec(LoadPoint Mk, LoadPoint Load, FU* BusContext, bool Ext) // Выдач
 	{
 		int MK = *(int*)Mk.Point;
 		if (MK < FUMkRange && !Ext) // Если МК адресована сомому ФУ
-			ProgFU(MK, Load);
+			ProgFU(MK, Load, this);
 		else
 			if (BusContext != nullptr)
-				BusContext->ProgFU(MK, Load);
+				BusContext->ProgFU(MK, Load, this);
 			else
-				Bus->ProgFU(MK, Load);
+				Bus->ProgFU(MK, Load, this);
 	}
 }
 
-void FU::Scheduling()
+void FU::Scheduling(bool SchedulerFlag)
 {
 	if (Modeling == nullptr) return;
 	if (Modeling->qmk.size() != 0)
 	{
-		Modeling->SchedulerFlag = true;
+		Modeling->SchedulerFlag = SchedulerFlag;
 		if (Modeling->qmk.size() == 0)
 			cout << "Modeling error\n";
 		else
 		{
 			ip t = Modeling->qmk.back();
 			Modeling->qmk.pop_back();
-			ProgFU(t.atr, t.Load);
+			ProgFU(t.atr, t.Load, this);
 			if (t.Load.Type % 2 == 1 && t.Load.Point != nullptr)
 				t.Load.VarDel();
 		}

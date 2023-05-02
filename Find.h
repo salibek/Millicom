@@ -5,7 +5,7 @@
 class Find: public FU
 {
 	public:
-	void ProgFU(int MK, LoadPoint Load) override;
+	void ProgFU(int MK, LoadPoint Load, FU* Sender = nullptr) override;
 	Find(FU *BusContext, FU *Templ) : FU(BusContext)
 	{
 		ProgFU(0, { 0,nullptr }); Bus = BusContext; Searcher.MainFU = this;

@@ -16,14 +16,14 @@ void BusFU::FUTypesIni()
 	FUTypeCorrect = 0;
 }
 
-void BusFU::ProgFU(int MK, LoadPoint Load)
+void BusFU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 {
 	ICVect* ipVect; // Указатель на вектор ИК
 	if (MK >= FUMkRange*2)
 	{
 		int FU_num = MK / FUMkRange;
 		if(FU_num<FUs.size())
-			FUs[FU_num]->ProgFU(MK%FUMkRange, Load);
+			FUs[FU_num]->ProgFU(MK%FUMkRange, Load, this);
 	}
 	else
 		switch (MK%FUMkRange)

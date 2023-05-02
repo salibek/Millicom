@@ -1,17 +1,17 @@
 #include "stdafx.h"
 #include "SchedulerEventser.h"
 
-void Eventser::Eventsing(FU* Context, double tay) // Запланиовать событие (tay - время задержки события)
+void Eventser::Eventsing(FU* Context, double tay, bool SchedulerFlag) // Запланиовать событие (tay - время задержки события)
 {
 	if (Events.size() == 0)
 	{
-		Events.insert(pair<double, FU*>(CurrentTime+tay, Context));
+		Events.insert(pair<double, Event>(CurrentTime + tay, {true, Context }));
 		if (work && !start)// ProgFU(1, { 0,nullptr });
 			start = true;
 			while (Events.size()!=0 && work) {
 	//			cout << CurrentTime << endl;
 				CurrentTime = Events.begin()->first;
-				Events.begin()->second->Scheduling();
+				Events.begin()->second.Receiver->Scheduling(Events.begin()->second.SchedulerFlag);
 				Events.erase(Events.begin());
 			}
 			ProgExec(FinProg);
@@ -19,11 +19,11 @@ void Eventser::Eventsing(FU* Context, double tay) // Запланиовать событие (tay -
 	}
 	else
 	{
-		Events.insert(pair<double, FU*>(Events.begin()->first+tay, Context));
+		Events.insert(pair<double, Event>(Events.begin()->first+tay, { true, Context }));
 	}
 }
 
-void Eventser::ProgFU(int MK, LoadPoint Load)
+void Eventser::ProgFU(int MK, LoadPoint Load, FU* Sender)
 {
 	switch (MK)
 	{
@@ -40,7 +40,7 @@ void Eventser::ProgFU(int MK, LoadPoint Load)
 		Events.clear();
 		while (Events.size()!=0 && work) {
 			CurrentTime = Events.begin()->first;
-			Events.begin()->second->Scheduling();
+			Events.begin()->second.Receiver->Scheduling(Events.begin()->second.SchedulerFlag);
 			if (Events.size() != 0) Events.erase(Events.begin());
 		}
 		ProgExec(FinProg);
@@ -68,7 +68,7 @@ void Eventser::ProgFU(int MK, LoadPoint Load)
 		MkExec(Load, { Cint, &EventCount });
 		break;
 	default:
-		CommonMk(MK, Load);
+		CommonMk(MK, Load, Sender);
 		break;
 	}
 }
@@ -116,7 +116,7 @@ void Scheduler::Scheduling(FU* Context, double DTime, bool CoreContinue)
 	ProgExec(SchedulingProg);
 }
 
-void Scheduler::ProgFU(int MK, LoadPoint Load)
+void Scheduler::ProgFU(int MK, LoadPoint Load, FU* Sender)
 {
 	switch (MK)
 	{
@@ -236,7 +236,7 @@ void Scheduler::ProgFU(int MK, LoadPoint Load)
 	}
 
 	default:
-		CommonMk(MK, Load);
+		CommonMk(MK, Load, Sender);
 		break;
 	}
 }

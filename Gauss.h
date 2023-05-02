@@ -5,7 +5,7 @@
 
 class GaussPoint : public FU {
 public:
-	void ProgFU(int MK, LoadPoint Load) override;
+	void ProgFU(int MK, LoadPoint Load, FU* Sender = nullptr) override;
 	GaussPoint(FU* BusContext, FU* Templ) : FU(BusContext) { Bus = BusContext; };
 	GaussPoint() : FU() { Bus = nullptr; };
 	double a = 0;
@@ -23,7 +23,7 @@ private:
 
 class Gauss : public FU {
 public:
-	void ProgFU(int MK, LoadPoint Load) override;
+	void ProgFU(int MK, LoadPoint Load, FU* Sender = nullptr) override;
 	Gauss(FU* BusContext, FU* Templ) : FU(BusContext) { Bus = BusContext; FUtype = 16; };
 	Gauss() : FU() { Bus = nullptr; };
 	int Size = 10; // Размерность матрицы

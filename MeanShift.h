@@ -7,7 +7,7 @@
 
 class MeanShiftPoint : public FU {
 public:
-	void ProgFU(int MK, LoadPoint Load) override;
+	void ProgFU(int MK, LoadPoint Load, FU* Sender=nullptr) override;
 	int ID = 0; // Идентификатор ФУ-исполнителя
 	int NDim = 2; // Количество изменений в фазовом пространстве
 	double Mass = 1; // Вес точки
@@ -37,7 +37,7 @@ private:
 
 class MeanShiftCluster : public FU { // Область для поиска максимума концентрации
 public:
-	void ProgFU(int MK, LoadPoint Load) override;
+	void ProgFU(int MK, LoadPoint Load, FU* Sender=nullptr) override;
 	void Migration(); // Поиск концентрации точек
 	void* Manager = nullptr; // Указатель на менеджера
 	vector<double> Center; // Координата центра кластера
@@ -60,7 +60,7 @@ class MeanShift : public FU {
 public:
 	vector <vector<MeanShiftPoint*>> VXY; // Указатели на точки, упорядоченные по координате X и Y и т.д.
 											// Каждое изменение - это отдельная линия в векторе
-	void ProgFU(int MK, LoadPoint Load) override;
+	void ProgFU(int MK, LoadPoint Load, FU* Sender=nullptr) override;
 	MeanShift(FU* BusContext, FU* Templ) : FU(BusContext) { FUtype = 14; ProbMaxMin = { {0,1},{0,1} }; eps = { 15,15 }; eps.resize(2);  Bus = BusContext; };
 	MeanShift() : FU() { ProbMaxMin = { {0,1},{0,1} }; eps = { 16,16 }; Bus = nullptr; };
 private:

@@ -5,7 +5,7 @@
 
 using namespace std;
 
-void Find::ProgFU(int MK, LoadPoint Load)
+void Find::ProgFU(int MK, LoadPoint Load, FU* Sender)
 {
 	switch (MK)
 	{

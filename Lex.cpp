@@ -12,19 +12,19 @@
 		{
 			if (uk->second.Fu != nullptr && uk->second.Mk!= 0)
 				if(!Copy)
-					uk->second.Fu->ProgFU(uk->second.Mk, { TIP, &LexBuf[ib] });
+					uk->second.Fu->ProgFU(uk->second.Mk, { TIP, &LexBuf[ib] }, this);
 				else
-					uk->second.Fu->ProgFU(uk->second.Mk, { TIP, LexBuf[ib].Сlone() });
+					uk->second.Fu->ProgFU(uk->second.Mk, { TIP, LexBuf[ib].Сlone() }, this);
 		}
 		else
 			if (Receiver.back() != nullptr)
 				if (Copy)
-					Receiver.back()->ProgFU(MK, { TIP, LexBuf[ib].Сlone() });
+					Receiver.back()->ProgFU(MK, { TIP, LexBuf[ib].Сlone() }, this);
 				else
-					Receiver.back()->ProgFU(MK, { TIP, &LexBuf[ib] });
+					Receiver.back()->ProgFU(MK, { TIP, &LexBuf[ib] }, this);
 	}
 
-	void Lex::ProgFU(int MK, LoadPoint Load)
+	void Lex::ProgFU(int MK, LoadPoint Load, FU* Sender)
 	{
 		// Доделать буфер ИП с лексемами
 	//	MK %= FUMkRange;
@@ -73,7 +73,7 @@
 				LexOut();
 				//Receiver.back()->ProgFU(MK, { TIP, &LexBuf[ib] });
 			else
-    			Receiver.back()->ProgFU(ReceiverMK.back(), Load);
+    			Receiver.back()->ProgFU(ReceiverMK.back(), Load, this);
 			break;
 		case 5: //ReceiverMKSet Установить МК для приемника лексем 
 			if (Load.Type >> 1 == Dint) ReceiverMK.back() = Load.toInt(); break;
@@ -182,17 +182,17 @@
 			if (Load.Point == nullptr)
 			{
 				//LexOut(false);
-				Receiver.back()->ProgFU(ReceiverMK.back(), { TIP, &LexBuf[ib] });
+				Receiver.back()->ProgFU(ReceiverMK.back(), { TIP, &LexBuf[ib] }, this);
 			}
 			else
 				if(Load.Type>>1==Dint)
-					Receiver.back()->ProgFU(Load.toInt(), { TIP, &LexBuf[ib] });
+					Receiver.back()->ProgFU(Load.toInt(), { TIP, &LexBuf[ib] }, this);
 			break;
 		case 36: // CopyOutMk Выдать МК с копией последней лексемы (если nil в нагрузке, то выдается на Receiver)
 			if (Load.Point!=nullptr) 
-				Receiver.back()->ProgFU(*(int*)Load.Point, { TIP, LexBuf[ib].Сlone() });
+				Receiver.back()->ProgFU(*(int*)Load.Point, { TIP, LexBuf[ib].Сlone() }, this);
 			else
-				Receiver.back()->ProgFU(ReceiverMK.back(), { TIP, LexBuf[ib].Сlone() });
+				Receiver.back()->ProgFU(ReceiverMK.back(), { TIP, LexBuf[ib].Сlone() }, this);
 			break;
 		case 37: // LoadOut Выдать нагрузку текущей лексемы
 			Load.Write(LexBuf[ib].Load);
@@ -215,16 +215,16 @@
 		case 45: //PrevOutMk Выдать МК с предыдущей лексемой (если нагрузка nil, то выдается на Receiver)
 		case 46: //PrevPrevOutMk Выдать МК с предпредыдущей лексемой (если нагрузка nil, то выдается на Receiver)
 			if (Load.Point==nullptr)
-				Receiver.back()->ProgFU(ReceiverMK.back(), { TIP, &LexBuf[(ib - MK + 44) % SizeBuf] });
+				Receiver.back()->ProgFU(ReceiverMK.back(), { TIP, &LexBuf[(ib - MK + 44) % SizeBuf] }, this);
 			else
-				Receiver.back()->ProgFU(Load.toInt(), {TIP, &LexBuf[(ib - MK + 44) % SizeBuf]});
+				Receiver.back()->ProgFU(Load.toInt(), {TIP, &LexBuf[(ib - MK + 44) % SizeBuf]}, this);
 			break;
 		case 47: //PrevCopyOutMk Выдать МК с копией предыдущей лексемы (если нагрузка nil, то выдается на Receiver)
 		case 48: //PrevPrevCopyOutMk Выдать МК с копией предпредыдущей лексемы (если нагрузка nil, то выдается на Receiver)
 			if (Load.Point == nullptr)
-				Receiver.back()->ProgFU(ReceiverMK.back(), { TIP, LexBuf[(ib - MK + 46) % SizeBuf].Сlone() });
+				Receiver.back()->ProgFU(ReceiverMK.back(), { TIP, LexBuf[(ib - MK + 46) % SizeBuf].Сlone() }, this);
 			else	
-				Receiver.back()->ProgFU(Load.toInt(), {TIP, LexBuf[(ib - MK + 46) % SizeBuf].Сlone()});
+				Receiver.back()->ProgFU(Load.toInt(), {TIP, LexBuf[(ib - MK + 46) % SizeBuf].Сlone()}, this);
 			break;
 		case 50: // AtrSet Установить атрибут последней лексемы
 			LexBuf[ib].atr=Load.toInt();
@@ -257,7 +257,7 @@
 			if (Load.Point == nullptr)
 				LexOut();
 			else
-				Receiver.back()->ProgFU(ReceiverMK.back(), Load);
+				Receiver.back()->ProgFU(ReceiverMK.back(), Load, this);
 
 /*
 			if (Load.Point == nullptr)
@@ -280,7 +280,7 @@
 			if (Load.Point == nullptr)
 				LexOut(true);
 			else
-				Receiver.back()->ProgFU(ReceiverMK.back(), Load.Clone());
+				Receiver.back()->ProgFU(ReceiverMK.back(), Load.Clone(), this);
 //			MkExec(ReceiverMK.back(), Load.Copy());
 			break;
 
@@ -1095,7 +1095,7 @@
 		ProgExec(FinProg); // Выполнить 
 		break;
 		default:
-			CommonMk(MK, Load);
+			CommonMk(MK, Load, Sender);
 		}
 	}
 /*

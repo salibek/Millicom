@@ -12,7 +12,7 @@ public:
 		T_Neighbours.clear();
 		T.clear();
 	};
-	void ProgFU(int MK, LoadPoint Load) override;
+	void ProgFU(int MK, LoadPoint Load, FU* Sender = nullptr) override;
 	TemperatEx(FU* BusContext, FU* Templ) : FU(BusContext) { Bus = BusContext; ProgFU(0, { 0,nullptr }); };
 	TemperatEx() : FU() { Bus = nullptr; };
 	vector<double> T; // Текущая температура
@@ -29,7 +29,7 @@ public:
 class NetManager: public FU // Менеджер сетевых расчетов
 {
 public:
-	void ProgFU(int MK, LoadPoint Load) override;
+	void ProgFU(int MK, LoadPoint Load, FU* Sender = nullptr) override;
 	NetManager(FU* BusContext, FU* Templ) : FU(BusContext) { Bus = BusContext; FUtype = 11; ProgFU(0, { 0,nullptr }); };
 	NetManager() : FU() { Bus = nullptr; };
 private:

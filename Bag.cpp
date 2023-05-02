@@ -3,7 +3,7 @@
 #include <fstream>
 #include "SchedulerEventser.h"
 
-void BagPoint::ProgFU(int MK, LoadPoint Load)
+void BagPoint::ProgFU(int MK, LoadPoint Load, FU* Sender)
 {
 	MK %= FUMkRange;
 	if (Modeling != nullptr && Modeling->ManualMode && Modeling->scheduler != nullptr && !Modeling->SchedulerFlag)
@@ -60,7 +60,7 @@ void BagPoint::ProgFU(int MK, LoadPoint Load)
 		((Scheduler*)Modeling->scheduler)->CoreFree();
 }
 
-void Bag::ProgFU(int MK, LoadPoint Load)
+void Bag::ProgFU(int MK, LoadPoint Load, FU* Sender)
 {
 	if (Modeling != nullptr && Modeling->ManualMode && Modeling->scheduler != nullptr && !Modeling->SchedulerFlag)
 	{
@@ -138,11 +138,10 @@ void Bag::ProgFU(int MK, LoadPoint Load)
 				if (Modeling != nullptr)
 				{
 					Field[i][j].Modeling = new FUModeling();
-					Field[i][j].Modeling->scheduler = (void*)Modeling->scheduler;
+					Field[i][j].Modeling->scheduler = (FU*)Modeling->scheduler;
 					Field[i][j].Modeling->ManualMode = true;
 				}
 			}
-
 
 		// —сылки
 		for (int i = 1; i < Field.size(); i++)

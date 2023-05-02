@@ -25,7 +25,7 @@ private:
 	double (*Activation[2])(double, vector<double>) = { LinF,Porog }; // вектор функций активации
 	double delta = 0, Z=0, Y=0;
 public:
-	void ProgFU(int MK, LoadPoint Load) override;
+	void ProgFU(int MK, LoadPoint Load, FU* Sender=nullptr) override;
 	Neuro(FU* BusContext, FU* Templ) : FU(BusContext) { Bus = BusContext; FUtype = 10; ProgFU(0, { 0,nullptr }); };
 	Neuro() : FU() { Bus = nullptr; };
 private:

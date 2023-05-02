@@ -48,7 +48,7 @@ const int ProgMk=958, ProgCycleMk = 959, ProgPostCycleMk = 960;
 const int YesMk = 961, YesCycleMk = 962, YesPostCycleMk = 963, YesBreakMk =967;
 const int NoMk = 964, NoCycleMk = 965, NoPostCycleMk = 966, NoBreakMk =968;
 const int CalcMk = 927; // Милликоманда вычисления АЛВ
-const int BreakMk = 909, NextMk = 910; // МК прерывания программы и продолжения цикла
+const int BreakMk = 934, NextMk = 935; // МК прерывания программы и продолжения цикла
 const int RepeatMk=911; // Начать выполнение ИК заново
 const int YesContinueMk = 969, NoContinueMk = 970;
 const int ProgExecMk = 990; // МК выполнения программы
@@ -86,7 +86,7 @@ public:
 	static bool isDigitBool(int type) { unsigned int t = type; return t >> 1 == Dint || t >> 1 == Dchar || t >> 1 == Dfloat || t >> 1 == Ddouble || t >> 1 == Dbool; }; // Число или булеан?
 
 	bool isBool(); // булеан?
-	static bool isBool(int type) { unsigned int t = type; return type >> 1 == Dbool; }; // Число или булеан?
+	static bool isBool(unsigned int type) { unsigned int t = type; return type >> 1 == Dbool; }; // Число или булеан?
 
 	bool isInt(); // Целое число?
 	static bool isInt(int type) { unsigned int t = type; return type >> 1 == Dint; }; // Целое число?
@@ -249,6 +249,13 @@ struct deletedIC //удаленная ИП
 	void* programm; // указатель на милипрограмму (ИК, содержащую набор милликоманд)
 };
 
+
+class Event { // Описание события
+public:
+	bool SchedulerFlag; // Флаг того, что МК была передана от планировщика событий, т.е. она должна выполняться. В противном случае она поступает в очередь ожидания МК
+	FU* Receiver;       // Получатель МК
+};
+
 class FUModeling
 {
 public:
@@ -256,13 +263,15 @@ public:
 	vector<ip> qmk; // Очередь МК для моделирования
 	bool ManualMode = false; // Режим ручного управления (для моделирования)
 	map<int, double> MkTime; // Время выполнения операций (для моделирования)
-	void* scheduler = nullptr; // Указатель на контекст планировщика вычислений
+	FU* scheduler = nullptr; // Указатель на контекст планировщика вычислений
+	FU* eventser = nullptr; // Указатель на контекст контроллера событий
+	int MaxQ = 0; // Максимальная длина очереди МК
 };
 
 class FU {  // Ядро функционального устройства
 public:
-	virtual void ProgFU(int MK, LoadPoint Load) {}; // Реализация логики работы ФУ
-	void Scheduling(); // Запуск МК после разрешенрия планировщика
+	virtual void ProgFU(int MK, LoadPoint Load, FU* Sender) {}; // Реализация логики работы ФУ
+	void Scheduling(bool SchedulerFlag); // Запуск МК после разрешенрия планировщика
 	int FUtype = 0; // Тип ФУ
 	string FUName; //  Имя ФУ
 	bool Active = true;
@@ -276,8 +285,8 @@ public:
 
 	FUModeling *Modeling=nullptr; // Моделирование
 
-	FU() { Bus = nullptr; ProgFU(0, { 0,nullptr }); };
-	FU(FU* BusContext) { Bus = BusContext; ProgFU(0, { 0,nullptr }); };
+	FU() { Bus = nullptr; ProgFU(0, { 0,nullptr }, nullptr); };
+	FU(FU* BusContext) { Bus = BusContext; ProgFU(0, { 0,nullptr }, nullptr); };
 	~FU() {
 		if (AccumCreating) Accum.Clear(); // Уничтожаем самостоятельно созданнный ФУ-ом аккумулятор
 		if (ALUCreating) delete Alu; // Уничтожаем самостоятельно созданнного АЛУ
@@ -301,7 +310,7 @@ public:
 	int NextAtr = NextMk;//Мк повторения программы
 	int ProgMkAtr=ProgMk, ProgCycleAtr= ProgCycleMk, ProgPostCycleAtr = ProgPostCycleMk;
 	int YesContinueAtr = YesContinueMk, NoContinueAtr = NoContinueMk; // МК условного выхода из программы
-	void CommonMk(int Mk, LoadPoint Uk); // Выполнение общих МК для ФУ
+	void CommonMk(int Mk, LoadPoint Uk, FU* Sender=nullptr); // Выполнение общих МК для ФУ
 	IC_type PrefixProg = nullptr, PostfixProg = nullptr, Prog = nullptr, ElseProg = nullptr; // Программы презапуска и послезапуска во время прихода МК, просто программа, альтернативная программа
 private:
 //	int ProgSetFaze = 0; // Фаза для установки программы ProgSet, ElseProgSet
