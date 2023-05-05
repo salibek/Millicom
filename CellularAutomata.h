@@ -2,6 +2,9 @@
 #include <vector>
 #include "Consts.h"
 #include "ALU.h"
+#include "Router.h"
+#include "Gateway.h"
+#include "SchedulerEventser.h"
 
 // Простейший клеточный автомат (устройство для вычисления сеточных функций)
 class CellularAutomat : public FU {
@@ -38,7 +41,7 @@ public:
 	int N_In = 0; // Количество входных данных для срабатывания
 	int State = 0; // Состояние автомата
 	int MkToSet = -1; // Милликоманда по умолчанию для установки ???
-	double ReceiveTime=0, CalcTime=0, SendTime=0, OtherMkTime=0; // Время задержки чтения, вычисления, записи данных
+	double ReceiveTime=0, CalcTime=0, SendTime=0, OtherMkTime=0, TransferTime=0; // Время задержки чтения, вычисления, записи данных
 };
 
 // Менеджер простейшего клеточного автомата (устройство для вычисления сеточных функций)
@@ -50,17 +53,18 @@ public:
 	CellularAutomatManager(FU* BusContext, FU* Templ) : FU(BusContext) { FUtype = 19; Bus = BusContext; ProgFU(0, { 0,nullptr });};
 	CellularAutomatManager() : FU() { Bus = nullptr; };
 	vector<CellularAutomat> Net; //вектор сеточных автоматов
+	vector<Router> Routers; // Вектор маршрутизаторов для моделирования распределенной вычислительной системы
+	vector<Gateway> Gateways; // Вектор маршрутизаторов для моделирования распределенной вычислительной системы
+	vector<Scheduler> Schedulers; // Вектор маршрутизаторов для моделирования распределенной вычислительной системы
 	int Dim=0; // Размерность поля автоматов (количество ФУ для каждого измерения)
 	void* iniAutmataProg = nullptr; // Программа инициализации автоматов
 	void* Collector = nullptr; // Ссылка на коллектор
-//	void* ActivationProg = nullptr; // Программа активации ФУ при приходе всех необходимых данных
-//	void* ReceiveProg = nullptr; // Программа активации при получении автоматом данных от соседей
-//	void* FiringProg = nullptr; // Программа вычисления результата
-	int Ind1 = -1, Ind2 = -1; // Индексы первого и второго ФУ-автомата
-	int Step1 = 0, Step2 = 0; // Шаг автоматической инсрементации
-//	int InCounter = 0; // Установить количество входящих данных
+	int Ind1 = -1, Ind2 = -1, Ind3=-1; // Индексы первого и второго ФУ-автомата
+	int Step1 = 0, Step2 = 0, Step3=0, Step4=0; // Шаг автоматической инкрементации
 	int PlyN = 1; // Максимальное количество слоев для расчета
 	int ContextAddMk=20; // Код МК добавления МК для исполнительного ФУ
 	int MkAddMk=21; // Код МК для добавления МК соседа исполнительного ФУ
 	int AutomataMk1 = -1, AutomataMk2 = -1; // Текущая МК для автомата по индексами 1, 2
+	int MkPhaze = 0; // Фаза милликоманды (для двухфазных МК)
+	int Mk = 0; // Милликоманда для выполненя на 2-фазных МК
 };

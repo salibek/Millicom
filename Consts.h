@@ -59,6 +59,10 @@ const int SchedulerSetMk = 918; // МК установка планировщика вычислений
 const int MkGlobalRangeSet = 949; // Установить глобальный адрес МК для ФУ
 const int MkGlobalRangeOutMk = 948; // Выдать глобальный адрес МК для ФУ
 const int MkGlobalRangeOutMkMK = 947; // Выдать МК с глобальным адресом МК для ФУ
+const int EventserCurrentTimeOutMk = 50; // Мк для контроллера событий, чтобы выдать текущее модельное время
+const int EventserFUSetMk = 10; // МК контроллера событий для установки контекста ФУ для описания события
+const int EventTimeSetMk = 11; // МК контроллера событий для установки времени события, инициированного планировщиком вычислительного процесса
+const int EventAwaitSetMk=15; //  МК контроллера событий для установки времени прихода удаленной МК
 
 bool isIPinIC(void* iP, void* iC); //проверка, что ИК входит в ИП
 
@@ -242,6 +246,12 @@ public:
 	};
 };
 
+class ipSender : public ip // Класс для размещения МК и отправителя МК (для применения в очереди ожидания МК при моделировании
+{
+public:
+	FU* Sender=nullptr; // Отправитель МК
+};
+
 
 struct deletedIC //удаленная ИП
 {
@@ -260,7 +270,8 @@ class FUModeling
 {
 public:
 	bool SchedulerFlag = false; // Флаг запуска МК планироващиком
-	vector<ip> qmk; // Очередь МК для моделирования
+	vector<ipSender> qmk; // Очередь МК для моделирования
+	map<double, ipSender> qAwaitMk; // Очередь ожидающих МК для моделирования (на находятся в процессе передачи к ФУ, например, во время передачи по сети)
 	bool ManualMode = false; // Режим ручного управления (для моделирования)
 	map<int, double> MkTime; // Время выполнения операций (для моделирования)
 	FU* scheduler = nullptr; // Указатель на контекст планировщика вычислений
@@ -270,8 +281,9 @@ public:
 
 class FU {  // Ядро функционального устройства
 public:
+	void Scheduling(bool SchedulerFlag); // Запуск МК после разрешения планировщика
+	void MkAwait(int MK, LoadPoint Load, FU* Sender, double Delay); // Постановка МК для ожидания её прихода при моделировании
 	virtual void ProgFU(int MK, LoadPoint Load, FU* Sender) {}; // Реализация логики работы ФУ
-	void Scheduling(bool SchedulerFlag); // Запуск МК после разрешенрия планировщика
 	int FUtype = 0; // Тип ФУ
 	string FUName; //  Имя ФУ
 	bool Active = true;

@@ -9,6 +9,9 @@ class Eventser: public FU
 	double CurrentTime = 0; // Текущее время моделирования
 	void* FinProg = nullptr; // Программа, запускаемая по завершении моделирования
 	int EventCount = 0; // Счетчик событий
+	double Time = 0; // Время для установки события
+	bool SchedulerF = true; // Флаг для установки события
+	FU* FUContext=nullptr;
 public:
 	void ProgFU(int MK, LoadPoint Load, FU* Sender = nullptr) override;
 	void Eventsing(FU* Context, double tay, bool SchedulerFlag=true);

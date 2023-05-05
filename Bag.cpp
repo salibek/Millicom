@@ -65,7 +65,7 @@ void Bag::ProgFU(int MK, LoadPoint Load, FU* Sender)
 	if (Modeling != nullptr && Modeling->ManualMode && Modeling->scheduler != nullptr && !Modeling->SchedulerFlag)
 	{
 		Modeling->SchedulerFlag = false;
-		Modeling->qmk.push_back({ MK, Load });
+		Modeling->qmk.push_back({ MK, Load, Sender });
 		((Scheduler*)(Modeling->scheduler))->Scheduling(this, SendTime);
 		return;
 	}

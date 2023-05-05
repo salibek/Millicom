@@ -1807,6 +1807,11 @@ void FU::CommonMk(int Mk, LoadPoint Load, FU* Sender)
 	case MkGlobalRangeOutMkMK: // Выдать МК с глобальным адресом МК для ФУ
 		MkExec(Load, { Cint, &FUMkGloabalRange });
 		break;
+	case 917: // EventserSet Установить ссылку на контроллер событий
+		if (Load.Point == nullptr) break;
+		if (Modeling == nullptr) Modeling = new FUModeling();
+		Modeling->eventser = (FU*)Load.Point;
+		break;
 	}
 }
 
@@ -1929,21 +1934,58 @@ void FU::MkExec(LoadPoint Mk, LoadPoint Load, FU* BusContext, bool Ext) // Выдач
 	}
 }
 
+void FU::MkAwait(int MK, LoadPoint Load, FU* Sender, double Delay) // Постановка МК для ожидания её прихода при моделировании
+{
+	if (Modeling == nullptr || Modeling->eventser == nullptr)
+	{
+		ProgFU(MK, Load, Sender);
+		return;
+	}
+	double t;
+	LoadPoint LP = { Tdouble, &t };
+	Modeling->eventser->ProgFU(EventserCurrentTimeOutMk, LP, this); // Взять текущее время из контроллера событий
+	Modeling->qAwaitMk.insert({ t + Delay, {MK, Load, Sender} }); // Поместить метку ожидаемого прихода МК в очередь ожидания
+	Modeling->eventser->ProgFU(EventserFUSetMk, { CFU, this }, this); // Поместить метку события в вектор ожидаемых событий
+	Modeling->eventser->ProgFU(EventAwaitSetMk, { Cdouble, &Delay }, this); // Поместить метку события в вектор ожидаемых событий
+}
+
 void FU::Scheduling(bool SchedulerFlag)
 {
-	if (Modeling == nullptr) return;
-	if (Modeling->qmk.size() != 0)
+	if (Modeling == nullptr)
 	{
-		Modeling->SchedulerFlag = SchedulerFlag;
-		if (Modeling->qmk.size() == 0)
-			cout << "Modeling error\n";
-		else
+		cout << "Modeling error: Modeling=null\n";
+		return;
+	}
+	Modeling->SchedulerFlag = SchedulerFlag;
+	if (SchedulerFlag) {
+		if (Modeling->qmk.size() != 0)
 		{
-			ip t = Modeling->qmk.back();
-			Modeling->qmk.pop_back();
-			ProgFU(t.atr, t.Load, this);
-			if (t.Load.Type % 2 == 1 && t.Load.Point != nullptr)
-				t.Load.VarDel();
+			if (Modeling->qmk.size() == 0)
+				cout << "Modeling error: qmk.size() = 0\n";
+			else
+			{
+				ip t = Modeling->qmk.back();
+				Modeling->qmk.pop_back();
+				ProgFU(t.atr, t.Load, this);
+				if (t.Load.Type % 2 == 1 && t.Load.Point != nullptr)
+					t.Load.VarDel();
+			}
+		}
+	}
+	else
+	{// MkReceive awaiting Ожидание прихода МК на ФУ
+		if (Modeling->qAwaitMk.size() != 0)
+		{
+			if (Modeling->qAwaitMk.size() == 0)
+				cout << "Modeling error: qAwaitMk.size() = 0\n";
+			else
+			{
+				ipSender t = Modeling->qAwaitMk.begin()->second;
+				Modeling->qAwaitMk.erase(Modeling->qAwaitMk.begin());
+				ProgFU(t.atr, t.Load, t.Sender);
+				if (t.Load.Type % 2 == 1 && t.Load.Point != nullptr)
+					t.Load.VarDel();
+			}
 		}
 	}
 }

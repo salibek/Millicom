@@ -37,7 +37,7 @@ void Eventser::ProgFU(int MK, LoadPoint Load, FU* Sender)
 	case 1: //Start Начать моделирование
 		work = true;
 		start = true;
-		Events.clear();
+		//Events.clear();
 		while (Events.size()!=0 && work) {
 			CurrentTime = Events.begin()->first;
 			Events.begin()->second.Receiver->Scheduling(Events.begin()->second.SchedulerFlag);
@@ -48,14 +48,26 @@ void Eventser::ProgFU(int MK, LoadPoint Load, FU* Sender)
 	case 5: // WorkSet Установить флаг рабочего режима
 		work = Load.toBool();
 		break;
+	case 10: // FUSet Установить контекст ФУ для запланирования события
+		FUContext = (FU*)Load.Point; 
+		break;
+	case 11: // EventTimeSet Установить временя выполнения МК, инициированной планировщиком вычислительного процесса
+		Events.insert({ CurrentTime + Load.toDouble(), {true, FUContext} });
+		break;
+	case 15: // EventAwaitSet Установить временя прихода удаленной МК
+		Events.insert({ CurrentTime + Load.toDouble(), {false, FUContext} });
+		break;
 	case 45: //TimeSet Установить текущее модельное время
 		CurrentTime = Load.toDouble();
 		break;
+	case 49: // TimeRefOut Выдать ссылку на переменную текущего модельного времени
+		Load.Write(&CurrentTime);
+		break;
 	case 50: // TimeOut Выдать текущее модельное время
-		if(Load.Type==Tdouble)
+		Load.Write(CurrentTime);
 		break;
 	case 51: // TimeOutMk Выдать МК с текущим модельным временем
-	case 52: // TimeOutRefMk Выдать МК со ссылкой на переменную текущего модельного времени
+	case 52: // TimeRefOutMk Выдать МК со ссылкой на переменную текущего модельного времени
 		if (MK == 51)
 			MkExec(Load, { Cdouble,&CurrentTime });
 		else

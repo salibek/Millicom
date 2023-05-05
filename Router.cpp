@@ -15,12 +15,23 @@ int Router::ChennelSearch(int MK) // Поиск канала по МК (Возврашает -1, если кан
 	return distance(Channels.begin(), i); // Вернуть номер канала
 }
 
+double Router::DelayGen(channel ch) //Генерация задержки передачи данных
+{
+	return ch.Delay; // Постоянная задержка
+}
+
 void Router::ProgFU(int MK, LoadPoint Load, FU* Sender)
 {
 	if (!(MK < FUMkRange || MK >= FUMkGlobalRange && MK < FUMkGlobalRange + FUMkRange)) // Routing
 	{
 		// Маршрутизация
 		// SendInd = ChennelSearch(MK); // Определить номер канала, по которому пришла МК для маршрутизации
+		if (Modeling != nullptr && Modeling->ManualMode && Modeling->scheduler != nullptr && !Modeling->SchedulerFlag)
+		{
+			Modeling->SchedulerFlag = false;
+			Modeling->qmk.push_back({ MK, Load });
+			((Scheduler*)(Modeling->scheduler))->Scheduling(this, 1);
+		}
 
 		ProgExec(ReceiveProg); // Запустить программу по приходу данных
 		MKCount++;
@@ -48,8 +59,9 @@ void Router::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		{
 			Channels[SendInd].MkOutCount++; // Посчитали МК
 			Channels[SendInd].DataOutCount += Load.DataSize();
-			if(Modeling==nullptr)
-				((FU*) Channels[SendInd].Receiver)->ProgFU(MK,Load, this);
+			//if(Modeling==nullptr)
+
+			((FU*) Channels[SendInd].Receiver)->MkAwait(MK,Load, Sender, DelayGen(Channels[SendInd]));
 //			else
 //				Eventser->Eventsing(Context, DTime + SchedulingTime);
 		}
@@ -72,7 +84,7 @@ void Router::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		Ind = Channels.size() - 1; // Настроить индекс на последний созданный канал
 		break;
 	}
-	case 2: // RoutingSimulat Эмуляции прихода МК на маршрутизатор
+	case 2: // RoutingSimulat Эмуляция прихода МК на маршрутизатор
 		ProgFU(((IC_type)Load.Point)->begin()->atr, ((IC_type)Load.Point)->begin()->Load);
 		break;
 	case 3: // IndSet Установить индекс текущего канала роутера
@@ -121,6 +133,9 @@ void Router::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		break;
 	case 50:// ChRangeDownOutMk Выдать МК с нижним диапазоном для текущего канала
 		MkExec(Load, { Cint, &Channels[Ind].Down });
+		break;
+	case 51: // ChDelaySet Устанговить константную задержку передачи данных по каналу
+		Channels[Ind].Delay = Load.toDouble();
 		break;
 	//
 	// Подпрограммы

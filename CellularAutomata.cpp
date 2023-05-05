@@ -135,7 +135,9 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load, FU* Sender)
 	case 52: // OtherMkTimeSet Установить время время выполнения других операций для имитацинного моделирования
 		SendTime = Load.toDouble();
 		break;
-
+	case 53: // TransferTimeSet Установить время передачи данных между ФУ
+		TransferTime = Load.toDouble();
+		break;
 	case 700: // IndSet Установить индекс
 		Ind = Load.toInt();
 		break;
@@ -387,7 +389,8 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		break;
 	case 10: // SendTo Выдать МК со значением для соседа по индексу
 		if (Ind > Plys[PlyInd].size()) break;
-		Neighbours[PlyInd][Ind].ProgFU(NeighboursMk[Ind], Load, this);
+//		Neighbours[PlyInd][Ind].ProgFU(NeighboursMk[Ind], Load, this);
+		Neighbours[PlyInd][Ind].MkAwait(NeighboursMk[Ind], Load, this, TransferTime);
 		break;
 	case 11: // MkAdd Увеличить значение Мк для соседа
 		if (Ind > Plys[PlyInd].size()) break;
@@ -653,7 +656,9 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		case 8: // Send_N Переслать значение для соседа с индексом
 			if (MK % 50 >= Neighbours.size()) break;
 			if (Neighbours[MK % 50] == nullptr) break;
-			Neighbours[MK % 50]->ProgFU(NeighboursMk[MK % 50], Load, this);
+
+//			Neighbours[MK % 50]->ProgFU(NeighboursMk[MK % 50], Load, this);
+			Neighbours[MK % 50]->MkAwait(NeighboursMk[MK % 50], Load, this, TransferTime);
 			//cout << Load.toDouble() << endl;
 			break;
 		case 9: //MkAdd_N Прибавить смещение к МК
@@ -674,7 +679,6 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load, FU* Sender)
 			if (MK % 50 >= 0 && MK % 50 < ReceiveProgs.size())
 				ProgExec(ReceiveProgs[MK%50]);
 			ProgExec(ReceiveProg); // Запуск программы по приему данных от соседа
-//			if (InCounter[PlyCurrent] == Neighbours.size()) // Набрался полный комплект
 			if (InCounter[PlyCurrent] == Plys[PlyCurrent].size()) // Набрался полный комплект
 				{
 				bool ModelingFlag = false;
@@ -776,19 +780,25 @@ void CellularAutomatManager::ProgFU(int MK, LoadPoint Load, FU* Sender)
 	case 33: // Step2Set Установить шаг автоматической инкрементации для 2-го индекса
 		Step2 = Load.toInt();
 		break;
-	case 35: // Context1Out Выдать контекст первого ФУ-автомата
+	case 34: // Step3Set Установить шаг автоматической инкрементации для 3-го индекса
+		Step2 = Load.toInt();
+		break;
+	case 35: // Step4Set Установить шаг автоматической инкрементации для 4-го индекса
+		Step2 = Load.toInt();
+		break;
+	case 36: // Context1Out Выдать контекст первого ФУ-автомата
 		if (Ind1 >= Net.size() || Ind1 < 0) break;
 		Load.Write((FU*)&Net[Ind1]);
 		break;
-	case 36: // Context2OutMk Выдать МК с контекстот первого ФУ-автомата
+	case 37: // Context1OutMk Выдать МК с контекстот первого ФУ-автомата
 		if (Ind1 >= Net.size() || Ind1 < 0) break;
 		MkExec(Load, { TFU, &Net[Ind1] });
 		break;
-	case 37: // Context2Out Выдать контекст второго ФУ-автомата
+	case 38: // Context2Out Выдать контекст второго ФУ-автомата
 		if (Ind2 >= Net.size() || Ind2 < 0) break;
 		Load.Write((FU*)&Net[Ind2]);
 		break;
-	case 38: // Context2OutMk Выдать МК с контекстом второго ФУ-автомата
+	case 39: // Context2OutMk Выдать МК с контекстом второго ФУ-автомата
 		if (Ind2 >= Net.size() || Ind2 < 0) break;
 		MkExec(Load, { TFU, &Net[Ind2] });
 		break;
@@ -814,6 +824,20 @@ void CellularAutomatManager::ProgFU(int MK, LoadPoint Load, FU* Sender)
 				i.ProgExec(Load.Point);
 			else
 				i.ProgExec(Prog);				
+		break;
+	case 53: // Ind1To2Exec Выполнить программу для всех ФУ с индексами от Ind1 до Ind2 невключительно
+		for (int i = Ind1; i < Ind2; i++)
+			if (Load.isProg())
+				Net[i].ProgExec(Load.Point);
+			else
+				Net[i].ProgExec(Prog);
+	case 54: // Ind1To2ExecInclude Выполнить программу для всех ФУ с индексами от Ind1 до Ind2 включительно
+		for (int i = Ind1; i <= Ind2; i++)
+			if (Load.isProg())
+				Net[i].ProgExec(Load.Point);
+			else
+				Net[i].ProgExec(Prog);
+
 		break;
 	case 58: //  Neitborder1To2Append Добавить соседа с индексом 2 для ФУ с индексом 1
 		if (Ind1 >= Net.size() || Ind1 < 0) break;
@@ -935,6 +959,43 @@ void CellularAutomatManager::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		Step1 = step1, Step2 = step2; // Восстановить шаги в контекста ФУ
 	}
 	break;
+
+	case 90: // DistrebutedNetGen Сгенерировать модель распределенной вычислительной сети
+		break;
+	case 92: // RouterMkSetExec Установить МК для роутера c индексом Ind1 и следующей МК выполнить МК
+		if (MkPhaze) // Вторая фаза МК
+			Routers[Ind1].ProgFU(Mk, Load);
+		else // Первая фаза МК
+			Mk=Load.toInt();
+		MkPhaze = (MkPhaze + 1) % 2;
+		Ind1 += Step1;
+		break;
+	case 93: // GatevayMkSetExec Установить МК для шлюза c индексом Ind1 и следующей МК выполнить МК
+		if (MkPhaze) // Вторая фаза МК
+			Gateways[Ind1].ProgFU(Mk, Load);
+		else // Первая фаза МК
+			Mk = Load.toInt();
+		MkPhaze = (MkPhaze + 1) % 2;
+		Ind1 += Step1;
+		break;
+	case 94: // SchedullerMkSetExec Установить МК для планировщика c индексом Ind1 вычислений и следующей МК выполнить МК
+		if (MkPhaze) // Вторая фаза МК
+			Schedulers[Ind1].ProgFU(Mk, Load);
+		else // Первая фаза МК
+			Mk = Load.toInt();
+		MkPhaze = (MkPhaze + 1) % 2;
+		Ind1 += Step1;
+		break;
+	case 95: // RouterAllMkSetExec Установить МК для роутера и следующей МК выполнить МК для всех роутеров
+		
+		break;
+	case 96: // GatevayAllMkSetExec Установить МК для шлюза и следующей МК выполнить МК для всех роутеров
+		
+		break;
+	case 97: // SchedullerAllMkSetExec Установить МК для планировщика вычислений и следующей МК выполнить МК для всех роутеров
+		
+		break;
+
 	case 200: //NetGenerate Генерация сетки (На вход может подаваться количество ФУ в сетке)
 	{
 		if (Load.Point != nullptr)

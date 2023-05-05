@@ -19,6 +19,9 @@ NewFU={Mnemo="Price" FUType=FUALUNew}
 NewFU={Mnemo="AluRez" FUType=FUALUNew Hint="АЛУ для сбора результата вычисления"}
 NewFU={Mnemo="Dev" FUType=FUCellularAutomat}
 NewFU={Mnemo="Scheduler" FUType=FUSchedulerNew}
+NewFU={Mnemo="Scheduler2" FUType=FUSchedulerNew}
+NewFU={Mnemo="SchedulerGateway1" FUType=FUSchedulerNew}
+NewFU={Mnemo="SchedulerGateway2" FUType=FUSchedulerNew}
 NewFU={Mnemo="Eventser" FUType=FUEventserNew}
 
 MainBus.PartialResetSet \\ Запомнить число созданных ФУ
@@ -180,11 +183,16 @@ Manager.Mk1Set=FUCellularAutomat.SendTimeSet
 Manager.Mk1AllExec=1
 Manager.Mk1Set=FUCellularAutomat.OtherMkTimeSet
 Manager.Mk1AllExec=1
+Manager.Mk1Set=FUCellularAutomat.TransferTimeSet
+Manager.Mk1AllExec=1
 
 Manager.Ind1Set=0
 
+Manager.Mk1Set=FUCellularAutomat.EventserSet // Настройка моделирования
+Eventser.ContextOutMk=Manager.Mk1AllExec
 Manager.Mk1Set=FUCellularAutomat.SchedulerSet // Настройка моделирования
 Scheduler.ContextOutMk=Manager.Mk1AllExec
+
 // Запуск расчета, сбор результата
 Volume.IndSet=0 // Настроить АЛУ объемов на начало
 Manager.Ind1Set=0
