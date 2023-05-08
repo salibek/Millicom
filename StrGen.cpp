@@ -23,7 +23,7 @@ void StrGen::ProgFU(int MK, LoadPoint Load, FU* Sender)
 	case 20: //ReceiverSet Установить ссылку на приемник строк
 		Receiver = Load.Point;
 	case 21: //ReceiverMkSet Установить МК для приемника строк
-		if (Load.Type >> 1 == Dint) ReceiverMK = Load.toInt(); break;
+		if (Load.Type >> 1 == Dint) ReceiverMK = *(int*)Load.Point; break;
 	case 1: // SourceSet
 		break;
 	case 2: // SourceSetStart
@@ -35,7 +35,7 @@ void StrGen::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		TimeLong = 0;
 		if (Load.Point != nullptr)
 		{
-			Filename = Load.toStr();
+			Filename = *((std::string*)(Load.Point));
 			Source.open(Filename);
 			LineCount = 0;
 		}

@@ -47,7 +47,6 @@ const int ListLine = -80, ListSub = -90; // Атрибуты линии спис
 const int ProgMk=958, ProgCycleMk = 959, ProgPostCycleMk = 960;
 const int YesMk = 961, YesCycleMk = 962, YesPostCycleMk = 963, YesBreakMk =967;
 const int NoMk = 964, NoCycleMk = 965, NoPostCycleMk = 966, NoBreakMk =968;
-<<<<<<< HEAD
 const int CalcMk = 927; // Милликоманда вычисления АЛВ
 const int BreakMk = 934, NextMk = 935; // МК прерывания программы и продолжения цикла
 const int RepeatMk=911; // Начать выполнение ИК заново
@@ -64,28 +63,6 @@ const int EventserCurrentTimeOutMk = 50; // Ìê äëÿ êîíòðîëëåðà �
 const int EventserFUSetMk = 10; // ÌÊ êîíòðîëëåðà ñîáûòèé äëÿ óñòàíîâêè êîíòåêñòà ÔÓ äëÿ îïèñàíèÿ ñîáûòèÿ
 const int EventTimeSetMk = 11; // ÌÊ êîíòðîëëåðà ñîáûòèé äëÿ óñòàíîâêè âðåìåíè ñîáûòèÿ, èíèöèèðîâàííîãî ïëàíèðîâùèêîì âû÷èñëèòåëüíîãî ïðîöåññà
 const int AwaitMkSetMk = 15; //  ÌÊ êîíòðîëëåðà ñîáûòèé äëÿ óñòàíîâêè âðåìåíè ïðèõîäà óäàëåííîé ÌÊ
-const int EventserCurrentTimeOutMk = 50; // Ìê äëÿ êîíòðîëëåðà ñîáûòèé, ÷òîáû âûäàòü òåêóùåå ìîäåëüíîå âðåìÿ
-const int EventserFUSetMk = 10; // ÌÊ êîíòðîëëåðà ñîáûòèé äëÿ óñòàíîâêè êîíòåêñòà ÔÓ äëÿ îïèñàíèÿ ñîáûòèÿ
-const int EventTimeSetMk = 11; // ÌÊ êîíòðîëëåðà ñîáûòèé äëÿ óñòàíîâêè âðåìåíè ñîáûòèÿ, èíèöèèðîâàííîãî ïëàíèðîâùèêîì âû÷èñëèòåëüíîãî ïðîöåññà
-const int AwaitMkSetMk = 15; //  ÌÊ êîíòðîëëåðà ñîáûòèé äëÿ óñòàíîâêè âðåìåíè ïðèõîäà óäàëåííîé ÌÊ
-=======
-const int CalcMk = 927; // ������������ ���������� ���
-const int BreakMk = 934, NextMk = 935; // �� ���������� ��������� � ����������� �����
-const int RepeatMk=911; // ������ ���������� �� ������
-const int YesContinueMk = 969, NoContinueMk = 970;
-const int ProgExecMk = 990; // �� ���������� ���������
-const int FUIndSetMk = 933; // �� ��������� ������� ��
-const int ContextOutMkMk = 999; // �� ������ �� � ���������� ��
-const int ContextOutMk = 995; // �� ������ ��������� ��
-const int SchedulerSetMk = 918; // �� ��������� ������������ ����������
-const int MkGlobalRangeSet = 949; // ���������� ���������� ����� �� ��� ��
-const int MkGlobalRangeOutMk = 948; // ������ ���������� ����� �� ��� ��
-const int MkGlobalRangeOutMkMK = 947; // ������ �� � ���������� ������� �� ��� ��
-const int EventserCurrentTimeOutMk = 50; // �� ��� ����������� �������, ����� ������ ������� ��������� �����
-const int EventserFUSetMk = 10; // �� ����������� ������� ��� ��������� ��������� �� ��� �������� �������
-const int EventTimeSetMk = 11; // �� ����������� ������� ��� ��������� ������� �������, ��������������� ������������� ��������������� ��������
-const int EventAwaitSetMk=15; //  �� ����������� ������� ��� ��������� ������� ������� ��������� ��
->>>>>>> 20b8bf40a63f9c0e265765d0c309b4eba87ec794
 
 bool isIPinIC(void* iP, void* iC); //проверка, что ИК входит в ИП
 
@@ -112,14 +89,8 @@ public:
 	bool isDigitBool(); // Число или булеан?
 	static bool isDigitBool(int type) { unsigned int t = type; return t >> 1 == Dint || t >> 1 == Dchar || t >> 1 == Dfloat || t >> 1 == Ddouble || t >> 1 == Dbool; }; // Число или булеан?
 
-<<<<<<< HEAD
 	bool isBool(); // булеан?
 	static bool isBool(unsigned int type) { unsigned int t = type; return type >> 1 == Dbool; }; // Число или булеан?
-	static bool isBool(unsigned int type) { unsigned int t = type; return type >> 1 == Dbool; }; // Число или булеан?
-=======
-	bool isBool(); // ������?
-	static bool isBool(unsigned int type) { unsigned int t = type; return type >> 1 == Dbool; }; // ����� ��� ������?
->>>>>>> 20b8bf40a63f9c0e265765d0c309b4eba87ec794
 
 	bool isInt(); // Целое число?
 	static bool isInt(int type) { unsigned int t = type; return type >> 1 == Dint; }; // Целое число?
@@ -275,12 +246,6 @@ public:
 	};
 };
 
-class ipSender : public ip // ����� ��� ���������� �� � ����������� �� (��� ���������� � ������� �������� �� ��� �������������
-{
-public:
-	FU* Sender=nullptr; // ����������� ��
-};
-
 
 struct deletedIC //удаленная ИП
 {
@@ -300,29 +265,9 @@ public:
 	FU* Receiver;       // Получатель МК
 };
 
-class ipSender : public ip // Êëàññ äëÿ ðàçìåùåíèÿ ÌÊ è îòïðàâèòåëÿ ÌÊ (äëÿ ïðèìåíåíèÿ â î÷åðåäè îæèäàíèÿ ÌÊ ïðè ìîäåëèðîâàíèè
-{
-public:
-	FU* Sender = nullptr; // Îòïðàâèòåëü ÌÊ
-};
-
-class Event { // Описание события
-public:
-	bool SchedulerFlag; // Флаг того, что МК была передана от планировщика событий, т.е. она должна выполняться. В противном случае она поступает в очередь ожидания МК
-	FU* Receiver;       // Получатель МК
-};
-
-
-class Event { // �������� �������
-public:
-	bool SchedulerFlag; // ���� ����, ��� �� ���� �������� �� ������������ �������, �.�. ��� ������ �����������. � ��������� ������ ��� ��������� � ������� �������� ��
-	FU* Receiver;       // ���������� ��
-};
-
 class FUModeling
 {
 public:
-<<<<<<< HEAD
 	bool SchedulerFlag = false; // Флаг запуска МК планироващиком
 	vector<ipSender> qmk; // Очередь МК для моделирования
 	multimap<double, ipSender> qAwaitMk; // Î÷åðåäü îæèäàþùèõ ÌÊ äëÿ ìîäåëèðîâàíèÿ (íà íàõîäÿòñÿ â ïðîöåññå ïåðåäà÷è ê ÔÓ, íàïðèìåð, âî âðåìÿ ïåðåäà÷è ïî ñåòè)
@@ -331,18 +276,6 @@ public:
 	void* scheduler = nullptr; // Указатель на контекст планировщика вычислений
 	FU* eventser = nullptr; // Ссылка на контроллер событий
 	void EventModelingPrint(); // Вывести состояние моделирования ФУ
-	FU* eventser = nullptr; // Ссылка на контроллер событий
-	void EventModelingPrint(); // Вывести состояние моделирования ФУ
-=======
-	bool SchedulerFlag = false; // ���� ������� �� ��������������
-	vector<ipSender> qmk; // ������� �� ��� �������������
-	map<double, ipSender> qAwaitMk; // ������� ��������� �� ��� ������������� (�� ��������� � �������� �������� � ��, ��������, �� ����� �������� �� ����)
-	bool ManualMode = false; // ����� ������� ���������� (��� �������������)
-	map<int, double> MkTime; // ����� ���������� �������� (��� �������������)
-	FU* scheduler = nullptr; // ��������� �� �������� ������������ ����������
-	FU* eventser = nullptr; // ��������� �� �������� ����������� �������
-	int MaxQ = 0; // ������������ ����� ������� ��
->>>>>>> 20b8bf40a63f9c0e265765d0c309b4eba87ec794
 };
 
 class FU {  // Ядро функционального устройства
@@ -350,19 +283,8 @@ public:
 	virtual void ProgFU(int MK, LoadPoint Load, FU* Sender) {}; // Реализация логики работы ФУ
 	void Scheduling(bool SchedulerFlag); // Запуск МК после разрешенрия планировщика
 	void MkAwait(int MK, LoadPoint Load, FU* Sender, double Delay); // Постановка МК для ожидания прихода
-<<<<<<< HEAD
-	virtual void ProgFU(int MK, LoadPoint Load, FU* Sender) {}; // Реализация логики работы ФУ
-	void Scheduling(bool SchedulerFlag); // Запуск МК после разрешенрия планировщика
-	void MkAwait(int MK, LoadPoint Load, FU* Sender, double Delay); // Постановка МК для ожидания прихода
 	int FUtype = 0; // Тип ФУ
 	string FUName; //  Имя ФУ
-=======
-	void Scheduling(bool SchedulerFlag); // ������ �� ����� ���������� ������������
-	void MkAwait(int MK, LoadPoint Load, FU* Sender, double Delay); // ���������� �� ��� �������� � ������� ��� �������������
-	virtual void ProgFU(int MK, LoadPoint Load, FU* Sender) {}; // ���������� ������ ������ ��
-	int FUtype = 0; // ��� ��
-	string FUName; //  ��� ��
->>>>>>> 20b8bf40a63f9c0e265765d0c309b4eba87ec794
 	bool Active = true;
 	LoadPoint Accum = { 0,nullptr }; // Указатель на аккумулятор
 	bool AccumCreating = false; // Флаг создания аккумулятора (аккумулятор создается при первой записи в него какого-либо значения)
@@ -398,15 +320,9 @@ public:
 	int BreakAtr = BreakMk;//Мк повторения программы
 	int NextAtr = NextMk;//Мк повторения программы
 	int ProgMkAtr=ProgMk, ProgCycleAtr= ProgCycleMk, ProgPostCycleAtr = ProgPostCycleMk;
-<<<<<<< HEAD
 	int YesContinueAtr = YesContinueMk, NoContinueAtr = NoContinueMk; // МК условного выхода из программы
 	void CommonMk(int Mk, LoadPoint Uk, FU* Sender=nullptr); // Выполнение общих МК для ФУ
 	IC_type PrefixProg = nullptr, PostfixProg = nullptr, Prog = nullptr, ElseProg = nullptr; // Программы презапуска и послезапуска во время прихода МК, просто программа, альтернативная программа
-=======
-	int YesContinueAtr = YesContinueMk, NoContinueAtr = NoContinueMk; // �� ��������� ������ �� ���������
-	void CommonMk(int Mk, LoadPoint Uk, FU* Sender=nullptr); // ���������� ����� �� ��� ��
-	IC_type PrefixProg = nullptr, PostfixProg = nullptr, Prog = nullptr, ElseProg = nullptr; // ��������� ���������� � ������������ �� ����� ������� ��, ������ ���������, �������������� ���������
->>>>>>> 20b8bf40a63f9c0e265765d0c309b4eba87ec794
 private:
 //	int ProgSetFaze = 0; // Фаза для установки программы ProgSet, ElseProgSet
 };

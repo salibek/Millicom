@@ -2,24 +2,12 @@
 #include "SchedulerEventser.h"
 
 void Eventser::Eventsing(FU* Context, double tay, bool SchedulerFlag) // Запланиовать событие (tay - время задержки события)
-<<<<<<< HEAD
-void Eventser::Eventsing(FU* Context, double tay, bool SchedulerFlag) // Запланиовать событие (tay - время задержки события)
 {
 	if (Events.size() == 0)
 	{
 //		Events.insert(pair<double, FU*>(CurrentTime+tay, Context));
 		Events.insert(pair<double, Event>(CurrentTime + tay, { true, Context }));
 		//return;
-//		Events.insert(pair<double, FU*>(CurrentTime+tay, Context));
-		Events.insert(pair<double, Event>(CurrentTime + tay, { true, Context }));
-		//return;
-=======
-void Eventser::Eventsing(FU* Context, double tay, bool SchedulerFlag) // ������������ ������� (tay - ����� �������� �������)
-{
-	if (Events.size() == 0)
-	{
-		Events.insert(pair<double, Event>(CurrentTime + tay, {true, Context }));
->>>>>>> 20b8bf40a63f9c0e265765d0c309b4eba87ec794
 		if (work && !start)// ProgFU(1, { 0,nullptr });
 			start = true;
 			while (Events.size()!=0 && work) {
@@ -35,12 +23,6 @@ void Eventser::Eventsing(FU* Context, double tay, bool SchedulerFlag) // ���
 	{
 //		Events.insert(pair<double, FU*>(Events.begin()->first+tay, Context));
 		Events.insert(pair<double, Event>(Events.begin()->first + tay, { true, Context }));
-<<<<<<< HEAD
-//		Events.insert(pair<double, FU*>(Events.begin()->first+tay, Context));
-		Events.insert(pair<double, Event>(Events.begin()->first + tay, { true, Context }));
-=======
-		Events.insert(pair<double, Event>(Events.begin()->first+tay, { true, Context }));
->>>>>>> 20b8bf40a63f9c0e265765d0c309b4eba87ec794
 	}
 }
 
@@ -60,21 +42,10 @@ void Eventser::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		start = true;
 		//Events.clear();
 		while (Events.size() != 0 && work) {
-		//Events.clear();
-<<<<<<< HEAD
-		while (Events.size() != 0 && work) {
 			CurrentTime = Events.begin()->first;
 //			EventsPrint();
 			Events.begin()->second.Receiver->Scheduling(Events.begin()->second.SchedulerFlag);
 //			cout << "----------------\n";
-=======
-		while (Events.size()!=0 && work) {
-			CurrentTime = Events.begin()->first;
-//			EventsPrint();
-			Events.begin()->second.Receiver->Scheduling(Events.begin()->second.SchedulerFlag);
-//			cout << "----------------\n";
-			Events.begin()->second.Receiver->Scheduling(Events.begin()->second.SchedulerFlag);
->>>>>>> 20b8bf40a63f9c0e265765d0c309b4eba87ec794
 			if (Events.size() != 0) Events.erase(Events.begin());
 		}
 		ProgExec(FinProg);
@@ -82,27 +53,6 @@ void Eventser::ProgFU(int MK, LoadPoint Load, FU* Sender)
 	case 5: // WorkSet Установить флаг рабочего режима
 		work = Load.toBool();
 		break;
-	case 10: // FUContextSet Установить ссылку на контекст ФУ для описания события
-		FUContext = (FU*)Load.Point;
-		break;
-	case 11: // EventTimeSet Установить временя выполнения МК, инициированной планировщиком вычислительного процесса
-		Delay = Load.toDouble();
-		break;
-	case 12: // EventMkInsert Установить МК для события
-		Events.insert({ CurrentTime + Delay, {true, FUContext} });
-		if (Load.isIC())
-			FUContext->Modeling->qmk.push_back({ Load.IC()->at(0), nullptr });
-		else if (Load.isIP())
-			FUContext->Modeling->qmk.push_back({*((ip*)Load.Point), nullptr});
-		break;
-	case 15: // AwaitMkInsert Установить ожидаемую МК
-		Events.insert({ CurrentTime + Delay, {false, FUContext} });
-		if (Load.isIC())
-			FUContext->Modeling->qAwaitMk.insert({ CurrentTime + Delay, {Load.IC()->at(0), Sender } });
-		else if (Load.isIP())
-			FUContext->Modeling->qAwaitMk.insert({ CurrentTime + Delay, {*((ip*)Load.Point), Sender }});
-		break;
-<<<<<<< HEAD
 	case 10: // FUContextSet Установить ссылку на контекст ФУ для описания события
 		FUContext = (FU*)Load.Point;
 		break;
@@ -131,28 +81,6 @@ void Eventser::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		break;
 	case 51: // TimeOutMk Выдать МК с текущим модельным временем
 	case 52: // TimeOutRefMk Выдать МК со ссылкой на переменную текущего модельного времени
-=======
-	case 10: // FUSet ���������� �������� �� ��� �������������� �������
-		FUContext = (FU*)Load.Point; 
-		break;
-	case 11: // EventTimeSet ���������� ������� ���������� ��, �������������� ������������� ��������������� ��������
-		Events.insert({ CurrentTime + Load.toDouble(), {true, FUContext} });
-		break;
-	case 15: // EventAwaitSet ���������� ������� ������� ��������� ��
-		Events.insert({ CurrentTime + Load.toDouble(), {false, FUContext} });
-		break;
-	case 45: //TimeSet ���������� ������� ��������� �����
-		CurrentTime = Load.toDouble();
-		break;
-	case 49: // TimeRefOut ������ ������ �� ���������� �������� ���������� �������
-		Load.Write(&CurrentTime);
-		break;
-	case 50: // TimeOut ������ ������� ��������� �����
-		Load.Write(CurrentTime);
-		break;
-	case 51: // TimeOutMk ������ �� � ������� ��������� ��������
-	case 52: // TimeRefOutMk ������ �� �� ������� �� ���������� �������� ���������� �������
->>>>>>> 20b8bf40a63f9c0e265765d0c309b4eba87ec794
 		if (MK == 51)
 			MkExec(Load, { Cdouble,&CurrentTime });
 		else

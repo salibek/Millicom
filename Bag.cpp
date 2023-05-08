@@ -65,7 +65,7 @@ void Bag::ProgFU(int MK, LoadPoint Load, FU* Sender)
 	if (Modeling != nullptr && Modeling->ManualMode && Modeling->scheduler != nullptr && !Modeling->SchedulerFlag)
 	{
 		Modeling->SchedulerFlag = false;
-		Modeling->qmk.push_back({ MK, Load, Sender });
+		Modeling->qmk.push_back({ MK, Load });
 		((Scheduler*)(Modeling->scheduler))->Scheduling(this, SendTime);
 		return;
 	}
@@ -138,10 +138,11 @@ void Bag::ProgFU(int MK, LoadPoint Load, FU* Sender)
 				if (Modeling != nullptr)
 				{
 					Field[i][j].Modeling = new FUModeling();
-					Field[i][j].Modeling->scheduler = (FU*)Modeling->scheduler;
+					Field[i][j].Modeling->scheduler = (void*)Modeling->scheduler;
 					Field[i][j].Modeling->ManualMode = true;
 				}
 			}
+
 
 		// —сылки
 		for (int i = 1; i < Field.size(); i++)

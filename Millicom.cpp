@@ -62,15 +62,12 @@ int main(int argc, char* argv[])
 //	STR = "CompileC.ind";
 	STR = "Router.ind";
 //	string STR = "OAGraphOut.ind";
-//	STR = "CompileC.ind";
-//	STR = "Router.ind";
-//	string STR = "OAGraphOut.ind";
 //	string STR = "MultyList.ind";
 //	STR = "CompLab.ind";
 //	STR = "AlU_test.ind";
 //	string STR = "TabTest.ind";
 //	string STR = "LexTest.ind"; // Имя запускного файла
-	STR = "Bag3.ind";
+//	STR = "Bag3.ind";
 //	string STR = "ControlAoutomat.ind";
 
 	Bus.ProgFU(10, {Cstring, &STR}); //Запуск индексного файла
