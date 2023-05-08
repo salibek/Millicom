@@ -399,13 +399,6 @@
 						//Debug(*i, S, LexAccum); // --- отладка
 						break;
 					}
-					if (*i == '/') // символ (/); 0 -> 5
-					{
-						LexAccum = *i; //запись в буферную переменную
-						S = 5; //переход в состояние 5
-						//Debug(*i, S, LexAccum); // --- отладка
-						break;
-					}
 					if (*i == '\n') //переход на новую строку; 0 -> 12
 					{
 						//LexAccum = *i; //запись в буферную переменную
@@ -415,33 +408,6 @@
 						//Debug(*i, S, LexAccum); // --- отладка
 						break;
 					}
-					auto SepUk = Seps.find(str.substr(distance(str.begin(), i), 1));
-					auto SepUk2 = Seps.find(str.substr(distance(str.begin(), i), 2));
-					auto SepUk3 = Seps.find(str.substr(distance(str.begin(), i), 3));
-					if (SepUk != Seps.end() || SepUk2 != Seps.end() || SepUk3 != Seps.end())
-					{
-						ib = (ib + 1) % SizeBuf;
-						LexBuf[ib].Load.Clear();
-						string* tstr=new string;
-						if (SepUk3 != Seps.end() && SepUk3->size()==3)
-						{
-							*tstr = *SepUk3;
-							i += 2;
-						}
-						else if (SepUk2 != Seps.end() && SepUk2->size() == 2)
-						{
-							*tstr = *SepUk2;
-							i += 1;
-						}
-						else if(SepUk != Seps.end())
-							*tstr = *SepUk;
-
-						LexBuf[ib] = { SeperatAtr,Cstring , tstr };
-						LexOut();
-						break;
-					}
-					else
-
 					if ((Digit.count(*i)) && (*i != '0')) // --- цифра (1..9); 0 -> 1
 					{
 						LexAccum = *i; //запись в буферную переменную
@@ -473,6 +439,58 @@
 						//Debug(*i, S, LexAccum); // --- отладка
 						break;
 					}
+					/*
+					if (*i == '/') // символ (/); 0 -> 5
+					{
+						LexAccum = *i; //запись в буферную переменную
+						S = 5; //переход в состояние 5
+						//Debug(*i, S, LexAccum); // --- отладка
+						break;
+					}
+					*/
+					
+					//Enver//
+					isCommentPart = false;
+					for (auto iterPair = Comments.begin(); iterPair != Comments.end(); iterPair++) //итерация по вектору из пар
+					{
+						if (*i == iterPair->first[0]) //если символ лексемы совпадает с началом символа комментария в какой-либо паре
+						{
+							LexAccum = *i; //запись в буферную переменную
+							S = 5; //переход в состояние 5
+							//Debug(*i, S, LexAccum); // --- отладка
+							isCommentPart = true;
+						}
+						if (isCommentPart) break;
+					}
+					if (isCommentPart) break;
+				
+					
+					auto SepUk = Seps.find(str.substr(distance(str.begin(), i), 1));
+					auto SepUk2 = Seps.find(str.substr(distance(str.begin(), i), 2));
+					auto SepUk3 = Seps.find(str.substr(distance(str.begin(), i), 3));
+					if (SepUk != Seps.end() || SepUk2 != Seps.end() || SepUk3 != Seps.end())
+					{
+						ib = (ib + 1) % SizeBuf;
+						LexBuf[ib].Load.Clear();
+						string* tstr=new string;
+						if (SepUk3 != Seps.end() && SepUk3->size()==3)
+						{
+							*tstr = *SepUk3;
+							i += 2;
+						}
+						else if (SepUk2 != Seps.end() && SepUk2->size() == 2)
+						{
+							*tstr = *SepUk2;
+							i += 1;
+						}
+						else if(SepUk != Seps.end())
+							*tstr = *SepUk;
+
+						LexBuf[ib] = { SeperatAtr,Cstring , tstr };
+						LexOut();
+						break;
+					}
+
 					Work = false; //установка флага рабочего режима лексера на false
 					if (ErrProg != nullptr) ProgExec(ErrProg, 0, Bus, nullptr); //обработка ошибки
 					break;
@@ -517,12 +535,12 @@
 					if (Digit.count(*i))  // --- число (0..9); 2 -> 2
 					{
 						LexAccum += *i; //добавление символа в буферную переменную
-					//	Debug(*i, S, LexAccum); // --- отладка
+						//Debug(*i, S, LexAccum); // --- отладка
 						break;
 					}
 					if (*i == '_') //символ разделения чисел (_); 2 -> 2
 					{
-					//	Debug(*i, S, LexAccum); // --- отладка
+						//Debug(*i, S, LexAccum); // --- отладка
 						break;
 					}
 					if (Seps.count(str.substr(distance(str.begin(), i), 1)) || *i == ' ') //разделитель; 2 -> 0
@@ -577,7 +595,7 @@
 					if (ABC.count(*i) || Digit.count(*i)) // --- буква либо число; 3 -> 3
 					{
 						LexAccum += *i; //добавление символа в буферную переменную
-					//	Debug(*i, S, LexAccum); // --- отладка
+						//Debug(*i, S, LexAccum); // --- отладка
 						break;
 					}
 					Work = false;  //установка флага рабочего режима лексера на false
@@ -608,7 +626,7 @@
 								LexBuf[ib] = { StrAtr, Cstring, st2 }; //добавление лексемы в буфер выходных лексем в виде ИП {атрибут, тип, указатель}
 								LexOut();
 								S = 0; //переход в состояние 0
-							//	Debug(*i, S, LexAccum); // --- отладка
+								//Debug(*i, S, LexAccum); // --- отладка
 								break;
 							}
 					Work = false;  //установка флага рабочего режима лексера на false
@@ -616,6 +634,32 @@
 					break;
 				//Обработка строчного комментария
 				case 5:
+					isCommentPart = false;
+					isCommentFull = false;
+					for (auto j = 0; j < Comments.size(); j++) //итерация по парам (вектор)
+					{
+						string currentStr = Comments[j].first; //строковая переменная, содержащая текущий открывающий комментарий
+
+						if (LexAccum + *i == currentStr) //если полное совпадение текущего аккумулятора лексемы с каким-либо комментарием
+						{
+							isCommentFull = true;
+							S = 11; //переход в состояние 11
+							LexAccum += *i; //запись в буферную переменную
+							commentIndex = j; //запись позиции найденной парочки комментариев
+							//Debug(*i, S, LexAccum); // --- отладка
+
+						}
+						else if (currentStr.starts_with(LexAccum + *i))  //если частичное совпадение текущего аккумулятора лексемы с каким-либо комментарием
+						{
+							LexAccum += *i; //запись в буферную переменную
+							//Debug(*i, S, LexAccum); // --- отладка
+							isCommentPart = true;
+						}
+						if (isCommentPart || isCommentFull) break;
+					}
+
+					if (isCommentPart || isCommentFull) break;
+					
 					if (*i == '/') //символ (/); 5 -> 11
 					{
 						LexAccum += *i; //добавление символа в буферную переменную
@@ -643,48 +687,6 @@
 						//					ProgExec(ErrProg, 0, Bus, nullptr); //обработчик ошибок
 						break;
 					}
-				//Обработка многострочного комментария
-				case 6:
-					if (*i != '/') //любой символ кроме (/); 6 -> 6
-					{
-						LexAccum += *i;  //добавление символа в буферную переменную
-					//	Debug(*i, S, LexAccum); // --- отладка
-						break;
-					}
-					if (*i == '/') //символ (/); 6 -> 7
-					{
-						LexAccum += *i; //добавление символа в буферную переменную
-						S = 7; //переход в состояние 7
-					//	Debug(*i, S, LexAccum); // --- отладка
-						break;
-					}
-					Work = false;  //установка флага рабочего режима лексера на false
-					ProgExec(ErrProg, 0, Bus, nullptr); //обработчик ошибок
-					break;
-				//Обработка многострочного комментария
-				case 7:
-					if (*i != '*') //любой символ кроме (*); 7 -> 6
-					{
-						LexAccum += *i;  //добавление символа в буферную переменную
-						S = 6; //переход в состояние 6
-						//Debug(*i, S, LexAccum); // --- отладка
-						break;
-					}
-					else //символ (*); 7 -> 0
-					{
-						string* multiLineComment = new string;
-						*multiLineComment = LexAccum; //запись лексемы в переменную
-						ib = (ib + 1) % SizeBuf; //увеличение текущего адреса буфера выходных лексем на 1
-						LexBuf[ib].Load.Clear(); //удаление нагрузки ИП
-						LexBuf[ib] = { StrAtr, Cstring, multiLineComment }; //добавление лексемы в буфер выходных лексем в виде ИП {атрибут, тип, указатель}
-						LexOut();
-						S = 0; //переход в состояние 0
-						//Debug(*i, S, LexAccum); // --- отладка
-						break;
-					}
-					Work = false;  //установка флага рабочего режима лексера на false
-					ProgExec(ErrProg, 0, Bus, nullptr); //обработчик ошибок
-					break;
 				//Обработка экранирования
 				case 8:
 					if (*i == '"' || *i == 'n' || *i == '\'') //символы (", n, '); 8 -> 4
@@ -738,7 +740,7 @@
 				case 9:
 					if (*i == '_') //символ разделения чисел (_); 9 -> 9
 					{
-			//			Debug(*i, S, LexAccum); // --- отладка
+						//Debug(*i, S, LexAccum); // --- отладка
 						break;
 					}
 					if (Digit.count(*i)) // --- число (0..9); 9 -> 1
@@ -746,7 +748,7 @@
 						LexAccum += *i; //добавление символа в буферную переменную
 						//TO DO numberFormat = DEC (реализация соответствующих действий)
 						S = 1; //переход в состояние 1
-				//		Debug(*i, S, LexAccum); // --- отладка
+						//Debug(*i, S, LexAccum); // --- отладка
 						break;
 					}
 					if (*i == 'b') //символ (b); 9 -> 13
@@ -754,7 +756,7 @@
 						//LexAccum += *i; //добавление символа в буферную переменную не нужно, так как b является обозначением BIN числа
 						//TO DO numberFormat = BIN (реализация соответствующих действий)
 						S = 13; //переход в состояние 13
-				//		Debug(*i, S, LexAccum); // --- отладка
+						//Debug(*i, S, LexAccum); // --- отладка
 						break;
 					}
 					if (*i == 'o') //символ (o); 9 -> 15
@@ -762,7 +764,7 @@
 						//LexAccum += *i; //добавление символа в буферную переменную не нужно, так как o является обозначением OCT числа
 						//TO DO numberFormat = OCT (реализация соответствующих действий)
 						S = 15; //переход в состояние 15
-				//		Debug(*i, S, LexAccum); // --- отладка
+						//Debug(*i, S, LexAccum); // --- отладка
 						break;
 					}
 					if (*i == 'x') //символ (x); 9 -> 17
@@ -770,7 +772,7 @@
 						//LexAccum += *i; //добавление символа в буферную переменную не нужно, так как x является обозначением HEX числа
 						//TO DO numberFormat = HEX (реализация соответствующих действий)
 						S = 17; //переход в состояние 17
-				//		Debug(*i, S, LexAccum); // --- отладка
+						//Debug(*i, S, LexAccum); // --- отладка
 						break;
 					}
 					if (DigitSeps.count(*i))  // --- символ разделения дробной и целой части (. ,); 9 -> 2
@@ -778,7 +780,7 @@
 						LexAccum += "."; //добавление символа в буферную переменную
 						//TO DO numberFormat = DEC (реализация соответствующих действий)
 						S = 2; //переход в состояние 2
-				//		Debug(*i, S, LexAccum); // --- отладка
+						//Debug(*i, S, LexAccum); // --- отладка
 						break;
 					}
 					i--;
@@ -821,8 +823,36 @@
 					Work = false;  //установка флага рабочего режима лексера на false
 					ProgExec(ErrProg, 0, Bus, nullptr); //обработчик ошибок
 					break;
-				//Обработка строчного комментария
+				//Обработка комментария
 				case 11:
+					//Enver//
+					if (Comments[commentIndex].second != "") //если второй элемент пары найденного комментария не пустой, то это многострочный комментарий
+					{
+						string currentStr = Comments[commentIndex].second; //строковая переменная, содержащая закрывающий комментарий
+						string lastSymbols = (LexAccum + *i).substr((LexAccum + *i).length() - currentStr.length());
+						if (lastSymbols == currentStr) //если полное совпадение последних символов лексемы с закрывающим комментарием
+						{
+							LexAccum += *i; //запись в буферную переменную
+							string* multiLineComment = new string;
+							*multiLineComment = LexAccum; //запись лексемы в переменную
+							ib = (ib + 1) % SizeBuf; //увеличение текущего адреса буфера выходных лексем на 1
+							LexBuf[ib].Load.Clear(); //удаление нагрузки ИП
+							LexBuf[ib] = { StrAtr, Cstring, multiLineComment }; //добавление лексемы в буфер выходных лексем в виде ИП {атрибут, тип, указатель}
+							LexOut();
+							S = 0; //переход в состояние 0
+							//Debug(*i, S, LexAccum); // --- отладка
+							break;
+
+						}
+						else  //если закрывающий комментарий не найден
+						{
+							LexAccum += *i; //запись в буферную переменную
+							//Debug(*i, S, LexAccum); // --- отладка
+							break;
+						}
+
+					}
+
 					if (*i != '\n') //любой символ кроме (\n); 11 -> 11
 					{
 						LexAccum += *i;  //добавление символа в буферную переменную
@@ -840,6 +870,7 @@
 					Work = false; //установка флага рабочего режима лексера на false
 					ProgExec(ErrProg, 0, Bus, nullptr); //обработчик ошибок
 					break;
+			
 				//Обработка табуляции
 				case 12:
 					if (*i != '\n')//любой символ кроме (\n); 12 -> 0
@@ -860,14 +891,14 @@
 						LexBuf[ib] = { StrAtr, Cstring, st3 }; //добавление лексемы в буфер выходных лексем в виде ИП {атрибут, тип, указатель}
 						LexOut();
 						S = 0; //переход в состояние 0
-					//	Debug(*i, S, LexAccum); // --- отладка
+						//Debug(*i, S, LexAccum); // --- отладка
 						break;
 					}
 					if (*i == '\n') //символ (\n); 12 -> 12
 					{
 					//	LexAccum += *i; //добавление символа в буферную переменную
 						// TO DO tabCounter = 0 (реализация соответствующих действий)
-					//	Debug(*i, S, LexAccum); // --- отладка
+						//Debug(*i, S, LexAccum); // --- отладка
 						break;
 					}
 					if (*i == '\t') //символ (\n); 12 -> 12
@@ -889,14 +920,14 @@
 					}
 					if (*i == '_') //символ разделения чисел (_); 13 -> 13
 					{
-					//	Debug(*i, S, LexAccum); // --- отладка
+						//Debug(*i, S, LexAccum); // --- отладка
 						break;
 					}
 					if (DigitSeps.count(*i))  // --- символ разделения дробной и целой части (. ,); 13 -> 14
 					{
 						LexAccum += "."; //добавление символа в буферную переменную
 						S = 2; //переход в состояние 2
-					//	Debug(*i, S, LexAccum); // --- отладка
+						//Debug(*i, S, LexAccum); // --- отладка
 						break;
 					}
 					if (Seps.count(str.substr(distance(str.begin(), i), 1)) || *i == ' ') //разделитель; 13 -> 0
@@ -909,7 +940,7 @@
 						LexBuf[ib] = { IntAtr, Cint , tint }; //добавление лексемы в буфер выходных лексем в виде ИП {атрибут, тип, указатель}
 						S = 0; //переход в состояние 0
 
-					//	Debug(*i, S, LexAccum); // --- отладка
+						//Debug(*i, S, LexAccum); // --- отладка
 						std::cout << "LexBuf[" << ib << "] = {IntAtr, TBinInt, " << *tint << "}\n"; // --- отладка
 
 						break;
@@ -922,12 +953,12 @@
 					if (DigitBIN.count(*i))  // --- число (0..1); 14 -> 14
 					{
 						LexAccum += *i; //добавление символа в буферную переменную
-					//	Debug(*i, S, LexAccum); // --- отладка
+						//Debug(*i, S, LexAccum); // --- отладка
 						break;
 					}
 					if (*i == '_') //символ разделения чисел (_); 14 -> 14
 					{
-					//	Debug(*i, S, LexAccum); // --- отладка
+						//Debug(*i, S, LexAccum); // --- отладка
 						break;
 					}
 					if (Seps.count(str.substr(distance(str.begin(), i), 1)) || *i == ' ') //разделитель; 14 -> 0
@@ -941,7 +972,7 @@
 						LexOut();
 						S = 0; //переход в состояние 0
 
-					//	Debug(*i, S, LexAccum); // --- отладка
+						//Debug(*i, S, LexAccum); // --- отладка
 						std::cout << "LexBuf[" << ib << "] = {DoubleAtr, TBinDouble, " << *ft << "}\n"; // --- отладка
 
 						break;
@@ -1036,7 +1067,7 @@
 					{
 						LexAccum += "."; //добавление символа в буферную переменную
 						S = 2; //переход в состояние 2
-					//	Debug(*i, S, LexAccum); // --- отладка
+						//Debug(*i, S, LexAccum); // --- отладка
 						break;
 					}
 					if (Seps.count(str.substr(distance(str.begin(), i), 1)) || *i == ' ') //разделитель; 17 -> 0
@@ -1098,14 +1129,14 @@
 			CommonMk(MK, Load, Sender);
 		}
 	}
-/*
+
 	void Lex::Debug(char i, int S, string LexAccum) // --- для отладки, позже удалить
 	{
 		cout << " Current symbol: " << i << "; "; // --- отладка
 		cout << "New condition: " << S << "; "; // --- отладка
 		cout << " LexAccum: " << LexAccum << endl; // --- отладка
 	}
-*/
+
 	Lex::Lex(FU *BusContext, FU *Templ) 
 	{
 		FUtype = 3;

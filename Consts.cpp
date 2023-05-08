@@ -1588,7 +1588,12 @@ void LoadPoint::print(map<int, string > AtrMnemo, string offset, string Sep, str
 	}
 }
 
+<<<<<<< HEAD
 // Работа с ФУ
+void FU::CommonMk(int Mk, LoadPoint Load, FU* Sender)
+=======
+// ������ � ��
+>>>>>>> 20b8bf40a63f9c0e265765d0c309b4eba87ec794
 void FU::CommonMk(int Mk, LoadPoint Load, FU* Sender)
 {
 	Mk %= FUMkRange;
@@ -1721,7 +1726,12 @@ void FU::CommonMk(int Mk, LoadPoint Load, FU* Sender)
 		ALUCreating = true;
 		((FU*)Alu)->ProgFU(ProgExecMk, Load, this);
 		break;
+<<<<<<< HEAD
 	case 989: // ProgStop Остановка программы (в нагрузке количество уровней выхода; если нагрузка nil, то присваивается 1)
+		ProgStop = Load.toInt(2);
+=======
+	case 989: // ProgStop ��������� ��������� (� �������� ���������� ������� ������; ���� �������� nil, �� ������������� 1)
+>>>>>>> 20b8bf40a63f9c0e265765d0c309b4eba87ec794
 		ProgStop = Load.toInt(2);
 		break;
 	case 988: // ProgStopAll Остановка всех запущенных на выполнение миллипрограммы для данного ФУ
@@ -1789,6 +1799,26 @@ void FU::CommonMk(int Mk, LoadPoint Load, FU* Sender)
 	case ContextOutMkMk: // 999 ContextOutMK Выдать милликоманду с указателем на контекст ФУ
 		if (Load.Type >> 1 == Dint)
 			Bus->ProgFU(*(int*)Load.Point, { TFU, this }, this);
+			Bus->ProgFU(*(int*)Load.Point, { TFU, this }, this);
+<<<<<<< HEAD
+=======
+		break;
+	case BreakMk: //Выход из циклов
+	    CycleStop = Load.toInt(1);
+		if (CycleStop < 0) CycleStop = 0;
+		break;
+	case NextMk: // Продолжение циклов
+		CycleStop = - Load.toInt(1); // При CycleStop < 0 выполняется оператор Continue
+		if (CycleStop > 0) CycleStop = 0;
+		break;
+	case BreakMk: //����� �� ������
+	    CycleStop = Load.toInt(1);
+		if (CycleStop < 0) CycleStop = 0;
+		break;
+	case NextMk: // ����������� ������
+		CycleStop = - Load.toInt(1); // ��� CycleStop < 0 ����������� �������� Continue
+		if (CycleStop > 0) CycleStop = 0;
+>>>>>>> 20b8bf40a63f9c0e265765d0c309b4eba87ec794
 		break;
 	case BreakMk: //Выход из циклов
 	    CycleStop = Load.toInt(1);
@@ -1811,6 +1841,20 @@ void FU::CommonMk(int Mk, LoadPoint Load, FU* Sender)
 		if (Modeling == nullptr) Modeling = new FUModeling();
 		Modeling->eventser = (FU*)Load.Point;
 		break;	}
+}
+<<<<<<< HEAD
+	case 917: // EventserSet Установить указатель на контроллер событий
+		if (Modeling == nullptr) Modeling = new FUModeling();
+		Modeling->eventser = (FU*)Load.Point;
+		break;	}
+=======
+	case 917: // EventserSet ���������� ������ �� ���������� �������
+		if (Load.Point == nullptr) break;
+		if (Modeling == nullptr) Modeling = new FUModeling();
+		Modeling->eventser = (FU*)Load.Point;
+		break;
+	}
+>>>>>>> 20b8bf40a63f9c0e265765d0c309b4eba87ec794
 }
 
 // Запуск программы
@@ -1836,7 +1880,13 @@ void FU::ProgExec(void* UK, unsigned int CycleMode, FU* ProgBus, vector<ip>::ite
 			}
 			if (i->atr >= FUMkRange)
 				ProgBus->ProgFU(i->atr, i->Load, this); // Если диапазон МК не принадлежит ФУ (выдаем на Bus)
+<<<<<<< HEAD
+				ProgBus->ProgFU(i->atr, i->Load, this); // Если диапазон МК не принадлежит ФУ (выдаем на Bus)
 			else // МК для данного ФУ
+=======
+				ProgBus->ProgFU(i->atr, i->Load, this); // ���� �������� �� �� ����������� �� (������ �� Bus)
+			else // �� ��� ������� ��
+>>>>>>> 20b8bf40a63f9c0e265765d0c309b4eba87ec794
 			{
 				if (i->atr == YesContinueAtr || i->atr == NoContinueAtr)
 				{
@@ -1876,6 +1926,12 @@ void FU::ProgExec(void* UK, unsigned int CycleMode, FU* ProgBus, vector<ip>::ite
 				}
 				ProgFU(i->atr, i->Load, this); // Выполнение команды
 			}
+<<<<<<< HEAD
+				ProgFU(i->atr, i->Load, this); // Выполнение команды
+=======
+				ProgFU(i->atr, i->Load, this); // ���������� �������
+>>>>>>> 20b8bf40a63f9c0e265765d0c309b4eba87ec794
+			}
 
 			if (CycleStop != 0) // Остановка циклов
 				if (!CycleMode) // Если не в режиме цикла, то просто выходим из уровня
@@ -1883,7 +1939,14 @@ void FU::ProgExec(void* UK, unsigned int CycleMode, FU* ProgBus, vector<ip>::ite
 				else {
 					if (CycleStop > 0)
 					{
+					{
+<<<<<<< HEAD
 						CycleStop--; // уменьшение счетчика выходов из цикла
+						if(!CycleStop) return;
+					}
+=======
+						CycleStop--; // ���������� �������� ������� �� �����
+>>>>>>> 20b8bf40a63f9c0e265765d0c309b4eba87ec794
 						if(!CycleStop) return;
 					}
 					else
@@ -1891,10 +1954,22 @@ void FU::ProgExec(void* UK, unsigned int CycleMode, FU* ProgBus, vector<ip>::ite
 						CycleStop++; // уменьшение счетчика выходов из цикла
 						if (CycleStop) 
 							return;
+<<<<<<< HEAD
+						CycleStop++; // уменьшение счетчика выходов из цикла
+=======
+						CycleStop++; // ���������� �������� ������� �� �����
+>>>>>>> 20b8bf40a63f9c0e265765d0c309b4eba87ec794
+						if (CycleStop) 
+							return;
 					}
 				}
 			if (ProgStop > 0) { ProgStop--; return; }
 			if (ProgStopAll) { return; } // Внеочередной выход из подпрограммы
+<<<<<<< HEAD
+			if (ProgStopAll) { return; } // Внеочередной выход из подпрограммы
+=======
+			if (ProgStopAll) { return; } // ������������ ����� �� ������������
+>>>>>>> 20b8bf40a63f9c0e265765d0c309b4eba87ec794
 		}
 	} while (RepeatF || CycleMode > 0);
 }
@@ -1908,7 +1983,12 @@ void FU::ProgExec(LoadPoint Uk, unsigned int CycleMode, FU* Bus, vector<ip>::ite
 
 void FU::MkExec(int MK, LoadPoint Load, FU* BusContext, bool Ext) // Выдача МК с нагрузкой
 {
+<<<<<<< HEAD
 	if (MK < FUMkRange && !Ext) // Если МК адресована сомому ФУ
+		ProgFU(MK, Load, this);
+=======
+	if (MK < FUMkRange && !Ext) // ���� �� ���������� ������ ��
+>>>>>>> 20b8bf40a63f9c0e265765d0c309b4eba87ec794
 		ProgFU(MK, Load, this);
 	else
 		if (BusContext != nullptr)
@@ -1922,7 +2002,12 @@ void FU::MkExec(LoadPoint Mk, LoadPoint Load, FU* BusContext, bool Ext) // Вы�
 	if (Mk.Type >> 1 == Dint && Mk.Point != nullptr)
 	{
 		int MK = *(int*)Mk.Point;
+<<<<<<< HEAD
 		if (MK < FUMkRange && !Ext) // Если МК адресована сомому ФУ
+			ProgFU(MK, Load, this);
+=======
+		if (MK < FUMkRange && !Ext) // ���� �� ���������� ������ ��
+>>>>>>> 20b8bf40a63f9c0e265765d0c309b4eba87ec794
 			ProgFU(MK, Load, this);
 		else
 			if (BusContext != nullptr)
@@ -1944,6 +2029,60 @@ void FU::MkAwait(int MK, LoadPoint Load, FU* Sender, double Delay) // ??????????
 //	LoadPoint LP = { Tdouble, &t };
 //	Modeling->eventser->ProgFU(EventserCurrentTimeOutMk, LP, this); // ????? ??????? ????? ?? ??????????? ???????
 //	Modeling->qAwaitMk.insert({ t + Delay, {MK, Load, Sender} }); // ????????? ????? ?????????? ??????? ?? ? ??????? ????????
+				BusContext->ProgFU(MK, Load, this);
+			else
+				Bus->ProgFU(MK, Load, this);
+	}
+}
+
+<<<<<<< HEAD
+void FU::MkAwait(int MK, LoadPoint Load, FU* Sender, double Delay) // ?????????? ?? ??? ???????? ?? ??????? ??? ?????????????
+{
+	if (Modeling == nullptr || Modeling->eventser == nullptr)
+	{
+		ProgFU(MK, Load, Sender);
+		return;
+	}
+	double t;
+	ip IP= {MK, Load};
+//	LoadPoint LP = { Tdouble, &t };
+//	Modeling->eventser->ProgFU(EventserCurrentTimeOutMk, LP, this); // ????? ??????? ????? ?? ??????????? ???????
+//	Modeling->qAwaitMk.insert({ t + Delay, {MK, Load, Sender} }); // ????????? ????? ?????????? ??????? ?? ? ??????? ????????
+
+	Modeling->eventser->ProgFU(EventserFUSetMk, { CFU, this }, this); // ????????? ????? ??????? ? ?????? ????????? ???????
+	Modeling->eventser->ProgFU(EventTimeSetMk, { Cdouble, &Delay }, this); // Установить вреям задержки ожидаемой МК
+	Modeling->eventser->ProgFU(AwaitMkSetMk, { CIP, &IP}, this); // ????????? ????? ??????? ? ?????? ????????? ???????
+}
+/*
+void FU::Scheduling(bool SchedulerFlag)
+=======
+void FU::MkAwait(int MK, LoadPoint Load, FU* Sender, double Delay) // ���������� �� ��� �������� � ������� ��� �������������
+>>>>>>> 20b8bf40a63f9c0e265765d0c309b4eba87ec794
+{
+	if (Modeling == nullptr || Modeling->eventser == nullptr)
+	{
+<<<<<<< HEAD
+		Modeling->SchedulerFlag = SchedulerFlag;
+		if (Modeling->qmk.size() == 0)
+			cout << "Modeling error\n";
+		else
+		{
+			ip t = Modeling->qmk.back();
+			Modeling->qmk.pop_back();
+			ProgFU(t.atr, t.Load, this);
+			if (t.Load.Type % 2 == 1 && t.Load.Point != nullptr)
+				t.Load.VarDel();
+=======
+		ProgFU(MK, Load, Sender);
+		return;
+	}
+	double t;
+	LoadPoint LP = { Tdouble, &t };
+	Modeling->eventser->ProgFU(EventserCurrentTimeOutMk, LP, this); // ����� ������� ����� �� ����������� �������
+	Modeling->qAwaitMk.insert({ t + Delay, {MK, Load, Sender} }); // ��������� ����� ���������� ������� �� � ������� ��������
+	Modeling->eventser->ProgFU(EventserFUSetMk, { CFU, this }, this); // ��������� ����� ������� � ������ ��������� �������
+	Modeling->eventser->ProgFU(EventAwaitSetMk, { Cdouble, &Delay }, this); // ��������� ����� ������� � ������ ��������� �������
+}
 
 	Modeling->eventser->ProgFU(EventserFUSetMk, { CFU, this }, this); // ????????? ????? ??????? ? ?????? ????????? ???????
 	Modeling->eventser->ProgFU(EventTimeSetMk, { Cdouble, &Delay }, this); // Установить вреям задержки ожидаемой МК
@@ -1965,6 +2104,98 @@ void FU::Scheduling(bool SchedulerFlag)
 			ProgFU(t.atr, t.Load, this);
 			if (t.Load.Type % 2 == 1 && t.Load.Point != nullptr)
 				t.Load.VarDel();
+		}
+	}
+}
+*/
+
+void FU::Scheduling(bool SchedulerFlag)
+{
+	if (Modeling == nullptr)
+	{
+		cout << "Modeling error: Modeling=null\n";
+		return;
+	}
+	Modeling->SchedulerFlag = SchedulerFlag;
+	if (SchedulerFlag) {
+		if (Modeling->qmk.size() != 0)
+		{
+			if (Modeling->qmk.size() == 0)
+				cout << "Modeling error: qmk.size() = 0\n";
+			else
+			{
+				ipSender t = Modeling->qmk.back();
+				Modeling->qmk.pop_back();
+				ProgFU(t.atr, t.Load, t.Sender);
+				if (t.Load.Type % 2 == 1 && t.Load.Point != nullptr)
+					t.Load.VarDel();
+			}
+		}
+	}
+	else
+	{// MkReceive awaiting Приход ожидаемой МК
+		if (Modeling->qAwaitMk.size() != 0)
+		{
+			if (Modeling->qAwaitMk.size() == 0)
+				cout << "Modeling error: qAwaitMk.size() = 0\n";
+			else
+			{
+				ipSender t = Modeling->qAwaitMk.begin()->second;
+				Modeling->qAwaitMk.erase(Modeling->qAwaitMk.begin());
+				ProgFU(t.atr, t.Load, t.Sender);
+				if (t.Load.Type % 2 == 1 && t.Load.Point != nullptr)
+					t.Load.VarDel();
+			}
+		}
+	}
+}
+
+void FUModeling::EventModelingPrint() // Вывести состояние моделирования ФУ
+{
+	cout << "qmk: " << endl;
+	for (auto i : qmk)
+		cout << i.atr << "=" << i.Load.Type << endl;
+	cout << "qAwaitMk: " << endl;
+	for (auto i : qAwaitMk)
+		cout << "Time: " << i.first << " MK: "<< i.second.atr << "=" << i.second.Load.Type << endl;
+void FU::Scheduling(bool SchedulerFlag)
+{
+	if (Modeling == nullptr)
+	{
+		cout << "Modeling error: Modeling=null\n";
+		return;
+	}
+	Modeling->SchedulerFlag = SchedulerFlag;
+	if (SchedulerFlag) {
+		if (Modeling->qmk.size() != 0)
+		{
+			if (Modeling->qmk.size() == 0)
+				cout << "Modeling error: qmk.size() = 0\n";
+			else
+			{
+				ip t = Modeling->qmk.back();
+				Modeling->qmk.pop_back();
+				ProgFU(t.atr, t.Load, this);
+				if (t.Load.Type % 2 == 1 && t.Load.Point != nullptr)
+					t.Load.VarDel();
+			}
+		}
+	}
+	else
+	{// MkReceive awaiting �������� ������� �� �� ��
+		if (Modeling->qAwaitMk.size() != 0)
+		{
+			if (Modeling->qAwaitMk.size() == 0)
+				cout << "Modeling error: qAwaitMk.size() = 0\n";
+			else
+			{
+				ipSender t = Modeling->qAwaitMk.begin()->second;
+				Modeling->qAwaitMk.erase(Modeling->qAwaitMk.begin());
+				ProgFU(t.atr, t.Load, t.Sender);
+				if (t.Load.Type % 2 == 1 && t.Load.Point != nullptr)
+					t.Load.VarDel();
+			}
+>>>>>>> 20b8bf40a63f9c0e265765d0c309b4eba87ec794
 		}
 	}
 }

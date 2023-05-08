@@ -28,6 +28,20 @@ void Router::ProgFU(int MK, LoadPoint Load, FU* Sender)
 //		Modeling->EventModelingPrint();
 		// Маршрутизация
 		// SendInd = ChennelSearch(MK); // Определить номер канала, по которому пришла МК для маршрутизации
+		if (Modeling != nullptr && Modeling->ManualMode && Modeling->scheduler != nullptr && !Modeling->SchedulerFlag)
+		{
+			Modeling->SchedulerFlag = false;
+			Modeling->qmk.push_back({ MK, Load });
+			((Scheduler*)(Modeling->scheduler))->Scheduling(this, 1);
+		}
+
+		if (Modeling != nullptr && Modeling->ManualMode && Modeling->scheduler != nullptr && !Modeling->SchedulerFlag)
+		{
+			Modeling->SchedulerFlag = false;
+			Modeling->qmk.push_back({ MK, Load });
+			((Scheduler*)(Modeling->scheduler))->Scheduling(this, RoutingTime);
+			return;
+		}
 
 		if (Modeling != nullptr && Modeling->ManualMode && Modeling->scheduler != nullptr && !Modeling->SchedulerFlag)
 		{

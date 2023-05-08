@@ -1,17 +1,17 @@
 16 1
-C:\Users\salib\YandexDisk\MillicomNew\Millicom\IndexingTest.oap 
+C:\Users\salib\YandexDisk\MillicomNew\Millicom\Bag3.oap 
+C:\Users\salib\YandexDisk\MillicomNew\Millicom\Router.oap 
+C:\Users\salib\YandexDisk\MillicomNew\Millicom\CompileC.oap 
+C:\Users\salib\YandexDisk\MillicomNew\Millicom\CompileC 29.04.23.oap 
+C:\Users\salib\YandexDisk\MillicomNew\Millicom\CompileC 29.04.23 
 C:\Users\salib\YandexDisk\MillicomNew\Millicom\CompileC 28.04 00.50.oap 
 C:\Users\salib\YandexDisk\MillicomNew\Millicom\CompileC 27.04 21.33.oap 
+C:\Users\salib\YandexDisk\MillicomNew\Millicom\IndexingTest.oap 
 C:\Users\salib\YandexDisk\MillicomNew\Millicom\ListTest.oap 
 C:\Users\salib\YandexDisk\MillicomNew\Millicom\CompileC 25.04 05.32 
 C:\Users\salib\YandexDisk\MillicomNew\Millicom\CompileC 24.04 23.53.oap 
 C:\Users\salib\YandexDisk\MillicomNew\Millicom\CompileC_Old2.oap 
-C:\Users\salib\YandexDisk\MillicomNew\Millicom\Router.oap 
 C:\Users\salib\YandexDisk\MillicomNew\Millicom\ALU_test.oap 
-C:\Users\salib\YandexDisk\MillicomNew\Millicom\Bag3.oap 
 C:\Users\salib\YandexDisk\MillicomNew\Millicom\ALUGeneral.oap 
 C:\Users\salib\YandexDisk\MillicomNew\Millicom\CompileC_Old.oap 
 C:\Users\salib\YandexDisk\MillicomNew\Millicom\CompileC_22_03_2023.oap 
-C:\Users\salib\YandexDisk\MillicomNew\Millicom\IntAluTest.oap 
-C:\Users\salib\YandexDisk\MillicomNew\Millicom\CompileC Ч копи€ (2).oap 
-C:\Users\salib\YandexDisk\MillicomNew\Millicom\CompileC_avk.oap 

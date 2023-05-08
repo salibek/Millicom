@@ -11,7 +11,7 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		Modeling->SchedulerFlag = false;
 		Modeling->qmk.push_back({ MK, Load });
 //		if (Load.Type % 2 == 1) Load.Point = Load.VarClone(); // Копирование константы
-		if(MK<100 || MK>565) // Не команда пересыдки
+		if(MK<100 || MK>565) // Не команда пересылки
 			((Scheduler*)(Modeling->scheduler))->Scheduling(this, OtherMkTime);
 		else
 		{
@@ -678,7 +678,6 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load, FU* Sender)
 			if (MK % 50 >= 0 && MK % 50 < ReceiveProgs.size())
 				ProgExec(ReceiveProgs[MK%50]);
 			ProgExec(ReceiveProg); // Запуск программы по приему данных от соседа
-//			if (InCounter[PlyCurrent] == Neighbours.size()) // Набрался полный комплект
 			if (InCounter[PlyCurrent] == Plys[PlyCurrent].size()) // Набрался полный комплект
 				{
 				bool ModelingFlag = false;
@@ -780,19 +779,25 @@ void CellularAutomatManager::ProgFU(int MK, LoadPoint Load, FU* Sender)
 	case 33: // Step2Set Установить шаг автоматической инкрементации для 2-го индекса
 		Step2 = Load.toInt();
 		break;
-	case 35: // Context1Out Выдать контекст первого ФУ-автомата
+	case 34: // Step3Set Установить шаг автоматической инкрементации для 3-го индекса
+		Step2 = Load.toInt();
+		break;
+	case 35: // Step4Set Установить шаг автоматической инкрементации для 4-го индекса
+		Step2 = Load.toInt();
+		break;
+	case 36: // Context1Out Выдать контекст первого ФУ-автомата
 		if (Ind1 >= Net.size() || Ind1 < 0) break;
 		Load.Write((FU*)&Net[Ind1]);
 		break;
-	case 36: // Context2OutMk Выдать МК с контекстот первого ФУ-автомата
+	case 37: // Context1OutMk Выдать МК с контекстот первого ФУ-автомата
 		if (Ind1 >= Net.size() || Ind1 < 0) break;
 		MkExec(Load, { TFU, &Net[Ind1] });
 		break;
-	case 37: // Context2Out Выдать контекст второго ФУ-автомата
+	case 38: // Context2Out Выдать контекст второго ФУ-автомата
 		if (Ind2 >= Net.size() || Ind2 < 0) break;
 		Load.Write((FU*)&Net[Ind2]);
 		break;
-	case 38: // Context2OutMk Выдать МК с контекстом второго ФУ-автомата
+	case 39: // Context2OutMk Выдать МК с контекстом второго ФУ-автомата
 		if (Ind2 >= Net.size() || Ind2 < 0) break;
 		MkExec(Load, { TFU, &Net[Ind2] });
 		break;
@@ -818,6 +823,20 @@ void CellularAutomatManager::ProgFU(int MK, LoadPoint Load, FU* Sender)
 				i.ProgExec(Load.Point);
 			else
 				i.ProgExec(Prog);				
+		break;
+	case 53: // Ind1To2Exec Выполнить программу для всех ФУ с индексами от Ind1 до Ind2 невключительно
+		for (int i = Ind1; i < Ind2; i++)
+			if (Load.isProg())
+				Net[i].ProgExec(Load.Point);
+			else
+				Net[i].ProgExec(Prog);
+	case 54: // Ind1To2ExecInclude Выполнить программу для всех ФУ с индексами от Ind1 до Ind2 включительно
+		for (int i = Ind1; i <= Ind2; i++)
+			if (Load.isProg())
+				Net[i].ProgExec(Load.Point);
+			else
+				Net[i].ProgExec(Prog);
+
 		break;
 	case 58: //  Neitborder1To2Append Добавить соседа с индексом 2 для ФУ с индексом 1
 		if (Ind1 >= Net.size() || Ind1 < 0) break;
@@ -939,6 +958,43 @@ void CellularAutomatManager::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		Step1 = step1, Step2 = step2; // Восстановить шаги в контекста ФУ
 	}
 	break;
+
+	case 90: // DistrebutedNetGen Сгенерировать модель распределенной вычислительной сети
+		break;
+	case 92: // RouterMkSetExec Установить МК для роутера c индексом Ind1 и следующей МК выполнить МК
+		if (MkPhaze) // Вторая фаза МК
+			Routers[Ind1].ProgFU(Mk, Load);
+		else // Первая фаза МК
+			Mk=Load.toInt();
+		MkPhaze = (MkPhaze + 1) % 2;
+		Ind1 += Step1;
+		break;
+	case 93: // GatevayMkSetExec Установить МК для шлюза c индексом Ind1 и следующей МК выполнить МК
+		if (MkPhaze) // Вторая фаза МК
+			Gateways[Ind1].ProgFU(Mk, Load);
+		else // Первая фаза МК
+			Mk = Load.toInt();
+		MkPhaze = (MkPhaze + 1) % 2;
+		Ind1 += Step1;
+		break;
+	case 94: // SchedullerMkSetExec Установить МК для планировщика c индексом Ind1 вычислений и следующей МК выполнить МК
+		if (MkPhaze) // Вторая фаза МК
+			Schedulers[Ind1].ProgFU(Mk, Load);
+		else // Первая фаза МК
+			Mk = Load.toInt();
+		MkPhaze = (MkPhaze + 1) % 2;
+		Ind1 += Step1;
+		break;
+	case 95: // RouterAllMkSetExec Установить МК для роутера и следующей МК выполнить МК для всех роутеров
+		
+		break;
+	case 96: // GatevayAllMkSetExec Установить МК для шлюза и следующей МК выполнить МК для всех роутеров
+		
+		break;
+	case 97: // SchedullerAllMkSetExec Установить МК для планировщика вычислений и следующей МК выполнить МК для всех роутеров
+		
+		break;
+
 	case 200: //NetGenerate Генерация сетки (На вход может подаваться количество ФУ в сетке)
 	{
 		if (Load.Point != nullptr)
