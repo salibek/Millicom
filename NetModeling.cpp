@@ -7,7 +7,7 @@ void TemperatEx::ProgFU(int MK, LoadPoint Load, FU* Sender)
 	if (Modeling!=nullptr && Modeling->ManualMode && Modeling->scheduler != nullptr && !Modeling->SchedulerFlag)
 	{
 		Modeling->SchedulerFlag = false;
-		Modeling->qmk.push_back({ MK, Load });
+		Modeling->qmk.push_back({ MK, Load, Sender });
 		if (Load.Type % 2 == 1) Load.Point=Load.VarClone(); // Копирование константы
 		if(Load.Point!=nullptr)
 			((Scheduler*)(Modeling->scheduler))->Scheduling(this, ReadTime);
@@ -140,7 +140,7 @@ void NetManager::ProgFU(int MK, LoadPoint Load, FU* Sender)
 				if(NetScheduler!=nullptr)
 				 {
 					Items[i][j]->Modeling = new FUModeling();
-					Items[i][j]->Modeling->scheduler = (void*)NetScheduler;
+					Items[i][j]->Modeling->scheduler = (FU*)NetScheduler;
 					if (NetScheduler != nullptr)Items[i][j]->Modeling->ManualMode = true;
 				}
 			}

@@ -1,7 +1,7 @@
 ﻿#include "stdafx.h"
 #include "SchedulerEventser.h"
 
-void Eventser::Eventsing(FU* Context, double tay, bool SchedulerFlag) // Запланиовать событие (tay - время задержки события)
+void Eventser::Eventsing(FU* Context, double tay, bool SchedulerFlag) // ������������ ������� (tay - ����� �������� �������)
 {
 	if (Events.size() == 0)
 	{
@@ -37,7 +37,7 @@ void Eventser::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		CurrentTime = 0;
 		FinProg = nullptr;
 		break;
-	case 1: //Start Начать моделирование
+	case 1: //Start ������ �������������
 		work = true;
 		start = true;
 		//Events.clear();
@@ -50,7 +50,7 @@ void Eventser::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		}
 		ProgExec(FinProg);
 		break;
-	case 5: // WorkSet Установить флаг рабочего режима
+	case 5: // WorkSet ���������� ���� �������� ������
 		work = Load.toBool();
 		break;
 	case 10: // FUContextSet Установить ссылку на контекст ФУ для описания события
@@ -73,14 +73,17 @@ void Eventser::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		else if (Load.isIP())
 			FUContext->Modeling->qAwaitMk.insert({ CurrentTime + Delay, {*((ip*)Load.Point), Sender }});
 		break;
-	case 45: //TimeSet Установить текущее модельное время
+	case 45: //TimeSet ���������� ������� ��������� �����
 		CurrentTime = Load.toDouble();
 		break;
-	case 50: // TimeOut Выдать текущее модельное время
-		if(Load.Type==Tdouble)
+	case 49: // TimeRefOut ������ ������ �� ���������� �������� ���������� �������
+		Load.Write(&CurrentTime);
 		break;
-	case 51: // TimeOutMk Выдать МК с текущим модельным временем
-	case 52: // TimeOutRefMk Выдать МК со ссылкой на переменную текущего модельного времени
+	case 50: // TimeOut ������ ������� ��������� �����
+		Load.Write(CurrentTime);
+		break;
+	case 51: // TimeOutMk ������ �� � ������� ��������� ��������
+	case 52: // TimeRefOutMk ������ �� �� ������� �� ���������� �������� ���������� �������
 		if (MK == 51)
 			MkExec(Load, { Cdouble,&CurrentTime });
 		else
@@ -98,7 +101,7 @@ void Eventser::ProgFU(int MK, LoadPoint Load, FU* Sender)
 	}
 }
 
-void Scheduler::CoreFree() // Освободить ядро
+void Scheduler::CoreFree() // ���������� ����
 {
 	int MkQueuePrev = Queue.size();
 	if (Queue.size() == 0)
@@ -161,7 +164,7 @@ void Scheduler::ProgFU(int MK, LoadPoint Load, FU* Sender)
 	case 1: // EventserSet
 		eventser = (FU*)Load.Point;
 		break;
-	case 2: // Clear Сбросить параметры моделирования
+	case 2: // Clear �������� ��������� �������������
 		CoreCountPrev = 0;
 		ParallelFactor = 0;
 		SchedulingTime = 0; RunTime = 0;
@@ -185,42 +188,42 @@ void Scheduler::ProgFU(int MK, LoadPoint Load, FU* Sender)
 	case 11: // TimeOutMk
 		MkExec(Load, { Cdouble, CurrentTime });
 		break;
-	case 15: // SchedulingProgSet Установить ссылка на программу, запускаемую при планировании вычислений
+	case 15: // SchedulingProgSet ���������� ������ �� ���������, ����������� ��� ������������ ����������
 		SchedulingProg = Load.Point;
 		break;
-	case 40: // CurrTimeRefSet Установить ссылку на переменную с текущим модельным временем 
+	case 40: // CurrTimeRefSet ���������� ������ �� ���������� � ������� ��������� �������� 
 		if(Load.Type==Tdouble)
 			CurrentTime =(double*) Load.Point;
 		break;
-	case 50: // CoreCountOut Выдать число занятых ядер
+	case 50: // CoreCountOut ������ ����� ������� ����
 		Load.Write(CoreCount);
 		break;
-	case 51: // CoreCountOutMk Выдать МК с числом занятых ядер
+	case 51: // CoreCountOutMk ������ �� � ������ ������� ����
 		MkExec(Load, { Cint,&CoreCount });
 		break;
-	case 55: // MkQueueOut Выдать количество МК в очереди на выполнение
+	case 55: // MkQueueOut ������ ���������� �� � ������� �� ����������
 		Load.Write(int(Queue.size()));
 		break;
-	case 56: // MkQueueOutMk Выдать МК с количеством МК в очереди на выполнение
+	case 56: // MkQueueOutMk ������ �� � ����������� �� � ������� �� ����������
 	{
 		int t = Queue.size();
 		MkExec(Load, { Cint,&t });
 		break;
 	}
-	case 60: // MkCountOut Выдать количество МК на выполнении и ожидании
+	case 60: // MkCountOut ������ ���������� �� �� ���������� � ��������
 		Load.Write(int(Queue.size()) + CoreCount);
 		break;
-	case 61: // MkCountOutMk Выдать МК с количеством МК на выполнении и ожидании
+	case 61: // MkCountOutMk ������ �� � ����������� �� �� ���������� � ��������
 	{
 		int t = Queue.size() + CoreCount;
 		MkExec(Load, { Cint,&t });
 		break;
 	}
 
-	case 65: // ParallelFactorOut Выдать коэффициент параллелизма
+	case 65: // ParallelFactorOut ������ ����������� ������������
 		Load.Write(ParallelFactor / *CurrentTime);
 		break;
-	case 66: //  ParallelFactorOutMk Выдать МК с коэффициентом параллелизма
+	case 66: //  ParallelFactorOutMk ������ �� � ������������� ������������
 //	if(Modeling!=nullptr)
 	{
 		double t;
@@ -231,11 +234,11 @@ void Scheduler::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		MkExec(Load, { Cdouble,&t });
 		break;
 	}
-	case 70: // AverageMkQueueOut Выдать среднюю длину очереди
+	case 70: // AverageMkQueueOut ������ ������� ����� �������
 //		if (Modeling != nullptr)
 			Load.Write(AverageMkQueue);
 		break;
-	case 71: //  AverageMkQueueOutMk Выдать МК со средней длиной очереди
+	case 71: //  AverageMkQueueOutMk ������ �� �� ������� ������ �������
 //		if (Modeling != nullptr)
 		{
 			double t;
@@ -246,11 +249,11 @@ void Scheduler::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		MkExec(Load, { Cdouble,&t });
 		break;
 	}
-	case 75: // MaxMkQueueOut Выдать максимальную длину очереди
+	case 75: // MaxMkQueueOut ������ ������������ ����� �������
 		if (Modeling != nullptr)
 			Load.Write(ParallelFactor / *CurrentTime);
 		break;
-	case 76: //  MaxMkQueueOutMk Выдать МК с максимальной длиной очереди
+	case 76: //  MaxMkQueueOutMk ������ �� � ������������ ������ �������
 	{
 //		if (Modeling != nullptr)
 		{
