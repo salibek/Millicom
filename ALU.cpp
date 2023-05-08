@@ -25,37 +25,39 @@ void		ALU::EQ(LoadPoint Load)
 {
 	sub(Load);
 	Stack.back().accum = Stack.back().accum == 0;
-	Stack.back().accumType = (Tbool + Stack.back().accumType & 1);
+	Stack.back().accumType = (Tbool + +Stack.back().accumType % 2);
 };
 void		ALU::NotEQ(LoadPoint Load)
 {
 	sub(Load);
 	Stack.back().accum = Stack.back().accum != 0;
-	Stack.back().accumType = (Tbool + Stack.back().accumType & 1);
+	Stack.back().accumType = (Tbool + +Stack.back().accumType % 2);
 };
 void		ALU::Bigger(LoadPoint Load)
 {
 	sub(Load);
 	Stack.back().accum = Stack.back().accum > 0;
-	Stack.back().accumType = (Tbool + Stack.back().accumType & 1);
+	Stack.back().accumType = (Tbool + +Stack.back().accumType % 2);
 };
 void		ALU::BiggerEQ(LoadPoint Load)
 {
 	sub(Load);
 	Stack.back().accum = Stack.back().accum >= 0;
-	Stack.back().accumType = (Tbool + Stack.back().accumType & 1);
+	Stack.back().accumType = (Tbool + +Stack.back().accumType % 2);
 };
 void		ALU::Smaller(LoadPoint Load)
 {
 	sub(Load);
 	Stack.back().accum = Stack.back().accum < 0;
-	Stack.back().accumType = (Tbool + Stack.back().accumType & 1);
+	Stack.back().accumType = (Tbool + Stack.back().accumType % 2);
 };
+
+
 void		ALU::SmallerEQ(LoadPoint Load)
 {
 	sub(Load);
 	Stack.back().accum = Stack.back().accum <= 0;
-	Stack.back().accumType = (Tbool + Stack.back().accumType & 1);
+	Stack.back().accumType = (Tbool + +Stack.back().accumType % 2);
 //	bool* t = new bool(getSign() || !getLogic());
 //	set({ Cbool,t });
 };
@@ -89,7 +91,7 @@ void	ALU::error_msg(int error_code)
 	}
 }
 
-void ALU::ProgFU(int MK, LoadPoint Load)
+void ALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 {
 	MK %= FUMkRange;
 	if (MK == 1) MK = E_MK::SET; // Заменить МК установки аккумулятора
@@ -198,7 +200,7 @@ void ALU::ProgFU(int MK, LoadPoint Load)
 				tt_int = Stack.back().accum;
 					Load = { Stack.back().accumType | 1, &tt_int }; // Запомнить значение вычисленного аккумулятора
 			}
-			else if (LoadPoint::isBool(Stack.back().accumType))	{
+			else if (Load.isBool(Stack.back().accumType))	{
 				tt_bool = Stack.back().accum;
 				Load = { Stack.back().accumType | 1, &tt_bool }; // Запомнить значение вычисленного аккумулятора
 			}

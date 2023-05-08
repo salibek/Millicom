@@ -5,7 +5,7 @@
 
 class BagPoint : public FU {
 public:
-	void ProgFU(int MK, LoadPoint Load) override;
+	void ProgFU(int MK, LoadPoint Load, FU* Sender = nullptr) override;
 	BagPoint(FU* BusContext, FU* Templ) : FU(BusContext) { Bus = BusContext; };
 	BagPoint() : FU() { Bus = nullptr; };
 	double p = 0; // = max (p_Up, p_Diagonal)
@@ -26,7 +26,7 @@ public:
 
 class Bag : public FU {
 public:
-	void ProgFU(int MK, LoadPoint Load) override;
+	void ProgFU(int MK, LoadPoint Load, FU* Sender = nullptr) override;
 	Bag(FU* BusContext, FU* Templ) : FU(BusContext) { Bus = BusContext; FUtype = 15; };
 	Bag() : FU() { Bus = nullptr; };
 private:

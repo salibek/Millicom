@@ -15,12 +15,27 @@ int Router::ChennelSearch(int MK) // Поиск канала по МК (Возврашает -1, если кан
 	return distance(Channels.begin(), i); // Вернуть номер канала
 }
 
-void Router::ProgFU(int MK, LoadPoint Load)
+double Router::DelayGen(channel ch) //Генерация задержки передачи данных
+{
+	return ch.Delay; // Постоянная задержка
+}
+
+void Router::ProgFU(int MK, LoadPoint Load, FU* Sender)
 {
 	if (!(MK < FUMkRange || MK >= FUMkGlobalRange && MK < FUMkGlobalRange + FUMkRange)) // Routing
 	{
+//		cout << FUName << " " << MK << endl;
+//		Modeling->EventModelingPrint();
 		// Маршрутизация
 		// SendInd = ChennelSearch(MK); // Определить номер канала, по которому пришла МК для маршрутизации
+
+		if (Modeling != nullptr && Modeling->ManualMode && Modeling->scheduler != nullptr && !Modeling->SchedulerFlag)
+		{
+			Modeling->SchedulerFlag = false;
+			Modeling->qmk.push_back({ MK, Load });
+			((Scheduler*)(Modeling->scheduler))->Scheduling(this, RoutingTime);
+			return;
+		}
 
 		ProgExec(ReceiveProg); // Запустить программу по приходу данных
 		MKCount++;
@@ -46,14 +61,16 @@ void Router::ProgFU(int MK, LoadPoint Load)
 			}
 		if (SendInd >= 0) // Стандартная маршрутизация
 		{
-			Channels[SendInd].MkCount++; // Посчитали МК
-			Channels[SendInd].DataCount += Load.DataSize();
-			if(Modeling==nullptr)
-				((FU*) Channels[SendInd].Receiver)->ProgFU(MK,Load);
-//			else
-//				Eventser->Eventsing(Context, DTime + SchedulingTime);
-		}
+			Channels[SendInd].MkOutCount++; // Посчитали МК
+			Channels[SendInd].DataOutCount += Load.DataSize();
+			//if(Modeling==nullptr)
 
+			((FU*) Channels[SendInd].Receiver)->MkAwait(MK,Load, Sender, DelayGen(Channels[SendInd]));
+		}
+		// Режим моделирования
+		if (Modeling!=0)
+			((Scheduler*)Modeling->scheduler)->CoreFree();
+		// -------------------
 	}
 	else // МК для роутера
 	switch (MK%FUMkRange)
@@ -72,7 +89,7 @@ void Router::ProgFU(int MK, LoadPoint Load)
 		Ind = Channels.size() - 1; // Настроить индекс на последний созданный канал
 		break;
 	}
-	case 2: // RoutingSimulat Эмуляции прихода МК на маршрутизатор
+	case 2: // RoutingSimulat Эмуляция прихода МК на маршрутизатор
 		ProgFU(((IC_type)Load.Point)->begin()->atr, ((IC_type)Load.Point)->begin()->Load);
 		break;
 	case 3: // IndSet Установить индекс текущего канала роутера
@@ -122,6 +139,9 @@ void Router::ProgFU(int MK, LoadPoint Load)
 	case 50:// ChRangeDownOutMk Выдать МК с нижним диапазоном для текущего канала
 		MkExec(Load, { Cint, &Channels[Ind].Down });
 		break;
+	case 51: // ChDelaySet Устанговить константную задержку передачи данных по каналу
+		Channels[Ind].Delay = Load.toDouble();
+		break;
 	//
 	// Подпрограммы
 	case 55: // RoutingProgSet Установить ссылку на программу маршрутизации
@@ -159,7 +179,7 @@ void Router::ProgFU(int MK, LoadPoint Load)
 //		MkExec(Load, { Cint, &Channels[Ind] });
 //		break;
 	case 105: // Переслать последнюю МК в канал с номером (номер канала в нагрузке МК для роутера)
-		Channels[Load.toInt()].Receiver->ProgFU(LaslMkIp.atr, LaslMkIp.Load);
+		Channels[Load.toInt()].Receiver->ProgFU(LaslMkIp.atr, LaslMkIp.Load, this);
 		break;
 //	case 120: // ReceiveIndOut
 //		Load.Write(SendInd);
@@ -175,31 +195,37 @@ void Router::ProgFU(int MK, LoadPoint Load)
 		//AverageMKQueue = 0;
 		for (auto i = Channels.begin(); i != Channels.end(); i++)
 		{
-			i->MkCount = 0;
-			i->DataCount = 0;
+			i->MkOutCount = 0;
+			i->DataOutCount = 0;
 		};
 		break;
 	case 325: // RouterDataCountOut Выдать объем переданных данных через роутер
 	{
 		int sum = 0;
 		for (auto i = Channels.begin(); i != Channels.end(); i++)
-			sum += i->DataCount;
+			sum += i->DataOutCount;
 		Load.Write(sum);
 		break;
 	}
-	case 330: // RouterDataInCountOutMk Выдать МК с объемом переданных данных через роутер
+	case 330: // RouterDataCountOutMk Выдать МК с объемом переданных данных через роутер
 	{
 		int sum = 0;
 		for (auto i = Channels.begin(); i != Channels.end(); i++)
-			sum += i->DataCount;
+			sum += i->DataOutCount;
 		MkExec(Load, { Cint, &sum });
 		break;
 	}
-	case 335: // ChDataInCountOut Выдать объем переданных данных через текущий канал (по индексу текущего канала)
-		Load.Write(Channels[Ind].DataCount);
+	case 335: // ChDataOutCountOut Выдать объем переданных данных из текущего канала (по индексу текущего канала)
+		Load.Write(Channels[Ind].DataOutCount);
 		break;
-	case 340: // ChDataInCountOutMk Выдать МК с объемом переданных данных через канал
-		MkExec(Load, { Cint, &Channels[Ind].DataCount });
+	case 336: // ChDataInCountOut Выдать объем пришедших данных в текущий канал (по индексу текущего канала)
+		Load.Write(Channels[Ind].DataInCount);
+		break;
+	case 340: // ChDataOutCountOutMk Выдать МК с объемом переданных данных переданных из канала
+		MkExec(Load, { Cint, &Channels[Ind].DataOutCount });
+		break;
+	case 341: // ChDataInCountOutMk Выдать МК с объемом пришедших данных в канал
+		MkExec(Load, { Cint, &Channels[Ind].DataInCount });
 		break;
 	case 345: // RouterMkCountOut Выдать количество переданных МК через роутер
 		Load.Write(MKCount);
@@ -208,10 +234,10 @@ void Router::ProgFU(int MK, LoadPoint Load)
 		MkExec(Load, { Cint, &MKCount });
 		break;
 	case 355: // ChMkInCountOut Выдать количество переданных МК через канал
-		Load.Write(Channels[Ind].MkCount);
+		Load.Write(Channels[Ind].MkOutCount);
 		break;
 	case 360: // ChMkInCountOutMk Выдать МК с количеством переданных МК через канал
-		MkExec(Load, { Cint, &Channels[Ind].MkCount });
+		MkExec(Load, { Cint, &Channels[Ind].MkOutCount });
 		break;
 	case 365: // RouterMaxMkQueueOut Выдать макс длину очереди МК на роутере
 		Load.Write(MaxMKQueue);
@@ -233,7 +259,7 @@ void Router::ProgFU(int MK, LoadPoint Load)
 		break;
 	//
 	default:
-		CommonMk(MK, Load);
+		CommonMk(MK, Load, Sender);
 		break;
 	}
 }

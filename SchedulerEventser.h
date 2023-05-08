@@ -3,15 +3,18 @@
 
 class Eventser: public FU
 {
-	multimap<double, FU*> Events; // События
+	multimap<double, Event> Events; // События
 	bool work = false; // Флаг процесса моделирования
 	bool start = false; // Флаг запуска процесса моделирования
 	double CurrentTime = 0; // Текущее время моделирования
 	void* FinProg = nullptr; // Программа, запускаемая по завершении моделирования
 	int EventCount = 0; // Счетчик событий
-public:
-	void ProgFU(int MK, LoadPoint Load) override;
-	void Eventsing(FU* Context, double tay);
+	double Time = 0; // Время для установки события
+	bool SchedulerF = true; // Флаг для установки события
+	double Delay = 0; // Задержка МК для Выполнения МК или для ожидания МК
+FU* FUContext = nullptr; public:
+	void ProgFU(int MK, LoadPoint Load, FU* Sender = nullptr) override;
+	void Eventsing(FU* Context, double tay, bool SchedulerFlag);
 	Eventser(FU* BusContext, FU* Templ)
 	{
 		Bus = BusContext;
@@ -19,6 +22,12 @@ public:
 		ProgFU(0, { 0,nullptr });
 	};
 	Eventser() {};
+public:
+	void EventsPrint() // Распечатать собырия в хронологии
+	{
+		for (auto i : Events)
+			cout << i.first << " : ShFlag " << i.second.SchedulerFlag << " FU: " << i.second.Receiver->FUName << endl;
+	};
 };
 
 class Scheduler : FU
@@ -36,7 +45,7 @@ class Scheduler : FU
 	int  MaxMkQueue = 0; // Максимальная длина очереди МК ко всем ФУ, подключенным к данному планировщику
 public:
 	void* SchedulingProg = nullptr;
-	void ProgFU(int MK, LoadPoint Load) override;
+	void ProgFU(int MK, LoadPoint Load, FU* Sender = nullptr) override;
 	void Scheduling(FU*, double DTime, bool CoreContinue=false); // CoreContinue - флаг удержания вычислительного ядра
 	void CoreFree(); // Освободить ядро
 		Scheduler(FU* BusContext, FU* Templ)

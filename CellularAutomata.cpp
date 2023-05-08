@@ -2,7 +2,7 @@
 #include "SchedulerEventser.h"
 
 // Простейший клеточный автомат (устройство для вычисления сеточных функций)
-void CellularAutomat::ProgFU(int MK, LoadPoint Load)
+void CellularAutomat::ProgFU(int MK, LoadPoint Load, FU* Sender)
 {
 	MK %= FUMkRange;
 	// Режим моделирования
@@ -135,7 +135,9 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load)
 	case 52: // OtherMkTimeSet Установить время время выполнения других операций для имитацинного моделирования
 		SendTime = Load.toDouble();
 		break;
-
+	case 53: // TransferTimeSet Установить время передачи данных между автоматами
+		TransferTime = Load.toDouble();
+		break;
 	case 700: // IndSet Установить индекс
 		Ind = Load.toInt();
 		break;
@@ -318,7 +320,7 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load)
 		break;
 	case 880: // RezSendToAll Выдать результат вычислений соседям
 		for (int i = 0; i < Neighbours.size(); i++)
-			Neighbours[i]->ProgFU(NeighboursMk[i], {Cdouble,&Rez[PlyCurrent]});
+			Neighbours[i]->ProgFU(NeighboursMk[i], {Cdouble,&Rez[PlyCurrent]},this);
 		break;
 	case 882: // InCounterSet Установить счетчик входных данных (Если PlyInd<0, то устанавливается для текущего уровня)
 		if(PlyInd<0)
@@ -387,7 +389,8 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load)
 		break;
 	case 10: // SendTo Выдать МК со значением для соседа по индексу
 		if (Ind > Plys[PlyInd].size()) break;
-		Neighbours[PlyInd][Ind].ProgFU(NeighboursMk[Ind], Load);
+		Neighbours[PlyInd][Ind].MkAwait(NeighboursMk[Ind], Load, this, TransferTime);
+		//Neighbours[PlyInd][Ind].ProgFU(NeighboursMk[Ind], Load, this);
 		break;
 	case 11: // MkAdd Увеличить значение Мк для соседа
 		if (Ind > Plys[PlyInd].size()) break;
@@ -653,7 +656,8 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load)
 		case 8: // Send_N Переслать значение для соседа с индексом
 			if (MK % 50 >= Neighbours.size()) break;
 			if (Neighbours[MK % 50] == nullptr) break;
-			Neighbours[MK % 50]->ProgFU(NeighboursMk[MK % 50], Load);
+			//Neighbours[MK % 50]->ProgFU(NeighboursMk[MK % 50], Load, this);
+			Neighbours[MK % 50]->MkAwait(NeighboursMk[MK % 50], Load, this, TransferTime);
 			//cout << Load.toDouble() << endl;
 			break;
 		case 9: //MkAdd_N Прибавить смещение к МК
@@ -710,7 +714,7 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load)
 	// -------------------
 }
 
-void CellularAutomatManager::ProgFU(int MK, LoadPoint Load)
+void CellularAutomatManager::ProgFU(int MK, LoadPoint Load, FU* Sender)
 {
 	MK %= FUMkRange;
 	// Доделать буфер ИП с лексемами

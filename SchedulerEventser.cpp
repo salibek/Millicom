@@ -1,17 +1,19 @@
-#include "stdafx.h"
+п»ї#include "stdafx.h"
 #include "SchedulerEventser.h"
 
-void Eventser::Eventsing(FU* Context, double tay) // Запланиовать событие (tay - время задержки события)
+void Eventser::Eventsing(FU* Context, double tay, bool SchedulerFlag) // Р—Р°РїР»Р°РЅРёРѕРІР°С‚СЊ СЃРѕР±С‹С‚РёРµ (tay - РІСЂРµРјСЏ Р·Р°РґРµСЂР¶РєРё СЃРѕР±С‹С‚РёСЏ)
 {
 	if (Events.size() == 0)
 	{
-		Events.insert(pair<double, FU*>(CurrentTime+tay, Context));
+//		Events.insert(pair<double, FU*>(CurrentTime+tay, Context));
+		Events.insert(pair<double, Event>(CurrentTime + tay, { true, Context }));
+		//return;
 		if (work && !start)// ProgFU(1, { 0,nullptr });
 			start = true;
 			while (Events.size()!=0 && work) {
 	//			cout << CurrentTime << endl;
 				CurrentTime = Events.begin()->first;
-				Events.begin()->second->Scheduling();
+				Events.begin()->second.Receiver->Scheduling(Events.begin()->second.SchedulerFlag);
 				Events.erase(Events.begin());
 			}
 			ProgExec(FinProg);
@@ -19,11 +21,12 @@ void Eventser::Eventsing(FU* Context, double tay) // Запланиовать событие (tay -
 	}
 	else
 	{
-		Events.insert(pair<double, FU*>(Events.begin()->first+tay, Context));
+//		Events.insert(pair<double, FU*>(Events.begin()->first+tay, Context));
+		Events.insert(pair<double, Event>(Events.begin()->first + tay, { true, Context }));
 	}
 }
 
-void Eventser::ProgFU(int MK, LoadPoint Load)
+void Eventser::ProgFU(int MK, LoadPoint Load, FU* Sender)
 {
 	switch (MK)
 	{
@@ -34,28 +37,50 @@ void Eventser::ProgFU(int MK, LoadPoint Load)
 		CurrentTime = 0;
 		FinProg = nullptr;
 		break;
-	case 1: //Start Начать моделирование
+	case 1: //Start РќР°С‡Р°С‚СЊ РјРѕРґРµР»РёСЂРѕРІР°РЅРёРµ
 		work = true;
 		start = true;
-		Events.clear();
-		while (Events.size()!=0 && work) {
+		//Events.clear();
+		while (Events.size() != 0 && work) {
 			CurrentTime = Events.begin()->first;
-			Events.begin()->second->Scheduling();
+//			EventsPrint();
+			Events.begin()->second.Receiver->Scheduling(Events.begin()->second.SchedulerFlag);
+//			cout << "----------------\n";
 			if (Events.size() != 0) Events.erase(Events.begin());
 		}
 		ProgExec(FinProg);
 		break;
-	case 5: // WorkSet Установить флаг рабочего режима
+	case 5: // WorkSet РЈСЃС‚Р°РЅРѕРІРёС‚СЊ С„Р»Р°Рі СЂР°Р±РѕС‡РµРіРѕ СЂРµР¶РёРјР°
 		work = Load.toBool();
 		break;
-	case 45: //TimeSet Установить текущее модельное время
+	case 10: // FUContextSet РЈСЃС‚Р°РЅРѕРІРёС‚СЊ СЃСЃС‹Р»РєСѓ РЅР° РєРѕРЅС‚РµРєСЃС‚ Р¤РЈ РґР»СЏ РѕРїРёСЃР°РЅРёСЏ СЃРѕР±С‹С‚РёСЏ
+		FUContext = (FU*)Load.Point;
+		break;
+	case 11: // EventTimeSet РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РІСЂРµРјРµРЅСЏ РІС‹РїРѕР»РЅРµРЅРёСЏ РњРљ, РёРЅРёС†РёРёСЂРѕРІР°РЅРЅРѕР№ РїР»Р°РЅРёСЂРѕРІС‰РёРєРѕРј РІС‹С‡РёСЃР»РёС‚РµР»СЊРЅРѕРіРѕ РїСЂРѕС†РµСЃСЃР°
+		Delay = Load.toDouble();
+		break;
+	case 12: // EventMkInsert РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РњРљ РґР»СЏ СЃРѕР±С‹С‚РёСЏ
+		Events.insert({ CurrentTime + Delay, {true, FUContext} });
+		if (Load.isIC())
+			FUContext->Modeling->qmk.push_back({ Load.IC()->at(0), nullptr });
+		else if (Load.isIP())
+			FUContext->Modeling->qmk.push_back({*((ip*)Load.Point), nullptr});
+		break;
+	case 15: // AwaitMkInsert РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РѕР¶РёРґР°РµРјСѓСЋ РњРљ
+		Events.insert({ CurrentTime + Delay, {false, FUContext} });
+		if (Load.isIC())
+			FUContext->Modeling->qAwaitMk.insert({ CurrentTime + Delay, {Load.IC()->at(0), Sender } });
+		else if (Load.isIP())
+			FUContext->Modeling->qAwaitMk.insert({ CurrentTime + Delay, {*((ip*)Load.Point), Sender }});
+		break;
+	case 45: //TimeSet РЈСЃС‚Р°РЅРѕРІРёС‚СЊ С‚РµРєСѓС‰РµРµ РјРѕРґРµР»СЊРЅРѕРµ РІСЂРµРјСЏ
 		CurrentTime = Load.toDouble();
 		break;
-	case 50: // TimeOut Выдать текущее модельное время
+	case 50: // TimeOut Р’С‹РґР°С‚СЊ С‚РµРєСѓС‰РµРµ РјРѕРґРµР»СЊРЅРѕРµ РІСЂРµРјСЏ
 		if(Load.Type==Tdouble)
 		break;
-	case 51: // TimeOutMk Выдать МК с текущим модельным временем
-	case 52: // TimeOutRefMk Выдать МК со ссылкой на переменную текущего модельного времени
+	case 51: // TimeOutMk Р’С‹РґР°С‚СЊ РњРљ СЃ С‚РµРєСѓС‰РёРј РјРѕРґРµР»СЊРЅС‹Рј РІСЂРµРјРµРЅРµРј
+	case 52: // TimeOutRefMk Р’С‹РґР°С‚СЊ РњРљ СЃРѕ СЃСЃС‹Р»РєРѕР№ РЅР° РїРµСЂРµРјРµРЅРЅСѓСЋ С‚РµРєСѓС‰РµРіРѕ РјРѕРґРµР»СЊРЅРѕРіРѕ РІСЂРµРјРµРЅРё
 		if (MK == 51)
 			MkExec(Load, { Cdouble,&CurrentTime });
 		else
@@ -68,12 +93,12 @@ void Eventser::ProgFU(int MK, LoadPoint Load)
 		MkExec(Load, { Cint, &EventCount });
 		break;
 	default:
-		CommonMk(MK, Load);
+		CommonMk(MK, Load, Sender);
 		break;
 	}
 }
 
-void Scheduler::CoreFree() // Освободить ядро
+void Scheduler::CoreFree() // РћСЃРІРѕР±РѕРґРёС‚СЊ СЏРґСЂРѕ
 {
 	int MkQueuePrev = Queue.size();
 	if (Queue.size() == 0)
@@ -84,7 +109,7 @@ void Scheduler::CoreFree() // Освободить ядро
 		MkQueuePrev--;
 		double tMK = MkTimeQueue.back();
 		Queue.pop_back(); MkTimeQueue.pop_back();
-		((Eventser*)eventser)->Eventsing(t, tMK + SchedulingTime);
+		((Eventser*)eventser)->Eventsing(t, tMK + SchedulingTime, true);
 	}
 	if (CurrentTime != nullptr)
 	{
@@ -99,12 +124,12 @@ void Scheduler::CoreFree() // Освободить ядро
 void Scheduler::Scheduling(FU* Context, double DTime, bool CoreContinue)
 {
 	if (CoreContinue)
-		((Eventser*)eventser)->Eventsing(Context, DTime);
+		((Eventser*)eventser)->Eventsing(Context, DTime, true);
 	else
 		if (CoreCount < NCores)
 		{
 			CoreCount++;
-			((Eventser*)eventser)->Eventsing(Context, DTime + SchedulingTime);
+			((Eventser*)eventser)->Eventsing(Context, DTime + SchedulingTime, true);
 		}
 		else
 		{
@@ -116,7 +141,7 @@ void Scheduler::Scheduling(FU* Context, double DTime, bool CoreContinue)
 	ProgExec(SchedulingProg);
 }
 
-void Scheduler::ProgFU(int MK, LoadPoint Load)
+void Scheduler::ProgFU(int MK, LoadPoint Load, FU* Sender)
 {
 	switch (MK)
 	{
@@ -136,7 +161,7 @@ void Scheduler::ProgFU(int MK, LoadPoint Load)
 	case 1: // EventserSet
 		eventser = (FU*)Load.Point;
 		break;
-	case 2: // Clear Сбросить параметры моделирования
+	case 2: // Clear РЎР±СЂРѕСЃРёС‚СЊ РїР°СЂР°РјРµС‚СЂС‹ РјРѕРґРµР»РёСЂРѕРІР°РЅРёСЏ
 		CoreCountPrev = 0;
 		ParallelFactor = 0;
 		SchedulingTime = 0; RunTime = 0;
@@ -160,42 +185,42 @@ void Scheduler::ProgFU(int MK, LoadPoint Load)
 	case 11: // TimeOutMk
 		MkExec(Load, { Cdouble, CurrentTime });
 		break;
-	case 15: // SchedulingProgSet Установить ссылка на программу, запускаемую при планировании вычислений
+	case 15: // SchedulingProgSet РЈСЃС‚Р°РЅРѕРІРёС‚СЊ СЃСЃС‹Р»РєР° РЅР° РїСЂРѕРіСЂР°РјРјСѓ, Р·Р°РїСѓСЃРєР°РµРјСѓСЋ РїСЂРё РїР»Р°РЅРёСЂРѕРІР°РЅРёРё РІС‹С‡РёСЃР»РµРЅРёР№
 		SchedulingProg = Load.Point;
 		break;
-	case 40: // CurrTimeRefSet Установить ссылку на переменную с текущим модельным временем 
+	case 40: // CurrTimeRefSet РЈСЃС‚Р°РЅРѕРІРёС‚СЊ СЃСЃС‹Р»РєСѓ РЅР° РїРµСЂРµРјРµРЅРЅСѓСЋ СЃ С‚РµРєСѓС‰РёРј РјРѕРґРµР»СЊРЅС‹Рј РІСЂРµРјРµРЅРµРј 
 		if(Load.Type==Tdouble)
 			CurrentTime =(double*) Load.Point;
 		break;
-	case 50: // CoreCountOut Выдать число занятых ядер
+	case 50: // CoreCountOut Р’С‹РґР°С‚СЊ С‡РёСЃР»Рѕ Р·Р°РЅСЏС‚С‹С… СЏРґРµСЂ
 		Load.Write(CoreCount);
 		break;
-	case 51: // CoreCountOutMk Выдать МК с числом занятых ядер
+	case 51: // CoreCountOutMk Р’С‹РґР°С‚СЊ РњРљ СЃ С‡РёСЃР»РѕРј Р·Р°РЅСЏС‚С‹С… СЏРґРµСЂ
 		MkExec(Load, { Cint,&CoreCount });
 		break;
-	case 55: // MkQueueOut Выдать количество МК в очереди на выполнение
+	case 55: // MkQueueOut Р’С‹РґР°С‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ РњРљ РІ РѕС‡РµСЂРµРґРё РЅР° РІС‹РїРѕР»РЅРµРЅРёРµ
 		Load.Write(int(Queue.size()));
 		break;
-	case 56: // MkQueueOutMk Выдать МК с количеством МК в очереди на выполнение
+	case 56: // MkQueueOutMk Р’С‹РґР°С‚СЊ РњРљ СЃ РєРѕР»РёС‡РµСЃС‚РІРѕРј РњРљ РІ РѕС‡РµСЂРµРґРё РЅР° РІС‹РїРѕР»РЅРµРЅРёРµ
 	{
 		int t = Queue.size();
 		MkExec(Load, { Cint,&t });
 		break;
 	}
-	case 60: // MkCountOut Выдать количество МК на выполнении и ожидании
+	case 60: // MkCountOut Р’С‹РґР°С‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ РњРљ РЅР° РІС‹РїРѕР»РЅРµРЅРёРё Рё РѕР¶РёРґР°РЅРёРё
 		Load.Write(int(Queue.size()) + CoreCount);
 		break;
-	case 61: // MkCountOutMk Выдать МК с количеством МК на выполнении и ожидании
+	case 61: // MkCountOutMk Р’С‹РґР°С‚СЊ РњРљ СЃ РєРѕР»РёС‡РµСЃС‚РІРѕРј РњРљ РЅР° РІС‹РїРѕР»РЅРµРЅРёРё Рё РѕР¶РёРґР°РЅРёРё
 	{
 		int t = Queue.size() + CoreCount;
 		MkExec(Load, { Cint,&t });
 		break;
 	}
 
-	case 65: // ParallelFactorOut Выдать коэффициент параллелизма
+	case 65: // ParallelFactorOut Р’С‹РґР°С‚СЊ РєРѕСЌС„С„РёС†РёРµРЅС‚ РїР°СЂР°Р»Р»РµР»РёР·РјР°
 		Load.Write(ParallelFactor / *CurrentTime);
 		break;
-	case 66: //  ParallelFactorOutMk Выдать МК с коэффициентом параллелизма
+	case 66: //  ParallelFactorOutMk Р’С‹РґР°С‚СЊ РњРљ СЃ РєРѕСЌС„С„РёС†РёРµРЅС‚РѕРј РїР°СЂР°Р»Р»РµР»РёР·РјР°
 //	if(Modeling!=nullptr)
 	{
 		double t;
@@ -206,11 +231,11 @@ void Scheduler::ProgFU(int MK, LoadPoint Load)
 		MkExec(Load, { Cdouble,&t });
 		break;
 	}
-	case 70: // AverageMkQueueOut Выдать среднюю длину очереди
+	case 70: // AverageMkQueueOut Р’С‹РґР°С‚СЊ СЃСЂРµРґРЅСЋСЋ РґР»РёРЅСѓ РѕС‡РµСЂРµРґРё
 //		if (Modeling != nullptr)
 			Load.Write(AverageMkQueue);
 		break;
-	case 71: //  AverageMkQueueOutMk Выдать МК со средней длиной очереди
+	case 71: //  AverageMkQueueOutMk Р’С‹РґР°С‚СЊ РњРљ СЃРѕ СЃСЂРµРґРЅРµР№ РґР»РёРЅРѕР№ РѕС‡РµСЂРµРґРё
 //		if (Modeling != nullptr)
 		{
 			double t;
@@ -221,11 +246,11 @@ void Scheduler::ProgFU(int MK, LoadPoint Load)
 		MkExec(Load, { Cdouble,&t });
 		break;
 	}
-	case 75: // MaxMkQueueOut Выдать максимальную длину очереди
+	case 75: // MaxMkQueueOut Р’С‹РґР°С‚СЊ РјР°РєСЃРёРјР°Р»СЊРЅСѓСЋ РґР»РёРЅСѓ РѕС‡РµСЂРµРґРё
 		if (Modeling != nullptr)
 			Load.Write(ParallelFactor / *CurrentTime);
 		break;
-	case 76: //  MaxMkQueueOutMk Выдать МК с максимальной длиной очереди
+	case 76: //  MaxMkQueueOutMk Р’С‹РґР°С‚СЊ РњРљ СЃ РјР°РєСЃРёРјР°Р»СЊРЅРѕР№ РґР»РёРЅРѕР№ РѕС‡РµСЂРµРґРё
 	{
 //		if (Modeling != nullptr)
 		{
@@ -236,7 +261,7 @@ void Scheduler::ProgFU(int MK, LoadPoint Load)
 	}
 
 	default:
-		CommonMk(MK, Load);
+		CommonMk(MK, Load, Sender);
 		break;
 	}
 }

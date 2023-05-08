@@ -480,8 +480,8 @@ CommonMkList{
 		Obj={Mnemo="NoCycleProg" Mk=965 Hint="Вызов цикла по НЕТ"}
 		Obj={Mnemo="NoPostCycleProg" Mk=966 Hint="Вызов пост цикла по НЕТ"}
 
-		Obj={Mnemo="Break" Mk=967 Hint="Выход из подпрограммы (в нагрузке количество уровней подъема (по умолчанию 0))"}
-		Obj={Mnemo="Next" Mk=968 Hint="Продолжение цикла (в нагрузке количество уровней подъема (по умолчанию 0))"}
+		Obj={Mnemo="Break" Mk=934 Hint="Выход из подпрограммы (в нагрузке количество уровней подъема (по умолчанию 0))"}
+		Obj={Mnemo="Next" Mk=935 Hint="Продолжение цикла (в нагрузке количество уровней подъема (по умолчанию 0))"}
 		Obj={Mnemo="YesContinue" Mk=969 Hint="Продлжение цикла по да"}
 		Obj={Mnemo="NoConitnue" Mk=970 Hint="Продолженпие цикла по нет"}
 	}
@@ -493,7 +493,7 @@ CommonMkList{
 		Obj={Mnemo="AccumSet" Mk=931 Hint="Установить значение аккумулятора"}
 		Obj={Mnemo="AccumOut" Mk=923 Hint="Выдать значение аккумулятора"}
 		Obj={Mnemo="AccumOutMk" Mk=925 Hint="Выдать МК со значением аккумулятора"}
-		Obj={Mnemo="IntAluCalc" Mk=932 Hint="Создать челочисленное АЛУ"}
+		Obj={Mnemo="IntAluCalc" Mk=932 Hint="Создать целочисленное АЛУ"}
 		Obj={Mnemo="Calc" Mk=927 Hint="Вычислить АЛВ"}
 		Obj={Mnemo="ALUSet" Mk=928 Hint="Установить ссылку на АЛУ"}
 		Obj={Mnemo="CalcContinue" Mk=929 Hint="Вычислить АЛВ и продолжеть выполнение программы, если результат true"}
@@ -4661,10 +4661,10 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 
     Obj={Mk=279 Mnemo="LineIpSwap" Hint="Поменять местами две последние ИП текущей линии"}
     Obj={Mk=149 Mnemo="LastIpSwap" Hint="Поменять местами две последние ИП последней линии"}
-    Obj={Mk=278 Mnemo="LastFirstIpToTail" Hint="Переместить последнюю ИП в начало ИК в последней линии"}
-    Obj={Mk=277 Mnemo="LineFirstIpToTail" Hint="Переместить gервую ИП в конец ИК в текущей линии"}
-    Obj={Mk=276 Mnemo="LastTailIpToFirst" Hint="Переместить последнюю ИП в начало ИК в последней линии"}
-    Obj={Mk=275 Mnemo="LineFirstIpToTail" Hint="Переместить последнюю ИП в начало ИК в текущей линии"}
+    Obj={Mk=275 Mnemo="LineIpTailToHead" Hint="Переместить последнюю ИП в начало ИК в текущей линии"}
+    Obj={Mk=276 Mnemo="LastIpTailToHead" Hint="Переместить последнюю ИП в начало ИК в последней линии"}
+    Obj={Mk=277 Mnemo="LineIpHeadToTail" Hint="Переместить первую ИП в конец ИК в текущей линии"}
+    Obj={Mk=278 Mnemo="LastIpHeadToTail" Hint="Переместить Первую ИП в конец ИК в последней линии"}
   }
   Obj={Mk=1 Mnemo="Set" Hint="Установить указатель на список"}
   Obj={Mk=2 Mnemo="Out" Hint="Выдать ссылку на список"}
@@ -5256,6 +5256,9 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
   	Obj={Mk=50 Mnemo="Round" Hint=""}
   	Obj={Mk=56 Mnemo="DivInt" Hint="Целочисленное деление"}
   	Obj={Mk=69 Mnemo="Remainder" Hint="Остаток от деления"}
+	Obj={Mk=78 Mnemo="Log10" Hint="Логорифм по основнию 10"}
+	Obj={Mk=79 Mnemo="Log2" Hint="Логорифм по основнию 2"}
+	Obj={Mk=80 Mnemo="Exp" Hint="Экспонентов"}
   }
 
   Obj={Mnemo="Comparision" Hint="Триганометрические функции" Comment
@@ -6580,8 +6583,8 @@ MnemoTable.Set=
 	>{Mnemo="NoCycleProg" Atr=965 Hint="Вызов цикла по НЕТ"}
 	>{Mnemo="NoPostCycleProg" Atr=966 Hint="Вызов пост цикла по НЕТ"}
 		
-	>{Mnemo="Break" Atr=967 Hint="Выход из подпрограммы (в нагрузке количество уровней подъема (по умолчанию 0))"}
-	>{Mnemo="Next" Atr=968 Hint="Продолжение цикла (в нагрузке количество уровней подъема (по умолчанию 0))"}
+	>{Mnemo="Break" Atr=934 Hint="Выход из подпрограммы (в нагрузке количество уровней подъема (по умолчанию 0))"}
+	>{Mnemo="Next" Atr=935 Hint="Продолжение цикла (в нагрузке количество уровней подъема (по умолчанию 0))"}
 	>{Mnemo="YesContinue" Atr=969 Hint="Продлжение цикла по да"}
 	>{Mnemo="NoConitnue" Atr=970 Hint="Продолженпие цикла по нет"}
 

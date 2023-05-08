@@ -12,18 +12,22 @@ public:
 	FU* Receiver = nullptr; // Приемник данных
 	int ReceiverMk = -1; // МК для приемника данных
 
-	int MkCount = 0; // Счетчик принятых МК в канал
-	int DataCount = 0; // Счетчик количества принятых данных в канал
+	int MkOutCount = 0; // Счетчик отправленных МК их канала
+	int DataOutCount = 0; // Счетчик количества отправленных данных из канал
+	int MkInCount = 0; // Счетчик принятых МК в канал
+	int DataInCount = 0; // Счетчик количества принятых данных в канал
+	double Delay = 0; // Задержка передачи данынх по каналу
 };
 
 class Router : public FU
 {
+public:
+	double DelayGen(channel ch); //Генерация задержки передачи данных
+
 //	int MkRangeStart = -1; // Диапазоны адресов МК для каждого из каналов (если нижний диапазон не указан, то он считается равным верхний диапазон + диапазон МК для устройства)
 //	vector<FU*> Gateways; // Вектор ссылок на шлюзы (входные и выходные)
 	int ChennelSearch(int MK); // Поиск канала по МК (Возврашает -1, если канал не найден)
 	vector<channel> Channels; // Вектор ссылок на каналы связи
-
-//	int RouterMkRange = 0; // Диапазон МК для роутера
 
 	Eventser* eventser = nullptr; // Ссылка на контроллер событий
 	double DelayTime = 0; // Время задержки передачи данных
@@ -48,7 +52,7 @@ class Router : public FU
 	int DataSize = 0, MaxDataSize = 0; // Текущий объем занятого буфера и максимальный объем занятого буфера
 	//	double AverageMKQueue = 0; // Средняя длина очереди
 public:
-	void ProgFU(int MK, LoadPoint Load) override;
+	void ProgFU(int MK, LoadPoint Load, FU* Sender=nullptr) override;
 	Router(FU* BusContext, FU* Templ)
 	{
 		Bus = BusContext;

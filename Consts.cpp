@@ -1,4 +1,4 @@
-#include "stdafx.h"
+п»ї#include "stdafx.h"
 #include "Consts.h"
 #include <iostream>
 #include <string>
@@ -10,7 +10,7 @@
 
 using namespace std;
 
-unsigned int LoadPoint::getType() // Выдать тип нагрузки
+unsigned int LoadPoint::getType() // Р’С‹РґР°С‚СЊ С‚РёРї РЅР°РіСЂСѓР·РєРё
 {
 	if (Type >> 1 == DLoadVectInd)
 		return ((LoadVect_type)Point)->at(Ind).Type;
@@ -24,7 +24,7 @@ unsigned int LoadPoint::getType() // Выдать тип нагрузки
 		}
 }
 
-int LoadPoint::DataSize() // Выдать размер данных в нагрузке
+int LoadPoint::DataSize() // Р’С‹РґР°С‚СЊ СЂР°Р·РјРµСЂ РґР°РЅРЅС‹С… РІ РЅР°РіСЂСѓР·РєРµ
 {
 	LoadPoint LP = *this;
 	while (LP.Type >> 1 == DLoadVectInd || LP.Type >> 1 == DICInd)
@@ -32,7 +32,7 @@ int LoadPoint::DataSize() // Выдать размер данных в нагрузке
 		if (LP.Type >> 1 == DLoadVectInd)
 			LP = ((LoadVect_type)Point)->at(LP.Ind);
 		else
-			if (LP.Ind < 0 || LP.Ind / 3 >= ((IC_type)LP.Point)->size()) return 2; // Ошибка индекса
+			if (LP.Ind < 0 || LP.Ind / 3 >= ((IC_type)LP.Point)->size()) return 2; // РћС€РёР±РєР° РёРЅРґРµРєСЃР°
 			else switch (LP.Ind % 3) {
 			case 0: LP = { TIP, &((IC_type)LP.Point)->at(Ind / 3) }; break;
 			case 1: LP = { Tint, &((IC_type)LP.Point)->at(Ind / 3).atr }; break;
@@ -84,7 +84,7 @@ bool LoadPoint::isDigit() {
 		case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
 		}
 	return t >> 1 == Dint || t >> 1 == Dchar || t >> 1 == Dfloat || t >> 1 == Ddouble;
-}; // Число?}
+}; // Р§РёСЃР»Рѕ?}
 
 bool LoadPoint::isDigitBool() {
 	if (Point == nullptr) return false;
@@ -102,7 +102,7 @@ bool LoadPoint::isDigitBool() {
 		case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
 		}
 	return t >> 1 == Dint || t >> 1 == Dchar || t >> 1 == Dfloat || t >> 1 == Ddouble || t >> 1 == Dbool;
-}; // Число или булеан?
+}; // Р§РёСЃР»Рѕ РёР»Рё Р±СѓР»РµР°РЅ?
 
 bool LoadPoint::isBool() {
 	if (Point == nullptr) return false;
@@ -120,7 +120,7 @@ bool LoadPoint::isBool() {
 		case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
 		}
 	return t >> 1 == Dbool;
-}; // булеан?
+}; // Р±СѓР»РµР°РЅ?
 
 bool LoadPoint::isInt() {
 	if (Point == nullptr) return false;
@@ -138,7 +138,7 @@ bool LoadPoint::isInt() {
 		case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
 		}
 	return t >> 1 == Dint;
-}; // Целое число?
+}; // Р¦РµР»РѕРµ С‡РёСЃР»Рѕ?
 
 bool LoadPoint::isIntBool() {
 	if (Point == nullptr) return false;
@@ -156,7 +156,7 @@ bool LoadPoint::isIntBool() {
 		case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
 		}
 	return t >> 1 == Dint || t >> 1 == Dbool;
-}; // булеан или целое число?
+}; // Р±СѓР»РµР°РЅ РёР»Рё С†РµР»РѕРµ С‡РёСЃР»Рѕ?
 
 bool LoadPoint::isFloatDouble() {
 	if (Point == nullptr) return false;
@@ -228,7 +228,7 @@ bool LoadPoint::isProg() {
 		case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
 		}
 	return t >> 1 == DIC || t >> 1 == DCalc || t >> 1 == DProg;
-}; // Определение может ли быть нагрузка программой
+}; // РћРїСЂРµРґРµР»РµРЅРёРµ РјРѕР¶РµС‚ Р»Рё Р±С‹С‚СЊ РЅР°РіСЂСѓР·РєР° РїСЂРѕРіСЂР°РјРјРѕР№
 
 bool LoadPoint::isStrChar() {
 	if (Point == nullptr) return false;
@@ -246,7 +246,7 @@ bool LoadPoint::isStrChar() {
 		case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
 		}
 	return Point != nullptr && (t >> 1 == Dstring || t >> 1 == Dchar);
-}; // Строка или символ?
+}; // РЎС‚СЂРѕРєР° РёР»Рё СЃРёРјРІРѕР»?
 
 bool LoadPoint::isStr() {
 	if (Point == nullptr) return false;
@@ -264,7 +264,7 @@ bool LoadPoint::isStr() {
 		case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
 		}
 	return Point != nullptr && t >> 1 == Dstring;
-}; // Строка?
+}; // РЎС‚СЂРѕРєР°?
 
 bool LoadPoint::isChar() {
 	if (Point == nullptr) return false;
@@ -282,7 +282,7 @@ bool LoadPoint::isChar() {
 		case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
 		}
 	return Point != nullptr && t >> 1 == Dchar;
-}; // символ?
+}; // СЃРёРјРІРѕР»?
 
 bool LoadPoint::isMk() {
 	if (Point == nullptr) return false;
@@ -296,11 +296,11 @@ bool LoadPoint::isMk() {
 		if (Ind < 0 || Ind / 3 >= ((IC_type)Point)->size()) return false;
 		else switch (Ind % 3) {
 		case 0: return false;
-		case 1: return (Ind / 3 >= ((IC_type)Point)->at(Ind / 3).atr >= 0) ? true : false; // Если атрибут неотрицательный, то он считается милликомандой
+		case 1: return (Ind / 3 >= ((IC_type)Point)->at(Ind / 3).atr >= 0) ? true : false; // Р•СЃР»Рё Р°С‚СЂРёР±СѓС‚ РЅРµРѕС‚СЂРёС†Р°С‚РµР»СЊРЅС‹Р№, С‚Рѕ РѕРЅ СЃС‡РёС‚Р°РµС‚СЃСЏ РјРёР»Р»РёРєРѕРјР°РЅРґРѕР№
 		case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
 		}
 	return Point != nullptr && t >> 1 == DMk;
-}; // Милликоманда?
+}; // РњРёР»Р»РёРєРѕРјР°РЅРґР°?
 
 bool LoadPoint::isVect() {
 	if (Point == nullptr) return false;
@@ -318,9 +318,9 @@ bool LoadPoint::isVect() {
 		case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
 		}
 	return t >> 1 == DLoadVect;
-}; // Вектор ?
+}; // Р’РµРєС‚РѕСЂ ?
 
-bool LoadPoint::isVectIndVectInd()  // Индексированный элемент вектора нагрузок от индексированного вектора нагрузок
+bool LoadPoint::isVectIndVectInd()  // РРЅРґРµРєСЃРёСЂРѕРІР°РЅРЅС‹Р№ СЌР»РµРјРµРЅС‚ РІРµРєС‚РѕСЂР° РЅР°РіСЂСѓР·РѕРє РѕС‚ РёРЅРґРµРєСЃРёСЂРѕРІР°РЅРЅРѕРіРѕ РІРµРєС‚РѕСЂР° РЅР°РіСЂСѓР·РѕРє
 {
 	if (Point == nullptr) return false;
 	register unsigned int t = Type;
@@ -339,7 +339,7 @@ bool LoadPoint::isVectIndVectInd()  // Индексированный элемент вектора нагрузок 
 	return (t >> 1) == DLoadVectInd;
 }
 
-bool LoadPoint::isIC() // Определить указывает ли ссылка на ИК
+bool LoadPoint::isIC() // РћРїСЂРµРґРµР»РёС‚СЊ СѓРєР°Р·С‹РІР°РµС‚ Р»Рё СЃСЃС‹Р»РєР° РЅР° РРљ
 {
 	if (Point == nullptr) return false;
 	register unsigned int t = Type;
@@ -355,11 +355,11 @@ bool LoadPoint::isIC() // Определить указывает ли ссылка на ИК
 		case 1: return false;
 		case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
 		}
-	set<unsigned int> IC_Types = { DIC, DCalc, DProg }; // Множевство типов ИК и ОА-графов
+	set<unsigned int> IC_Types = { DIC, DCalc, DProg }; // РњРЅРѕР¶РµРІСЃС‚РІРѕ С‚РёРїРѕРІ РРљ Рё РћРђ-РіСЂР°С„РѕРІ
 	return IC_Types.count(t >> 1);
 }
 
-bool LoadPoint::isIP() // Определить указывает ли ссылка на ИП
+bool LoadPoint::isIP() // РћРїСЂРµРґРµР»РёС‚СЊ СѓРєР°Р·С‹РІР°РµС‚ Р»Рё СЃСЃС‹Р»РєР° РЅР° РРџ
 {
 	if (Point == nullptr) return false;
 	register unsigned int t = Type;
@@ -375,11 +375,11 @@ bool LoadPoint::isIP() // Определить указывает ли ссылка на ИП
 		case 1: return false;
 		case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
 		}
-	set<unsigned int> IP_Types = { DIP }; // Множевство типов ИК и ОА-графов
+	set<unsigned int> IP_Types = { DIP }; // РњРЅРѕР¶РµРІСЃС‚РІРѕ С‚РёРїРѕРІ РРљ Рё РћРђ-РіСЂР°С„РѕРІ
 	return IP_Types.count(t >> 1);
 }
 
-bool LoadPoint::isCalc() // Определить указывает ли ссылка на ИК с АЛВ
+bool LoadPoint::isCalc() // РћРїСЂРµРґРµР»РёС‚СЊ СѓРєР°Р·С‹РІР°РµС‚ Р»Рё СЃСЃС‹Р»РєР° РЅР° РРљ СЃ РђР›Р’
 {
 	if (Point == nullptr) return false;
 	register unsigned int t = Type;
@@ -395,11 +395,11 @@ bool LoadPoint::isCalc() // Определить указывает ли ссылка на ИК с АЛВ
 		case 1: return false;
 		case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
 		}
-	set<unsigned int> IP_Types = { DCalc }; // Множевство типов ИК и ОА-графов
+	set<unsigned int> IP_Types = { DCalc }; // РњРЅРѕР¶РµРІСЃС‚РІРѕ С‚РёРїРѕРІ РРљ Рё РћРђ-РіСЂР°С„РѕРІ
 	return IP_Types.count(t >> 1);
 }
 
-bool LoadPoint::isICSet() // Определить указывает ли ссылка на ИК с неупорядоченным множеством
+bool LoadPoint::isICSet() // РћРїСЂРµРґРµР»РёС‚СЊ СѓРєР°Р·С‹РІР°РµС‚ Р»Рё СЃСЃС‹Р»РєР° РЅР° РРљ СЃ РЅРµСѓРїРѕСЂСЏРґРѕС‡РµРЅРЅС‹Рј РјРЅРѕР¶РµСЃС‚РІРѕРј
 {
 	if (Point == nullptr) return false;
 	register unsigned int t = Type;
@@ -415,11 +415,11 @@ bool LoadPoint::isICSet() // Определить указывает ли ссылка на ИК с неупорядочен
 		case 1: return false;
 		case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
 		}
-	set<unsigned int> IP_Types = { DIC }; // Множевство типов ИК и ОА-графов
+	set<unsigned int> IP_Types = { DIC }; // РњРЅРѕР¶РµРІСЃС‚РІРѕ С‚РёРїРѕРІ РРљ Рё РћРђ-РіСЂР°С„РѕРІ
 	return IP_Types.count(t >> 1);
 }
 
-LoadPoint LoadPoint::IndLoadReturn() // Возвратить указатель на нагрузку индексированного элемента
+LoadPoint LoadPoint::IndLoadReturn() // Р’РѕР·РІСЂР°С‚РёС‚СЊ СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РЅР°РіСЂСѓР·РєСѓ РёРЅРґРµРєСЃРёСЂРѕРІР°РЅРЅРѕРіРѕ СЌР»РµРјРµРЅС‚Р°
 {
 	if (Point == nullptr)
 		return *this;
@@ -443,12 +443,12 @@ LoadPoint LoadPoint::IndLoadReturn() // Возвратить указатель на нагрузку индекси
 	return LP;
 }
 
-LoadPoint LoadPoint::IndLoadReturn(LoadPoint LP) // Возвратить указатель на нагрузку индексированного элемента
+LoadPoint LoadPoint::IndLoadReturn(LoadPoint LP) // Р’РѕР·РІСЂР°С‚РёС‚СЊ СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РЅР°РіСЂСѓР·РєСѓ РёРЅРґРµРєСЃРёСЂРѕРІР°РЅРЅРѕРіРѕ СЌР»РµРјРµРЅС‚Р°
 {
 	return LP.IndLoadReturn();
 }
 
-string LoadPoint::toStr(string define) // Перевод в bool
+string LoadPoint::toStr(string define) // РџРµСЂРµРІРѕРґ РІ bool
 {
 	if (Point == nullptr)
 		return define;
@@ -477,7 +477,7 @@ string LoadPoint::toStr(string define) // Перевод в bool
 	}
 }
 
-bool LoadPoint::toBool(bool define) // Перевод в bool (по умолчания false)
+bool LoadPoint::toBool(bool define) // РџРµСЂРµРІРѕРґ РІ bool (РїРѕ СѓРјРѕР»С‡Р°РЅРёСЏ false)
 {
 	if (Point == nullptr)
 		return define;
@@ -506,7 +506,7 @@ bool LoadPoint::toBool(bool define) // Перевод в bool (по умолчания false)
 	}
 }
 
-int LoadPoint::toInt(int define) { // Перевод в integer
+int LoadPoint::toInt(int define) { // РџРµСЂРµРІРѕРґ РІ integer
 	if (Point == nullptr)
 		return define;
 	LoadPoint LP = *this;
@@ -534,7 +534,7 @@ int LoadPoint::toInt(int define) { // Перевод в integer
 		break;
 	}
 }
-double LoadPoint::toDouble(double define) {// Перевод в integer
+double LoadPoint::toDouble(double define) {// РџРµСЂРµРІРѕРґ РІ integer
 	if (Point == nullptr)
 		return define;
 	LoadPoint LP = *this;
@@ -563,7 +563,7 @@ double LoadPoint::toDouble(double define) {// Перевод в integer
 	}
 }
 
-float LoadPoint::toFloat(float define) {// Перевод в integer
+float LoadPoint::toFloat(float define) {// РџРµСЂРµРІРѕРґ РІ integer
 	if (Point == nullptr)
 		return define;
 	LoadPoint LP = *this;
@@ -591,7 +591,7 @@ float LoadPoint::toFloat(float define) {// Перевод в integer
 		break;
 	}
 };
-// Запись в нагрузку ИП
+// Р—Р°РїРёСЃСЊ РІ РЅР°РіСЂСѓР·РєСѓ РРџ
 int LoadPoint::Write(vector<double> x) //
 {
 	if (Point == nullptr)
@@ -616,7 +616,7 @@ int LoadPoint::Write(vector<float> x) //
 	else
 		return 1;
 }
-int LoadPoint::Write(vector<bool> x) // Копирование вектора
+int LoadPoint::Write(vector<bool> x) // РљРѕРїРёСЂРѕРІР°РЅРёРµ РІРµРєС‚РѕСЂР°
 {
 	if (Point == nullptr)
 		return 1;
@@ -628,7 +628,7 @@ int LoadPoint::Write(vector<bool> x) // Копирование вектора
 	else
 		return 1;
 }
-int LoadPoint::Write(vector<char> x) // Копирование вектора
+int LoadPoint::Write(vector<char> x) // РљРѕРїРёСЂРѕРІР°РЅРёРµ РІРµРєС‚РѕСЂР°
 {
 	if (Point == nullptr)
 		return 1;
@@ -640,7 +640,7 @@ int LoadPoint::Write(vector<char> x) // Копирование вектора
 	else
 		return 1;
 }
-int  LoadPoint::Write(vector<int> x) // Копирование вектора
+int  LoadPoint::Write(vector<int> x) // РљРѕРїРёСЂРѕРІР°РЅРёРµ РІРµРєС‚РѕСЂР°
 {
 	if (Point == nullptr)
 		return 1;
@@ -654,17 +654,17 @@ int  LoadPoint::Write(vector<int> x) // Копирование вектора
 }
 // -----
 
-int LoadPoint::WriteFromLoad(LoadPoint Load) // Записать величину из нагрузки
+int LoadPoint::WriteFromLoad(LoadPoint Load) // Р—Р°РїРёСЃР°С‚СЊ РІРµР»РёС‡РёРЅСѓ РёР· РЅР°РіСЂСѓР·РєРё
 {
 	if (Point == nullptr) return 1;
 	LoadPoint LP = *this;
 	if (Type >> 1 == DLoadVectInd) {
 		register int N = ((LoadVect_type)Point)->size();
-		if (N <= Ind || N < -Ind || ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Point == nullptr) return 2; // Ошибка индекса
+		if (N <= Ind || N < -Ind || ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Point == nullptr) return 2; // РћС€РёР±РєР° РёРЅРґРµРєСЃР°
 		LP = ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind);
 	}
 	else if (Type >> 1 == DICInd)
-		if (Ind < 0 || Ind / 3 >= ((IC_type)Point)->size()) return 2; // Ошибка индекса
+		if (Ind < 0 || Ind / 3 >= ((IC_type)Point)->size()) return 2; // РћС€РёР±РєР° РёРЅРґРµРєСЃР°
 		else switch (Ind % 3) {
 		case 0: LP = { TIP, &((IC_type)Point)->at(Ind / 3) }; break;
 		case 1: LP = { Tint, &((IC_type)Point)->at(Ind / 3).atr }; break;
@@ -696,12 +696,12 @@ int LoadPoint::WriteFromLoad(LoadPoint Load) // Записать величину из нагрузки
 	case TIC:
 		//...
 		break;
-	default: // Перезапись указателя
-		if (Type % 2 != 0) // Если тип переменной
-			return 2; // Ошибка: попытка запись в константу
+	default: // РџРµСЂРµР·Р°РїРёСЃСЊ СѓРєР°Р·Р°С‚РµР»СЏ
+		if (Type % 2 != 0) // Р•СЃР»Рё С‚РёРї РїРµСЂРµРјРµРЅРЅРѕР№
+			return 2; // РћС€РёР±РєР°: РїРѕРїС‹С‚РєР° Р·Р°РїРёСЃСЊ РІ РєРѕРЅСЃС‚Р°РЅС‚Сѓ
 		else
 			if (Type >> 1 != Load.Type >> 1)
-				return 1; // Ошибка: несоотвествие типов
+				return 1; // РћС€РёР±РєР°: РЅРµСЃРѕРѕС‚РІРµСЃС‚РІРёРµ С‚РёРїРѕРІ
 			else
 				Point = Load.Point;
 	}
@@ -713,19 +713,19 @@ int LoadPoint::WriteFromLoad(LoadPoint Load) // Записать величину из нагрузки
 		register void* P = Point;
 		if (Ind >= 0)
 			if (Type == TLoadVect) {
-				if (Ind >= ((LoadVect_type)Point)->size()) return 2; // Ошибка индекса
+				if (Ind >= ((LoadVect_type)Point)->size()) return 2; // РћС€РёР±РєР° РёРЅРґРµРєСЃР°
 				P = ((LoadVect_type)Point)->at(Ind).Point;
 				t = ((LoadVect_type)Point)->at(Ind).Type;
 			}
 			else if (Type == TIC){
-				if (Ind/3 >= ((IC_type)Point)->size()) return 2; // Ошибка индекса
+				if (Ind/3 >= ((IC_type)Point)->size()) return 2; // РћС€РёР±РєР° РёРЅРґРµРєСЃР°
 				switch (Ind % 3) {
 					case 0: P = &((IC_type)P)->at(Ind / 3); t = TIP; break;
 					case 1: P = &((IC_type)P)->at(Ind / 3).atr; t = Tint; break;
 					case 2: P = ((IC_type)P)->at(Ind / 3).Load.Point; t = ((IC_type)P)->at(Ind / 3).Load.Type;
 				}
 			}
-			else return 2; // Ошибка индекса
+			else return 2; // РћС€РёР±РєР° РёРЅРґРµРєСЃР°
 		if (P == nullptr || t % 2 != 0) return 1;
 		switch (t)
 		{
@@ -747,12 +747,12 @@ int LoadPoint::WriteFromLoad(LoadPoint Load) // Записать величину из нагрузки
 		case Tstring:
 			*((string*)P) = Load.toStr();
 			break;
-		default: // Перезапись указателя
-			if (Type % 2 != 0) // Если тип переменной
-				return 2; // Ошибка: попытка запись в константу
+		default: // РџРµСЂРµР·Р°РїРёСЃСЊ СѓРєР°Р·Р°С‚РµР»СЏ
+			if (Type % 2 != 0) // Р•СЃР»Рё С‚РёРї РїРµСЂРµРјРµРЅРЅРѕР№
+				return 2; // РћС€РёР±РєР°: РїРѕРїС‹С‚РєР° Р·Р°РїРёСЃСЊ РІ РєРѕРЅСЃС‚Р°РЅС‚Сѓ
 			else
 				if (Type >> 1 != Load.Type >> 1)
-					return 1; // Ошибка: несоотвествие типов
+					return 1; // РћС€РёР±РєР°: РЅРµСЃРѕРѕС‚РІРµСЃС‚РІРёРµ С‚РёРїРѕРІ
 				else
 					Point = Load.Point;
 		}
@@ -766,11 +766,11 @@ int LoadPoint::Write(size_t x)
 	LoadPoint LP = *this;
 	if (Type >> 1 == DLoadVectInd) {
 		register int N = ((LoadVect_type)Point)->size();
-		if (N <= Ind || N < -Ind || ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Point == nullptr) return 2; // Ошибка индекса
+		if (N <= Ind || N < -Ind || ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Point == nullptr) return 2; // РћС€РёР±РєР° РёРЅРґРµРєСЃР°
 		LP = ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind);
 	}
 	else if (Type >> 1 == DICInd)
-		if (Ind < 0 || Ind / 3 >= ((IC_type)Point)->size()) return 2; // Ошибка индекса
+		if (Ind < 0 || Ind / 3 >= ((IC_type)Point)->size()) return 2; // РћС€РёР±РєР° РёРЅРґРµРєСЃР°
 		else switch (Ind % 3) {
 		case 0: LP = { TIP, &((IC_type)Point)->at(Ind / 3) }; break;
 		case 1: LP = { Tint, &((IC_type)Point)->at(Ind / 3).atr }; break;
@@ -798,7 +798,7 @@ int LoadPoint::Write(size_t x)
 		break;
 
 	default:
-		return 2; // Несоответствие типов
+		return 2; // РќРµСЃРѕРѕС‚РІРµС‚СЃС‚РІРёРµ С‚РёРїРѕРІ
 	}
 	return 0;
 }
@@ -809,11 +809,11 @@ int LoadPoint::Write(int x)
 	LoadPoint LP = *this;
 	if (Type >> 1 == DLoadVectInd) {
 		register int N = ((LoadVect_type)Point)->size();
-		if (N <= Ind || N < -Ind || ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Point == nullptr) return 2; // Ошибка индекса
+		if (N <= Ind || N < -Ind || ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Point == nullptr) return 2; // РћС€РёР±РєР° РёРЅРґРµРєСЃР°
 		LP = ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind);
 	}
 	else if (Type >> 1 == DICInd)
-		if (Ind < 0 || Ind / 3 >= ((IC_type)Point)->size()) return 2; // Ошибка индекса
+		if (Ind < 0 || Ind / 3 >= ((IC_type)Point)->size()) return 2; // РћС€РёР±РєР° РёРЅРґРµРєСЃР°
 		else switch (Ind % 3) {
 		case 0: LP = { TIP, &((IC_type)Point)->at(Ind / 3) }; break;
 		case 1: LP = { Tint, &((IC_type)Point)->at(Ind / 3).atr }; break;
@@ -837,13 +837,13 @@ int LoadPoint::Write(int x)
 		if (x >= 0 && x < 256)
 			*((char*)LP.Point) = x;
 		else
-			return 1; // Несоответствие типов
+			return 1; // РќРµСЃРѕРѕС‚РІРµС‚СЃС‚РІРёРµ С‚РёРїРѕРІ
 		break;
 	case Tstring:
 		*((string*)LP.Point) = to_string(x);
 		break;
 	default:
-		return 1; // Несоответствие типов
+		return 1; // РќРµСЃРѕРѕС‚РІРµС‚СЃС‚РІРёРµ С‚РёРїРѕРІ
 	}
 	return 0;
 }
@@ -854,11 +854,11 @@ int LoadPoint::Write(double x)
 	LoadPoint LP = *this;
 	if (Type >> 1 == DLoadVectInd) {
 		register int N = ((LoadVect_type)Point)->size();
-		if (N <= Ind || N < -Ind || ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Point == nullptr) return 2; // Ошибка индекса
+		if (N <= Ind || N < -Ind || ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Point == nullptr) return 2; // РћС€РёР±РєР° РёРЅРґРµРєСЃР°
 		LP = ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind);
 	}
 	else if (Type >> 1 == DICInd)
-		if (Ind < 0 || Ind / 3 >= ((IC_type)Point)->size()) return 2; // Ошибка индекса
+		if (Ind < 0 || Ind / 3 >= ((IC_type)Point)->size()) return 2; // РћС€РёР±РєР° РёРЅРґРµРєСЃР°
 		else switch (Ind % 3) {
 		case 0: LP = { TIP, &((IC_type)Point)->at(Ind / 3) }; break;
 		case 1: LP = { Tint, &((IC_type)Point)->at(Ind / 3).atr }; break;
@@ -885,7 +885,7 @@ int LoadPoint::Write(double x)
 		*((string*)LP.Point) = to_string(x);
 		break;
 	defoult:
-		return 1; // Несоответствие типов
+		return 1; // РќРµСЃРѕРѕС‚РІРµС‚СЃС‚РІРёРµ С‚РёРїРѕРІ
 	}
 	return 0;
 }
@@ -896,11 +896,11 @@ int LoadPoint::Write(float x)
 	LoadPoint LP = *this;
 	if (Type >> 1 == DLoadVectInd) {
 		register int N = ((LoadVect_type)Point)->size();
-		if (N <= Ind || N < -Ind || ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Point == nullptr) return 2; // Ошибка индекса
+		if (N <= Ind || N < -Ind || ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Point == nullptr) return 2; // РћС€РёР±РєР° РёРЅРґРµРєСЃР°
 		LP = ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind);
 	}
 	else if (Type >> 1 == DICInd)
-		if (Ind < 0 || Ind / 3 >= ((IC_type)Point)->size()) return 2; // Ошибка индекса
+		if (Ind < 0 || Ind / 3 >= ((IC_type)Point)->size()) return 2; // РћС€РёР±РєР° РёРЅРґРµРєСЃР°
 		else switch (Ind % 3) {
 		case 0: LP = { TIP, &((IC_type)Point)->at(Ind / 3) }; break;
 		case 1: LP = { Tint, &((IC_type)Point)->at(Ind / 3).atr }; break;
@@ -927,7 +927,7 @@ int LoadPoint::Write(float x)
 		*((string*)LP.Point) = to_string(x);
 		break;
 	defoult:
-		return 1; // Несоответствие типов
+		return 1; // РќРµСЃРѕРѕС‚РІРµС‚СЃС‚РІРёРµ С‚РёРїРѕРІ
 	}
 	return 0;
 }
@@ -938,11 +938,11 @@ int LoadPoint::Write(bool x)
 	LoadPoint LP = *this;
 	if (Type >> 1 == DLoadVectInd) {
 		register int N = ((LoadVect_type)Point)->size();
-		if (N <= Ind || N < -Ind || ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Point == nullptr) return 2; // Ошибка индекса
+		if (N <= Ind || N < -Ind || ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Point == nullptr) return 2; // РћС€РёР±РєР° РёРЅРґРµРєСЃР°
 		LP = ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind);
 	}
 	else if (Type >> 1 == DICInd)
-		if (Ind < 0 || Ind / 3 >= ((IC_type)Point)->size()) return 2; // Ошибка индекса
+		if (Ind < 0 || Ind / 3 >= ((IC_type)Point)->size()) return 2; // РћС€РёР±РєР° РёРЅРґРµРєСЃР°
 		else switch (Ind % 3) {
 		case 0: LP = { TIP, &((IC_type)Point)->at(Ind / 3) }; break;
 		case 1: LP = { Tint, &((IC_type)Point)->at(Ind / 3).atr }; break;
@@ -969,7 +969,7 @@ int LoadPoint::Write(bool x)
 		*((string*)LP.Point) = to_string(x);
 		break;
 	defoult:
-		return 1; // Несоответствие типов
+		return 1; // РќРµСЃРѕРѕС‚РІРµС‚СЃС‚РІРёРµ С‚РёРїРѕРІ
 	}
 	return 0;
 }
@@ -980,11 +980,11 @@ int LoadPoint::Write(char x)
 	LoadPoint LP = *this;
 	if (Type >> 1 == DLoadVectInd) {
 		register int N = ((LoadVect_type)Point)->size();
-		if (N <= Ind || N < -Ind || ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Point == nullptr) return 2; // Ошибка индекса
+		if (N <= Ind || N < -Ind || ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Point == nullptr) return 2; // РћС€РёР±РєР° РёРЅРґРµРєСЃР°
 		LP = ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind);
 	}
 	else if (Type >> 1 == DICInd)
-		if (Ind < 0 || Ind / 3 >= ((IC_type)Point)->size()) return 2; // Ошибка индекса
+		if (Ind < 0 || Ind / 3 >= ((IC_type)Point)->size()) return 2; // РћС€РёР±РєР° РёРЅРґРµРєСЃР°
 		else switch (Ind % 3) {
 		case 0: LP = { TIP, &((IC_type)Point)->at(Ind / 3) }; break;
 		case 1: LP = { Tint, &((IC_type)Point)->at(Ind / 3).atr }; break;
@@ -1011,7 +1011,7 @@ int LoadPoint::Write(char x)
 		*((string*)LP.Point) = x;
 		break;
 	defoult:
-		return 1; // Несоответствие типов
+		return 1; // РќРµСЃРѕРѕС‚РІРµС‚СЃС‚РІРёРµ С‚РёРїРѕРІ
 	}
 	return 0;
 }
@@ -1022,11 +1022,11 @@ int LoadPoint::Write(string x)
 	LoadPoint LP = *this;
 	if (Type >> 1 == DLoadVectInd) {
 		register int N = ((LoadVect_type)Point)->size();
-		if (N <= Ind || N < -Ind || ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Point == nullptr) return 2; // Ошибка индекса
+		if (N <= Ind || N < -Ind || ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Point == nullptr) return 2; // РћС€РёР±РєР° РёРЅРґРµРєСЃР°
 		LP = ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind);
 	}
 	else if (Type >> 1 == DICInd)
-		if (Ind < 0 || Ind / 3 >= ((IC_type)Point)->size()) return 2; // Ошибка индекса
+		if (Ind < 0 || Ind / 3 >= ((IC_type)Point)->size()) return 2; // РћС€РёР±РєР° РёРЅРґРµРєСЃР°
 		else switch (Ind % 3) {
 		case 0: LP = { TIP, &((IC_type)Point)->at(Ind / 3) }; break;
 		case 1: LP = { Tint, &((IC_type)Point)->at(Ind / 3).atr }; break;
@@ -1053,22 +1053,22 @@ int LoadPoint::Write(string x)
 		*((string*)LP.Point) = x;
 		break;
 	defoult:
-		return 1; // Несоответствие типов
+		return 1; // РќРµСЃРѕРѕС‚РІРµС‚СЃС‚РІРёРµ С‚РёРїРѕРІ
 	}
 	return 0;
 }
 
-int LoadPoint::Write(LoadPoint x) // Записать величину из нагрузки
+int LoadPoint::Write(LoadPoint x) // Р—Р°РїРёСЃР°С‚СЊ РІРµР»РёС‡РёРЅСѓ РёР· РЅР°РіСЂСѓР·РєРё
 {
 	if (Point == nullptr) return 1;
 	LoadPoint LP = *this;
 	if (Type >> 1 == DLoadVectInd) {
 		register int N = ((LoadVect_type)Point)->size();
-		if (N <= Ind || N < -Ind || ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Point == nullptr) return 2; // Ошибка индекса
+		if (N <= Ind || N < -Ind || ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Point == nullptr) return 2; // РћС€РёР±РєР° РёРЅРґРµРєСЃР°
 		((LoadVect_type)Point)->at(N * (Ind < 0) + Ind) = x; return 0;
 	}
 	else if (Type >> 1 == DICInd) {
-		if (Ind < 0 || Ind / 3 >= ((IC_type)Point)->size()) return 2; // Ошибка индекса
+		if (Ind < 0 || Ind / 3 >= ((IC_type)Point)->size()) return 2; // РћС€РёР±РєР° РёРЅРґРµРєСЃР°
 		if (Ind % 3 != 2)
 			return 1;
 		else
@@ -1081,7 +1081,7 @@ int LoadPoint::Write(LoadPoint x) // Записать величину из нагрузки
 	return 0;
 }
 template <typename T>
-int LoadPoint::WriteByVector(T x) // Запись по нагрузкам в векторе
+int LoadPoint::WriteByVector(T x) // Р—Р°РїРёСЃСЊ РїРѕ РЅР°РіСЂСѓР·РєР°Рј РІ РІРµРєС‚РѕСЂРµ
 {
 	if (Point == nullptr) return 1;
 	if (!isVect()) return 1;
@@ -1096,25 +1096,25 @@ int LoadPoint::Write(vector<LoadPoint>* x)
 	register void* P = Point;
 	if (Type == TLoadVectInd) {
 		register int N = ((LoadVect_type)Point)->size();
-		if (N <= Ind || N < -Ind || ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Point == nullptr) return 2; // Ошибка индекса
+		if (N <= Ind || N < -Ind || ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Point == nullptr) return 2; // РћС€РёР±РєР° РёРЅРґРµРєСЃР°
 		P = ((LoadVect_type)Point)->at(Ind).Point;
 		t = ((LoadVect_type)Point)->at(Ind).Type;
 	}
 	else if (Type == TICInd) {
-		if (Ind / 3 >= ((LoadVect_type)Point)->size()) return 2; // Ошибка индекса
+		if (Ind / 3 >= ((LoadVect_type)Point)->size()) return 2; // РћС€РёР±РєР° РёРЅРґРµРєСЃР°
 		switch (Ind % 3) {
 		case 0: P = &((IC_type)P)->at(Ind / 3); t = TIP; break;
 		case 1: P = &((IC_type)P)->at(Ind / 3).atr; t = Tint; break;
 		case 2: P = ((IC_type)P)->at(Ind / 3).Load.Point; t = ((IC_type)P)->at(Ind / 3).Load.Type;
 		}
 	}
-	else return 2; // Ошибка индекса
+	else return 2; // РћС€РёР±РєР° РёРЅРґРµРєСЃР°
 	if (P == nullptr || t % 2 != 0) return 1;
 	P = x; t = TLoadVect;
 	return 0;
 }
 
-int LoadPoint::Write(vector<LoadPoint> x) // Копирование вектора нагрузок нагрузку
+int LoadPoint::Write(vector<LoadPoint> x) // РљРѕРїРёСЂРѕРІР°РЅРёРµ РІРµРєС‚РѕСЂР° РЅР°РіСЂСѓР·РѕРє РЅР°РіСЂСѓР·РєСѓ
 {
 	if (Point == nullptr || !isVect() || Type % 2 != 0)
 		return 1;
@@ -1123,19 +1123,19 @@ int LoadPoint::Write(vector<LoadPoint> x) // Копирование вектора нагрузок нагруз
 
 	if (Type == TLoadVectInd) {
 		register int N = ((LoadVect_type)Point)->size();
-		if (N <= Ind || N < -Ind || ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Point == nullptr) return 2; // Ошибка индекса
+		if (N <= Ind || N < -Ind || ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Point == nullptr) return 2; // РћС€РёР±РєР° РёРЅРґРµРєСЃР°
 		P = ((LoadVect_type)Point)->at(Ind).Point;
 		t = ((LoadVect_type)Point)->at(Ind).Type;
 	}
 	else if (Type == TICInd) {
-		if (Ind / 3 >= ((LoadVect_type)Point)->size()) return 2; // Ошибка индекса
+		if (Ind / 3 >= ((LoadVect_type)Point)->size()) return 2; // РћС€РёР±РєР° РёРЅРґРµРєСЃР°
 		switch (Ind % 3) {
 		case 0: P = &((IC_type)P)->at(Ind / 3); t = TIP; break;
 		case 1: P = &((IC_type)P)->at(Ind / 3).atr; t = Tint; break;
 		case 2: P = ((IC_type)P)->at(Ind / 3).Load.Point; t = ((IC_type)P)->at(Ind / 3).Load.Type;
 		}
 	}
-	else return 2; // Ошибка индекса
+	else return 2; // РћС€РёР±РєР° РёРЅРґРµРєСЃР°
 	if (P == nullptr || t % 2 != 0) return 1;
 
 	((LoadVect_type)P)->resize(x.size());
@@ -1143,7 +1143,7 @@ int LoadPoint::Write(vector<LoadPoint> x) // Копирование вектора нагрузок нагруз
 	return 0;
 }
 
-unsigned int  LoadPoint::TypeMinimize(double x) // Минимизировать тип, т.е. было целое число - возвращается int и т.д.
+unsigned int  LoadPoint::TypeMinimize(double x) // РњРёРЅРёРјРёР·РёСЂРѕРІР°С‚СЊ С‚РёРї, С‚.Рµ. Р±С‹Р»Рѕ С†РµР»РѕРµ С‡РёСЃР»Рѕ - РІРѕР·РІСЂР°С‰Р°РµС‚СЃСЏ int Рё С‚.Рґ.
 {
 	if (x == int(x) and abs(x) < 2147483647)
 		return Tint;
@@ -1154,7 +1154,7 @@ unsigned int  LoadPoint::TypeMinimize(double x) // Минимизировать тип, т.е. было
 
 }
 
-LoadPoint LoadPoint::TypeMinimizeOut(double x, bool var) // Минимизировать тип (возвращается LoadPoint), т.е. было целое число - возвращается int и т.д.
+LoadPoint LoadPoint::TypeMinimizeOut(double x, bool var) // РњРёРЅРёРјРёР·РёСЂРѕРІР°С‚СЊ С‚РёРї (РІРѕР·РІСЂР°С‰Р°РµС‚СЃСЏ LoadPoint), С‚.Рµ. Р±С‹Р»Рѕ С†РµР»РѕРµ С‡РёСЃР»Рѕ - РІРѕР·РІСЂР°С‰Р°РµС‚СЃСЏ int Рё С‚.Рґ.
 {
 	if (x == int(x) and abs(x) < 2147483647)
 	{
@@ -1173,16 +1173,16 @@ LoadPoint LoadPoint::TypeMinimizeOut(double x, bool var) // Минимизировать тип (
 	}
 }
 
-LoadPoint LoadPoint::Clone(LoadPoint LP) // Дублировать нагрузку (вариант с передаваемой в качестве параметра нагрузки)
+LoadPoint LoadPoint::Clone(LoadPoint LP) // Р”СѓР±Р»РёСЂРѕРІР°С‚СЊ РЅР°РіСЂСѓР·РєСѓ (РІР°СЂРёР°РЅС‚ СЃ РїРµСЂРµРґР°РІР°РµРјРѕР№ РІ РєР°С‡РµСЃС‚РІРµ РїР°СЂР°РјРµС‚СЂР° РЅР°РіСЂСѓР·РєРё)
 {
 	return LP.Clone();
 }
 
-LoadPoint LoadPoint::Clone(bool All) // Вернуть клонированную нагрузку
+LoadPoint LoadPoint::Clone(bool All) // Р’РµСЂРЅСѓС‚СЊ РєР»РѕРЅРёСЂРѕРІР°РЅРЅСѓСЋ РЅР°РіСЂСѓР·РєСѓ
 {
 	if (Point == nullptr)
 		return { 0,nullptr };
-	if (Type % 2 == 0 && !All) // Если переменная, то возвращаем указатель
+	if (Type % 2 == 0 && !All) // Р•СЃР»Рё РїРµСЂРµРјРµРЅРЅР°СЏ, С‚Рѕ РІРѕР·РІСЂР°С‰Р°РµРј СѓРєР°Р·Р°С‚РµР»СЊ
 		return *this;
 
 	LoadPoint LP = *this;
@@ -1193,7 +1193,7 @@ LoadPoint LoadPoint::Clone(bool All) // Вернуть клонированную нагрузку
 			else
 				LP = ((LoadVect_type)Point)->at(Ind);
 		else if (LP.Type >> 1 == DICInd)
-			if (LP.Ind < 0 || LP.Ind / 3 >= ((IC_type)Point)->size()) return {}; // Ошибка индекса
+			if (LP.Ind < 0 || LP.Ind / 3 >= ((IC_type)Point)->size()) return {}; // РћС€РёР±РєР° РёРЅРґРµРєСЃР°
 			else if (LP.Type == CICInd && !All)
 				return LP;
 			else switch (Ind % 3) {
@@ -1215,13 +1215,13 @@ LoadPoint LoadPoint::Clone(bool All) // Вернуть клонированную нагрузку
 		vector<LoadPoint>* t = new vector<LoadPoint>;
 		t->resize(((vector<LoadPoint>*)Point)->size());
 		for (auto i = t->begin(), j = ((vector<LoadPoint>*)Point)->begin(); i != t->end(); i++, j++)
-			*i = j->Clone(); // Клонирование каждой нагрузки
+			*i = j->Clone(); // РљР»РѕРЅРёСЂРѕРІР°РЅРёРµ РєР°Р¶РґРѕР№ РЅР°РіСЂСѓР·РєРё
 		return { CLoadVect, t };
 	}
 	case DIC:
 
 		break;
-	case DIP: //return { Type, (*(ip*)Point).Сlone() };
+	case DIP: //return { Type, (*(ip*)Point).РЎlone() };
 	{
 		vector<ip>* t = new vector<ip>;
 		t->push_back(*((ip*)Point));
@@ -1232,7 +1232,7 @@ LoadPoint LoadPoint::Clone(bool All) // Вернуть клонированную нагрузку
 	}
 }
 
-void* LoadPoint::VarClone() // Вернуть ссылку на клонированное значение из нагрузки
+void* LoadPoint::VarClone() // Р’РµСЂРЅСѓС‚СЊ СЃСЃС‹Р»РєСѓ РЅР° РєР»РѕРЅРёСЂРѕРІР°РЅРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ РёР· РЅР°РіСЂСѓР·РєРё
 {
 	if (Point == nullptr)
 		return nullptr;
@@ -1255,7 +1255,7 @@ void* LoadPoint::VarClone() // Вернуть ссылку на клонированное значение из нагру
 	}
 }
 
-void LoadPoint::VarDel() // Удаление нагрузки ИП
+void LoadPoint::VarDel() // РЈРґР°Р»РµРЅРёРµ РЅР°РіСЂСѓР·РєРё РРџ
 {
 	if (Point == nullptr)
 		return;
@@ -1306,7 +1306,7 @@ void LoadPoint::Copy(LoadPoint LP)
 	}
 }
 
-void LoadPoint::Clear() // Сбросить нагрузку
+void LoadPoint::Clear() // РЎР±СЂРѕСЃРёС‚СЊ РЅР°РіСЂСѓР·РєСѓ
 {
 	if (Type % 2 == 0) return;
 	switch (Type)
@@ -1326,8 +1326,8 @@ void LoadPoint::Clear() // Сбросить нагрузку
 	}
 	Type = 0; Point = nullptr;
 }
-// Печать вектора
-void LoadPoint::LoadPoint::VarClear() // Сброс нагрузки ИП в том числе и с переменной (переменная стирается)
+// РџРµС‡Р°С‚СЊ РІРµРєС‚РѕСЂР°
+void LoadPoint::LoadPoint::VarClear() // РЎР±СЂРѕСЃ РЅР°РіСЂСѓР·РєРё РРџ РІ С‚РѕРј С‡РёСЃР»Рµ Рё СЃ РїРµСЂРµРјРµРЅРЅРѕР№ (РїРµСЂРµРјРµРЅРЅР°СЏ СЃС‚РёСЂР°РµС‚СЃСЏ)
 {
 	Type -= Type % 2;
 	Type += 1;
@@ -1392,7 +1392,7 @@ void LoadPoint::VectorPrint(unsigned int Type, void* P, map<int, string > AtrMne
 		cout << "unknown load\n";
 	}
 }
-// Печать матрицы
+// РџРµС‡Р°С‚СЊ РјР°С‚СЂРёС†С‹
 void LoadPoint::MatrixPrint(unsigned int Type, void* P, map<int, string > AtrMnemo, string offset, string Sep, string End, string ArrayBracketStart, string ArrayBracketFin)
 {
 	switch ((Type % 1000) >> 1)
@@ -1452,8 +1452,8 @@ void LoadPoint::MatrixPrint(unsigned int Type, void* P, map<int, string > AtrMne
 		cout << "unknown load\n";
 	}
 }
-// AtrMnemo - словарь мнемоник атрибутов
-// AdrMap - список ссылок уже пройденных ИК при выводе ОА-графа
+// AtrMnemo - СЃР»РѕРІР°СЂСЊ РјРЅРµРјРѕРЅРёРє Р°С‚СЂРёР±СѓС‚РѕРІ
+// AdrMap - СЃРїРёСЃРѕРє СЃСЃС‹Р»РѕРє СѓР¶Рµ РїСЂРѕР№РґРµРЅРЅС‹С… РРљ РїСЂРё РІС‹РІРѕРґРµ РћРђ-РіСЂР°С„Р°
 void LoadPoint::print(map<int, string > AtrMnemo, string offset, string Sep, string End, string quote, string ArrayBracketStart, string ArrayBracketFin, map<void*, int>* AdrMap)
 {
 	LoadPoint LP =IndLoadReturn();
@@ -1498,11 +1498,11 @@ void LoadPoint::print(map<int, string > AtrMnemo, string offset, string Sep, str
 		while (LP.isVectInd() || LP.isICInd())
 			if (Type >> 1 == DLoadVectInd) {
 				register int N = ((LoadVect_type)Point)->size();
-				if (N <= Ind || N < -Ind || ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Point == nullptr) return; // Ошибка индекса
+				if (N <= Ind || N < -Ind || ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Point == nullptr) return; // РћС€РёР±РєР° РёРЅРґРµРєСЃР°
 				LP = ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind);
 			}
 			else if (Type >> 1 == DICInd)
-				if (Ind < 0 || Ind / 3 >= ((IC_type)Point)->size()) return; // Ошибка индекса
+				if (Ind < 0 || Ind / 3 >= ((IC_type)Point)->size()) return; // РћС€РёР±РєР° РёРЅРґРµРєСЃР°
 				else switch (Ind % 3) {
 				case 0: LP = { TIP, &((IC_type)Point)->at(Ind / 3) }; break;
 				case 1: LP = { Tint, &((IC_type)Point)->at(Ind / 3).atr }; break;
@@ -1518,18 +1518,18 @@ void LoadPoint::print(map<int, string > AtrMnemo, string offset, string Sep, str
 			((ip*)LP.Point)->Load.print();
 			break;
 		}
-		bool FMap = false; // Флаг создания списка пройденных адресов ОА-графа
+		bool FMap = false; // Р¤Р»Р°Рі СЃРѕР·РґР°РЅРёСЏ СЃРїРёСЃРєР° РїСЂРѕР№РґРµРЅРЅС‹С… Р°РґСЂРµСЃРѕРІ РћРђ-РіСЂР°С„Р°
 		if (AdrMap == nullptr)
 		{
 			AdrMap = new map<void*, int>;
 			FMap = true;
 		}
-		if (AdrMap->count(LP.Point)) // Обнаружение зацикливания ОА-графа
+		if (AdrMap->count(LP.Point)) // РћР±РЅР°СЂСѓР¶РµРЅРёРµ Р·Р°С†РёРєР»РёРІР°РЅРёСЏ РћРђ-РіСЂР°С„Р°
 		{
 			cout << offset << "IC id: " << (*AdrMap)[LP.Point] << endl;
 			break;
 		}
-		(*AdrMap)[LP.Point] = AdrMap->size(); // Запомнить пройденную ИК для избежания зацикливания
+		(*AdrMap)[LP.Point] = AdrMap->size(); // Р—Р°РїРѕРјРЅРёС‚СЊ РїСЂРѕР№РґРµРЅРЅСѓСЋ РРљ РґР»СЏ РёР·Р±РµР¶Р°РЅРёСЏ Р·Р°С†РёРєР»РёРІР°РЅРёСЏ
 
 		if (!((IC_type)LP.Point)->size()) return;
 		for (auto i = ((IC_type)LP.Point)->begin(); i != ((IC_type)LP.Point)->end(); i++)
@@ -1548,7 +1548,7 @@ void LoadPoint::print(map<int, string > AtrMnemo, string offset, string Sep, str
 			if (i != ((IC_type)LP.Point)->end() - 1)
 				cout << endl;
 		}
-		if (FMap)  // Удачить таблицу пройденных адресов
+		if (FMap)  // РЈРґР°С‡РёС‚СЊ С‚Р°Р±Р»РёС†Сѓ РїСЂРѕР№РґРµРЅРЅС‹С… Р°РґСЂРµСЃРѕРІ
 		{
 			AdrMap->clear();
 			delete AdrMap;
@@ -1556,7 +1556,7 @@ void LoadPoint::print(map<int, string > AtrMnemo, string offset, string Sep, str
 		break;
 	}
 	case TLoadVect:
-	case CLoadVect: // Вектор нагрузок
+	case CLoadVect: // Р’РµРєС‚РѕСЂ РЅР°РіСЂСѓР·РѕРє
 	{
 		cout << ArrayBracketStart;
 		register int c = 1;
@@ -1570,7 +1570,7 @@ void LoadPoint::print(map<int, string > AtrMnemo, string offset, string Sep, str
 		break;
 	}
 	case TLoadVectInd:
-	case CLoadVectInd: // Вектор нагрузок
+	case CLoadVectInd: // Р’РµРєС‚РѕСЂ РЅР°РіСЂСѓР·РѕРє
 	{
 		register int i = Ind;
 		cout << "Vect Ind[" << Ind << "] ";
@@ -1579,7 +1579,7 @@ void LoadPoint::print(map<int, string > AtrMnemo, string offset, string Sep, str
 		break;
 	}
 	default:
-		if (Type >= 2000) // Печать матрицы и вектора
+		if (Type >= 2000) // РџРµС‡Р°С‚СЊ РјР°С‚СЂРёС†С‹ Рё РІРµРєС‚РѕСЂР°
 		{
 			MatrixPrint(Type, Point, AtrMnemo, offset, Sep, End, ArrayBracketStart, ArrayBracketFin);
 		}
@@ -1588,50 +1588,50 @@ void LoadPoint::print(map<int, string > AtrMnemo, string offset, string Sep, str
 	}
 }
 
-// Работа с ФУ
-void FU::CommonMk(int Mk, LoadPoint Load)
+// Р Р°Р±РѕС‚Р° СЃ Р¤РЈ
+void FU::CommonMk(int Mk, LoadPoint Load, FU* Sender)
 {
 	Mk %= FUMkRange;
-	if (Mk < 0) // Команды для АЛУ
+	if (Mk < 0) // РљРѕРјР°РЅРґС‹ РґР»СЏ РђР›РЈ
 	{
 
-		if (Alu == nullptr) // Если еще не создан АЛУ
-		{ // Создать АЛУ
+		if (Alu == nullptr) // Р•СЃР»Рё РµС‰Рµ РЅРµ СЃРѕР·РґР°РЅ РђР›РЈ
+		{ // РЎРѕР·РґР°С‚СЊ РђР›РЈ
 			Alu = (FU*)new ALU(Bus);
 			//			cout << "FUType: " << FUtype << endl;
-			Alu->ProgFU(0, { 0,nullptr });
+			Alu->ProgFU(0, { 0,nullptr }, this);
 			((FU*)Alu)->Parent = this;
 			Accum = { Cdouble, &((ALU*)Alu)->accum };
 		}
-		Alu->ProgFU(-Mk, Load);
+		Alu->ProgFU(-Mk, Load, this);
 		return;
 	}
 	switch (Mk)
 	{
-	case 902: // ActiveSet Установить активность ФУ (true по умолчанию)
+	case 902: // ActiveSet РЈСЃС‚Р°РЅРѕРІРёС‚СЊ Р°РєС‚РёРІРЅРѕСЃС‚СЊ Р¤РЈ (true РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ)
 		Active = Load.toBool(true);
 		break;
-	case ProgMk: // 958 Prog Вызов подпрограммы
-	case ProgCycleMk: //959 CycleProg Вызов цикла
-	case ProgPostCycleMk: //960 PostCycleProg Вызов пост цикла
+	case ProgMk: // 958 Prog Р’С‹Р·РѕРІ РїРѕРґРїСЂРѕРіСЂР°РјРјС‹
+	case ProgCycleMk: //959 CycleProg Р’С‹Р·РѕРІ С†РёРєР»Р°
+	case ProgPostCycleMk: //960 PostCycleProg Р’С‹Р·РѕРІ РїРѕСЃС‚ С†РёРєР»Р°
 		if (Alu != nullptr)
-			((ALU*)Alu)->Stack.push_back({}); //Буферизиация текущего стека
+			((ALU*)Alu)->Stack.push_back({}); //Р‘СѓС„РµСЂРёР·РёР°С†РёСЏ С‚РµРєСѓС‰РµРіРѕ СЃС‚РµРєР°
 		if (Load.Point == nullptr)
 			ProgExec(Prog, Mk - ProgMk);
 		else
 			ProgExec(Load, Mk - ProgMk);
 		if (Alu != nullptr)
-			((ALU*)Alu)->Stack.pop_back(); // Отмена буферизации текущего стека
+			((ALU*)Alu)->Stack.pop_back(); // РћС‚РјРµРЅР° Р±СѓС„РµСЂРёР·Р°С†РёРё С‚РµРєСѓС‰РµРіРѕ СЃС‚РµРєР°
 		break;
-	case YesMk: //961 YesProg Вызов подпрограммы по ДА
-	case YesCycleMk: //962 YesCycleProg Вызов цикла по ДА
-	case YesPostCycleMk: //963 YesPostCycleProg Вызов пост цикла по ДА
-	case YesBreakMk: //967 YesProgBreak Вызов подпрограммы по ДА с последующим прерыванием основной программы
+	case YesMk: //961 YesProg Р’С‹Р·РѕРІ РїРѕРґРїСЂРѕРіСЂР°РјРјС‹ РїРѕ Р”Рђ
+	case YesCycleMk: //962 YesCycleProg Р’С‹Р·РѕРІ С†РёРєР»Р° РїРѕ Р”Рђ
+	case YesPostCycleMk: //963 YesPostCycleProg Р’С‹Р·РѕРІ РїРѕСЃС‚ С†РёРєР»Р° РїРѕ Р”Рђ
+	case YesBreakMk: //967 YesProgBreak Р’С‹Р·РѕРІ РїРѕРґРїСЂРѕРіСЂР°РјРјС‹ РїРѕ Р”Рђ СЃ РїРѕСЃР»РµРґСѓСЋС‰РёРј РїСЂРµСЂС‹РІР°РЅРёРµРј РѕСЃРЅРѕРІРЅРѕР№ РїСЂРѕРіСЂР°РјРјС‹
 		if (Accum.toBool())
 		{
 			int PB = Mk == YesBreakMk;
 			if (Alu != nullptr)
-				((ALU*)Alu)->Stack.push_back({}); //Буферизиация текущего стека
+				((ALU*)Alu)->Stack.push_back({}); //Р‘СѓС„РµСЂРёР·РёР°С†РёСЏ С‚РµРєСѓС‰РµРіРѕ СЃС‚РµРєР°
 			if (Mk == YesBreakMk) {
 				Mk = YesMk;
 			}
@@ -1640,19 +1640,19 @@ void FU::CommonMk(int Mk, LoadPoint Load)
 			else
 				ProgExec(Load.Point, Mk - YesMk);
 			if (Alu != nullptr)
-				((ALU*)Alu)->Stack.pop_back(); // Отмена буферизации текущего стека
-			ProgStop += PB; // Выйти из главной программы
+				((ALU*)Alu)->Stack.pop_back(); // РћС‚РјРµРЅР° Р±СѓС„РµСЂРёР·Р°С†РёРё С‚РµРєСѓС‰РµРіРѕ СЃС‚РµРєР°
+			ProgStop += PB; // Р’С‹Р№С‚Рё РёР· РіР»Р°РІРЅРѕР№ РїСЂРѕРіСЂР°РјРјС‹
 		}
 		break;
-	case NoMk: //964 NoProg Вызов подпрограммы по НЕТ
-	case NoCycleMk: //965 NoCycleProg Вызов цикла по НЕТ
-	case NoPostCycleMk: //966 NoPostCycleProg Вызов пост цикла по НЕТ
-	case NoBreakMk: //968 NoProgBreak Вызов подпрограммы по НЕТ с последующим прерыванием основной программы
+	case NoMk: //964 NoProg Р’С‹Р·РѕРІ РїРѕРґРїСЂРѕРіСЂР°РјРјС‹ РїРѕ РќР•Рў
+	case NoCycleMk: //965 NoCycleProg Р’С‹Р·РѕРІ С†РёРєР»Р° РїРѕ РќР•Рў
+	case NoPostCycleMk: //966 NoPostCycleProg Р’С‹Р·РѕРІ РїРѕСЃС‚ С†РёРєР»Р° РїРѕ РќР•Рў
+	case NoBreakMk: //968 NoProgBreak Р’С‹Р·РѕРІ РїРѕРґРїСЂРѕРіСЂР°РјРјС‹ РїРѕ РќР•Рў СЃ РїРѕСЃР»РµРґСѓСЋС‰РёРј РїСЂРµСЂС‹РІР°РЅРёРµРј РѕСЃРЅРѕРІРЅРѕР№ РїСЂРѕРіСЂР°РјРјС‹
 		if (!Accum.toBool())
 		{
 			int PB = Mk == NoBreakMk;
 			if (Alu != nullptr)
-				((ALU*)Alu)->Stack.push_back({}); //Буферизиация текущего стека
+				((ALU*)Alu)->Stack.push_back({}); //Р‘СѓС„РµСЂРёР·РёР°С†РёСЏ С‚РµРєСѓС‰РµРіРѕ СЃС‚РµРєР°
 			if (Mk == NoBreakMk) {
 				ProgStop += 1;
 				Mk = NoMk;
@@ -1662,47 +1662,47 @@ void FU::CommonMk(int Mk, LoadPoint Load)
 			else
 				ProgExec(Load.Point, Mk - NoMk);
 			if (Alu != nullptr)
-				((ALU*)Alu)->Stack.pop_back(); // Отмена буферизации текущего стека
-			ProgStop += PB; // Выйти из главной программы
+				((ALU*)Alu)->Stack.pop_back(); // РћС‚РјРµРЅР° Р±СѓС„РµСЂРёР·Р°С†РёРё С‚РµРєСѓС‰РµРіРѕ СЃС‚РµРєР°
+			ProgStop += PB; // Р’С‹Р№С‚Рё РёР· РіР»Р°РІРЅРѕР№ РїСЂРѕРіСЂР°РјРјС‹
 		}
 		break;
-	case 919: // AccumPointerSet Установить ссылку на аккумулятор
+	case 919: // AccumPointerSet РЈСЃС‚Р°РЅРѕРІРёС‚СЊ СЃСЃС‹Р»РєСѓ РЅР° Р°РєРєСѓРјСѓР»СЏС‚РѕСЂ
 		if (Load.Type >> 1 == Ddouble)
 			Accum = Load;
 		break;
-	case 920: // AccumPointerOut Выдать ссылку на аккумулятор
+	case 920: // AccumPointerOut Р’С‹РґР°С‚СЊ СЃСЃС‹Р»РєСѓ РЅР° Р°РєРєСѓРјСѓР»СЏС‚РѕСЂ
 		Load.Write(Accum);
 		break;
-	case 921: // AccumPointerOutMk Выдать МК со ссылкой на аккумулятор
+	case 921: // AccumPointerOutMk Р’С‹РґР°С‚СЊ РњРљ СЃРѕ СЃСЃС‹Р»РєРѕР№ РЅР° Р°РєРєСѓРјСѓР»СЏС‚РѕСЂ
 		MkExec(Load, Accum);
 		break;
-	case 931: // AccumSet Установить значение аккумулятора
+	case 931: // AccumSet РЈСЃС‚Р°РЅРѕРІРёС‚СЊ Р·РЅР°С‡РµРЅРёРµ Р°РєРєСѓРјСѓР»СЏС‚РѕСЂР°
 		if (Accum.Point = nullptr)
 		{
 			Accum = { Cdouble,new double };
-			AccumCreating = true; // Устанавливаем флаг самостоятельного создания аккумулятора ФУ-ом
+			AccumCreating = true; // РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј С„Р»Р°Рі СЃР°РјРѕСЃС‚РѕСЏС‚РµР»СЊРЅРѕРіРѕ СЃРѕР·РґР°РЅРёСЏ Р°РєРєСѓРјСѓР»СЏС‚РѕСЂР° Р¤РЈ-РѕРј
 		}
 		Accum.Write(Load.toDouble());
 		AccumCreating = false;
 		break;
-	case 923: // AccumOut Выдать значение аккумулятора
+	case 923: // AccumOut Р’С‹РґР°С‚СЊ Р·РЅР°С‡РµРЅРёРµ Р°РєРєСѓРјСѓР»СЏС‚РѕСЂР°
 		Load.WriteFromLoad(Accum);
 		break;
-	case 925: // AccumOutMk Выдать МК со значением аккумулятора
+	case 925: // AccumOutMk Р’С‹РґР°С‚СЊ РњРљ СЃРѕ Р·РЅР°С‡РµРЅРёРµРј Р°РєРєСѓРјСѓР»СЏС‚РѕСЂР°
 		MkExec(Load, Accum);
 		break;
-	case FUIndSetMk: // 933 FUIndSet Установить индекс ФУ
+	case FUIndSetMk: // 933 FUIndSet РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РёРЅРґРµРєСЃ Р¤РЈ
 		FUInd = Load.toInt();
 		break;
-	case 992: // FUIndOut Выдать индекс ФУ
+	case 992: // FUIndOut Р’С‹РґР°С‚СЊ РёРЅРґРµРєСЃ Р¤РЈ
 		Load.Write(FUInd);
 		break;
-	case 993: //FUIndOutMk Выдать милликоманду с индексом ФУ
+	case 993: //FUIndOutMk Р’С‹РґР°С‚СЊ РјРёР»Р»РёРєРѕРјР°РЅРґСѓ СЃ РёРЅРґРµРєСЃРѕРј Р¤РЈ
 		MkExec(Load, { Cint, &FUInd });
 		break;
-	case CalcMk: // 927 Calc вычислить АЛВ
-	case 929: // CalcContinue Вычислить АЛВ и продолжеть выполнение программы, если результат true
-	case 930: // CalcBreak Вычислить АЛВ и продолжеть выполнение программы, если результат false
+	case CalcMk: // 927 Calc РІС‹С‡РёСЃР»РёС‚СЊ РђР›Р’
+	case 929: // CalcContinue Р’С‹С‡РёСЃР»РёС‚СЊ РђР›Р’ Рё РїСЂРѕРґРѕР»Р¶РµС‚СЊ РІС‹РїРѕР»РЅРµРЅРёРµ РїСЂРѕРіСЂР°РјРјС‹, РµСЃР»Рё СЂРµР·СѓР»СЊС‚Р°С‚ true
+	case 930: // CalcBreak Р’С‹С‡РёСЃР»РёС‚СЊ РђР›Р’ Рё РїСЂРѕРґРѕР»Р¶РµС‚СЊ РІС‹РїРѕР»РЅРµРЅРёРµ РїСЂРѕРіСЂР°РјРјС‹, РµСЃР»Рё СЂРµР·СѓР»СЊС‚Р°С‚ false
 		if (Alu == nullptr)
 		{
 			Alu = (FU*)new ALU(this->Bus);
@@ -1710,37 +1710,37 @@ void FU::CommonMk(int Mk, LoadPoint Load)
 			AccumCreating = false;
 			ALUCreating = true;
 		}
-		((FU*)Alu)->ProgFU(ProgExecMk, Load);
+		((FU*)Alu)->ProgFU(ProgExecMk, Load, this);
 		break;
 		if (Mk == 929 && Accum.toBool() || Mk == 930 && !Accum.toBool())
-			ProgStop = 1; // Выход из программы
-	case 932: // IntAluCalc Создать челочисленное АЛУ
+			ProgStop = 1; // Р’С‹С…РѕРґ РёР· РїСЂРѕРіСЂР°РјРјС‹
+	case 932: // IntAluCalc РЎРѕР·РґР°С‚СЊ С‡РµР»РѕС‡РёСЃР»РµРЅРЅРѕРµ РђР›РЈ
 		Alu = new IntAlu(this->Bus);
 		Accum = { Tint, &((IntAlu*)Alu)->Accum };
 		AccumCreating = false;
 		ALUCreating = true;
-		((FU*)Alu)->ProgFU(ProgExecMk, Load);
+		((FU*)Alu)->ProgFU(ProgExecMk, Load, this);
 		break;
-	case 989: // ProgStop Остановка программы (в нагрузке количество уровней выхода; если нагрузка nil, то присваивается 1)
-		ProgStop = Load.toInt(1);
+	case 989: // ProgStop РћСЃС‚Р°РЅРѕРІРєР° РїСЂРѕРіСЂР°РјРјС‹ (РІ РЅР°РіСЂСѓР·РєРµ РєРѕР»РёС‡РµСЃС‚РІРѕ СѓСЂРѕРІРЅРµР№ РІС‹С…РѕРґР°; РµСЃР»Рё РЅР°РіСЂСѓР·РєР° nil, С‚Рѕ РїСЂРёСЃРІР°РёРІР°РµС‚СЃСЏ 1)
+		ProgStop = Load.toInt(2);
 		break;
-	case 988: // ProgStopAll Остановка всех запущенных на выполнение миллипрограммы для данного ФУ
+	case 988: // ProgStopAll РћСЃС‚Р°РЅРѕРІРєР° РІСЃРµС… Р·Р°РїСѓС‰РµРЅРЅС‹С… РЅР° РІС‹РїРѕР»РЅРµРЅРёРµ РјРёР»Р»РёРїСЂРѕРіСЂР°РјРјС‹ РґР»СЏ РґР°РЅРЅРѕРіРѕ Р¤РЈ
 		ProgStopAll = Load.toBool(true);
 		break;
-	case 987: //Next Переход к следующей итерации цикла
+	case 987: //Next РџРµСЂРµС…РѕРґ Рє СЃР»РµРґСѓСЋС‰РµР№ РёС‚РµСЂР°С†РёРё С†РёРєР»Р°
 		CycleStop = Load.toInt();
 		break;
-	case 916:// ManualModeSet Установить режим ручного управления
+	case 916:// ManualModeSet РЈСЃС‚Р°РЅРѕРІРёС‚СЊ СЂРµР¶РёРј СЂСѓС‡РЅРѕРіРѕ СѓРїСЂР°РІР»РµРЅРёСЏ
 		if (Modeling == nullptr) Modeling = new FUModeling();
 		Modeling->ManualMode = Load.toBool();
 		break;
-	case SchedulerSetMk: //918: // SchedulerSet Установить контекст планировщика вычислений
+	case SchedulerSetMk: //918: // SchedulerSet РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РєРѕРЅС‚РµРєСЃС‚ РїР»Р°РЅРёСЂРѕРІС‰РёРєР° РІС‹С‡РёСЃР»РµРЅРёР№
 		if (Load.Point == nullptr) break;
 		if (Modeling == nullptr) Modeling = new FUModeling();
 		Modeling->scheduler = (FU*)Load.Point;
 		Modeling->ManualMode = true;
 		break;
-	case 924: // PrеfixProgSet
+	case 924: // PrРµfixProgSet
 		PrefixProg = (IC_type)Load.Point;
 		break;
 	case 922: // PostfixProgSet
@@ -1749,28 +1749,28 @@ void FU::CommonMk(int Mk, LoadPoint Load)
 	case 926: // BusSet
 		Bus = (FU*)Load.Point;
 		break;
-	case ProgExecMk: // ProgExec Выполнить программу (если в нагрузке null, То выполнить из регистра Prog
+	case ProgExecMk: // ProgExec Р’С‹РїРѕР»РЅРёС‚СЊ РїСЂРѕРіСЂР°РјРјСѓ (РµСЃР»Рё РІ РЅР°РіСЂСѓР·РєРµ null, РўРѕ РІС‹РїРѕР»РЅРёС‚СЊ РёР· СЂРµРіРёСЃС‚СЂР° Prog
 		if (Load.Point == nullptr)
 			ProgExec((vector<ip>*)Prog);
 		else
 			ProgExec((vector<ip>*)Load.Point);
 		break;
-	case 991: // ProgSet // Установить указатель на программу
+	case 991: // ProgSet // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РїСЂРѕРіСЂР°РјРјСѓ
 		Prog = (IC_type)Load.Point;
 		break;
 	case 953: // ElseProgSet
 		ElseProg = (IC_type)Load.Point;
 		break;
-	case 954: // ProgSetExec Установить указатель на программу и выполнить ее
+	case 954: // ProgSetExec РЈСЃС‚Р°РЅРѕРІРёС‚СЊ СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РїСЂРѕРіСЂР°РјРјСѓ Рё РІС‹РїРѕР»РЅРёС‚СЊ РµРµ
 		Prog = (IC_type)Load.Point;
 		ProgExec((vector<ip>*)Prog);
 		break;
-	case ContextOutMk:  // 995 ContextOut Выдать указатель на контекст ФУ
+	case ContextOutMk:  // 995 ContextOut Р’С‹РґР°С‚СЊ СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РєРѕРЅС‚РµРєСЃС‚ Р¤РЈ
 		//		if (Load.Type >> 1 == Dvoid || Load.Type >> 1 == DPPoint || Load.Type >> 1 == DFU)
 		//			Load.Point = this;
 		Load.Write((FU*)this);
 		break;
-	case 928: // ALUSet Установить ссылку на АЛУ
+	case 928: // ALUSet РЈСЃС‚Р°РЅРѕРІРёС‚СЊ СЃСЃС‹Р»РєСѓ РЅР° РђР›РЈ
 		if (ALUCreating)
 			delete Alu;
 		Alu = (FU*)Load.Point;
@@ -1786,70 +1786,68 @@ void FU::CommonMk(int Mk, LoadPoint Load)
 		if (Load.Point != nullptr)
 			MkExec(Load.toInt(), { Cstring,&FUName });
 		break;
-	case ContextOutMkMk: // 999 ContextOutMK Выдать милликоманду с указателем на контекст ФУ
+	case ContextOutMkMk: // 999 ContextOutMK Р’С‹РґР°С‚СЊ РјРёР»Р»РёРєРѕРјР°РЅРґСѓ СЃ СѓРєР°Р·Р°С‚РµР»РµРј РЅР° РєРѕРЅС‚РµРєСЃС‚ Р¤РЈ
 		if (Load.Type >> 1 == Dint)
-			Bus->ProgFU(*(int*)Load.Point, { TFU, this });
+			Bus->ProgFU(*(int*)Load.Point, { TFU, this }, this);
 		break;
-	case MkGlobalRangeSet: // Установить глобальный адрес МК для ФУ
+	case BreakMk: //Р’С‹С…РѕРґ РёР· С†РёРєР»РѕРІ
+	    CycleStop = Load.toInt(1);
+		if (CycleStop < 0) CycleStop = 0;
+		break;
+	case NextMk: // РџСЂРѕРґРѕР»Р¶РµРЅРёРµ С†РёРєР»РѕРІ
+		CycleStop = - Load.toInt(1); // РџСЂРё CycleStop < 0 РІС‹РїРѕР»РЅСЏРµС‚СЃСЏ РѕРїРµСЂР°С‚РѕСЂ Continue
+		if (CycleStop > 0) CycleStop = 0;
+		break;
+	case MkGlobalRangeSet: // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РіР»РѕР±Р°Р»СЊРЅС‹Р№ Р°РґСЂРµСЃ РњРљ РґР»СЏ Р¤РЈ
 		FUMkGloabalRange = Load.toInt();
 		break;
-	case MkGlobalRangeOutMk:  // Выдать глобальный адрес МК для ФУ
+	case MkGlobalRangeOutMk:  // Р’С‹РґР°С‚СЊ РіР»РѕР±Р°Р»СЊРЅС‹Р№ Р°РґСЂРµСЃ РњРљ РґР»СЏ Р¤РЈ
 		Load.Write(FUMkGloabalRange);
 		break;
-	case MkGlobalRangeOutMkMK: // Выдать МК с глобальным адресом МК для ФУ
+	case MkGlobalRangeOutMkMK: // Р’С‹РґР°С‚СЊ РњРљ СЃ РіР»РѕР±Р°Р»СЊРЅС‹Рј Р°РґСЂРµСЃРѕРј РњРљ РґР»СЏ Р¤РЈ
 		MkExec(Load, { Cint, &FUMkGloabalRange });
 		break;
-	}
+	case 917: // EventserSet РЈСЃС‚Р°РЅРѕРІРёС‚СЊ СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РєРѕРЅС‚СЂРѕР»Р»РµСЂ СЃРѕР±С‹С‚РёР№
+		if (Modeling == nullptr) Modeling = new FUModeling();
+		Modeling->eventser = (FU*)Load.Point;
+		break;	}
 }
 
-// Запуск программы
-// CycleType тип цикла: 0 - без цикла, 1 - цикл, 2 - цикл с постусловием
-void FU::ProgExec(void* UK, unsigned int CycleMode, FU* ProgBus, vector<ip>::iterator* Start) // Исполнение программы из ИК
+// Р—Р°РїСѓСЃРє РїСЂРѕРіСЂР°РјРјС‹
+// CycleType С‚РёРї С†РёРєР»Р°: 0 - Р±РµР· С†РёРєР»Р°, 1 - С†РёРєР», 2 - С†РёРєР» СЃ РїРѕСЃС‚СѓСЃР»РѕРІРёРµРј
+void FU::ProgExec(void* UK, unsigned int CycleMode, FU* ProgBus, vector<ip>::iterator* Start) // РСЃРїРѕР»РЅРµРЅРёРµ РїСЂРѕРіСЂР°РјРјС‹ РёР· РРљ
 {
 	if (UK == nullptr) return;
 	vector<ip>* Uk = (IC_type)UK;
 	if (ProgBus == nullptr) ProgBus = Bus;
-	bool RepeatF = false; // Флаг циклического повторения программы в ИК
+	bool RepeatF = false; // Р¤Р»Р°Рі С†РёРєР»РёС‡РµСЃРєРѕРіРѕ РїРѕРІС‚РѕСЂРµРЅРёСЏ РїСЂРѕРіСЂР°РјРјС‹ РІ РРљ
 	do
 	{
-		ProgStop = 0; // Останов программы (содержит количество уровней, из которых необходимо выйти
-		RepeatF = false; // Флаг необходимости перехода на новый цикл выборки МК в ИК
-		ProgStopAll = false; // Флаг остановки всей программы
-		CycleStop = 0; // Счетчик выходов из циклов (если отрицательная величина, то Продолжение цикла)
+		ProgStop = 0; // РћСЃС‚Р°РЅРѕРІ РїСЂРѕРіСЂР°РјРјС‹ (СЃРѕРґРµСЂР¶РёС‚ РєРѕР»РёС‡РµСЃС‚РІРѕ СѓСЂРѕРІРЅРµР№, РёР· РєРѕС‚РѕСЂС‹С… РЅРµРѕР±С…РѕРґРёРјРѕ РІС‹Р№С‚Рё
+		RepeatF = false; // Р¤Р»Р°Рі РЅРµРѕР±С…РѕРґРёРјРѕСЃС‚Рё РїРµСЂРµС…РѕРґР° РЅР° РЅРѕРІС‹Р№ С†РёРєР» РІС‹Р±РѕСЂРєРё РњРљ РІ РРљ
+		ProgStopAll = false; // Р¤Р»Р°Рі РѕСЃС‚Р°РЅРѕРІРєРё РІСЃРµР№ РїСЂРѕРіСЂР°РјРјС‹
+		CycleStop = 0; // РЎС‡РµС‚С‡РёРє РІС‹С…РѕРґРѕРІ РёР· С†РёРєР»РѕРІ (РµСЃР»Рё РѕС‚СЂРёС†Р°С‚РµР»СЊРЅР°СЏ РІРµР»РёС‡РёРЅР°, С‚Рѕ РџСЂРѕРґРѕР»Р¶РµРЅРёРµ С†РёРєР»Р°)
 		for (auto i = Start == nullptr ? Uk->begin() : *Start; i != Uk->end(); i++)
 		{
-			if (i->atr == GotoAtr) // Переход на другую ИК
+			if (i->atr == GotoAtr) // РџРµСЂРµС…РѕРґ РЅР° РґСЂСѓРіСѓСЋ РРљ
 			{
 				ProgExec(i->Load, CycleMode, ProgBus, Start);
 				return;
 			}
 			if (i->atr >= FUMkRange)
-				ProgBus->ProgFU(i->atr, i->Load); // Если диапазон МК не принадлежит ФУ (выдаем на Bus)
-			else // МК для данного ФУ
+				ProgBus->ProgFU(i->atr, i->Load, this); // Р•СЃР»Рё РґРёР°РїР°Р·РѕРЅ РњРљ РЅРµ РїСЂРёРЅР°РґР»РµР¶РёС‚ Р¤РЈ (РІС‹РґР°РµРј РЅР° Bus)
+			else // РњРљ РґР»СЏ РґР°РЅРЅРѕРіРѕ Р¤РЈ
 			{
-				if (i->atr == BreakAtr) { ProgStop = i->Load.toInt() - 1; return; } // Прервать программу
-				if (i->atr == NextAtr)
-					if (!i->Load.toInt())
-					{
-						i = Uk->begin();  // Продолжение текущего цикла
-						continue;
-					}
-					else
-					{
-						CycleStop = i->Load.toInt();
-						return;
-					} // Переход к следующим итерациям циклов
-				// Выход из цикла по условию
 				if (i->atr == YesContinueAtr || i->atr == NoContinueAtr)
 				{
-					if (CycleMode == 2) // Проверка цикла с постусловием (пропускаем первую проверку)
+					if (CycleMode == 2) // РџСЂРѕРІРµСЂРєР° С†РёРєР»Р° СЃ РїРѕСЃС‚СѓСЃР»РѕРІРёРµРј (РїСЂРѕРїСѓСЃРєР°РµРј РїРµСЂРІСѓСЋ РїСЂРѕРІРµСЂРєСѓ)
 					{
 						CycleMode = 1;
 						continue;
 					}
-					if (i->Load.isProg() && Alu != nullptr) // Запуск вычисления АЛВ
+					if (i->Load.isProg() && Alu != nullptr) // Р—Р°РїСѓСЃРє РІС‹С‡РёСЃР»РµРЅРёСЏ РђР›Р’
 
-						// Перейти к следующей итерации цикла continue
+						// РџРµСЂРµР№С‚Рё Рє СЃР»РµРґСѓСЋС‰РµР№ РёС‚РµСЂР°С†РёРё С†РёРєР»Р° continue
 						if (i->Load.isProg())
 						{
 							if (Alu == nullptr)
@@ -1867,124 +1865,165 @@ void FU::ProgExec(void* UK, unsigned int CycleMode, FU* ProgBus, vector<ip>::ite
 						}
 					if (i->atr == YesContinueAtr && !Accum.toBool() || i->atr == NoContinueAtr && Accum.toBool())
 					{
-						CycleMode = 0; // Выход из цикла
-						ProgStop += 1; // Выход из цикла
+						CycleMode = 0; // Р’С‹С…РѕРґ РёР· С†РёРєР»Р°
+						ProgStop += 1; // Р’С‹С…РѕРґ РёР· С†РёРєР»Р°
 						break;
-					} // Выход из цикла
+					} // Р’С‹С…РѕРґ РёР· С†РёРєР»Р°
 					continue;
 				}
-				if (i->atr == RepeatAtr) { // Запустить программу заново
+				if (i->atr == RepeatAtr) { // Р—Р°РїСѓСЃС‚РёС‚СЊ РїСЂРѕРіСЂР°РјРјСѓ Р·Р°РЅРѕРІРѕ
 					RepeatF = true; break;
 				}
-				/*
-								if (i->atr == ProgMkAtr || // Переход к подрограмме
-									i->atr == YesAtr && Accum.toBool() ||
-									i->atr == NoAtr && !Accum.toBool()) {
-									((ALU*)Alu)->Stack.push_back(((ALU*)Alu)->Stack.back());
-									ProgExec(i->Load, 0, ProgBus);
-									((ALU*)Alu)->Stack.pop_back();
-									((ALU*)Alu)->accum = ((ALU*)Alu)->Stack.back().accum;
-									continue;
-								}
-								if (i->atr == YesCycleAtr && Accum.toBool() || // Переход к циклу с постусловием
-									i->atr == NoCycleAtr && !Accum.toBool() ||
-									i->atr == ProgCycleAtr) {
-									((ALU*)Alu)->Stack.push_back(((ALU*)Alu)->Stack.back());
-									ProgExec(i->Load, 1, ProgBus);
-									((ALU*)Alu)->Stack.pop_back();
-									((ALU*)Alu)->accum = ((ALU*)Alu)->Stack.back().accum;
-									continue;
-								}
-								if (i->atr == YesPostCycleAtr && Accum.toBool() || // Переход к циклу
-									i->atr == NoPostCycleAtr && !Accum.toBool() ||
-									i->atr == ProgPostCycleAtr) {
-									((ALU*)Alu)->Stack.push_back(((ALU*)Alu)->Stack.back());
-									ProgExec(i->Load, 2, ProgBus);
-									((ALU*)Alu)->Stack.pop_back();
-									((ALU*)Alu)->accum = ((ALU*)Alu)->Stack.back().accum;
-									continue;
-								}
-				*/
-				ProgFU(i->atr, i->Load); // Выполнение команды
+				ProgFU(i->atr, i->Load, this); // Р’С‹РїРѕР»РЅРµРЅРёРµ РєРѕРјР°РЅРґС‹
 			}
 
-			if (CycleStop != 0) // Остановка циклов
-				if (!CycleMode) // Если не в режиме цикла, то просто выходим из уровня
+			if (CycleStop != 0) // РћСЃС‚Р°РЅРѕРІРєР° С†РёРєР»РѕРІ
+				if (!CycleMode) // Р•СЃР»Рё РЅРµ РІ СЂРµР¶РёРјРµ С†РёРєР»Р°, С‚Рѕ РїСЂРѕСЃС‚Рѕ РІС‹С…РѕРґРёРј РёР· СѓСЂРѕРІРЅСЏ
 					return;
-				else
+				else {
 					if (CycleStop > 0)
-						CycleStop--; // уменьшение счетчика выходов из цикла
+					{
+						CycleStop--; // СѓРјРµРЅСЊС€РµРЅРёРµ СЃС‡РµС‚С‡РёРєР° РІС‹С…РѕРґРѕРІ РёР· С†РёРєР»Р°
+						if(!CycleStop) return;
+					}
 					else
 					{
-						CycleStop++;
-						if (!CycleStop) // уменьшение счетчика выходов из цикла
-							i = Uk->begin(); // Продолжение цикла
-						return;
+						CycleStop++; // СѓРјРµРЅСЊС€РµРЅРёРµ СЃС‡РµС‚С‡РёРєР° РІС‹С…РѕРґРѕРІ РёР· С†РёРєР»Р°
+						if (CycleStop) 
+							return;
 					}
+				}
 			if (ProgStop > 0) { ProgStop--; return; }
-			if (ProgStopAll)
-			{
-				return;
-			} // Внеочередной выход из подпрограммы
+			if (ProgStopAll) { return; } // Р’РЅРµРѕС‡РµСЂРµРґРЅРѕР№ РІС‹С…РѕРґ РёР· РїРѕРґРїСЂРѕРіСЂР°РјРјС‹
 		}
 	} while (RepeatF || CycleMode > 0);
 }
 
-// Запуск программы по указателю из нарузки ИП
-void FU::ProgExec(LoadPoint Uk, unsigned int CycleMode, FU* Bus, vector<ip>::iterator* Start) // Исполнение программы из ИК
+// Р—Р°РїСѓСЃРє РїСЂРѕРіСЂР°РјРјС‹ РїРѕ СѓРєР°Р·Р°С‚РµР»СЋ РёР· РЅР°СЂСѓР·РєРё РРџ
+void FU::ProgExec(LoadPoint Uk, unsigned int CycleMode, FU* Bus, vector<ip>::iterator* Start) // РСЃРїРѕР»РЅРµРЅРёРµ РїСЂРѕРіСЂР°РјРјС‹ РёР· РРљ
 {
 	if (Uk.isIC())
 		ProgExec(Uk.Point, CycleMode, Bus, Start);
 }
 
-void FU::MkExec(int MK, LoadPoint Load, FU* BusContext, bool Ext) // Выдача МК с нагрузкой
+void FU::MkExec(int MK, LoadPoint Load, FU* BusContext, bool Ext) // Р’С‹РґР°С‡Р° РњРљ СЃ РЅР°РіСЂСѓР·РєРѕР№
 {
-	if (MK < FUMkRange && !Ext) // Если МК адресована сомому ФУ
-		ProgFU(MK, Load);
+	if (MK < FUMkRange && !Ext) // Р•СЃР»Рё РњРљ Р°РґСЂРµСЃРѕРІР°РЅР° СЃРѕРјРѕРјСѓ Р¤РЈ
+		ProgFU(MK, Load, this);
 	else
 		if (BusContext != nullptr)
-			BusContext->ProgFU(MK, Load);
+			BusContext->ProgFU(MK, Load, this);
 		else
-			Bus->ProgFU(MK, Load);
+			Bus->ProgFU(MK, Load, this);
 }
 
-void FU::MkExec(LoadPoint Mk, LoadPoint Load, FU* BusContext, bool Ext) // Выдача МК с нагрузкой
+void FU::MkExec(LoadPoint Mk, LoadPoint Load, FU* BusContext, bool Ext) // Р’С‹РґР°С‡Р° РњРљ СЃ РЅР°РіСЂСѓР·РєРѕР№
 {
 	if (Mk.Type >> 1 == Dint && Mk.Point != nullptr)
 	{
 		int MK = *(int*)Mk.Point;
-		if (MK < FUMkRange && !Ext) // Если МК адресована сомому ФУ
-			ProgFU(MK, Load);
+		if (MK < FUMkRange && !Ext) // Р•СЃР»Рё РњРљ Р°РґСЂРµСЃРѕРІР°РЅР° СЃРѕРјРѕРјСѓ Р¤РЈ
+			ProgFU(MK, Load, this);
 		else
 			if (BusContext != nullptr)
-				BusContext->ProgFU(MK, Load);
+				BusContext->ProgFU(MK, Load, this);
 			else
-				Bus->ProgFU(MK, Load);
+				Bus->ProgFU(MK, Load, this);
 	}
 }
 
-void FU::Scheduling()
+void FU::MkAwait(int MK, LoadPoint Load, FU* Sender, double Delay) // ?????????? ?? ??? ???????? ?? ??????? ??? ?????????????
+{
+	if (Modeling == nullptr || Modeling->eventser == nullptr)
+	{
+		ProgFU(MK, Load, Sender);
+		return;
+	}
+	double t;
+	ip IP= {MK, Load};
+//	LoadPoint LP = { Tdouble, &t };
+//	Modeling->eventser->ProgFU(EventserCurrentTimeOutMk, LP, this); // ????? ??????? ????? ?? ??????????? ???????
+//	Modeling->qAwaitMk.insert({ t + Delay, {MK, Load, Sender} }); // ????????? ????? ?????????? ??????? ?? ? ??????? ????????
+
+	Modeling->eventser->ProgFU(EventserFUSetMk, { CFU, this }, this); // ????????? ????? ??????? ? ?????? ????????? ???????
+	Modeling->eventser->ProgFU(EventTimeSetMk, { Cdouble, &Delay }, this); // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РІСЂРµСЏРј Р·Р°РґРµСЂР¶РєРё РѕР¶РёРґР°РµРјРѕР№ РњРљ
+	Modeling->eventser->ProgFU(AwaitMkSetMk, { CIP, &IP}, this); // ????????? ????? ??????? ? ?????? ????????? ???????
+}
+/*
+void FU::Scheduling(bool SchedulerFlag)
 {
 	if (Modeling == nullptr) return;
 	if (Modeling->qmk.size() != 0)
 	{
-		Modeling->SchedulerFlag = true;
+		Modeling->SchedulerFlag = SchedulerFlag;
 		if (Modeling->qmk.size() == 0)
 			cout << "Modeling error\n";
 		else
 		{
 			ip t = Modeling->qmk.back();
 			Modeling->qmk.pop_back();
-			ProgFU(t.atr, t.Load);
+			ProgFU(t.atr, t.Load, this);
 			if (t.Load.Type % 2 == 1 && t.Load.Point != nullptr)
 				t.Load.VarDel();
 		}
 	}
 }
+*/
 
-bool LoadCmp(LoadPoint x, LoadPoint y) // Сравнение двух нагрузок ИП
+void FU::Scheduling(bool SchedulerFlag)
 {
-	// Доработать с указателями на ИК и ИП
+	if (Modeling == nullptr)
+	{
+		cout << "Modeling error: Modeling=null\n";
+		return;
+	}
+	Modeling->SchedulerFlag = SchedulerFlag;
+	if (SchedulerFlag) {
+		if (Modeling->qmk.size() != 0)
+		{
+			if (Modeling->qmk.size() == 0)
+				cout << "Modeling error: qmk.size() = 0\n";
+			else
+			{
+				ipSender t = Modeling->qmk.back();
+				Modeling->qmk.pop_back();
+				ProgFU(t.atr, t.Load, t.Sender);
+				if (t.Load.Type % 2 == 1 && t.Load.Point != nullptr)
+					t.Load.VarDel();
+			}
+		}
+	}
+	else
+	{// MkReceive awaiting РџСЂРёС…РѕРґ РѕР¶РёРґР°РµРјРѕР№ РњРљ
+		if (Modeling->qAwaitMk.size() != 0)
+		{
+			if (Modeling->qAwaitMk.size() == 0)
+				cout << "Modeling error: qAwaitMk.size() = 0\n";
+			else
+			{
+				ipSender t = Modeling->qAwaitMk.begin()->second;
+				Modeling->qAwaitMk.erase(Modeling->qAwaitMk.begin());
+				ProgFU(t.atr, t.Load, t.Sender);
+				if (t.Load.Type % 2 == 1 && t.Load.Point != nullptr)
+					t.Load.VarDel();
+			}
+		}
+	}
+}
+
+void FUModeling::EventModelingPrint() // Р’С‹РІРµСЃС‚Рё СЃРѕСЃС‚РѕСЏРЅРёРµ РјРѕРґРµР»РёСЂРѕРІР°РЅРёСЏ Р¤РЈ
+{
+	cout << "qmk: " << endl;
+	for (auto i : qmk)
+		cout << i.atr << "=" << i.Load.Type << endl;
+	cout << "qAwaitMk: " << endl;
+	for (auto i : qAwaitMk)
+		cout << "Time: " << i.first << " MK: "<< i.second.atr << "=" << i.second.Load.Type << endl;
+}
+
+bool LoadCmp(LoadPoint x, LoadPoint y) // РЎСЂР°РІРЅРµРЅРёРµ РґРІСѓС… РЅР°РіСЂСѓР·РѕРє РРџ
+{
+	// Р”РѕСЂР°Р±РѕС‚Р°С‚СЊ СЃ СѓРєР°Р·Р°С‚РµР»СЏРјРё РЅР° РРљ Рё РРџ
 	if (x.Point == nullptr || y.Point == nullptr)
 		return true;
 	int xt = x.Type >> 1, yt = y.Type >> 1;
@@ -2032,7 +2071,7 @@ bool LoadCmp(LoadPoint x, LoadPoint y) // Сравнение двух нагрузок ИП
 	return false;
 }
 
-bool IPCmp(ip* x, ip* y) // Сравнение двух  ИП
+bool IPCmp(ip* x, ip* y) // РЎСЂР°РІРЅРµРЅРёРµ РґРІСѓС…  РРџ
 {
 	if (!LoadCmp(x->Load, y->Load))
 		return false;
@@ -2043,8 +2082,8 @@ bool IPCmp(ip* x, ip* y) // Сравнение двух  ИП
 			return false;
 }
 
-// Работа с ИК
-bool AtrSearch(void* uk, int Atr) // Поиск атриубута в ИК
+// Р Р°Р±РѕС‚Р° СЃ РРљ
+bool AtrSearch(void* uk, int Atr) // РџРѕРёСЃРє Р°С‚СЂРёСѓР±СѓС‚Р° РІ РРљ
 {
 	for (auto& i : *(IC_type)uk)
 		if (i.atr == Atr)
@@ -2052,7 +2091,7 @@ bool AtrSearch(void* uk, int Atr) // Поиск атриубута в ИК
 	return false;
 }
 
-int AtrCounter(void* uk, int Atr) // Подсчет количества ИП с заданнным атриубутом в ИК
+int AtrCounter(void* uk, int Atr) // РџРѕРґСЃС‡РµС‚ РєРѕР»РёС‡РµСЃС‚РІР° РРџ СЃ Р·Р°РґР°РЅРЅРЅС‹Рј Р°С‚СЂРёСѓР±СѓС‚РѕРј РІ РРљ
 {
 	int c = 0;
 	for (auto& i : *(IC_type)uk)
@@ -2061,26 +2100,26 @@ int AtrCounter(void* uk, int Atr) // Подсчет количества ИП с заданнным атриубуто
 	return c;
 }
 
-void ICDel(void* Uk) // Удаление ИК
+void ICDel(void* Uk) // РЈРґР°Р»РµРЅРёРµ РРљ
 {
 	for (auto&& i : *(IC_type)Uk)
 		i.Load.Clear();
 	delete (IC_type)Uk;
 }
 
-void ICDel(LoadPoint& Uk)// Удаление ИК
+void ICDel(LoadPoint& Uk)// РЈРґР°Р»РµРЅРёРµ РРљ
 {
 	if (!Uk.isIC()) return;
 	ICDel(Uk.Point);
 	Uk = { 0,nullptr };
 }
 
-LoadPoint ICCopy(LoadPoint uk, bool Copy) // Копирование ИК (Copy - флаг принудительного копирования всех ИК в ОА-графе)
+LoadPoint ICCopy(LoadPoint uk, bool Copy) // РљРѕРїРёСЂРѕРІР°РЅРёРµ РРљ (Copy - С„Р»Р°Рі РїСЂРёРЅСѓРґРёС‚РµР»СЊРЅРѕРіРѕ РєРѕРїРёСЂРѕРІР°РЅРёСЏ РІСЃРµС… РРљ РІ РћРђ-РіСЂР°С„Рµ)
 {
 	IC_type CapsNew = new vector<ip>;
-	if (uk.Type >> 1 == DIP) // Если передается ИП
+	if (uk.Type >> 1 == DIP) // Р•СЃР»Рё РїРµСЂРµРґР°РµС‚СЃСЏ РРџ
 	{
-		CapsNew->push_back(*(*(ip*)uk.Point).Сlone());
+		CapsNew->push_back(*(*(ip*)uk.Point).РЎlone());
 		return { uk.Type, CapsNew };
 	}
 	IC_type Uk = (IC_type)uk.Point;
@@ -2090,19 +2129,19 @@ LoadPoint ICCopy(LoadPoint uk, bool Copy) // Копирование ИК (Copy - флаг принуди
 		j->atr = i->atr;
 		if (Copy and i->Load.isIC())
 			j->Load = ICCopy(i->Load, true);
-		//j->Load.Copy({ i->Load.Type | 1, i->Load.Point, i->Load.Ind }); // Преобразовать к константе, чтобы произошло копирование
+		//j->Load.Copy({ i->Load.Type | 1, i->Load.Point, i->Load.Ind }); // РџСЂРµРѕР±СЂР°Р·РѕРІР°С‚СЊ Рє РєРѕРЅСЃС‚Р°РЅС‚Рµ, С‡С‚РѕР±С‹ РїСЂРѕРёР·РѕС€Р»Рѕ РєРѕРїРёСЂРѕРІР°РЅРёРµ
 		else
 			j->Load.Copy(i->Load);
 	}
 	return { uk.Type, CapsNew };
 }
 
-void* GraphCopy(void* Uk, LocatTable* Table = nullptr) // Копирование ОА-графа
+void* GraphCopy(void* Uk, LocatTable* Table = nullptr) // РљРѕРїРёСЂРѕРІР°РЅРёРµ РћРђ-РіСЂР°С„Р°
 {
 	return nullptr;
 }
 
-void GraphDel(void* Uk, LocatTable* Table = nullptr) // Удаление ОА-графа
+void GraphDel(void* Uk, LocatTable* Table = nullptr) // РЈРґР°Р»РµРЅРёРµ РћРђ-РіСЂР°С„Р°
 {
 	return;
 }
@@ -2110,7 +2149,7 @@ void GraphDel(void* Uk, LocatTable* Table = nullptr) // Удаление ОА-графа
 
 
 
-// Найти в ИК ИП с атрибутом Atr и выполнить программу либо по адр. в нагрузке, либо после найденной ИП, если атрибут не найден, возвращается true
+// РќР°Р№С‚Рё РІ РРљ РРџ СЃ Р°С‚СЂРёР±СѓС‚РѕРј Atr Рё РІС‹РїРѕР»РЅРёС‚СЊ РїСЂРѕРіСЂР°РјРјСѓ Р»РёР±Рѕ РїРѕ Р°РґСЂ. РІ РЅР°РіСЂСѓР·РєРµ, Р»РёР±Рѕ РїРѕСЃР»Рµ РЅР°Р№РґРµРЅРЅРѕР№ РРџ, РµСЃР»Рё Р°С‚СЂРёР±СѓС‚ РЅРµ РЅР°Р№РґРµРЅ, РІРѕР·РІСЂР°С‰Р°РµС‚СЃСЏ true
 bool AtrProgExec(vector<ip>* Prog, int Atr, FU* Bus, bool AfterContinue)
 {
 	auto i = Prog->begin();
@@ -2126,7 +2165,7 @@ bool AtrProgExec(vector<ip>* Prog, int Atr, FU* Bus, bool AfterContinue)
 	return false;
 }
 
-ip* AtrFind(void* IC, int Atr) // Поиск в ИК ИП с заданным атрутом
+ip* AtrFind(void* IC, int Atr) // РџРѕРёСЃРє РІ РРљ РРџ СЃ Р·Р°РґР°РЅРЅС‹Рј Р°С‚СЂСѓС‚РѕРј
 {
 	if (IC == nullptr) return nullptr;
 	auto uk = (*(IC_type)IC).begin();
@@ -2138,7 +2177,7 @@ ip* AtrFind(void* IC, int Atr) // Поиск в ИК ИП с заданным атрутом
 	return nullptr;
 }
 
-bool isIPinIC(void* iP, void* iC) //проверка, что ИП входит в ИК
+bool isIPinIC(void* iP, void* iC) //РїСЂРѕРІРµСЂРєР°, С‡С‚Рѕ РРџ РІС…РѕРґРёС‚ РІ РРљ
 {
 	for (auto i = ((IC_type)iC)->begin(); i != ((IC_type)iC)->end(); i++) {
 		if (IPCmp(i._Ptr, ((ip*)iP)))
@@ -2147,19 +2186,19 @@ bool isIPinIC(void* iP, void* iC) //проверка, что ИП входит в ИК
 	return false;
 }
 
-void ICCopyConcat(void* uk, void* uk2) // Конкатенация двух ИК
+void ICCopyConcat(void* uk, void* uk2) // РљРѕРЅРєР°С‚РµРЅР°С†РёСЏ РґРІСѓС… РРљ
 {
 	//copy( ((IC_type)uk2)->begin(), ((IC_type)uk2)->end(), inserter(*((IC_type)uk), ((IC_type)uk)->end()));
 	for (auto& i : *(IC_type)uk2)
 		((IC_type)uk)->push_back(i.Copy());
 }
 
-int ICLen(void* uk) // Определитель длины ИК
+int ICLen(void* uk) // РћРїСЂРµРґРµР»РёС‚РµР»СЊ РґР»РёРЅС‹ РРљ
 {
 	return (((IC_type)uk)->size());
 }
 
-vector<ip>::iterator IPSearch(void* ic, ip IP) // Поиск ИП в ИК (возвращается указатель на персую найденную ИП
+vector<ip>::iterator IPSearch(void* ic, ip IP) // РџРѕРёСЃРє РРџ РІ РРљ (РІРѕР·РІСЂР°С‰Р°РµС‚СЃСЏ СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РїРµСЂСЃСѓСЋ РЅР°Р№РґРµРЅРЅСѓСЋ РРџ
 {
 	for (auto i = ((IC_type)ic)->begin(); i != ((IC_type)ic)->end(); i++)
 		if (IPCmp(i._Ptr, &IP))
@@ -2167,7 +2206,7 @@ vector<ip>::iterator IPSearch(void* ic, ip IP) // Поиск ИП в ИК (возвращается ук
 	return ((IC_type)ic)->end();
 }
 
-vector<ip>::iterator IPSearch(void* ic, LoadPoint IP) // Поиск ИП в ИК (возвращается указатель на персую найденную ИП
+vector<ip>::iterator IPSearch(void* ic, LoadPoint IP) // РџРѕРёСЃРє РРџ РІ РРљ (РІРѕР·РІСЂР°С‰Р°РµС‚СЃСЏ СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РїРµСЂСЃСѓСЋ РЅР°Р№РґРµРЅРЅСѓСЋ РРџ
 {
 	if (IP.isIP())
 		return IPSearch(ic, *((ip*)IP.Point));
@@ -2175,25 +2214,25 @@ vector<ip>::iterator IPSearch(void* ic, LoadPoint IP) // Поиск ИП в ИК (возвраща
 		return IPSearch(ic, *((IC_type)IP.Point)->begin());
 	return ((IC_type)ic)->end();
 }
-void IPAdd(void* IC, ip IP) // Добавить ИП в конец ИК
+void IPAdd(void* IC, ip IP) // Р”РѕР±Р°РІРёС‚СЊ РРџ РІ РєРѕРЅРµС† РРљ
 {
 	((vector<ip>*)IC)->push_back(IP.Copy());
 }
 
-void IPAdd(LoadPoint IC, ip IP) // Добавить ИП в конец ИК
+void IPAdd(LoadPoint IC, ip IP) // Р”РѕР±Р°РІРёС‚СЊ РРџ РІ РєРѕРЅРµС† РРљ
 {
 	if (!IC.isIC())return;
 	IPAdd(IC.Point, IP);
 }
 
-void* MakeLoadFromDouble(double x, unsigned int Type) // Создать нагрузку из типа double
+void* MakeLoadFromDouble(double x, unsigned int Type) // РЎРѕР·РґР°С‚СЊ РЅР°РіСЂСѓР·РєСѓ РёР· С‚РёРїР° double
 {
-	if (Type > 0) // Задан тип
+	if (Type > 0) // Р—Р°РґР°РЅ С‚РёРї
 	{
 		LoadPoint P = { Type, nullptr };
 		if (!P.isDigitBool()) return nullptr;
 	}
-	else // Автоматическое определерние типа
+	else // РђРІС‚РѕРјР°С‚РёС‡РµСЃРєРѕРµ РѕРїСЂРµРґРµР»РµСЂРЅРёРµ С‚РёРїР°
 	{
 		if (x == 0 || x == 1)
 			Type = Tbool;
@@ -2220,39 +2259,39 @@ void* MakeLoadFromDouble(double x, unsigned int Type) // Создать нагрузку из тип
 	}
 };
 
-LoadVect_type LoadPoint::Vect() // Возвращает укаазатель на вектор
+LoadVect_type LoadPoint::Vect() // Р’РѕР·РІСЂР°С‰Р°РµС‚ СѓРєР°Р°Р·Р°С‚РµР»СЊ РЅР° РІРµРєС‚РѕСЂ
 {
 //	if (!isVect()) return nullptr;
 	return (LoadVect_type)Point;
 }
-IC_type LoadPoint::IC() // Возвращает указатель на ИК
+IC_type LoadPoint::IC() // Р’РѕР·РІСЂР°С‰Р°РµС‚ СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РРљ
 {
 //	if (!isIC()) return nullptr;
 	return (IC_type)Point;
 }
 
-LoadPoint LoadNew(int t) //Создание нагрузки от перененной
+LoadPoint LoadNew(int t) //РЎРѕР·РґР°РЅРёРµ РЅР°РіСЂСѓР·РєРё РѕС‚ РїРµСЂРµРЅРµРЅРЅРѕР№
 {
 	return { Cint, (void*)&t };
 }
-LoadPoint LoadNew(double t) //Создание нагрузки от перененной
+LoadPoint LoadNew(double t) //РЎРѕР·РґР°РЅРёРµ РЅР°РіСЂСѓР·РєРё РѕС‚ РїРµСЂРµРЅРµРЅРЅРѕР№
 {
 	return { Cdouble, (void*)&t };
 }
-LoadPoint LoadNew(bool t) //Создание нагрузки от перененной
+LoadPoint LoadNew(bool t) //РЎРѕР·РґР°РЅРёРµ РЅР°РіСЂСѓР·РєРё РѕС‚ РїРµСЂРµРЅРµРЅРЅРѕР№
 {
 	return { Cbool, (void*)&t };
 }
-LoadPoint LoadNew(string t) //Создание нагрузки от перененной
+LoadPoint LoadNew(string t) //РЎРѕР·РґР°РЅРёРµ РЅР°РіСЂСѓР·РєРё РѕС‚ РїРµСЂРµРЅРµРЅРЅРѕР№
 {
 	return { Cstring, (void*)&t };
 }
-LoadPoint LoadNew(float t) //Создание нагрузки от перененной
+LoadPoint LoadNew(float t) //РЎРѕР·РґР°РЅРёРµ РЅР°РіСЂСѓР·РєРё РѕС‚ РїРµСЂРµРЅРµРЅРЅРѕР№
 {
 	return { Cfloat, (void*)&t };
 }
 
-LoadPoint CopyAdrCorrect(LoadPoint OriginalIC, LoadPoint CopyIC, LoadPoint Adr, set<void*> buf) // Корректировка адреса в копированной ИК (Переборный алгоритм)
+LoadPoint CopyAdrCorrect(LoadPoint OriginalIC, LoadPoint CopyIC, LoadPoint Adr, set<void*> buf) // РљРѕСЂСЂРµРєС‚РёСЂРѕРІРєР° Р°РґСЂРµСЃР° РІ РєРѕРїРёСЂРѕРІР°РЅРЅРѕР№ РРљ (РџРµСЂРµР±РѕСЂРЅС‹Р№ Р°Р»РіРѕСЂРёС‚Рј)
 {
 	if (buf.count(OriginalIC.Point)) return {};
 	buf.insert(OriginalIC.Point);

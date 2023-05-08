@@ -5,7 +5,7 @@
 #include <iostream>
 using namespace std;
 
-void StrGen::ProgFU(int MK, LoadPoint Load)
+void StrGen::ProgFU(int MK, LoadPoint Load, FU* Sender)
 {
 	switch (MK)
 	{
@@ -52,7 +52,7 @@ void StrGen::ProgFU(int MK, LoadPoint Load)
 			Point.Type = 2;
 			Point.Point = &str;
 
-			((FU*)Receiver)->ProgFU(ReceiverMK, Point);
+			((FU*)Receiver)->ProgFU(ReceiverMK, Point, this);
 			system("pause");
 		}
 		if (work) // выдача завершающей лексемы
@@ -60,7 +60,7 @@ void StrGen::ProgFU(int MK, LoadPoint Load)
 			LoadPoint Point;
 			Point.Type = 2;
 			Point.Point = &finStr;
-			((FU*)Receiver)->ProgFU(ReceiverMK, Point);
+			((FU*)Receiver)->ProgFU(ReceiverMK, Point, this);
 		}
 		Source.close();
 		TimeLong = clock() - TimeStart;
@@ -124,7 +124,7 @@ void StrGen::ProgFU(int MK, LoadPoint Load)
 		StopProg = Load.Point;
 		break;
 	default:
-		CommonMk(MK, Load);
+		CommonMk(MK, Load, Sender);
 		break;
 	}
 }
