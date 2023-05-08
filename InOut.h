@@ -19,7 +19,7 @@ private:
 	map<int, void*> StageOutProg;  // программы на состояних автомата (запуск программы по атрибуту для reciever-a)
 	int StageProgMk = -1;  // МК для установки программы для состояния
 public:
-	void ProgFU(int MK, LoadPoint Load) override;
+	void ProgFU(int MK, LoadPoint Load, FU* Sender = nullptr) override;
 	AutomatManager(FU* BusContext, FU* Templ) : FU(BusContext) { Bus = BusContext;  Template = new vector<ip>; ProgFU(0, { 0,0 }); };
 	AutomatManager() : FU() { Bus = nullptr; };
 };
@@ -107,7 +107,7 @@ private:
 public:
 	int CurrentCh = -1;  // ??? номер текущего канала, на который пришли данные
 	int ChMkAtrCount = 0;  // счётчик фаз команды
-	void ProgFU(int MK, LoadPoint Load) override;
+	void ProgFU(int MK, LoadPoint Load, FU* Sender=nullptr) override;
 	InOut(FU* BusContext, FU* Templ) : FU(BusContext) { Bus = BusContext; ProgFU(0, { 0,0 }); };
 	InOut() : FU() { Bus = nullptr; };
 	int ArchSignalVolume = 2; // Количество архивных сигналов

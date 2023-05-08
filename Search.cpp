@@ -13,11 +13,11 @@ bool Search::PredicatCalc(IC_type Templ) // Функция вычисления предиката, если о
 	if (Alu == nullptr) // Создание АЛУ
 	{
 		Alu = (FU*)new ALU({});
-		Alu->ProgFU(0, { 0,nullptr });
+		Alu->ProgFU(0, { 0,nullptr }, nullptr);
 	}
 	double tt = 1;
 	Alu->ProgExec(t->Load);
-	Alu->ProgFU(2, {Tdouble, &tt}); // Чтение результата из АЛУ
+	Alu->ProgFU(2, {Tdouble, &tt}, nullptr); // Чтение результата из АЛУ
 	return tt;
 }
 

@@ -4,7 +4,7 @@
 
 using namespace std;
 
-void List::ProgFU(int MK, LoadPoint Load)
+void List::ProgFU(int MK, LoadPoint Load, FU* Sender)
 {
 	if (PrefixProg != nullptr)
 	{
@@ -1288,7 +1288,7 @@ void List::ProgFU(int MK, LoadPoint Load)
 			ProgExec(Load);
 		break;
 	default:
-		CommonMk(MK, Load);
+		CommonMk(MK, Load, Sender);
 		break;
 	}
 	if (ListHead.size() == 1 && PostfixProg!=nullptr)

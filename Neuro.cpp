@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Neuro.h"
 
-void Neuro::ProgFU(int MK, LoadPoint Load)
+void Neuro::ProgFU(int MK, LoadPoint Load, FU* Sender)
 {
 	switch (MK)
 	{
@@ -145,7 +145,7 @@ void Neuro::ProgFU(int MK, LoadPoint Load)
 		}
 		break;
 	default:
-		CommonMk(MK, Load);
+		CommonMk(MK, Load, Sender);
 		break;
 	}
 }

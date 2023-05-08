@@ -3,6 +3,7 @@
 #include <set>
 #include <map>
 #include <vector>
+#include <algorithm>
 
 struct MkFu
 {
@@ -56,5 +57,12 @@ public:
 	map<int,MkFu> UnicAtr; // Список специфических атрибутов, по которым идет обработки другими ФУ
 	int LastUnicAtr = 0; // Последний уникальный атрибут (чтобы можно было потом добавить к нему МК и адрес ФУ)
 	// Буфер описаний лексем {"dsfsdf",-3,"dfsdfs",""}
-//	void Debug(char i, int S, string FigureBuf); // --- для отладки, позже удалить
+
+	//Enver// 
+	vector <pair <string, string> > Comments = {{"//", ""}, {"/*", "*/"}}; //Буфер обозначений комментариев
+	int commentIndex = -1; //позиция найденного символа комментария в буфере обозначений комментариев
+	bool isCommentPart = false; //флаг совпадения символа текущей лексемы и комментария
+	bool isCommentFull = false; //флаг совпадения всех символов текущей лексемы и комментария
+	
+	void Debug(char i, int S, string FigureBuf); // --- для отладки, позже удалить
 };

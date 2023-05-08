@@ -5,7 +5,7 @@
 
 const int Key = 1, KeyToRight = 3, DownARight = 5, DownA = 7, Cof=9, Zero = 11, SumToLeft = 13, SumToLeftUp=15, Up=17;
 
-void GaussPoint::ProgFU(int MK, LoadPoint Load)
+void GaussPoint::ProgFU(int MK, LoadPoint Load, FU* Sender)
 {
 	if (Modeling != nullptr && Modeling->ManualMode && Modeling->scheduler != nullptr && !Modeling->SchedulerFlag)
 	{
@@ -88,7 +88,7 @@ void GaussPoint::ProgFU(int MK, LoadPoint Load)
 			Neighbours[1]->ProgFU(SumToLeftUp, { 0, nullptr });
 		break;
 	default:
-		CommonMk(MK, Load);
+		CommonMk(MK, Load, Sender);
 		break;
 	}
 
@@ -96,7 +96,7 @@ void GaussPoint::ProgFU(int MK, LoadPoint Load)
 		((Scheduler*)Modeling->scheduler)->CoreFree();
 }
 
-void Gauss::ProgFU(int MK, LoadPoint Load)
+void Gauss::ProgFU(int MK, LoadPoint Load, FU* Sender)
 {
 	switch (MK)
 	{
@@ -159,7 +159,7 @@ void Gauss::ProgFU(int MK, LoadPoint Load)
 	}
 
 	default:
-		CommonMk(MK, Load);
+		CommonMk(MK, Load, Sender);
 		break;
 	}
 }

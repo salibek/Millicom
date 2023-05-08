@@ -17,22 +17,89 @@ NewFU={Mnemo="Console1" FUType=FUConsNew Hint="Консоль для вывода логов"}
 NewFU={Mnemo="Console2" FUType=FUConsNew Hint="Консоль для вывода логов"}
 NewFU={Mnemo="Router" FUType=FURouter}
 NewFU={Mnemo="Gateway" FUType=FUGateway}
+NewFU={Mnemo="Gateway2" FUType=FUGateway}
+NewFU={Mnemo="Gateway3" FUType=FUGateway}
+NewFU={Mnemo="Gateway4" FUType=FUGateway}
+NewFU={Mnemo="Eventser" FUType=FUEventserNew}
+NewFU={Mnemo="Scheduller" FUType=FUSchedulerNew}
+NewFU={Mnemo="Scheduller1" FUType=FUSchedulerNew}
+NewFU={Mnemo="Scheduller2" FUType=FUSchedulerNew}
+NewFU={Mnemo="Scheduller3" FUType=FUSchedulerNew}
+NewFU={Mnemo="Scheduller4" FUType=FUSchedulerNew}
 
 MainBus.PartialResetSet \\ Запомнить число созданных ФУ
 MainBus.ModeSet=2
 
+Gateway2.ContextOutMk=Gateway.GatewayFriendSet
+Gateway.ContextOutMk=Gateway2.GatewayFriendSet
+Gateway3.ContextOutMk=Gateway4.GatewayFriendSet
+Gateway4.ContextOutMk=Gateway3.GatewayFriendSet
+
 Console.QuoteSet=""
 
-Console1.PrefixSet="Console: "
+Console1.PrefixSet="Console1: "
 Console2.PrefixSet="Console2: "
 
 Router.ChCreate=10000
-Console1.ContextOutMk=Router.ChGatewaySet
+Router.ChDelaySet=1
+Gateway.ContextOutMk=Router.ChGatewaySet
+Router.ContextOutMk=Gateway.ReceiverSet
+Console1.ContextOutMk=Gateway2.ReceiverSet
 
 Router.ChCreate=11000
-Console2.ContextOutMk=Router.ChGatewaySet
+Router.ChDelaySet=1
+Gateway3.ContextOutMk=Router.ChGatewaySet
+Router.ContextOutMk=Gateway3.ReceiverSet
+Console2.ContextOutMk=Gateway4.ReceiverSet
 
-Router.RoutingSimulat={10002=13}
-Router.RoutingSimulat={11002=17}
+Gateway.ProcessingTimeSet=1
+Gateway2.ProcessingTimeSet=1
+Gateway3.ProcessingTimeSet=1
+Gateway4.ProcessingTimeSet=1
+
+Router.RouterTimeSet=1
+Gateway.MkTransmTimeSet=1
+Gateway2.MkTransmTimeSet=1
+Gateway3.MkTransmTimeSet=1
+Gateway4.MkTransmTimeSet=1
+
+Gateway.FUNameSet="Gateway"
+Gateway2.FUNameSet="Gateway2"
+Gateway3.FUNameSet="Gateway3"
+Gateway4.FUNameSet="Gateway4"
+Router.FUNameSet="Router"
+
+Eventser.ContextOutMk=Scheduller.EventserSet
+Eventser.ContextOutMk=Scheduller1.EventserSet
+Eventser.ContextOutMk=Scheduller2.EventserSet
+Eventser.ContextOutMk=Scheduller3.EventserSet
+Eventser.ContextOutMk=Scheduller4.EventserSet
+
+Eventser.ContextOutMk=Console1.EventserSet
+Eventser.ContextOutMk=Console2.EventserSet
+Eventser.ContextOutMk=Router.EventserSet
+Eventser.ContextOutMk=Gateway.EventserSet
+Eventser.ContextOutMk=Gateway2.EventserSet
+Eventser.ContextOutMk=Gateway3.EventserSet
+Eventser.ContextOutMk=Gateway4.EventserSet
+Scheduller.ContextOutMk=Router.SchedulerSet
+Scheduller1.ContextOutMk=Gateway.SchedulerSet
+Scheduller2.ContextOutMk=Gateway2.SchedulerSet
+Scheduller3.ContextOutMk=Gateway3.SchedulerSet
+Scheduller4.ContextOutMk=Gateway4.SchedulerSet
+
+//Router.RoutingSimulat={11002=18}
+//Router.RoutingSimulat={10002=13}
+
+Gateway4.ContextOutMk=Eventser.FUSet
+Eventser.EventAwaitSet={FUGateway.RoutingSimulat={10002=20}}
+Gateway4.ContextOutMk=Eventser.FUSet
+Eventser.EventAwaitSet={FUGateway.RoutingSimulat={10002=15}}
+Gateway2.ContextOutMk=Eventser.FUSet
+Eventser.EventAwaitSet={FUGateway.RoutingSimulat={11002=13}}
+//Gateway2.RoutingSimulat={11002=17}
+
+Eventser.Start
  
 Console.Out="ChNum: " Router.ChNumOutMk=Console.OutLn
+Console.Out="Work time: " Eventser.TimeOutMk=Console.OutLn

@@ -20,7 +20,7 @@ private:
 	void *StartProg = nullptr, *FinProg = nullptr, *StopProg = nullptr; // Ссылки на программы, аапускаемые при начале, оокончании и прерывании генерации строк
 	string finStr = ""; // Строка, выдаваемая при окончании геренации строк
 public:
-	void ProgFU(int MK, LoadPoint Load) override;
+	void ProgFU(int MK, LoadPoint Load, FU* Sender = nullptr) override;
 	StrGen(FU* BusContext, FU* Templ) : FU(BusContext) { ProgFU(0, { 0, nullptr }); Bus = BusContext; FUtype = 2; };
 	StrGen(): FU() { StrGen(nullptr, nullptr); };
 };

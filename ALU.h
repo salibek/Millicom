@@ -49,7 +49,7 @@ public:
 	Alu = (FU*)this; // Настроить ссылку на АЛУ на самого себя
 	ALUCreating = false;
 	};
-	void ProgFU(int MK, LoadPoint Load) override;
+	void ProgFU(int MK, LoadPoint Load, FU* Sender = nullptr) override;
 	void VectOperation(int MK, LoadPoint Load); // Реализацая векторных операций
 	void		add(LoadPoint load);
 	void		Clear();

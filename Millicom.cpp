@@ -58,11 +58,10 @@ int main(int argc, char* argv[])
 //	string STR = "Gauss.ind";
 //	string STR = "ALE3.ind";
 //	string STR = "MeanShift.ind";
-//	string STR = "Bag.ind";
 //	string STR = "NetTemperat2.ind";
-	STR = "CompileC.ind";
-//	STR = "Router.ind";
-	//	string STR = "OAGraphOut.ind";
+//	STR = "CompileC.ind";
+	STR = "Router.ind";
+//	string STR = "OAGraphOut.ind";
 //	string STR = "MultyList.ind";
 //	STR = "CompLab.ind";
 //	STR = "AlU_test.ind";

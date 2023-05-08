@@ -7,7 +7,7 @@
 class CellularAutomat : public FU {
 //private:
 public:
-	void ProgFU(int MK, LoadPoint Load) override;
+	void ProgFU(int MK, LoadPoint Load, FU* Sender = nullptr) override;
 	CellularAutomat(FU* BusContext, FU* Templ) : FU(BusContext) { FUtype = 18; Bus = BusContext; ProgFU(0, { 0,nullptr }); };
 	CellularAutomat() : FU() { Bus = nullptr; ProgFU(0, { 0,nullptr });};
 	void* Manager = nullptr;// Ссылка на менеджера
@@ -39,13 +39,14 @@ public:
 	int State = 0; // Состояние автомата
 	int MkToSet = -1; // Милликоманда по умолчанию для установки ???
 	double ReceiveTime=0, CalcTime=0, SendTime=0, OtherMkTime=0; // Время задержки чтения, вычисления, записи данных
+	double TransferTime = 0; // Време передачи данных от одного автомата другому
 };
 
 // Менеджер простейшего клеточного автомата (устройство для вычисления сеточных функций)
 class CellularAutomatManager : public FU {
 	//private:
 public:
-	void ProgFU(int MK, LoadPoint Load) override;
+	void ProgFU(int MK, LoadPoint Load, FU* Sender = nullptr) override;
 	int NetType = 0;// Тип автоматной сетки 0 - не задано, 1- квадратная, 2 - треугольная, 3 гексагональная
 	CellularAutomatManager(FU* BusContext, FU* Templ) : FU(BusContext) { FUtype = 19; Bus = BusContext; ProgFU(0, { 0,nullptr });};
 	CellularAutomatManager() : FU() { Bus = nullptr; };
