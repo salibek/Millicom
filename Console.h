@@ -21,7 +21,7 @@ private:
 	ofstream fin; // ??
 	FILE* streamOut, *streamIn; // Входной/выходной файлы
 	string Sep = " ", VectSep=",", End = "\n"; // Строка-разделитель и строка в конце вывода
-	string quote = "\""; // Символ кавычек при выводе строки
+	string quote = ""; // Символ кавычек при выводе строки
 	string FloatPoint = "."; // Разделитель дробной части
 	string ArrayBracketStart = "[", ArrayBracketFin = "]"; // Начальная и конечная скобки для вывода вектора
 	vector<string> TrueVar = { "true","True" }; // Вектор значений "правда"
@@ -39,6 +39,6 @@ private:
 public:
 	void ProgFU(int MK, LoadPoint Load, FU* Sender = nullptr) override;
 	Console(FU* BusContext, FU* Templ) : FU(BusContext) { Bus = BusContext; FUtype = 1; };
-	Console() : FU() { Bus = nullptr; };
+	Console() : FU() { Console(nullptr, nullptr); };
 private:
 };

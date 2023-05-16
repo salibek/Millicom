@@ -5,6 +5,7 @@
 
 class Gateway : public FU
 {
+public:
 	double DelayFunc(); // Функция вычисления задержки передачи данных
 //	int GatewayMkRange = 0; // Диапазон МК для шлюза
 	double DataTransmRate = 0; // Скорость передачи данных (в бит/с)
@@ -36,4 +37,5 @@ public:
 		FUtype = 21;
 		ProgFU(0, { 0, nullptr });
 	};
+	Gateway(){Gateway(nullptr, nullptr);}
 };

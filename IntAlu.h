@@ -27,5 +27,5 @@ public:
 	int Fin = 0; // Конечное значение цикла
 	void ProgFU(int MK, LoadPoint Load, FU* Sender=nullptr);
 	IntAlu(FU* BusContext, FU* Templ=nullptr) : FU(BusContext) { ProgFU(0, { 0, nullptr }); Bus = BusContext; FUtype = 7; };
-	IntAlu() : FU() { IntAlu(nullptr, nullptr); };
+	IntAlu(){ IntAlu(nullptr, nullptr); };
 };

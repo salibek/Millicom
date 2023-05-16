@@ -23,6 +23,7 @@ class Router : public FU
 {
 public:
 	double DelayGen(channel ch); //Генерация задержки передачи данных
+	// Если начало и конец диапазонов равны нулю, то в данный канал пересылаются любые МК (т.е. это - канал для отправки МК по умолчанияю)
 
 //	int MkRangeStart = -1; // Диапазоны адресов МК для каждого из каналов (если нижний диапазон не указан, то он считается равным верхний диапазон + диапазон МК для устройства)
 //	vector<FU*> Gateways; // Вектор ссылок на шлюзы (входные и выходные)
@@ -50,12 +51,21 @@ public:
 	int DataCount = 0; // Объем переданной информации через роутер
 	int MaxMKQueue = 0; // Максимальная длина очереди
 	int DataSize = 0, MaxDataSize = 0; // Текущий объем занятого буфера и максимальный объем занятого буфера
+
+	vector <int> SectorDim; // Размеры областей для моделирования распределенной ВС
+	vector <int> SectorCoordinate; // Координата сектора, обслуживаемого роутером
+	vector <FU*> SectorReceivers; // Роутеры для обслуживания сектора
+	void NetRouting(int MK, LoadPoint Load, FU* Sender); // Маршрутизация в сети ФУ, разделенные на распределенные сетора
 	//	double AverageMKQueue = 0; // Средняя длина очереди
 public:
 	void ProgFU(int MK, LoadPoint Load, FU* Sender=nullptr) override;
 	Router(FU* BusContext, FU* Templ)
 	{
 		Bus = BusContext;
+		FUtype = 20;
+		ProgFU(0, { 0, nullptr });
+	};
+	Router() {
 		FUtype = 20;
 		ProgFU(0, { 0, nullptr });
 	};

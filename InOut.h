@@ -21,7 +21,7 @@ private:
 public:
 	void ProgFU(int MK, LoadPoint Load, FU* Sender = nullptr) override;
 	AutomatManager(FU* BusContext, FU* Templ) : FU(BusContext) { Bus = BusContext;  Template = new vector<ip>; ProgFU(0, { 0,0 }); };
-	AutomatManager() : FU() { Bus = nullptr; };
+	AutomatManager() { AutomatManager(nullptr, nullptr); };
 };
 /*
 class AutomatManager : public FU

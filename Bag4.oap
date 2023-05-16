@@ -28,8 +28,8 @@ MainBus.ModeSet=2
 
 Eventser.ContextOutMk=Scheduler.EventserSet
 
-V#10 // Объём рюкзака
-NItem#10  // Количество предметов для расположения в рюкзаке
+V#12 // Объём рюкзака
+NItem#12  // Количество предметов для расположения в рюкзаке
 
 Console.QuoteSet=""
 
@@ -66,6 +66,8 @@ Volume.Append=3
 Volume.Append=4
 Volume.Append=5
 Volume.Append=4
+Volume.Append=2
+Volume.Append=1
 
 Price.VectNew // Вектор цен предметов
 Price.Append=3
@@ -78,6 +80,8 @@ Price.Append=4
 Price.Append=9
 Price.Append=3
 Price.Append=1
+Price.Append=2
+Price.Append=4
 
 Price.IndAutoIncSet=1
 Volume.IndSet=0
@@ -174,7 +178,7 @@ Manager.Mk1AllExec=
 	FUCellularAutomat.AccumOutMk=FUCellularAutomat.SendTo_1=FUCellularAutomat.SendTo_2 // Выдача результата
 }
 
-Scheduler.NCoresSet=30
+Scheduler.NCoresSet=1
 
 Manager.Mk1Set=FUCellularAutomat.ReceiveTimeSet
 Manager.Mk1AllExec=1
@@ -187,10 +191,18 @@ Manager.Mk1AllExec=1
 
 Manager.Ind1Set=0
 
-Manager.Mk1Set=FUCellularAutomat.SchedulerSet // Настройка моделирования
-Scheduler.ContextOutMk=Manager.Mk1AllExec
-Manager.Mk1Set=FUCellularAutomat.EventserSet // Настройка моделирования
-Eventser.ContextOutMk=Manager.Mk1AllExec
+// Настройка моделирования распределенной вычислительной сети
+//Eventser.ContextOutMk=Manager.NetEvenserSet
+Manager.SectorDimAdd=3
+Manager.SectorDimAdd=12
+Manager.SectorDimAdd=48
+
+Manager.SectorGenearte
+
+//Manager.Mk1Set=FUCellularAutomat.SchedulerSet // Настройка моделирования
+//Scheduler.ContextOutMk=Manager.Mk1AllExec
+//Manager.Mk1Set=FUCellularAutomat.EventserSet // Настройка моделирования
+//Eventser.ContextOutMk=Manager.Mk1AllExec
 
 // Запуск расчета, сбор результата
 Volume.IndSet=0 // Настроить АЛУ объемов на начало
@@ -207,9 +219,11 @@ IntAlu.ProgSet={
 	Volume.OutMk=IntAlu1.Set
 	IntAlu1.OutMk=Manager.Ind1Add // Запуск цены, начиная с объёма предмета
 	Manager.Ind1Sub=1
-	Manager.Ind1Exec={Price.OutMk=Manager.Mk1Exec} // Переслать цену предмета на автомат в начале строки сетки
+Console.OutLn="*"
+	Price.OutMk=Manager.Mk1Exec // Переслать цену предмета на автомат в начале строки сетки
      // Разрыв горизонтальных связей не месте объем текущего предмета
 	IntAlu1.Sub=1
+Console.OutLn="**"
 	IntAlu1.NEQExec={
 		Manager.Ind1Sub=1
 		Manager.Ind1Exec={FUCellularAutomat.Neighbour_0_Set}

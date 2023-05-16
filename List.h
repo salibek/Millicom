@@ -44,7 +44,7 @@ public:
 	int Mode = 0; // Режима работы списка 0 - список на основе ИК, 1 - список на основе хеш-таблицы
 
 	List(FU* BusContext, FU* Templ) : FU(BusContext) { ProgFU(0, { 0, nullptr }); Bus = BusContext; Searcher.MainFU = this; FUtype = 5; };
-	List() : FU() { List(nullptr, nullptr); };
+	List(){ List(nullptr, nullptr); };
 	int HashAtr = 0; // Атрибут для хеширования
 	unordered_map<string, IC_type> Hash; // Хеш-таблица
 	ip HashLineUk; // Псевдосписок для хеш-режима

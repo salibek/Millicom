@@ -10,6 +10,7 @@ int Router::ChennelSearch(int MK) // Поиск канала по МК (Возврашает -1, если кан
 	auto i = Channels.begin();
 	for (; i != Channels.end(); i++)
 		if (i->Up <= MK < i->Down) break;
+		else if (i->Up == i->Down && i->Up==0) break; // Канал по умолчанию
 	if (i == Channels.end()) // Канал не нейден
 		return -1;
 	return distance(Channels.begin(), i); // Вернуть номер канала
@@ -18,6 +19,30 @@ int Router::ChennelSearch(int MK) // Поиск канала по МК (Возврашает -1, если кан
 double Router::DelayGen(channel ch) //Генерация задержки передачи данных
 {
 	return ch.Delay; // Постоянная задержка
+}
+
+void Router::NetRouting(int MK, LoadPoint Load, FU* Sender) // Маршрутизация в сети ФУ, разделенные на распределенные сетора
+{
+	MK -= FUMkRange; // Убираем лишний индекс
+	vector<int> D; // Дифференциал при отправке по сетке
+	// Вычисление дифференциала по первой координате
+	D.push_back(((MK / FUMkRange) % ((SectorDim[2] / SectorDim[1]) * SectorDim[0]) / SectorDim[0]) - SectorCoordinate[0]);
+	D.push_back((MK / FUMkRange) / SectorDim[2] - SectorCoordinate[1]);
+	//	for(int i=1; i<SectorDim.size();i++)
+//		D.push_back(MK/FUMkRange - SectorCoordinate[i]);
+	int c = 0;
+	for (auto i : D)
+		if (i != 0) c++;
+	c = rand() % c; // Перенаправление случайным образом на один из маршрутов
+	for(int i=0; i<SectorDim.size(); i++)
+		if (D[i] != 0)
+		{
+			c--;
+			if (!c)
+			{
+				SectorReceivers[D[i]<0 ? 0: 1]->ProgFU(MK, Load, Sender);
+			}
+		}
 }
 
 void Router::ProgFU(int MK, LoadPoint Load, FU* Sender)
@@ -67,6 +92,11 @@ void Router::ProgFU(int MK, LoadPoint Load, FU* Sender)
 
 			((FU*) Channels[SendInd].Receiver)->MkAwait(MK,Load, Sender, DelayGen(Channels[SendInd]));
 		}
+		else if (SectorDim.size() > 0) // Размерность сетки ненулевая, следовательно сеточная маршрутизация
+		{
+			
+		}
+
 		// Режим моделирования
 		if (Modeling!=0)
 			((Scheduler*)Modeling->scheduler)->CoreFree();
@@ -257,7 +287,20 @@ void Router::ProgFU(int MK, LoadPoint Load, FU* Sender)
 	case 395: // ReceiveProgSet Установить ссылку на программу, активизирующуюся при приходе МК для маршрутизации (для реализации автоматического сбора статистики)
 		ReceiveProg = Load.Point;
 		break;
-	//
+
+	case 450: // SectorClear Очистить размерность распределенной вычислительной сетки и индексы
+		SectorDim.clear();
+		SectorCoordinate.clear();
+		SectorReceivers.clear();
+		break;
+	case 451: // SectorDimAdd // Добавить размерность измерения
+		SectorDim.push_back(Load.toInt());
+		break;
+	case 452: // SectorCoordinateAdd Добавить координату сектора
+		SectorCoordinate.push_back(Load.toInt());
+		break;
+	case 453: // SectorRouterAdd Добавить секторальный роутер
+		SectorReceivers.push_back((Router*)Load.Point);
 	default:
 		CommonMk(MK, Load, Sender);
 		break;

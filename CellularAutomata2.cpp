@@ -1,6 +1,8 @@
 #include "CellularAutomata.h"
 #include "SchedulerEventser.h"
 
+using namespace std;
+
 // Простейший клеточный автомат (устройство для вычисления сеточных функций)
 void CellularAutomat::ProgFU(int MK, LoadPoint Load, FU* Sender)
 {
@@ -72,10 +74,9 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		if(!Mode)
 			Mode = t; // Восстановить прежний режим работы ФУ
 	}
-	if (MK == ContextOutMk || MK == ContextOutMkMk)
-		N_In++; // Автоматический подсчет количестсва пришедших данных (сколько раз автомат выдавал свой контекст, столько ему и придет входных данных
-	if (MK == ProgExecMk)
-		Received = { MK, Load, Sender };
+//	if (MK == ContextOutMkMk || MK == ContextOutMk)
+//		N_In ++ ;
+
 	switch (MK)
 	{
 	case 0: // Reset
@@ -170,24 +171,14 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load, FU* Sender)
 //		cout << FUInd << endl;
 		break;
 	case 801: // N_PlySet Установить количество слоев для расчета
-		PlyN = Load.toInt();
-		Plys.resize(PlyN);
-		RezReady.resize(PlyN);
-		InComplectF.resize(PlyN);
-		Rez.resize(PlyN);
-		InCounter.resize(PlyN);
+		Plys.resize(Load.toInt());
+		RezReady.resize(Load.toInt());
+		Rez.resize(Load.toInt());
 		if (!Neighbours.size())
 			for (auto& i : Plys)
 				i.resize(Neighbours.size());
-		//InCounter[PlyCurrent] = Load.toInt();
+		InCounter[PlyCurrent] = Load.toInt();
 		break;
-	case 802: // N_InOut Выдать количество ожидаемых входных данных
-		Load.Write(N_In);
-		break;
-	case 803: // N_InOutMk Выдать МК с количеством ожидаемых входных данных
-		MkExec(Load, {Cint, &N_In});
-		break;
-
 	case 805: //RezSet  Установить результат вычислений (если PlyInd<0,  устанавливается значение текущего слоя)
 		Rez[PlyInd < 0 ? Rez.size() - 1 : PlyInd] = Load.toDouble();
 		break;
@@ -196,8 +187,7 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		break;
 	case 807: //RezOutMk Выдать МК с результатом вычислений (если PlyInd<0, выдается значение результат расчета текущего слоя)
 	{
-//		double t = Rez[PlyInd < 0 ? Rez.size() - 1 : 0];
-		double t = Rez[PlyCurrent];
+		double t = Rez[PlyInd < 0 ? Rez.size() - 1 : 0];
 		MkExec(Load, {Cdouble, &t });
 		break;
 	}
@@ -333,32 +323,9 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load, FU* Sender)
 	case 870: // Настройка/рабочий режим
 		Mode = Load.toInt();
 		break;
-	case 875: // ReceivedOut Выдать полученные данные
-		Load.Write(Received.Load);
-		break;
-	case 876: // ReceivedOutMk Выдать МК с полученными данными
-		MkExec(Load,Received.Load, Received.Sender);
-		break;
-	case 877: // FiringProgExec Выполнить программу, если в наличие полный комплект выходных данных 
-		if (N_In == InCounter[PlyCurrent])
-			ProgExec(Load);
-		break;
-	case 878: // PlyNext Перейти к следующему слою (в нагрзуке передаёться значение результата на новом слое)
-		PlyCurrent++;
-		PlyCurrent %= PlyN;
-		InCounter[PlyCurrent] = 0;
-		RezReady[PlyCurrent] = false;
-		InComplectF[PlyCurrent] = false;
-		Rez[PlyCurrent] = Load.toDouble();
-		break;
-	case 879: // PriorityMkSet Установить приоритетную МК для отправки соседям (при -1 считается, что приоритетной МК нет
-		PriorityMk = Load.toInt();
-		break;
-	case 880: // SendToAll Выдать результат вычислений соседям
-		if (OutBlock) break;
+	case 880: // RezSendToAll Выдать результат вычислений соседям
 		for (int i = 0; i < Neighbours.size(); i++)
-			if(Neighbours[i]!=nullptr)
-				Neighbours[i]->ProgFU(NeighboursMk[i], {Cdouble,&Rez[PlyCurrent]},this);
+			Neighbours[i]->ProgFU(NeighboursMk[i], {Cdouble,&Rez[PlyCurrent]},this);
 		break;
 	case 882: // InCounterSet Установить счетчик входных данных (Если PlyInd<0, то устанавливается для текущего уровня)
 		if(PlyInd<0)
@@ -372,7 +339,7 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load, FU* Sender)
 	case 884: // InCounterOutMk Выдать МК со значением счетчика входных данных
 		MkExec(Load, { Cint,&InCounter });
 		break;
-	case 885: //PlyNSet Установить количество в слоев для расчета
+	case 885: //PlyNSet Установить количество в
 		PlyN = Load.toInt();
 		break;
 	case 887: //  PlyCurrentOut Выдать индекс текущего слоя расчета
@@ -395,7 +362,15 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		else if (Load.Type >> 1 == DIP)
 			MkExec(((ip*)Load.Point)->atr, ((ip*)Load.Point)->Load, (FU*)Collector);
 		break;
-
+	case 898: // NeighboursPrint Вывести соседей ФУ
+		cout << FUInd << " :";
+		for (auto i : Neighbours)
+			if (i == nullptr)
+				cout << " nil";
+			else
+				cout << " " << i->FUInd;
+		cout << endl;
+		break;
 	case 897: //Synk Синхронизация вычислений (по этому сигналу ФУ выдает результат вычислений соседям, если не установлен AutoSend)
 		if (RezReady[PlyCurrent])
 		{
@@ -404,19 +379,6 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load, FU* Sender)
 			PlyCurrent = (PlyCurrent + 1) % Neighbours.size();
 		}
 		break;
-	case 898: // NeighboursPrint Вывести соседей ФУ
-		cout << FUInd << " :";
-		for (int i = 0; i < Neighbours.size(); i++)
-			if (Neighbours[i] == nullptr)
-				cout << " nil |";
-			else
-				cout << " " << Neighbours[i]->FUInd << " Mk: " << NeighboursMk[i] << " | ";
-		cout << endl;
-		break;
-	case 899: // OutBlockSet Установить блокировку выдачи данных для ФУ
-		OutBlock = Load.toBool();
-		break;
-
 	case 3: // InOut Выдать полученное от соседа значение по индексу
 		Load.Write(Plys[PlyInd][Ind]);
 		break;
@@ -427,26 +389,21 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		NeighboursMk[Ind] = Load.toInt(); // Установить МК для соседа
 		break;
 	case 6: // NeighbourSet Установить ссылку на соседа по индексу
-		Neighbours[Ind] = (FU*)Load.Point;
+		Neighbours[Ind] = (CellularAutomat*)Load.Point;
 		break;
 	case 7: // ParametrSet Установить параметр по индексу
 		parameters[Ind].WriteFromLoad(Load);
 		break;
 	case 8: // ParametrOut Выдать МК с параметром по индексу
-		if (OutBlock) break;
 		MkExec(Load, parameters[Ind]);
 		break;
 	case 9: // ParametrOutMk Установить ссылку на соседа по индексу
-		if (OutBlock) break;
 		Neighbours[Ind] = (FU*)Load.Point;
 		break;
 	case 10: // SendTo Выдать МК со значением для соседа по индексу
-		if (OutBlock) break;
 		if (Ind > Plys[PlyInd].size()) break;
-		if(PriorityMk>=0)
-			Neighbours[Ind]->MkAwait(PriorityMk, Load, this, TransferTime);
-		else
-		    Neighbours[Ind]->MkAwait(NeighboursMk[Ind], Load, this, TransferTime);
+		if (Neighbours[Ind] == nullptr) break;
+		Neighbours[Ind]->MkAwait(NeighboursMk[Ind], Load, this, TransferTime);
 		//Neighbours[PlyInd][Ind].ProgFU(NeighboursMk[Ind], Load, this);
 		break;
 	case 11: // MkAdd Увеличить значение Мк для соседа
@@ -472,14 +429,12 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load, FU* Sender)
 				Modeling->ManualMode= ModelingFlag; // Восстановить режим моделирования
 
 			RezReady[PlyCurrent] = true;
-			if (AutoSend) ProgFU(880, { 0, nullptr });
-			if (FiringProg == nullptr && !AutoSend) {
-				PlyCurrent++;
-				PlyCurrent %= PlyN;
-				InCounter[PlyCurrent] = 0;
-				RezReady[PlyCurrent] = false;
-				InComplectF[PlyCurrent] = false;
-			}
+			if (AutoSend) ProgFU(890, { 0, nullptr });
+			PlyCurrent++;
+			PlyCurrent %= PlyN;
+			InCounter[PlyCurrent] = 0;
+			RezReady[PlyCurrent] = false;
+			InComplectF[PlyCurrent] = false;
 //			for (int i = 0; i < Neighbours.size(); i++)
 //				InComplectF[PlyCurrent][i] = false;
 		}
@@ -488,6 +443,7 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		ProgExec(ReceiveProg); // Запуск программы по приему данных от соседа
 	}
 	break;
+
 	case 40: // N_In_Out Выдать ожидаемое количество операндов
 		Load.Write(N_In);
 		break;
@@ -684,52 +640,47 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		MK-=100;
 		switch (MK / 50) {
 		case 1: // Выдать полученное от соседа значение
-			if (MK % 50 >= Plys[PlyInd].size()) break;
+			if (MK % 50 >= Neighbours.size()) {
+				Neighbours.resize(MK % 50 + 1);
+				NeighboursMk.resize(MK % 50 + 1);}
 			Load.Write(Plys[PlyInd][MK % 50]);
 			break;
 		case 2: // Выдать МК со значением от соседа
-			if (MK % 50 >= Plys[PlyInd].size()) break;
+			if (MK % 50 >= Neighbours.size()) {
+				Neighbours.resize(MK % 50 + 1);
+				NeighboursMk.resize(MK % 50 + 1);}
 			MkExec(Load, Plys[PlyInd][MK % 50]);
 			break;
 		case 3: // Установить МК для соседа
 			if (MK % 50 >= Neighbours.size()) {
 				Neighbours.resize(MK % 50 + 1);
-				NeighboursMk.resize(MK % 50 + 1);
-			}
+				NeighboursMk.resize(MK % 50 + 1);}
 			NeighboursMk[MK % 50] = Load.toInt(); // Установить МК для соседа
 			break;
 		case 4: // Установить ссылку на соседа
 			if (MK % 50 >= Neighbours.size()) {
 				Neighbours.resize(MK % 50 + 1);
-				NeighboursMk.resize(MK % 50 + 1);
-			}
-			Neighbours[MK % 50] = (FU*)Load.Point;
+				NeighboursMk.resize(MK % 50 + 1);}
+			Neighbours[MK % 50] = (CellularAutomat*)Load.Point;
 			break;
 		case 5: // Установить параметр
 			if (MK % 50 >= parameters.size())
-				parameters.resize(MK % 50 + 1);
+				parameters.resize(MK%50+1);
 			parameters[MK % 50].WriteFromLoad(Load);
 			break;
-		case 6: // Выдать параметр
-			if (OutBlock) break;
-			if (MK % 50 >= parameters.size()) break;
-			Load.Write(parameters[MK % 50]);
-			break;
-		case 7: // Выдать МК с параметром
-			if (OutBlock) break;
+		case 6: // Выдать МК с параметром
 			if (MK % 50 >= parameters.size()) break;
 			MkExec(Load, parameters[MK % 50]);
 			break;
+		case 7: // Установить ссылку на соседа
+			if (MK % 50 >= Neighbours.size()) break;
+			Neighbours[MK % 50] = (FU*)Load.Point;
+			break;
 		case 8: // Send_N Переслать значение для соседа с индексом
-			if (OutBlock) break;
 			if (MK % 50 >= Neighbours.size()) break;
 			if (Neighbours[MK % 50] == nullptr) break;
 			//Neighbours[MK % 50]->ProgFU(NeighboursMk[MK % 50], Load, this);
-			if (Neighbours[MK % 50] == nullptr) break;
-			if (PriorityMk >= 0)
-				Neighbours[MK % 50]->MkAwait(PriorityMk, Load, this, TransferTime);
-			else
-				Neighbours[MK % 50]->MkAwait(NeighboursMk[MK % 50], Load, this, TransferTime);
+			Neighbours[MK % 50]->MkAwait(NeighboursMk[MK % 50], Load, this, TransferTime);
 			//cout << Load.toDouble() << endl;
 			break;
 		case 9: //MkAdd_N Прибавить смещение к МК
@@ -739,11 +690,12 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		case 0: // In_N_Set Приять значение от соседа
 		{
 			//cout << FUInd << endl;
-			if (MK % 50 >= Plys[PlyCurrent].size())
+			if (Plys[PlyCurrent].size() < MK % 50)
 				Plys[PlyCurrent].resize(MK % 50 + 1);
-			if (Plys[PlyCurrent][MK % 50].Point != nullptr)
+			if (Plys[PlyCurrent][MK % 50].Point == nullptr)
+				InCounter[PlyCurrent]++;
+			else
 				Plys[PlyCurrent][MK % 50].Clear();
-			InCounter[PlyCurrent]++;
 			Plys[PlyCurrent][MK % 50] = Load.Clone();
 
 //			cout << Plys[PlyCurrent][MK % 50].toDouble() << endl;
@@ -751,9 +703,9 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load, FU* Sender)
 			if (MK % 50 >= 0 && MK % 50 < ReceiveProgs.size())
 				ProgExec(ReceiveProgs[MK%50]);
 			ProgExec(ReceiveProg); // Запуск программы по приему данных от соседа
-//			if (InCounter[PlyCurrent] == Plys[PlyCurrent].size()) // Набрался полный комплект
-			if (InCounter[PlyCurrent] == N_In) // Набрался полный комплект
-			{
+//			if (InCounter[PlyCurrent] == Neighbours.size()) // Набрался полный комплект
+			if (InCounter[PlyCurrent] == Plys[PlyCurrent].size()) // Набрался полный комплект
+				{
 				bool ModelingFlag = false;
 //				InComplectF[PlyCurrent]= true;
 				if (Modeling != nullptr) {
@@ -765,13 +717,11 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load, FU* Sender)
 					Modeling->ManualMode = ModelingFlag; // Восстановить режим моделирования
 
 				RezReady[PlyCurrent] = true;
-				if (AutoSend) ProgFU(880, { 0, nullptr });
-				if (FiringProg == nullptr && !AutoSend) {
-					PlyCurrent++;
-					PlyCurrent %= PlyN;
-					InCounter[PlyCurrent] = 0;
-					RezReady[PlyCurrent] = false;
-				}
+				if (AutoSend) ProgFU(890, { 0, nullptr });
+				PlyCurrent++;
+				PlyCurrent %= PlyN;
+				InCounter[PlyCurrent] = 0;
+				RezReady[PlyCurrent] = false;
 //				for (int i = 0; i < Neighbours.size(); i++)
 //					InComplectF[PlyCurrent][i] = false;
 //				InComplectF[PlyCurrent] = false;
@@ -803,6 +753,9 @@ void CellularAutomatManager::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		break;
 	case 3: // DimSet Добавить измерение
 		Dim = Load.toInt();
+		break;
+	case 5: // NilRefModeModeSet Установить режим добавления нулевых ссылок, если ссылка устанавливается на несуществующий элемент вычислительной сетки
+		NilRefMode = Load.toBool(true);
 		break;
 	case 10: // IniAutmataProgSet Установить программу инициализации автомата
 		iniAutmataProg = Load.Point;
@@ -884,7 +837,7 @@ void CellularAutomatManager::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		break;
 	case 51: // Ind2Exec Выполнить программу для второго ФУ-автомата
 		if (Ind2 >= Net.size() || Ind2 < 0) break;
-		Net[Ind2].ProgExec(Load);
+		Net[Ind1].ProgExec(Load);
 		Ind2 += Step2;
 		break;
 	case 52: // AllExec Выполнить программу для всех исполнительных ФУ
@@ -977,9 +930,7 @@ void CellularAutomatManager::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		Net[Ind2].ProgFU(AutomataMk2, Load);
 		break;
 	case 74: // Mk1AllExec  Выполнить МК для автомта с индексом 1 для всех автоматов
-
 		for(auto &i: Net)
-
 			i.ProgFU(AutomataMk1, Load);
 		break;
 	case 75: // Mk1toInd2Exec Выполнить первую МК для всех ФУ от индекса 1 до индекса 2 невключительно
@@ -1003,7 +954,7 @@ void CellularAutomatManager::ProgFU(int MK, LoadPoint Load, FU* Sender)
 	{
 		int N_it = -1; // Количество итераций 
 		int  step1 = Step1, step2 = Step2;
-		Step1 = 0; Step2 = 0; // Обнуление шагов, чтобы не увеличивать индекс по каждой коменде
+		Step1 = 0; Step2 = 0; // Обнуление шагов, чтобы не увеличивать индекс по каждой команде
 
 		void* Pr = Prog;
 		if (Load.isProg())
@@ -1016,13 +967,65 @@ void CellularAutomatManager::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		Step1 = step1, Step2 = step2; // Восстановить шаги в контекста ФУ
 	}
 	break;
+
+	case 100: // SectorDimClear Очистить настройки распределенного моделирования
+		SectorDim.clear();
+		break;
+	case 101: // SectorDimAdd Добавить измерение для моделирования распределенной вычислительной системы
+		SectorDim.push_back(Load.toInt());
+		break;
+	case 105: // SectorGenearte Перестроить вычислительную сетки для моделирования распределенной ВС
+		DistrebuteModelGenerate();
+		break;
+
+	case 110: // RouterExec Выполнить программу для текущего роутера
+		Routers[Ind1].ProgExec(Load);
+		break;
+	case 111: // RouterAllExec Выполнить программу для всех роутеров
+		for(auto &i: Routers)
+			i.ProgExec(Load);
+		break;
+	case 112: // GatewayExec Выполнить программу для текущего шлюза
+		Gateways[Ind1].ProgExec(Load);
+		break;
+	case 113: // GatewayAllExec Выполнить программу для всех шлюза
+		for (auto& i : Gateways)
+			i.ProgExec(Load);
+		break;
+	case 115: // RouterMkSet Установить МК для роутера
+		RouterMk = Load.toInt();
+		break;
+	case 116: // RouterMkExec Выполнить МК для текущего роутера
+		Routers[Ind1].ProgFU(RouterMk, Load, Sender);
+		break;
+	case 117: // RouterAllMkExec Выполнить МК для всех роутеров
+		for (auto& i : Routers)
+			i.ProgFU(RouterMk, Load, Sender);
+		break;
+	case 118: // GatewayMkSet Установить МК для шлюза
+		GatewayMk = Load.toInt();
+		break;
+	case 119: // GatewayMkExec Выполнить МК для текущего шлюза
+		Gateways[Ind1].ProgFU(GatewayMk, Load, Sender);
+		break;
+	case 120: // GatewayAllMkExec Выполнить МК для всех шлюзов
+		for (auto& i : Gateways)
+			i.ProgFU(GatewayMk, Load, Sender);
+		break;
+	case 125: // NetEvenserSet Установить указатель на контроллер событий для распределенной сети
+		NetEventser = (Eventser*)Load.Point;
+		break;
+
 	case 200: //NetGenerate Генерация сетки (На вход может подаваться количество ФУ в сетке)
 	{
 		if (Load.Point != nullptr)
 			Dim = Load.toInt();
 		Net.resize(Dim); // Создать поле автоматов
 		for (auto& i : Net)
+		{
 			i.Bus = Bus;
+			i.ProgFU(0, {0, nullptr}, nullptr);
+		}
 		int k = 0;
 		for (auto& i : Net)
 		{
@@ -1034,6 +1037,7 @@ void CellularAutomatManager::ProgFU(int MK, LoadPoint Load, FU* Sender)
 			k++;
 		}
 	}
+	
 		break;
 	case 201: // NetClear Очистить сетку
 		Net.clear();
@@ -1042,4 +1046,127 @@ void CellularAutomatManager::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		CommonMk(MK, Load);
 		break;
 	}
+}
+
+void CellularAutomatManager::DistrebuteModelGenerate() // Генерация модели распределенное ВС
+{
+	for (auto& i : Net) // Простановка индексов МК автоматов для маршрутизации
+	{
+		i.FUMkGloabalRange = (i.FUInd + 1) * i.FUMkRange; // Коррекция глобального диапазона МК для ФУ
+		auto k = i.NeighboursMk.begin();
+		if(i.Neighbours.size())
+			for (auto j = i.Neighbours.begin(); j != i.Neighbours.end(); j++, k++)
+				if(*j!=nullptr)
+					*k = *k + (FUMkRange + 1) * ((*j)->FUInd);
+	}
+	// Определение размерности сетки
+	int M = SectorDim[2] / SectorDim[1]; // Количество секторов в строке
+	int N = Net.size() / SectorDim[1]; // Общее количество секторов
+	int K = SectorDim[0] *(SectorDim[2] / SectorDim[1]); // Количество узлов в строке
+	
+	Routers.resize(N << 2);
+	Gateways.resize(N << 2);
+	Schedullers.resize(N << 2);
+	
+	for (int i = 0; i < N; i++) // Цикл по секторам
+	{
+		int x = i % M;
+		int y = i / M;
+
+		Gateways[i << 2].Receiver = &Routers[i << 2];
+		Gateways[(i << 2)+1].Receiver = &Routers[(i << 2) +1];
+		Gateways[(i << 2)+2].Receiver = &Routers[(i << 2) +2];
+		Gateways[(i << 2)+3].Receiver = &Routers[(i << 2) +3];
+
+		if(x>0) Gateways[i << 2].GatewayFriend = &Gateways[((x-1 + y*M)<<2) +1];
+		if(x!=M-1) Gateways[(i << 2) + 1].GatewayFriend = &Gateways[(x + 1 + y * M) << 2];
+		if (y > 0) Gateways[(i << 2) + 2].GatewayFriend = &Gateways[((x + (y-1) * M) << 2) + 3];
+		if (y != N/M - 1) Gateways[(i << 2) + 3].GatewayFriend = &Gateways[((x + (y+1) * M) << 2) + 2];
+
+		// Перенастройка ссылок между ФУ-автоматами
+		for (int j = 0; j < 4; j++) // Настройка секторальных пересылок роутера
+			for (int k = 0; k < 4; k++)
+				Routers[(i << 2) + j].SectorReceivers.push_back(&Gateways[(i << 2) + k]);
+		
+		// Поставление ссылок с роутера на ФУ-автоматы своего сектора
+		for (int k = 0; i < SectorDim[1] / SectorDim[0]; i++)
+			for (int j = 0; j < SectorDim[0]; j++)
+			{
+				Routers[i << 2].Channels.push_back({});
+				Routers[(i << 2) + 1].Channels.push_back({});
+				Routers[(i << 2) + 2].Channels.push_back({});
+				Routers[(i << 2) + 3].Channels.push_back({});
+
+				Routers[i << 2].Channels.back().Up = (i + j + K * M) + 1 * FUMkRange; // + 1 для того, чтобы диапазон МК 0-го автомата не начинался с 0
+				Routers[(i << 2) + 1].Channels.back().Up = (i + j + K * M + 1) * FUMkRange;
+				Routers[(i << 2) + 2].Channels.back().Up = (i + j + K * M + 1) * FUMkRange;
+				Routers[(i << 2) + 3].Channels.back().Up = (i + j + K * M + 1) * FUMkRange;
+
+				Routers[i << 2].Channels.back().Down = (i + j + K * M + 1 + 1) * FUMkRange;
+				Routers[(i << 2) + 1].Channels.back().Down = (i + j + K * M + 1 + 1) * FUMkRange;
+				Routers[(i << 2) + 2].Channels.back().Down = (i + j + K * M + 1 + 1) * FUMkRange;
+				Routers[(i << 2) + 3].Channels.back().Down = (i + j + K * M + 1 + 1) * FUMkRange;
+
+				Routers[i << 2].Channels.back().Receiver =       &Net[i + j + K * M];
+				Routers[(i << 2) + 1].Channels.back().Receiver = &Net[i + j + K * M ];
+				Routers[(i << 2) + 2].Channels.back().Receiver = &Net[i + j + K * M ];
+				Routers[(i << 2) + 3].Channels.back().Receiver = &Net[i + j + K * M ];
+
+				if (NetEventser != nullptr) // Настройка моделирования
+				{
+					Schedullers[i].eventser = NetEventser;
+					if(Net[i + j + K * M].Modeling==nullptr)
+						Net[i + j + K * M].Modeling = new FUModeling;
+					Net[i + j + K * M].Modeling->scheduler = &Schedullers[i];
+					Net[i + j + K * M].Modeling->eventser = (FU*) & NetEventser;
+				}
+			}
+	}
+
+
+	// Перестройка ссылок межды ФУ для формирования модели распределенной ВС
+	int cc = 0;
+	for (auto& i : Net)
+	{
+//		cout << cc << endl; cc++;
+//		if (cc == 40)
+//			cout << "!!!!!\n";
+		vector<int> El; // Дифференциал при отправке по сетке
+		El.push_back(((i.FUInd) % ((SectorDim[2] / SectorDim[1]) * SectorDim[0]) / SectorDim[0])); // Координата по x
+		El.push_back((i.FUInd / i.FUMkRange) / SectorDim[1]); // Координата по y
+		
+		auto Nieb = i.Neighbours.begin();
+		for (auto Mk = i.NeighboursMk.begin(); Mk != i.NeighboursMk.end(); Mk++, Nieb++) //Проход по соседям автомата
+		{
+			int Index = (*Mk - FUMkRange)/ FUMkRange;
+			vector<int> D; // Дифференциал при отправке по сетке
+			D.push_back( (Index % ((SectorDim[2] / SectorDim[1]) * SectorDim[0]) / SectorDim[0]) - El[0]); // Координата по x
+			D.push_back( (Index / SectorDim[2]) - El[1]); // Координата по y
+			if (D[0] == 0 && D[1] == 0) continue; // Ссылка на тот же сектор
+			int c = 0;
+			if (D[0])
+			{
+				D[0] = D[0] / abs(D[0]);
+				c++;
+			}
+			if (D[1])
+			{
+				D[1] = D[1] / abs(D[1]);
+				c++;
+			}
+			if(c==2) // Если два возможных направления, выбираем только одно случайным образом
+				D[rand() % 2]=0;
+			if (D[0] < 0)
+				*Nieb = (FU*)&Gateways[(El[1] * M + El[0] - 1) << 2];
+			else if(D[0] > 0)
+				*Nieb = (FU*)&Gateways[(El[1] * M + El[0] + 1) << 2 + 1];
+			
+			if (D[1] < 0)
+				*Nieb = (FU*)&Gateways[((El[1] * M - M + El[0]+  2) << 2) + 2];
+			else if (D[1] > 0)
+				*Nieb = (FU*)&Gateways[((El[1] * M + M + El[0]) << 2) + 3];
+		}
+
+	}
+//	cout << "End Sectoring\n";
 }

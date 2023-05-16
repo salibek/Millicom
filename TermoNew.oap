@@ -1,0 +1,192 @@
+// Модель распределенной вычислительной системы для решения задачи рюкзака
+
+//NewFU={Mnemo="Main_Bus" MkBegRange=1000 FUType=FUBusNew} // Описание Bus
+
+\\ Для создания индексного файла сначала надо запустить программу !!!!
+ CapsManager.IndexVectCreate=20000
+ CapsManager.IpIcIdOutMk=MainBus.IpIcIdSet
+ CapsManager.IpIcIdOutMk=VariableManager.IpIcIdSet
+ CapsManager.IpIcIdOutMk=ListSyntez.IpIcIdSet
+ MainBus.ModeSet=1
+\\ -------------------------------------- \\
+MainBus.FUTypeCorrectSet=-96 // Корректировка номера типа ФУ для переноса на новую ОА-платформу
+
+NewFU={Mnemo="Manager" FUType=FUCellularAutomatManager}
+NewFU={Mnemo="Console" FUType=FUConsNew}
+NewFU={Mnemo="IntAlu" FUType=FUIntAluNew}
+NewFU={Mnemo="IntAlu1" FUType=FUIntAluNew}
+NewFU={Mnemo="IntAlu2" FUType=FUIntAluNew}
+NewFU={Mnemo="AluRez" FUType=FUALUNew Hint="АЛУ для сбора результата вычисления"}
+NewFU={Mnemo="Dev" FUType=FUCellularAutomat}
+NewFU={Mnemo="Scheduler" FUType=FUSchedulerNew}
+NewFU={Mnemo="Eventser" FUType=FUEventserNew}
+NewFU={Mnemo="Scheduler" FUType=FUSchedulerNew}
+NewFU={Mnemo="Eventser" FUType=FUEventserNew}
+NewFU={Mnemo="Scheduler" FUType=FUSchedulerNew}
+NewFU={Mnemo="Eventser" FUType=FUEventserNew}
+
+MainBus.PartialResetSet \\ Запомнить число созданных ФУ
+MainBus.ModeSet=2
+
+Eventser.ContextOutMk=Scheduler.EventserSet
+Scheduler.ContextOutMk=Eventser.SchedulerSet
+Scheduler.NCoresSet=1
+Manager.Mk1Set=FUCellularAutomat.ReceiveTimeSet
+Manager.Mk1AllExec=1
+Manager.Mk1Set=FUCellularAutomat.SendTimeSet
+Manager.Mk1AllExec=1
+Manager.Mk1Set=FUCellularAutomat.OtherMkTimeSet
+Manager.Mk1AllExec=1
+Manager.Mk1Set=FUCellularAutomat.TransferTimeSet
+Manager.Mk1AllExec=1
+
+
+X#12 X1#11
+Y#12 Y1#11
+N#144 // Количество ФУ в сетке
+IntAlu.Set=X IntAlu.Mul=Y
+//IntAlu.Inc // Мнимый элемент сетки
+IntAlu.OutMk=Manager.NetGenerate
+
+Lx # 1.0
+Ly # 1.0
+dx # 0.2
+dy # 0.2
+dt # 0.1
+kappa # 0.1 // Коэффициент теплопроводности металла
+steps_total # 30 //Временной промежуток
+steps_out # 5 // Количество итераций
+
+
+Manager.Ind1Set=0
+Manager.Ind2Set=1
+IntAlu.Set=Y
+IntAlu.StepSet=-1;
+Manager.Mk1Set=FUCellularAutomat.ContextOutMk
+Manager.Mk2Set=FUCellularAutomat.Neighbour_0_Set
+Manager.ProgSet={Manager.Ind2Exec={FUCellularAutomat.NeighbourMk_0_Set=FUCellularAutomat.In_1_Set}
+  Manager.Mk1Exec=Manager.Mk2Exec Manager.Ind1Add=1 Manager.Ind2Add=1} // Ссылки влево
+for Y{
+  Manager.ForExec=X1
+  Manager.Ind1Add=1
+  Manager.Ind2Add=1
+}
+
+Manager.Ind1Set=0
+Manager.Ind2Set=1
+IntAlu.Set=Y
+IntAlu.StepSet=-1;
+Manager.Mk2Set=FUCellularAutomat.ContextOutMk
+Manager.Mk1Set=FUCellularAutomat.Neighbour_1_Set
+Manager.ProgSet={Manager.Ind1Exec={FUCellularAutomat.NeighbourMk_1_Set=FUCellularAutomat.In_0_Set}
+Manager.Mk2Exec=Manager.Mk1Exec Manager.Ind1Add=1 Manager.Ind2Add=1} // Ссылки вправо
+for Y{
+  Manager.ForExec=X1
+  Manager.Ind1Add=1
+  Manager.Ind2Add=1
+}
+
+Manager.Ind1Set=0
+Manager.Ind2Set=Y
+IntAlu.Set=Y1
+IntAlu.StepSet=-1;
+Manager.Mk1Set=FUCellularAutomat.ContextOutMk
+Manager.Mk2Set=FUCellularAutomat.Neighbour_2_Set
+Manager.ProgSet={
+Manager.Ind2Exec={FUCellularAutomat.NeighbourMk_2_Set=FUCellularAutomat.In_3_Set}
+Manager.Mk1Exec=Manager.Mk2Exec Manager.Ind1Add=1 Manager.Ind2Add=1
+} // Ссылки вниз
+for Y-1{
+  Manager.ForExec=X
+}
+
+Manager.Ind1Set=0
+Manager.Ind2Set=Y
+IntAlu.Set=Y1
+IntAlu.StepSet=-1;
+Manager.Mk2Set=FUCellularAutomat.ContextOutMk
+Manager.Mk1Set=FUCellularAutomat.Neighbour_3_Set
+Manager.ProgSet={
+Manager.Ind1Exec={FUCellularAutomat.NeighbourMk_3_Set=FUCellularAutomat.In_2_Set}
+Manager.Mk2Exec=Manager.Mk1Exec Manager.Ind1Add=1 Manager.Ind2Add=1
+} // Ссылки верх
+For Y-1{
+  Manager.ForExec=X
+}
+
+//Инициализация вычислительного поля
+Manager.Mk1Set=FUCellularAutomat.N_PlySet
+Manager.Mk1AllExec=2
+
+Manager.Mk1Set=FUCellularAutomat.RezSet
+Manager.Mk1AllExec=0
+Manager.Ind1Set=65
+Manager.Mk1Exec=100
+
+Manager.AllExec={
+  FUCellularAutomat.FiringProgSet={
+// Вычисление новой температуры
+    TempOld=0.0
+    FUCellularAutomat.RezOut=TempOld
+    k1=k2=k3=k4=0.0
+
+     k1=(FUCellularAutomat.In_1_OutMk*kip1 + kim1*FUCellularAutomat.In_1_OutMk - (kip1 + kim1) * (TempOld + 0))/(dx*dx)
+     k1+=(FUCellularAutomat.In_1_OutMk*kip1 + kim1*FUCellularAutomat.In_1_OutMk - (kip1 + kim1) * (TempOld + 0))/(dy*dy)
+    k1/=kappa
+
+
+     k2=(FUCellularAutomat.In_1_OutMk*kip1 + kim1*FUCellularAutomat.In_1_OutMk - (kip1 + kim1) * (TempOld + dt/2/0*k1))/(dx*dx)
+     k2+=(FUCellularAutomat.In_1_OutMk*kip1 + kim1*FUCellularAutomat.In_1_OutMk - (kip1 + kim1) * (TempOld + dt/2/0*k1))/(dy*dy)
+    k2/=kappa
+
+
+     k3=(FUCellularAutomat.In_1_OutMk*kip1 + kim1*FUCellularAutomat.In_1_OutMk - (kip1 + kim1) * (TempOld + dt/2/0*k2))/(dx*dx)
+     k3+=(FUCellularAutomat.In_1_OutMk*kip1 + kim1*FUCellularAutomat.In_1_OutMk - (kip1 + kim1) * (TempOld + dt/2/0*k2))/(dy*dy)
+    k3/=kappa
+
+
+     k4=(FUCellularAutomat.In_1_OutMk*kip1 + kim1*FUCellularAutomat.In_1_OutMk - (kip1 + kim1) * (TempOld + k3))/(dx*dx)
+     k4+=(FUCellularAutomat.In_1_OutMk*kip1 + kim1*FUCellularAutomat.In_1_OutMk - (kip1 + kim1) * (TempOld + k3))/(dy*dy)
+    k4/=kappa
+
+
+    FUCellularAutomat.PlyNext=TempOld + dt / 6.0 * (k1 + 2.0 * k2 + 2.0 * k3 +k4
+  }
+}
+
+// Запуск расчета
+for steps_out{
+Manager.Ind1Set=0
+Manager.Ind1Exec={
+FUCellularAutomat.ProgExec={
+FUCellularAutomat.SendToAll
+FUCellularAutomat.PriorityMkSet=ProgExec
+FUCellularAutomat.ReceivedOutMk=FUCellularAutomat.SendTo_1
+FUCellularAutomat.ReceivedOutMk=FUCellularAutomat.SendTo_3
+FUCellularAutomat.PriorityMkSet=-1
+FUCellularAutomat.OutBlockSet=True // Заблокировать дальнейшую выдачу данных
+}}
+
+Manager.Ind1Exec={ // Милликоманда разблокировки выдачи данных
+FUCellularAutomat.ProgExec={
+     FUCellularAutomat.OutBlockSet=0
+	FUCellularAutomat.PriorityMkSet=ProgExec
+	FUCellularAutomat.ReceivedOutMk=FUCellularAutomat.SendTo_1
+	FUCellularAutomat.ReceivedOutMk=FUCellularAutomat.SendTo_3
+	FUCellularAutomat.PriorityMkSet=-1
+}}
+
+}
+Manager.Step1Set=1
+Manager.Step2Set=0
+Manager.Ind1Set=0
+Manager.Ind2Set=0
+Manager.ProgSet={FUCellularAutomatManager.Ind1Exec={
+  FUCellularAutomat.RezOutMk=Console.Out Console.Out=" "}}
+for Y{
+	Manager.ForExec=X
+	Console.OutLn
+}
+Console.OutLn="End of program"
+Console.Out="Work time: " Eventser.TimeOutMk=Console.OutLn
+Console.Out="Max MK Queue: " Scheduler.MaxMkQueueOutMk=Console.OutLn

@@ -1123,8 +1123,3 @@
 		LexBuf[0].atr = SeperatAtr;
 		ProgFU(0, {0,nullptr});
 	}
-
-	Lex::Lex() : FU() 
-	{
-		Lex(nullptr, nullptr); 
-	}

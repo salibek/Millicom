@@ -21,7 +21,5 @@ public:
 		navigator.currentPos = new vector<Position>(); 
 		ProgFU(0, { 0,nullptr }); 
 	};
-	GraphTransf() : FU() {
-		Bus = nullptr; 
-	};
+	GraphTransf(){GraphTransf(nullptr, nullptr);};
 };

@@ -27,6 +27,6 @@ private:
 public:
 	void ProgFU(int MK, LoadPoint Load, FU* Sender=nullptr) override;
 	Neuro(FU* BusContext, FU* Templ) : FU(BusContext) { Bus = BusContext; FUtype = 10; ProgFU(0, { 0,nullptr }); };
-	Neuro() : FU() { Bus = nullptr; };
+	Neuro(){ Neuro(nullptr, nullptr); };
 private:
 };

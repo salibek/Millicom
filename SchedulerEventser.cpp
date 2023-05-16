@@ -136,7 +136,8 @@ void Scheduler::Scheduling(FU* Context, double DTime, bool CoreContinue)
 			Queue.push_back(Context);
 			MkTimeQueue.push_back(DTime);
 			MkQueuePrev++;
-			if (Queue.size() > MaxMkQueue)MaxMkQueue = Queue.size();
+			if (Queue.size() > MaxMkQueue)
+				MaxMkQueue = Queue.size();
 		}
 	ProgExec(SchedulingProg);
 }

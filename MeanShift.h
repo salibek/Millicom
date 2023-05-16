@@ -12,7 +12,7 @@ public:
 	int NDim = 2; // Количество изменений в фазовом пространстве
 	double Mass = 1; // Вес точки
 	MeanShiftPoint(FU* BusContext, FU* Templ) : FU(BusContext) { Bus = BusContext; };
-	MeanShiftPoint() : FU() { Bus = nullptr; };
+	MeanShiftPoint() { MeanShiftPoint(nullptr, nullptr); };
 	vector<double> Coodinate; // координата точки в фазовом прострастве
 	int NV; // Количество точек в множестве близлажищих точек?
 	void* Manager = nullptr; // Указатель на менеджера

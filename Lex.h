@@ -44,7 +44,7 @@ private:
 public:
 	void ProgFU(int MK, LoadPoint Load, FU* Sender=nullptr);
 	Lex(FU *BusContext=nullptr, FU *Templ=nullptr);
-	Lex() ;
+	Lex() { Lex(nullptr, nullptr); };
 	vector<FU*> Receiver = { nullptr }; // Стек указаталей не ФУ-приемники
 	vector<int> ReceiverMK = { 0 }; // Стек МК для приемников
 	int S = 0; // Номер состояния распознающего автомата

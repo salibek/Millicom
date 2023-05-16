@@ -14,7 +14,7 @@ public:
 	};
 	void ProgFU(int MK, LoadPoint Load, FU* Sender = nullptr) override;
 	TemperatEx(FU* BusContext, FU* Templ) : FU(BusContext) { Bus = BusContext; ProgFU(0, { 0,nullptr }); };
-	TemperatEx() : FU() { Bus = nullptr; };
+	TemperatEx() { TemperatEx(nullptr, nullptr); };
 	vector<double> T; // Текущая температура
 	vector<vector<double>> T_Neighbours; // Температура соседей
 	double a = 1; // Коэффициент в уравнении

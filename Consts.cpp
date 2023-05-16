@@ -1266,7 +1266,7 @@ void LoadPoint::VarDel() // Удаление нагрузки ИП
 	case Cfloat: delete (float*)Point; break;
 		//	case Cdouble: delete (double*)Point; break;
 	case Cchar: delete (char*)Point; break;
-	case Cbool: delete (bool*)Point; break;
+//	case Cbool: delete (bool*)Point; break;
 	case CPPoint: delete (void**)Point; break;
 	case CLoadVect: ((vector<LoadPoint>*)Point)->resize(0); delete ((vector<LoadPoint>*)Point); break;
 	}
@@ -1919,9 +1919,9 @@ void FU::MkExec(int MK, LoadPoint Load, FU* BusContext, bool Ext) // Выдач�
 
 void FU::MkExec(LoadPoint Mk, LoadPoint Load, FU* BusContext, bool Ext) // Выдача МК с нагрузкой
 {
-	if (Mk.Type >> 1 == Dint && Mk.Point != nullptr)
+	if (Mk.Point!=nullptr && Mk.Type >> 1 == Dint && Mk.Point != nullptr)
 	{
-		int MK = *(int*)Mk.Point;
+		int MK = Mk.toInt();
 		if (MK < FUMkRange && !Ext) // Если МК адресована сомому ФУ
 			ProgFU(MK, Load, this);
 		else

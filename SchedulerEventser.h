@@ -35,7 +35,6 @@ class Scheduler : FU
 	int NCores = 1, CoreCount = 0, CoreCountPrev = 0; // Количество ядер и счетчик занятых ядер
 	int MkQueuePrev = 0; // Предыдущая длина очереди МК
 	double SchedulingTime = 0, RunTime=0; // Время планирования вычислений и запуска на выполнение
-	FU* eventser = nullptr; // Указатель на контроллер событий
 	vector<FU*>Queue; // Очередь контекстов ФУ для выдачи задания для моделирования
 	vector<double> MkTimeQueue; // Очередь времен выполнения МК, находящихся в очереди
 	double* CurrentTime = 0; // Текущее время
@@ -44,14 +43,16 @@ class Scheduler : FU
 	double AverageMkQueue = 0; // Средняя и максимальная длины очереди МК
 	int  MaxMkQueue = 0; // Максимальная длина очереди МК ко всем ФУ, подключенным к данному планировщику
 public:
+	FU* eventser = nullptr; // Указатель на контроллер событий
 	void* SchedulingProg = nullptr;
 	void ProgFU(int MK, LoadPoint Load, FU* Sender = nullptr) override;
 	void Scheduling(FU*, double DTime, bool CoreContinue=false); // CoreContinue - флаг удержания вычислительного ядра
 	void CoreFree(); // Освободить ядро
-		Scheduler(FU* BusContext, FU* Templ)
+	Scheduler(FU* BusContext, FU* Templ)
 	{
 		Bus = BusContext;
 		FUtype = 12;
 		ProgFU(0, { 0,nullptr });
 	};
+	Scheduler() { Scheduler(nullptr, nullptr); };
 };
