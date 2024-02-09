@@ -28,8 +28,8 @@ MainBus.ModeSet=2
 
 Eventser.ContextOutMk=Scheduler.EventserSet
 
-V#10 // Объём рюкзака
-NItem#10  // Количество предметов для расположения в рюкзаке
+V#30 // Объём рюкзака
+NItem#20  // Количество предметов для расположения в рюкзаке
 
 Console.QuoteSet=""
 
@@ -68,6 +68,16 @@ Volume.Append=5
 Volume.Append=4
 
 Price.VectNew // Вектор цен предметов
+Price.Append=3
+Price.Append=5
+Price.Append=6
+Price.Append=3
+Price.Append=2
+Price.Append=7
+Price.Append=4
+Price.Append=9
+Price.Append=3
+Price.Append=1
 Price.Append=3
 Price.Append=5
 Price.Append=6
@@ -174,7 +184,7 @@ Manager.Mk1AllExec=
 	FUCellularAutomat.AccumOutMk=FUCellularAutomat.SendTo_1=FUCellularAutomat.SendTo_2 // Выдача результата
 }
 
-Scheduler.NCoresSet=30
+Scheduler.NCoresSet=5
 
 Manager.Mk1Set=FUCellularAutomat.ReceiveTimeSet
 Manager.Mk1AllExec=1
@@ -236,3 +246,4 @@ IntAlu.For={
 // Вывод результатов моделирования
 Console.Out="Work time: " Eventser.TimeOutMk=Console.OutLn
 Console.Out="Max MK Queue: " Scheduler.MaxMkQueueOutMk=Console.OutLn
+Console.Out="Parallel degree: " Scheduler.ParallelFactorOutMk=Console.OutLn

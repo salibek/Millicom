@@ -170,6 +170,7 @@
     <ClCompile Include="Search.cpp" />
     <ClCompile Include="Gauss.cpp" />
     <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="StreamFloatALU.cpp" />
     <ClCompile Include="StrGen.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -200,6 +201,7 @@
     <ClInclude Include="SchedulerEventser.h" />
     <ClInclude Include="Search.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="StreamFloatALU.h" />
     <ClInclude Include="StrGen.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

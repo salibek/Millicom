@@ -69,7 +69,7 @@ int main(int argc, char* argv[])
 //	string STR = "LexTest.ind"; // Имя запускного файла
 	STR = "Bag3.ind";
 //	STR = "Bag4.ind";
-	STR = "Termo.ind";
+//	STR = "Termo.ind";
 	//	string STR = "ControlAoutomat.ind";
 
 	Bus.ProgFU(10, {Cstring, &STR}); //Запуск индексного файла

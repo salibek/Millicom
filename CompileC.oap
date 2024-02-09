@@ -1503,7 +1503,7 @@ FUListNew.ReceivedOutMk=Console.OutLn
   Stack.FindOrLast={AleSep="else"}
   // Ошибка оформления тернарной конструкции
 //  Stack.FailExec={Lex.Stop Console.OutLn="Ternar construction wrong description" ProgStopAll}
-  Stack.FailExec={ProgExec=AleFinProg OperatWait.ProgStopAll Console.OutLn="OperatWait }"}
+  Stack.FailExec={ProgExec=AleFinProg OperatWait.ProgStopAll Console.OutLn="OperatWait }" OAList.LastPopMk}
   Stack.LastDelMk
   OAList.LastPopMk
   OAList.LastPopMk
@@ -1560,7 +1560,9 @@ Lex.ReceiverPopMk
   Stack.FailExec={OAList.LastPopMk} // Если не if, то необходимо завершить обработку АЛВ
   Stack.OutMk=Console.OutLn
 Console.OutLn="OperatWait else"
-//OAList.OutMk=Console.OutLn
+OAList.OutMk=Console.OutLn
+Console.OutLn="---------------"
+Stack.OutMk=Console.OutLn
   OperatWait.ReceivedOutMk=Console.OutLn
   OperatWait.ReceivedOutMk=Lex.SendToReceiver} \* 23.03.2023 *\
 
@@ -1646,11 +1648,11 @@ Lex.ReceiverMkSet=Root.FindAnd
 //Lex.Lexing="a=[1,2,3,4] Cons.OutLn=a[2]"
 //Lex.Lexing="i=13 a=[4,3,2,1] for a>>i Cons.OutLn=i} Cons.OutLn=""End"""
 //Lex.Lexing="i=13 after 4:10:2>>i Cons.OutLn=i} Cons.OutLn=""End"""
-//Lex.Lexing="i=13 for 4+1:10:2>>i Cons.OutLn=i} Cons.OutLn=""End"""
-//Lex.Lexing="i=13 for 4-2:10:2>>i Cons.OutLn=i next Cons.OutLn=i }else>> Cons.OutLn=""For else""} Cons.OutLn=""End"""
+//Lex.Lexing="i=13 for 2+1:10:2>>i Cons.OutLn=i} Cons.OutLn=""End"""
+Lex.Lexing="i=13 for 4-2*2:10:2>>i Cons.OutLn=i next Cons.OutLn=i }else>> Cons.OutLn=""For else""} Cons.OutLn=""End"""
 //Lex.Lexing="i=13 i=i+i Cons.OutLn=i"
-Lex.Lexing="i=13 for 2:10:2>>i Cons.OutLn=i if i<4 {Cons.OutLn=i*i} }else>> Cons.OutLn=""For else""} Cons.OutLn=""End"""
-//Lex.Lexing="i=13 if 1<5 { Cons.OutLn=i }"
+//Lex.Lexing="i=13 for 2:10:2>>i Cons.OutLn=i if i<4 {Cons.OutLn=i*i} }else>> Cons.OutLn=""For else""} Cons.OutLn=""End"""
+//Lex.Lexing="i=13 if 1<5+1 { Cons.OutLn=i*i}"
 
 Lex.SendToReceiver={Sep=""} // Конечный символ после трансляции всего кода программы
 
@@ -1668,4 +1670,4 @@ Stack.LineCountOutMK=Console.OutLn
 Stack.OutMk=Console.OutLn
 Console.OutLn="---- Programm out ----"
 OAList.LastOutMk=ALUG.ProgExec
-OAList.LastOutMk=Console.OutLn
+//OAList.LastOutMk=Console.OutLn

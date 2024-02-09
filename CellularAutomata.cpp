@@ -1016,6 +1016,56 @@ void CellularAutomatManager::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		Step1 = step1, Step2 = step2; // Восстановить шаги в контекста ФУ
 	}
 	break;
+
+	case 100: // SectorDimClear Очистить настройки распределенного моделирования
+		SectorDim.clear();
+		break;
+	case 101: // SectorDimAdd Добавить измерение для моделирования распределенной вычислительной системы
+		SectorDim.push_back(Load.toInt());
+		break;
+	case 105: // SectorGenearte Перестроить вычислительную сетки для моделирования распределенной ВС
+		DistrebuteModelGenerate();
+		break;
+
+	case 110: // RouterExec Выполнить программу для текущего роутера
+		Routers[Ind1].ProgExec(Load);
+		break;
+	case 111: // RouterAllExec Выполнить программу для всех роутеров
+		for (auto& i : Routers)
+			i.ProgExec(Load);
+		break;
+	case 112: // GatewayExec Выполнить программу для текущего шлюза
+		Gateways[Ind1].ProgExec(Load);
+		break;
+	case 113: // GatewayAllExec Выполнить программу для всех шлюза
+		for (auto& i : Gateways)
+			i.ProgExec(Load);
+		break;
+	case 115: // RouterMkSet Установить МК для роутера
+		RouterMk = Load.toInt();
+		break;
+	case 116: // RouterMkExec Выполнить МК для текущего роутера
+		Routers[Ind1].ProgFU(RouterMk, Load, Sender);
+		break;
+	case 117: // RouterAllMkExec Выполнить МК для всех роутеров
+		for (auto& i : Routers)
+			i.ProgFU(RouterMk, Load, Sender);
+		break;
+	case 118: // GatewayMkSet Установить МК для шлюза
+		GatewayMk = Load.toInt();
+		break;
+	case 119: // GatewayMkExec Выполнить МК для текущего шлюза
+		Gateways[Ind1].ProgFU(GatewayMk, Load, Sender);
+		break;
+	case 120: // GatewayAllMkExec Выполнить МК для всех шлюзов
+		for (auto& i : Gateways)
+			i.ProgFU(GatewayMk, Load, Sender);
+		break;
+	case 125: // NetEvenserSet Установить указатель на контроллер событий для распределенной сети
+		NetEventser = (Eventser*)Load.Point;
+		break;
+
+
 	case 200: //NetGenerate Генерация сетки (На вход может подаваться количество ФУ в сетке)
 	{
 		if (Load.Point != nullptr)
@@ -1038,8 +1088,160 @@ void CellularAutomatManager::ProgFU(int MK, LoadPoint Load, FU* Sender)
 	case 201: // NetClear Очистить сетку
 		Net.clear();
 		break;
+	case 205: // NetDimAppend добвить размерность многомерной сетки
+		NetDim.push_back(Load.toInt());
+		break;
+	case 206: // NetDimClear очистить размерность многомерной сетки
+		NetDim.clear();
+		break;
+	case 207: // NetDimGenerate Сгенерировать прямоугольную сетку
+	{
+		int P = 1;
+		for (auto i : NetDim)
+			P *= i;
+		if (Net.size()!=0 &&  P != Net.size()) break; // Размерность сетки не соотвествует количеству элементов в ней
+		if (Net.size() != 0)
+			ProgFU(200, {Cint, &P}, this); // Генерировать ФУ-автоматы вычислительного поля
+		// Простановка связей между автоматами
+		switch(NetDim.size()){
+		case 1:
+			for (int i=1; i < NetDim[0]; i++)
+				Net[i].Neighbours.push_back(&Net[i - 1]);
+			for (int i=0; i < NetDim[0] - 1; i++)
+				Net[i].Neighbours.push_back(&Net[i + 1]);
+			break;
+		case 2:
+			break;
+		case 3:
+			break;
+		}
+	}
 	default:
 		CommonMk(MK, Load);
 		break;
 	}
+}
+
+
+void CellularAutomatManager::DistrebuteModelGenerate() // Генерация модели распределенное ВС
+{
+	for (auto& i : Net) // Простановка индексов МК автоматов для маршрутизации
+	{
+		i.FUMkGloabalRange = (i.FUInd + 1) * i.FUMkRange; // Коррекция глобального диапазона МК для ФУ
+		auto k = i.NeighboursMk.begin();
+		if (i.Neighbours.size())
+			for (auto j = i.Neighbours.begin(); j != i.Neighbours.end(); j++, k++)
+				if (*j != nullptr)
+					*k = *k + (FUMkRange + 1) * ((*j)->FUInd);
+	}
+	// Определение размерности сетки
+	int M = SectorDim[2] / SectorDim[1]; // Количество секторов в строке
+	int N = Net.size() / SectorDim[1]; // Общее количество секторов
+	int K = SectorDim[0] * (SectorDim[2] / SectorDim[1]); // Количество узлов в строке
+
+	Routers.resize(N << 2);
+	Gateways.resize(N << 2);
+	Schedullers.resize(N << 2);
+
+	for (int i = 0; i < N; i++) // Цикл по секторам
+	{
+		int x = i % M;
+		int y = i / M;
+
+		Gateways[i << 2].Receiver = &Routers[i << 2];
+		Gateways[(i << 2) + 1].Receiver = &Routers[(i << 2) + 1];
+		Gateways[(i << 2) + 2].Receiver = &Routers[(i << 2) + 2];
+		Gateways[(i << 2) + 3].Receiver = &Routers[(i << 2) + 3];
+
+		if (x > 0) Gateways[i << 2].GatewayFriend = &Gateways[((x - 1 + y * M) << 2) + 1];
+		if (x != M - 1) Gateways[(i << 2) + 1].GatewayFriend = &Gateways[(x + 1 + y * M) << 2];
+		if (y > 0) Gateways[(i << 2) + 2].GatewayFriend = &Gateways[((x + (y - 1) * M) << 2) + 3];
+		if (y != N / M - 1) Gateways[(i << 2) + 3].GatewayFriend = &Gateways[((x + (y + 1) * M) << 2) + 2];
+
+		// Перенастройка ссылок между ФУ-автоматами
+		for (int j = 0; j < 4; j++) // Настройка секторальных пересылок роутера
+			for (int k = 0; k < 4; k++)
+				Routers[(i << 2) + j].SectorReceivers.push_back(&Gateways[(i << 2) + k]);
+
+		// Поставление ссылок с роутера на ФУ-автоматы своего сектора
+		for (int k = 0; i < SectorDim[1] / SectorDim[0]; i++)
+			for (int j = 0; j < SectorDim[0]; j++)
+			{
+				Routers[i << 2].Channels.push_back({});
+				Routers[(i << 2) + 1].Channels.push_back({});
+				Routers[(i << 2) + 2].Channels.push_back({});
+				Routers[(i << 2) + 3].Channels.push_back({});
+
+				Routers[i << 2].Channels.back().Up = (i + j + K * M) + 1 * FUMkRange; // + 1 для того, чтобы диапазон МК 0-го автомата не начинался с 0
+				Routers[(i << 2) + 1].Channels.back().Up = (i + j + K * M + 1) * FUMkRange;
+				Routers[(i << 2) + 2].Channels.back().Up = (i + j + K * M + 1) * FUMkRange;
+				Routers[(i << 2) + 3].Channels.back().Up = (i + j + K * M + 1) * FUMkRange;
+
+				Routers[i << 2].Channels.back().Down = (i + j + K * M + 1 + 1) * FUMkRange;
+				Routers[(i << 2) + 1].Channels.back().Down = (i + j + K * M + 1 + 1) * FUMkRange;
+				Routers[(i << 2) + 2].Channels.back().Down = (i + j + K * M + 1 + 1) * FUMkRange;
+				Routers[(i << 2) + 3].Channels.back().Down = (i + j + K * M + 1 + 1) * FUMkRange;
+
+				Routers[i << 2].Channels.back().Receiver = &Net[i + j + K * M];
+				Routers[(i << 2) + 1].Channels.back().Receiver = &Net[i + j + K * M];
+				Routers[(i << 2) + 2].Channels.back().Receiver = &Net[i + j + K * M];
+				Routers[(i << 2) + 3].Channels.back().Receiver = &Net[i + j + K * M];
+
+				if (NetEventser != nullptr) // Настройка моделирования
+				{
+					Schedullers[i].eventser = NetEventser;
+					if (Net[i + j + K * M].Modeling == nullptr)
+						Net[i + j + K * M].Modeling = new FUModeling;
+					Net[i + j + K * M].Modeling->scheduler = &Schedullers[i];
+					Net[i + j + K * M].Modeling->eventser = (FU*)&NetEventser;
+				}
+			}
+	}
+
+
+	// Перестройка ссылок межды ФУ для формирования модели распределенной ВС
+	int cc = 0;
+	for (auto& i : Net)
+	{
+		//		cout << cc << endl; cc++;
+		//		if (cc == 40)
+		//			cout << "!!!!!\n";
+		vector<int> El; // Дифференциал при отправке по сетке
+		El.push_back(((i.FUInd) % ((SectorDim[2] / SectorDim[1]) * SectorDim[0]) / SectorDim[0])); // Координата по x
+		El.push_back((i.FUInd / i.FUMkRange) / SectorDim[1]); // Координата по y
+
+		auto Nieb = i.Neighbours.begin();
+		for (auto Mk = i.NeighboursMk.begin(); Mk != i.NeighboursMk.end(); Mk++, Nieb++) //Проход по соседям автомата
+		{
+			int Index = (*Mk - FUMkRange) / FUMkRange;
+			vector<int> D; // Дифференциал при отправке по сетке
+			D.push_back((Index % ((SectorDim[2] / SectorDim[1]) * SectorDim[0]) / SectorDim[0]) - El[0]); // Координата по x
+			D.push_back((Index / SectorDim[2]) - El[1]); // Координата по y
+			if (D[0] == 0 && D[1] == 0) continue; // Ссылка на тот же сектор
+			int c = 0;
+			if (D[0])
+			{
+				D[0] = D[0] / abs(D[0]);
+				c++;
+			}
+			if (D[1])
+			{
+				D[1] = D[1] / abs(D[1]);
+				c++;
+			}
+			if (c == 2) // Если два возможных направления, выбираем только одно случайным образом
+				D[rand() % 2] = 0;
+			if (D[0] < 0)
+				*Nieb = (FU*)&Gateways[(El[1] * M + El[0] - 1) << 2];
+			else if (D[0] > 0)
+				*Nieb = (FU*)&Gateways[(El[1] * M + El[0] + 1) << 2 + 1];
+
+			if (D[1] < 0)
+				*Nieb = (FU*)&Gateways[((El[1] * M - M + El[0] + 2) << 2) + 2];
+			else if (D[1] > 0)
+				*Nieb = (FU*)&Gateways[((El[1] * M + M + El[0]) << 2) + 3];
+		}
+
+	}
+	//	cout << "End Sectoring\n";
 }

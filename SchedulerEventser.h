@@ -6,7 +6,6 @@ class Eventser: public FU
 	multimap<double, Event> Events; // События
 	bool work = false; // Флаг процесса моделирования
 	bool start = false; // Флаг запуска процесса моделирования
-	double CurrentTime = 0; // Текущее время моделирования
 	void* FinProg = nullptr; // Программа, запускаемая по завершении моделирования
 	int EventCount = 0; // Счетчик событий
 	double Time = 0; // Время для установки события
@@ -23,6 +22,7 @@ FU* FUContext = nullptr; public:
 	};
 	Eventser() {};
 public:
+	double CurrentTime = 0; // Текущее время моделирования
 	void EventsPrint() // Распечатать собырия в хронологии
 	{
 		for (auto i : Events)

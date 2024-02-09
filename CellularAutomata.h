@@ -65,7 +65,7 @@ public:
 	vector <Gateway> Gateways; // Вектор шлюзов для моделирования распределенной вычислительной сетки
 	vector <int> SectorDim; // Размеры областей для моделирования распределенной ВС
 	vector <Scheduler> Schedullers; // Вектор планировщиков вычислений
-	Eventser* NetEventser = nullptr; // 
+	Eventser* NetEventser = nullptr; // Контроллер событий
 
 	void* iniAutmataProg = nullptr; // Программа инициализации автоматов
 
@@ -76,4 +76,5 @@ public:
 	int MkAddMk=21; // Код МК для добавления МК соседа исполнительного ФУ
 	int AutomataMk1 = -1, AutomataMk2 = -1; // Текущая МК для автомата по индексами 1, 2
 	int GatewayMk = -1, RouterMk = -1; // МК для шлюза и маршрутизатора
+	vector<int> NetDim; // Вектор с размерностями прямоугольной сетки
 };

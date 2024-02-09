@@ -29,7 +29,7 @@ void Gateway::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		MkCount++; // Посчитать количетво МК, переданных через шлюз
 		DataCount += Load.DataSize(); // Подсчет объема переданных данных
 		if(MK>=0)
-			GatewayFriend->MkAwait(-MK, Load, Sender, DelayFunc()); // Передать сообщение на парный шлюз
+			GatewayFriend->MkAwait(MK, Load, Sender, DelayFunc()); // Передать сообщение на парный шлюз
 		else
 			Receiver->MkAwait(-MK, Load, Sender, DelayFunc()); // Передать сообщение на парный шлюз
 

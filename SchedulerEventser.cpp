@@ -161,6 +161,7 @@ void Scheduler::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		break;
 	case 1: // EventserSet
 		eventser = (FU*)Load.Point;
+		CurrentTime = &((Eventser*)Load.Point)->CurrentTime; // Ссылка на пеерменную с текущем временем моделирования
 		break;
 	case 2: // Clear Сбросить параметры моделирования
 		CoreCountPrev = 0;

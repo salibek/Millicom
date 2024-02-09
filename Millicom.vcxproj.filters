@@ -96,6 +96,9 @@
     <ClCompile Include="Consts.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="StreamFloatALU.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ALU.h">
@@ -180,6 +183,9 @@
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="Router.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="StreamFloatALU.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>
