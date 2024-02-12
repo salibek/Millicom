@@ -67,8 +67,9 @@ int main(int argc, char* argv[])
 //	STR = "AlU_test.ind";
 //	string STR = "TabTest.ind";
 //	string STR = "LexTest.ind"; // Имя запускного файла
-	STR = "Bag3.ind";
-//	STR = "Bag4.ind";
+//	STR = "Bag3.ind";
+	STR = "StreamFloatALU.ind";
+	//	STR = "Bag4.ind";
 //	STR = "Termo.ind";
 	//	string STR = "ControlAoutomat.ind";
 

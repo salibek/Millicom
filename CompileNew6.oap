@@ -517,6 +517,7 @@ CommonMkList{
 	Obj={Mnemo="Modeling" Comment Hint="Моделирование вычислительного процеса"
 		Obj={Mnemo="SchedulerContextSet" Mk=918 Hint="Установить ссылку на контекст ФУ-планировщика"}
 		Obj={Mnemo="SchedulerSet" Mk=918 Hint="Установить ссылку на контекст ФУ-планировщика"}
+		Obj={Mnemo="EventserSet" Mk=917 Hint="Установить ссылку на контекст контроллера событий"}
 		Obj={Mnemo="ManualModeSet" Mk=916 Hint="Установить режим ручного управления ФУ"}
 		Obj={Mnemo="ModelingReset" Mk=907 Hint="Сбросить настройки моделирования у ФУ"}
 
@@ -4378,7 +4379,7 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
   Obj={Mnemo="ReceiverPush" Mk=2 Hint="Положить адрес приёмника лексемы в стек"}
   Obj={Mnemo="ReceiverPop" Mk=3 Hint="Вытолкнуть адрес премника из стека и записать его"}
   Obj={Mnemo="ReceiverPopMk" Mk=4 Hint="Вытолкнуть адрес премника из стека и выдать МК с ним"}
-  Obj={Mnemo="ReceiverPopCend" Mk=1 Hint="Вытолкнуть адрес премника из стека и выдать Лексему (при нулевой нагрузке выдается текущая лексема"}
+  Obj={Mnemo="ReceiverPopSend" Mk=1 Hint="Вытолкнуть адрес премника из стека и выдать Лексему (при нулевой нагрузке выдается текущая лексема"}
 
   Obj={Mnemo="FinMkAdd" Mk=6 Hint="Добавить финальную МК"}
   Obj={Mnemo="FinMkClear" Mk=7 Hint="Очистить список фитальных МК"}
@@ -4438,8 +4439,8 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
   Obj={Mnemo="VarSet" Mk=65 Hint="Установить тип переменной для нагрузки последней лексемы"}
   Obj={Mnemo="PrevVarSet" Mk=66 Hint="Установить тип переменной для нагрузки предыдущей лексемы"}
 
-  Obj={Mnemo="CendToReceiver" Mk=70 Hint="Переслать лексему из нагрузки получателю"}
-  Obj={Mnemo="CendCopyToReceiver" Mk=71 Hint="Переслать копию лексемы из нагрузки получателю"}
+  Obj={Mnemo="SendToReceiver" Mk=70 Hint="Переслать лексему из нагрузки получателю"}
+  Obj={Mnemo="SendCopyToReceiver" Mk=71 Hint="Переслать копию лексемы из нагрузки получателю"}
 
   Obj={Mnemo="RegSet" Mk=85 Hint="Установить регулярное выражение"}
   Obj={Mnemo="RegProgSet" Mk=86 Hint="Установить программу обработки лексемы, выделенной регулярным выражением"}
@@ -4451,6 +4452,8 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
   Obj={Mnemo="LexReset" Mk=98 Hint="Сбросить настройки лексического анализа"}
   Obj={Mnemo="Stop" Mk=99 Hint="Остановить лексический анализ"}
   Obj={Mnemo="Lexing" Mk=100 Hint="Лексический разбор строки"}
+  Obj={Mnemo="AddComment" Mk=101 Hint="Добавление нового обозначения комментария"}
+  Obj={Mnemo="DelComment" Mk=102 Hint="Удаление существующего обозначения комментария"}
   Obj=CommonMkList
 }
 
@@ -5107,15 +5110,21 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
       Obj=CommonMkList
    }
 
-// EventserMewMkList
+// EventserNewMkList
 	FuTypeIndexes.CellSet=109 FuTypeMkTrees.CellSet=
    {
       Obj={Mk=1 Mnemo="Start" Hint="Начать моделирование"}
       Obj={Mk=5 Mnemo="WorkSet" Hint="Установить флаг рабочего режима"}
+
+      Obj={Mk=10 Mnemo="FUSet" Hint="Установить контекст ФУ для запланирования события"}
+      Obj={Mk=11 Mnemo="EventTimeSet" Hint="Установить временя выполнения МК, инициированной планировщиком вычислительного процесса"}
+      Obj={Mk=15 Mnemo="EventAwaitSet" Hint="Установить временя прихода удаленной МК"}
+
       Obj={Mk=45 Mnemo="TimeSet" Hint="Установить текущее модельное время"}
+      Obj={Mk=49 Mnemo="TimeRefOut" Hint="Выдать ссылку на переменную текущего модельного времени"}
       Obj={Mk=50 Mnemo="TimeOut" Hint="Выдать текущее модельное время"}
       Obj={Mk=51 Mnemo="TimeOutMk" Hint="Выдать МК с текущим модельным временем"}
-      Obj={Mk=52 Mnemo="TimeOutRefMk" Hint="Выдать МК со ссылкой на переменную текущего модельного времени"}
+      Obj={Mk=52 Mnemo="TimeRefOutMk" Hint="Выдать МК со ссылкой на переменную текущего модельного времени"}
       Obj=CommonMkList
    }
 // MeanShiftManager
@@ -5164,7 +5173,17 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 
 
       Obj=CommonMkList
-   }
+	}
+
+// StreamFloatALU
+	FuTypeIndexes.CellSet=111 FuTypeMkTrees.CellSet=
+	{
+		Obj={Mk=1 Mnemo="RezSet" Hint="Установить результат"}
+		Obj={Mk=5 Mnemo="RezOut" Hint="Выдать результат"}
+		Obj={Mk=6 Mnemo="RezOutMk" Hint="Выдать МК с результатом"}
+		Obj=CommonMkList
+	}
+/*
 // BagManager
 	FuTypeIndexes.CellSet=111 FuTypeMkTrees.CellSet=
    {
@@ -5182,6 +5201,7 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 
       Obj=CommonMkList
    }
+*/
 
 // GaussManager
 	FuTypeIndexes.CellSet=112 FuTypeMkTrees.CellSet=
@@ -5328,9 +5348,9 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 // CellularAutomat Клеточный автомат
      FuTypeIndexes.CellSet=114 FuTypeMkTrees.CellSet=
 	{
-	 Obj={Mk=20  Mnemo="NeighbourAdd" Hint="Добавить ссылку на исполнительное устройство"}
-	 Obj={Mk=21  Mnemo="NeighbourMkAdd" Hint="Добавить МК для соседа (сначала добавляем ссылку, затем МК; если добавляется только МК, то в качестве сслыки автоматически добавлается Bus)"}
-	 Obj={Mk=22  Mnemo="NeighbourClear" Hint="Очистить буфера ссылок на соседей и МК для них"}
+	 Obj={Mk=37 Mnemo="IndOut" Hint="Выдать индекс"}
+	 Obj={Mk=21 Mnemo="NeighbourMkAdd" Hint="Добавить МК для соседа (сначала добавляем ссылку, затем МК; если добавляется только МК, то в качестве сслыки автоматически добавлается Bus)"}
+	 Obj={Mk=22 Mnemo="NeighbourClear" Hint="Очистить буфера ссылок на соседей и МК для них"}
 	 Obj={Mk=30 Mnemo="StateSet" Hint="Установить индекс состояния автомата"}
 	 Obj={Mk=31 Mnemo="StateOut" Hint="Выдать индекс состояния автомата"}
 	 Obj={Mk=32 Mnemo="StateOutMk" Hint="Выдать МК с индексом состояния автомата"}
@@ -5339,9 +5359,17 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 	 Obj={Mk=37 Mnemo="IndOut" Hint="Выдать индекс"}
 	 Obj={Mk=38 Mnemo="IndOutMk" Hint="Выдать МК с индексом"}
 
+	 Obj={Mk=50  Mnemo="ReceiveTimeSet" Hint="Установить время получения данных"}
+	 Obj={Mk=51  Mnemo="SendTimeSet" Hint="Установить время отправки данных"}
+	 Obj={Mk=52  Mnemo="OtherMkTimeSet" Hint="Установить время для других МК"}
+	 Obj={Mk=53  Mnemo="TransferTimeSet" Hint="Установить время передачи данных между ФУ"}
+
 	 Obj={Mk=799 Mnemo="N_InAdd" Hint="Изменить число входных параметров (по умолчанию +1)"}
 	 Obj={Mk=800 Mnemo="N_InSet" Hint="Установить количество входных данных"}
 	 Obj={Mk=801 Mnemo="N_PlySet" Hint="Установить количество слоев для расчета"}
+	 Obj={Mk=802 Mnemo="N_InOut" Hint="Выдать количество ожидаемых входных данных"}
+	 Obj={Mk=803 Mnemo="N_InOutMk" Hint="Выдать МК с количеством ожидаемых входных данных"}
+
 	 Obj={Mk=805 Mnemo="RezSet" Hint="Установить результат вычислений (если PlyInd<0, устанавливается значение текущего слоя)"}
 	 Obj={Mk=806 Mnemo="RezOut" Hint="Выдать результат вычислений (если PlyInd<0, выдается значение результат расчета текущего слоя)"}
 	 Obj={Mk=807 Mnemo="RezOutMk" Hint="Выдать МК с результатом вычислений (если PlyInd<0, выдается значение результат расчета текущего слоя)"}
@@ -5355,8 +5383,16 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 	 Obj={Mk=854 Mnemo="ParametersClear" Hint="Очистать список параметров"}
 	 Obj={Mk=863 Mnemo="FUIndSet" Hint="Очистать список параметров"}
 	 Obj={Mk=865 Mnemo="ManagerSet" Hint="Установить ссылку на менеджера автомата"}
-	 Obj={Mk=880 Mnemo="RezSendToAll" Hint="Выдать результат вычислений соседям"}
+	 Obj={Mk=880 Mnemo="SendToAll" Hint="Выдать результат вычислений соседям"}
 	 Obj={Mk=885 Mnemo="PlyNSet" Hint="Установить количество слоев"}
+	 Obj={Mk=898 Mnemo="NeighboursPrint" Hint="Вывести соседей ФУ"}
+	 Obj={Mk=899 Mnemo="OutBlockSet" Hint="Установить блокировку выдачи данных для ФУ"}
+	 Obj={Mk=875 Mnemo="ReceivedOut" Hint="Выдать полученные данные"}
+	 Obj={Mk=876 Mnemo="ReceivedOutMk" Hint="Выдать МК с полученными данными"}
+	 Obj={Mk=877 Mnemo="FiringProgExec" Hint=" Выполнить программу, если в наличие полный комплект выходных данных"}
+	 Obj={Mk=878 Mnemo="PlyNext" Hint="Перейти к следующему слою (в нагрзуке передаёться значение результата на новом слое)"}
+	 Obj={Mk=879 Mnemo="PriorityMkSet" Hint=" Установить приоритетную МК для отправки соседям (при -1 считается, что приоритетной МК нет"}
+
 	 
 	 Obj={Mk=3  Mnemo="InOut" Hint="Выдать полученное от соседа значение по индексу"}
 	 Obj={Mk=4  Mnemo="InOutMk" Hint="Выдать соседу МК со значением от соседа по индексу"}
@@ -5578,16 +5614,20 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 	 Obj={Mk=23 Mnemo="Ind2Sub" Hint="Уменьшить значение второго счетчика"}
 	 Obj={Mk=32 Mnemo="Step1Set" Hint="Установить шаг автоматической инкрементации для 1-го индекса"}
 	 Obj={Mk=33 Mnemo="Step2Set" Hint="Установить шаг автоматической инкрементации для 2-го индекса"}
-	 Obj={Mk=35 Mnemo="Context1Out" Hint="Выдать контекст первого ФУ-автомата"}
-	 Obj={Mk=36 Mnemo="Context1OutMk" Hint="Выдать МК с контекстот первого ФУ-автомата"}
-	 Obj={Mk=37 Mnemo="Context2Out" Hint="Выдать контекст второго ФУ-автомата"}
-	 Obj={Mk=38 Mnemo="Context2OutMk" Hint="Выдать МК с контекстом второго ФУ-автомата"}
+	 Obj={Mk=34 Mnemo="Step3Set" Hint="Установить шаг автоматической инкрементации для 3-го индекса"}
+	 Obj={Mk=35 Mnemo="Step4Set" Hint="Установить шаг автоматической инкрементации для 4-го индекса"}
+	 Obj={Mk=36 Mnemo="Context1Out" Hint="Выдать контекст первого ФУ-автомата"}
+	 Obj={Mk=37 Mnemo="Context1OutMk" Hint="Выдать МК с контекстот первого ФУ-автомата"}
+	 Obj={Mk=38 Mnemo="Context2Out" Hint="Выдать контекст второго ФУ-автомата"}
+	 Obj={Mk=39 Mnemo="Context2OutMk" Hint="Выдать МК с контекстом второго ФУ-автомата"}
 	 Obj={Mk=40 Mnemo="ContextAddMkSet" Hint="Установить МК для добавления контекста соседа исполнительного ФУ"}
 	 Obj={Mk=41 Mnemo="MkAppendMkSet" Hint="Установить МК для добавления МК для соседа исполнительного ФУ"}
 
 	 Obj={Mk=50 Mnemo="Ind1Exec" Hint="Выполнить программу для первого ФУ-автомата"}
 	 Obj={Mk=51 Mnemo="Ind2Exec" Hint="Выполнить программу для второго ФУ-автомата"}
 	 Obj={Mk=52 Mnemo="AllExec" Hint="Выполнить программу для всех исполнительных ФУ"}
+	 Obj={Mk=53 Mnemo="Ind1To2Exec" Hint="Выполнить программу для всех ФУ с индексами от Ind1 до Ind2 невключительно"}
+	 Obj={Mk=54 Mnemo="Ind1To2ExecInclude" Hint="Выполнить программу для всех ФУ с индексами от Ind1 до Ind2 включительно"}
 
 	 Obj={Mk=58 Mnemo="Neitborder1To2Append" Hint="Добавить соседа с индексом 2 для ФУ с индексом 1"}
 	 Obj={Mk=59 Mnemo="Neitborder2To1Append" Hint="Добавить соседа с индексом 1 для ФУ с индексом 2"}
@@ -5610,6 +5650,25 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 	 Obj={Mk=81 Mnemo="Ind1InCounterOutMk" Hint="Выдать МК с количеством пришедших входных данных"}	 
 	 Obj={Mk=85 Mnemo="ForExec" Hint="Выполнить цикл (на входе программа для выполнени цикла или количество итераций (тогда выполняется программа по указателю Prog из контекста)"}	 
 	// Obj={Mk=70 Mnemo="PlyNSet" Hint="Установить количество слоев"}
+
+	
+	Obj={Mnemo="Dustrbuted system modeling" Hint="Моделирование распределенной вычислительной системы" Comment
+	   Obj={Mk=100 Mnemo="SectorDimClear" Hint="Очистить настройки распределенного моделирования"}
+	   Obj={Mk=101 Mnemo="SectorDimAdd" Hint="Добавить измерение для моделирования распределенной вычислительной системы"}
+	   Obj={Mk=105 Mnemo="SectorGenearte" Hint="Перестроить вычислительную сетки для моделирования распределенной ВС"}
+	   Obj={Mk=110 Mnemo="RouterExec" Hint="Выполнить программу для текущего роутера"}
+	   Obj={Mk=111 Mnemo="RouterAllExec" Hint="Выполнить программу для всех роутеров"}
+	   Obj={Mk=112 Mnemo="GatewayExec" Hint="Выполнить программу для текущего шлюза"}
+	   Obj={Mk=113 Mnemo="GatewayAllExec" Hint="Выполнить программу для всех шлюзов"}
+	   Obj={Mk=115 Mnemo="RouterMkSet" Hint="Установить МК для роутера"}
+	   Obj={Mk=116 Mnemo="RouterMkExec" Hint="Выполнить МК для текущего роутера"}
+	   Obj={Mk=117 Mnemo="RouterAllMkExec" Hint="Выполнить МК для всех роутеров"}
+	   Obj={Mk=118 Mnemo="GatewayMkSet" Hint="Установить МК для шлюза"}
+	   Obj={Mk=119 Mnemo="GatewayMkExec" Hint="Выполнить МК для текущего шлюза"}
+	   Obj={Mk=120 Mnemo="GatewayAllMkExec" Hint="Выполнить МК для всех шлюзов"}
+	   Obj={Mk=125 Mnemo="NetEvenserSet" Hint="Установить указатель на контроллер событий для распределенной сети"}
+	}
+//	 Obj={Mk= Mnemo="" Hint=""}
 
 	 Obj={Mk=200 Mnemo="NetGenerate" Hint="Генерация сетки (На вход может подаваться количество ФУ в сетке)"}
 
@@ -5635,6 +5694,7 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 	 Obj={Mk=40 Mnemo="ChRangeUpOutMk" Hint="Выдать МК с верхним диапазоном адресов для текущего канала"}
 	 Obj={Mk=45 Mnemo="ChRangeDownOut" Hint="Выдать нижний диапазон для текущего канала"}
 	 Obj={Mk=50 Mnemo="ChRangeDownOutMk" Hint="Выдать МК с нижним диапазоном для текущего канала"}
+	 Obj={Mk=51 Mnemo="ChDelaySet" Hint="Устанговить константную задержку передачи данных по каналу"}
 	 Obj={Mk=55 Mnemo="RoutingProgSet" Hint="Установить ссылку на программу маршрутизации"}
 	 Obj={Mk=60 Mnemo="OverflowProgSet" Hint="Установить ссылку на подпрограмму реакции на переполнение буфера для хранения данных"}
 	 Obj={Mk=61 Mnemo="MkOverflowProgSet" Hint="Установить ссылку на подпрограмму реакции на переполнение буфера МК"}
@@ -5648,9 +5708,13 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 	 Obj={Mk=320 Mnemo="RouterStatsClear" Hint="Сбросить блок статистики переданных данных через роутер"}
 	 Obj={Mk=325 Mnemo="RouterDataInCountOut" Hint="Выдать объем переданных данных через роутер"}
 	 Obj={Mk=330 Mnemo="RouterDataInCountOutMk" Hint="Выдать МК с объемом переданных данных через роутер"}
-	 Obj={Mk=335 Mnemo="ChDataInCountOut" Hint="Выдать объем переданных данных через текущий канал (по индексу текущего канала)"}
-	 Obj={Mk=340 Mnemo="ChDataInCountOutMk" Hint="Выдать МК с объемом переданных данных через канал"}
-	 Obj={Mk=345 Mnemo="RouterMkCountOut" Hint="Выдать количество переданных МК через роутер"}
+	 
+      Obj={Mk=335 Mnemo="ChDataOutCountOut" Hint="Выдать объем переданных данных из текущего канала (по индексу текущего канала)"}
+      Obj={Mk=336 Mnemo="ChDataInCountOut" Hint="Выдать объем пришедших данных в текущий канал (по индексу текущего канала)"}
+	 Obj={Mk=340 Mnemo="ChDataOutCountOutMk" Hint="Выдать МК с объемом переданных данных переданных из канала"}
+	 Obj={Mk=341 Mnemo="ChDataInCountOutMk" Hint="Выдать МК с объемом пришедших данных в канал"}
+	 
+      Obj={Mk=345 Mnemo="RouterMkCountOut" Hint="Выдать количество переданных МК через роутер"}
 	 Obj={Mk=350 Mnemo="RouterMkCountOutMk" Hint="Выдать МК с количеством переданных МК через роутер"}
 	 Obj={Mk=355 Mnemo="ChMkInCountOut" Hint="Выдать количество переданных МК через канал"}
 	 Obj={Mk=360 Mnemo="ChMkInCountOutMk" Hint="Выдать МК с количеством переданных МК через канал"}
@@ -5660,16 +5724,46 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 	 Obj={Mk=380 Mnemo="RouterAverageMkQueueOuMk" Hint="Выдать МК со средней длиной очереди МК на роутере"}
 	 Obj={Mk=395 Mnemo="ReceiveProgSet" Hint="Установить ссылку на программу, активизирующуюся при приходе МК для маршрутизации (для реализации автоматического сбора статистики)"}
 
+	 Obj={Mk=450 Mnemo="SectorClear" Hint="Очистить размерность распределенной вычислительной сетки и индексы"}
+	 Obj={Mk=451 Mnemo="SectorDimAdd" Hint="Добавить размерность измерения"}
+	 Obj={Mk=452 Mnemo="SectorCoordinateAdd" Hint="Добавить координату сектора"}
+	 Obj={Mk=453 Mnemo="SectorRouterAdd" Hint="Добавить секторальный роутер"}
+
+
       Obj=CommonMkList
 	}
 
-// Gateway Маршрутизатор
+// Gateway Шлюз для передачи даннных
      FuTypeIndexes.CellSet=117 FuTypeMkTrees.CellSet=
 	{
-      Obj={Mk=3 Mnemo="ChClear" Hint="Очистить список каналов"}
-      Obj={Mk=5 Mnemo="ChInSet" Hint="Установить входной канал"}
-      Obj={Mk=6 Mnemo="ChOutSet" Hint="Установить выходной канал"}
-      Obj={Mk=7 Mnemo="ChOutAdd" Hint="Добавить выход для текущего канала"}
+      Obj={Mk=1 Mnemo="ReceiverSet" Hint="Установить ссылку на роутер"}
+	 Obj={Mk=2 Mnemo="RoutingSimulat" Hint="Эмуляция прихода МК для маршрутизации"}	 
+      Obj={Mk=5 Mnemo="GatewayFriendSet" Hint="Установить ссылку на парный шлюз (или ФУ-модель  другого сетевого оборудования)"}
+      Obj={Mk=10 Mnemo="TransmTimeSet" Hint="Установить время передачи единицы данны"}
+      Obj={Mk=11 Mnemo="TransErrorSet" Hint="Установить вероятность ошибки передачи"}
+      Obj={Mk=12 Mnemo="ModeSet" Hint="Установить решим передачи данных: симплекс от шлюза, симплекс к шлюзу, полудуплекс, дуплекс"}
+      Obj={Mk=13 Mnemo="ProcessingTimeSet" Hint="Установить время обработки запроса передачу"}
+      Obj={Mk=15 Mnemo="GatewayProgSet" Hint="Установить ссылку на программу описания протокола обмена данными и моделирования передачи данных"}
+      Obj={Mk=16 Mnemo="MkOverflowProgSet" Hint="Установить ссылку на подпрограмму обработки события превышения максимального количества МК в буфере"}
+      Obj={Mk=17 Mnemo="OverflowProgSet" Hint="Установить ссылку на подпрограмму обработки события переполнения шлюза"}
+      Obj={Mk=20 Mnemo="DataCounterOut" Hint="Выдать объём переданных данных"}
+      Obj={Mk=21 Mnemo="DataCounterOutMk" Hint="Выдать МК с объёмом переданных данны"}
+      Obj={Mk=22 Mnemo="MkTransmTimeSet" Hint="Установить время передачи МК по каналу связи"}
+      Obj={Mk=23 Mnemo="DataTransmRateSet" Hint="Установить скорость передачи данных (в бит/с)"}
+      Obj={Mk=24 Mnemo="HeaderVolumSet" Hint="Установить длину заголовка передаваемого пакета данных"}
+
+      Obj={Mk=25 Mnemo="TransmTimeSet" Hint="Установить скорость передачи данных"}
+      Obj={Mk=30 Mnemo="MaxDataBufSet" Hint="Установить максимальный объем буфера данных для передачи"}
+      Obj={Mk=35 Mnemo="MaxMkBufSet" Hint="Установить максимальное количество МК, помещающиеся в буфере"}
+      Obj={Mk=40 Mnemo="StatReset" Hint="Сброс блока статистики"}
+      Obj={Mk=45 Mnemo="DataCountOut" Hint="Выдать объем переданных данных через шлюз (в обе стороны)"}
+      Obj={Mk=50 Mnemo="DataCountMkOut" Hint="Выдать МК с объемом переданных данных через шлюз (в обе стороны)"}
+      Obj={Mk=55 Mnemo="DataCountOutMk" Hint="Выдать объем переданных данных через шлюз"}
+      Obj={Mk=60 Mnemo="DataCountMkOutMk" Hint="Выдать МК с объемом переданных данных через шлюз"}
+      Obj={Mk=65 Mnemo="DataCountOut" Hint="Выдать объем принятых данных через шлюз"}
+      Obj={Mk=70 Mnemo="DataCountOutMk" Hint="Выдать МК с объемом принятых данных через шлюз"}
+//      Obj={Mk= Mnemo="" Hint=""}
+
 	 Obj=CommonMkList
 	}
   FuTypeMkTrees.CellSet=nil
@@ -7068,8 +7162,8 @@ Bus={FuTypeMkList.RowSet=FUBus; FuTypeMkList.CellPop=temp
  	FUType=110 FUTypeDef=110 Hint="ФУ контроллер событий"}
 
      FuTypeMkList.CellPop=temp FuTypeMkTrees.CellPop=temp2
- 	MnemoServiceTable.LineAdd={Mnemo="FUBag" TreeParentLevelAtr=1 MkList=temp(nil)! MkTree=temp2(nil)!
- 	FUType=111 FUTypeDef=111 Hint="ФУ Решения задачи о рюкзаке методом динамического программирования"}
+ 	MnemoServiceTable.LineAdd={Mnemo="FUStreamFloatALU" TreeParentLevelAtr=1 MkList=temp(nil)! MkTree=temp2(nil)!
+ 	FUType=111 FUTypeDef=111 Hint="ФУ потоковое дробное АЛУ"}
 
      FuTypeMkList.CellPop=temp FuTypeMkTrees.CellPop=temp2
  	MnemoServiceTable.LineAdd={Mnemo="FUGausNew" TreeParentLevelAtr=1 MkList=temp(nil)! MkTree=temp2(nil)!
