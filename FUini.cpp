@@ -22,6 +22,8 @@
 #include "Router.h"
 #include "Gateway.h"
 #include "StreamFloatALU.h"
+#include "StreamFloatALUManager.h"
+#include "StreamIntALU.h"
 
 using namespace std;
 
@@ -163,4 +165,19 @@ FU* GatewayIni(FU* BusContext, FU* TEmpl)
 FU* StreamFloatALUIni(FU* BusContext, FU* TEmpl)
 {
 	return (FU*) new StreamFloatALU(BusContext, TEmpl);
+}
+
+FU* StreamFloatALUManagerIni(FU* BusContext, FU* TEmpl)
+{
+	return (FU*) new StreamFloatALUManager(BusContext, TEmpl);
+}
+
+FU* StreamIntALUIni(FU* BusContext, FU* TEmpl)
+{
+	return (FU*) new StreamIntALU(BusContext, TEmpl);
+}
+
+FU* StreamIntALUManagerIni(FU* BusContext, FU* TEmpl)
+{
+	return (FU*) new StreamIntALUManager(BusContext, TEmpl);
 }

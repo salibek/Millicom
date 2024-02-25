@@ -30,6 +30,7 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 	case 20: // ZExec
 		if (Rez == 0)
 			ProgExec(Load);
+		break;
 	case 30: // AngleModeSet
 		AngleMode = Load.toInt();
 		break;

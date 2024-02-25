@@ -3,7 +3,7 @@
 #include "FUini.h"
 #include <vector>
 
-const int NFUTypes = 23;
+const int NFUTypes = 26;
 
 typedef FU*(*FUiniArr[NFUTypes])(FU*, FU*);
 
@@ -15,7 +15,7 @@ public:
 	FU* (*FUTypes[NFUTypes])(FU*, FU*) = {BusIni, ConsIni, StrGenIni, LexIni, FindIni, 
 		ListIni, GraphTrasfIni, IntAluIni, InOutIni, AutomatManagerIni, NeuroIni,
 		NetManagerIni,SchedulerIni,EventserIni, MeanShiftIni, StreamFloatALUIni, GaussIni, ALUIni,
-		CellularAutomatIni, CellularAutomatManagerIni, RouterIni, GatewayIni};
+		CellularAutomatIni, CellularAutomatManagerIni, RouterIni, GatewayIni, StreamFloatALUManagerIni, StreamIntALUIni, StreamIntALUManagerIni };
 	vector <FU *> FUs; // Вектор указателей на контексты ФУ
 	FU * FUTempl = nullptr; // Указатель на контекст шаблона ФУ
 	int FUMkRange = 1000; // Диапазон МК для каждого ФУ

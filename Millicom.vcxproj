@@ -148,7 +148,6 @@
     <ClCompile Include="CellularAutomata.cpp" />
     <ClCompile Include="Consts.cpp" />
     <ClCompile Include="IntAlu.cpp" />
-    <ClCompile Include="Bag.cpp" />
     <ClCompile Include="Bus.cpp" />
     <ClCompile Include="Console.cpp" />
     <ClCompile Include="Find.cpp" />
@@ -171,13 +170,15 @@
     <ClCompile Include="Gauss.cpp" />
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="StreamFloatALU.cpp" />
+    <ClCompile Include="StreamFloatALUManager.cpp" />
+    <ClCompile Include="StreamIntALU.cpp" />
     <ClCompile Include="StrGen.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ALU.h" />
     <ClInclude Include="CellularAutomata.h" />
+    <ClInclude Include="Header.h" />
     <ClInclude Include="IntAlu.h" />
-    <ClInclude Include="Bag.h" />
     <ClInclude Include="Bus.h" />
     <ClInclude Include="Console.h" />
     <ClInclude Include="Consts.h" />
@@ -202,6 +203,8 @@
     <ClInclude Include="Search.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="StreamFloatALU.h" />
+    <ClInclude Include="StreamFloatALUManager.h" />
+    <ClInclude Include="StreamIntALU.h" />
     <ClInclude Include="StrGen.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

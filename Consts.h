@@ -128,7 +128,7 @@ public:
 	LoadPoint IndLoadReturn(); // Возвратить указатель на нагрузку индексированного элемента
 	bool isVectIndVectInd();  // Индексированный элемент вектора нагрузок от индексированного вектора нагрузок
 	static LoadPoint IndLoadReturn(LoadPoint LP); // Возвратить указатель на нагрузку индексированного элемента
-
+	bool isEmpty() { return Point == nullptr; }; // Проветка указателя на null
 	bool isVect(); // Вектор ли нагрузка
 	static bool isVect(unsigned int type) { return (type >> 1) == DLoadVect; }; // Вектор ли нагрузка
 	int Write(int x); // return 0 - корректная запись, 1 - несоотвествие типов
