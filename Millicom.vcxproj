@@ -159,6 +159,7 @@
     <ClCompile Include="Lex.cpp" />
     <ClCompile Include="List.cpp" />
     <ClCompile Include="LocationTable.cpp" />
+    <ClCompile Include="MatPlot.cpp" />
     <ClCompile Include="MeanShift.cpp" />
     <ClCompile Include="Millicom.cpp" />
     <ClCompile Include="Navigator.cpp" />
@@ -194,6 +195,7 @@
     <ClInclude Include="Lex.h" />
     <ClInclude Include="List.h" />
     <ClInclude Include="LocationTable.h" />
+    <ClInclude Include="MatPlot.h" />
     <ClInclude Include="MeanShift.h" />
     <ClInclude Include="Navigator.h" />
     <ClInclude Include="NetModeling.h" />

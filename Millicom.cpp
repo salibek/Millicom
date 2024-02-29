@@ -11,6 +11,7 @@
 #include <fstream>
 #include "MeanShift.h"
 #include "ALU.h"
+#include "StreamFloatALU.h"
 
 
 
@@ -22,6 +23,9 @@ int main(int argc, char* argv[])
 	system("chcp 1251");
 	BusFU Bus;
 	string STR;
+	StreamFloatALU ALU;
+
+	ALU.ProgFU(0, { 0, nullptr });
 	/*
 	* 
 	if (argc == 1)
@@ -67,11 +71,14 @@ int main(int argc, char* argv[])
 //	string STR = "TabTest.ind";
 //	string STR = "LexTest.ind"; // Имя запускного файла
 //	STR = "Bag3.ind";
-	STR = "StreamFloatALU.ind";
+
+//	STR = "StreamFloatALU.ind";
+
 	//	STR = "Bag4.ind";
 //	STR = "Termo.ind";
 	//	string STR = "ControlAoutomat.ind";
 
+	STR = "StreamFloatALUTest.ind";
 	Bus.ProgFU(10, {Cstring, &STR}); //Запуск индексного файла
 
 	system("pause");

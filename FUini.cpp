@@ -24,6 +24,7 @@
 #include "StreamFloatALU.h"
 #include "StreamFloatALUManager.h"
 #include "StreamIntALU.h"
+#include "MatPlot.h"
 
 using namespace std;
 
@@ -180,4 +181,9 @@ FU* StreamIntALUIni(FU* BusContext, FU* TEmpl)
 FU* StreamIntALUManagerIni(FU* BusContext, FU* TEmpl)
 {
 	return (FU*) new StreamIntALUManager(BusContext, TEmpl);
+}
+
+FU* MatPlotIni(FU* BusContext, FU* TEmpl)
+{
+	return (FU*) new MatPlot(BusContext, TEmpl);
 }

@@ -1,25 +1,29 @@
 #pragma once
 #include "Consts.h"
+#include <cmath>
 
 class StreamFloatALU : public FU
 {
-private:
-	vector<double>RezStack; // Стек результатов
-	double Rez = 0; // Регистр результата
-	bool Ready = false; // Флаг готовности результата
-	bool OutBlock = false; // Флаг запрета выдачи результата вычисления
-	int OperandsCounter = 0; // Счетчик операндов
-	vector<double>Operands; // Вектор операндов
-	vector<double>OperandsFlags; // Вектор флагов операндов
-	bool Redy = false; // Флаг готовности результата
-	vector<int>ReseiverMk; // Вектор МК для адресатов результата
-	vector<FU*>ReseiverContext; // Ссылки на контексты адресатов результата
-	int AngleMode = 0; // Режим угла
-	void* ZProg = nullptr, *NZProg = nullptr;
-	void* ErrProg = nullptr;
-
 public:
-	void ProgFU(int MK, LoadPoint Load, FU* Sender = nullptr) override;
+	vector<bool> Foperands; //   
+	bool Ready = false; //   
+	bool OutRezBlock = false; //    
+	void ProgFU(int MK, LoadPoint Load, FU* Sender = nullptr) override; //    
+	vector<double>RezStack; //  
+	double Rez = 0; //  
+	int OperandsCounter = 0; //  
+	bool Redy = false; //   
+	vector<int>ReseiverMk; //
+	vector<FU*>ReseiverContext; //     
+	int AngleMode = 0; //  
+	int Noperands = 2; //  
+	void* ZProg = nullptr, * NZProg = nullptr, * BProg = nullptr, * BZProg = nullptr, * LProg = nullptr, * LZProg = nullptr; //      
+	void* ErrProg = nullptr, * WrongFormatErrProg = nullptr, * OveflowProg = nullptr; //    
+	void* RezStackIsEmpyProg = nullptr; //     
+	void* OperetionProg = nullptr;//  
+	void* RezProg = nullptr; // ,    
+	vector<double> Operands;//  
+
 	StreamFloatALU(FU* BusContext, FU* Templ)
 	{
 		Bus = BusContext;
