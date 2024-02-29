@@ -136,12 +136,14 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 			double temp = Operands[0];
 			MkExec(Load, { Cdouble, &temp });
 		}
+		break;
 	case 210: // Op1Out   
 		if (Operands.size() == 1)
 			break;
 		else {
 			Load.Write(Operands[1]);
 		}
+		break;
 	case 211: // Op1OutMk   
 		if (Operands.size() == 1)
 			break;
