@@ -50,10 +50,10 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		MkExec(Load, { Cdouble, &t });
 	}
 		break;
-	case 21: // AngleModeSet     (0  , 1 - )
+	case 20: // AngleModeSet     Установить режим измерения угла (0 - радианы, 1 -градусы)
 		AngleMode = Load.toInt();
 		break;
-	case 30: // OperandsReset  
+	case 30: // OperandsReset
 		OperandsCounter = 0;
 		for (size_t i = 0; i < Foperands.size(); ++i) {
 			Foperands[i] = false;
@@ -91,7 +91,7 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 	case 80: // OutRezBlockSet      
 		OutRezBlock = Load.toBool(true);
 		break;
-	case 90:// Push     
+	case 90:// Push 
 		if (Load.Point == nullptr)
 			RezStack.push_back(Rez);
 		else
@@ -151,7 +151,7 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		ReseiverMk.push_back(Load.toInt());
 		break;
 	case 190: // RezProgSet    ,    
-		ReseiverContext.push_back((FU*)Load.Point);
+		RezProg=Load.Point;
 		break;
 	case 200: // Op0Out   
 		if (Operands.size() == 0)
@@ -468,7 +468,7 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 				Foperands[0] = true;
 				OperandsCounter++;
 			}
-			Foperands[0] = Load.toDouble(Rez);
+			Operands[0] = Load.toDouble(Rez);
 		}
 		else // Второй операнд
 		{
@@ -507,8 +507,9 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 			RezExec(); // Действия при получении результата
 		}
 		break;
-	case 520: // DivInt Целочисленное деление
-	case 521:	// Rem Остаток от целочисленного деления
+	case 520: // DivInt1 Целочисленное деление
+	case 521: // DivInt2 Целочисленное деление
+	case 522:	// Rem Остаток от целочисленного деления
 		if (!Foperands[0]) {
 			//      
 			OperandsCounter++;

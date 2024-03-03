@@ -18,9 +18,7 @@ NewFU={Mnemo="Console" FUType=FUConsNew}
 MainBus.PartialResetSet \\ Запомнить число созданных ФУ
 MainBus.ModeSet=2
 
-SALU.Add=2
-SALU.Add=2
-SALU.OutMk=Console.OutLn
+SALU.ReceiverMkSet=Console.OutLn
+SALU.RezProgSet={Console.Out="Rezult=" SALU.OutMk=Console.OutLn}
 SALU.Sub1=2
-SALU.Sub2=2
-SALU.OutMk=Console.OutLn
+SALU.Sub2=3

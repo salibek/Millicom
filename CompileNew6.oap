@@ -5178,9 +5178,39 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 // StreamFloatALU
 	FuTypeIndexes.CellSet=111 FuTypeMkTrees.CellSet=
 	{
-		Obj={Mk=1 Mnemo="RezSet" Hint="Установить результат"}
-		Obj={Mk=5 Mnemo="RezOut" Hint="Выдать результат"}
-		Obj={Mk=6 Mnemo="RezOutMk" Hint="Выдать МК с результатом"}
+		Obj={Mk=1 Mnemo="Set" Hint="Установить результат"}
+		Obj={Mk=5 Mnemo="Out" Hint="Выдать результат"}
+		Obj={Mk=6 Mnemo="OutMk" Hint="Выдать МК с результатом"}
+		Obj={Mk=10 Mnemo="OpCounterOut" Hint="Выдать счетчик накопленных операндов"}
+		Obj={Mk=11 Mnemo="OpCounterOutMk" Hint="Выдать МК со счетчиком накопленных операндов"}
+		Obj={Mk=20 Mnemo="AngleModeSet" Hint="Установить режим измерения угла (0 - радианы, 1 -градусы)"}
+		Obj={Mk=40 Mnemo="ErrProgSet" Hint="Установить программу обработки ошибок"}
+		Obj={Mk=75 Mnemo="ReadyExec" Hint="Запуск программы по флагу готовности резульатата"}
+
+		Obj={Mk=90 Mnemo="Push" Hint="Поместить в стек результатов"}
+		Obj={Mk=91 Mnemo="Pop" Hint="Вытолкнуть значение из стека резульатов"}
+		Obj={Mk=92 Mnemo="PopMk" Hint="Вытолкнуть МК со значением из стека резульатов"}
+		Obj={Mk=95 Mnemo="StackOut" Hint="Выдать значение из стека резульатов"}
+		Obj={Mk=96 Mnemo="StackOutMk" Hint="Выдать МК со значением из стека резульатов"}
+
+		Obj={Mk=160 Mnemo="ReceiverSet" Hint="Установить ссылку на контекст получателя результата"}
+		Obj={Mk=162 Mnemo="ReceiverMkSet" Hint="Установить МК для получателя результата"}
+		Obj={Mk=190 Mnemo="RezProgSet" Hint="Установить программу при получении результата"}
+
+		Obj={Mnemo="Arithmetic" Hint="Арифметические операции" Comment
+			Obj={Mk=500 Mnemo="Add" Hint="Сложение"}
+			Obj={Mk=501 Mnemo="AddSqr" Hint="Сложение квадратов"}
+			Obj={Mk=505 Mnemo="Sub1" Hint="Вычитаемое"}
+			Obj={Mk=506 Mnemo="Sub2" Hint="Вычитатель"}
+			Obj={Mk=510 Mnemo="Mul" Hint="Умножение"}
+			Obj={Mk=515 Mnemo="Div1" Hint="Делимое"}
+			Obj={Mk=516 Mnemo="Div2" Hint="Делитель"}
+			Obj={Mk=520 Mnemo="DivInt1" Hint="Цедлчисленное делимое"}
+			Obj={Mk=521 Mnemo="DivInt2" Hint="Целочисленный делитель"}
+			Obj={Mk=522 Mnemo="Rem" Hint="Остаток от целочисленного деления"}
+			Obj={Mk=525 Mnemo="Sqrt" Hint="Квадратный корень"}
+			Obj={Mk=526 Mnemo="Sqr" Hint="Квадрат"}
+		}
 		Obj=CommonMkList
 	}
 /*
