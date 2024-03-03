@@ -6,23 +6,27 @@ class StreamFloatALU : public FU
 {
 public:
 	vector<bool> Foperands; //   
-	bool Ready = false; //   
+	int Ready = 0; // Код готовности результата 0 - не готов, 1 - готов, 2 - ошибка
 	bool OutRezBlock = false; //    
-	void ProgFU(int MK, LoadPoint Load, FU* Sender = nullptr) override; //    
+	void ProgFU(int MK, LoadPoint Load, FU* Sender = nullptr) override; //
+	void RezExec(); // Выполнение подпрограмм при получении результата
 	vector<double>RezStack; //  
 	double Rez = 0; //  
 	int OperandsCounter = 0; //  
+	int OpInd = 0; // Индекс операнда
 	bool Redy = false; //   
+	bool ErrFlag = false; // Флаг ошибки
 	vector<int>ReseiverMk; //
 	vector<FU*>ReseiverContext; //     
 	int AngleMode = 0; //  
 	int Noperands = 2; //  
 	void* ZProg = nullptr, * NZProg = nullptr, * BProg = nullptr, * BZProg = nullptr, * LProg = nullptr, * LZProg = nullptr; //      
-	void* ErrProg = nullptr, * WrongFormatErrProg = nullptr, * OveflowProg = nullptr; //    
+	void* ErrProg = nullptr, * WrongFormatErrProg = nullptr, * OveflowErrProg = nullptr, *DivZeroErrProg=nullptr; //    
 	void* RezStackIsEmpyProg = nullptr; //     
 	void* OperetionProg = nullptr;//  
 	void* RezProg = nullptr; // ,    
-	vector<double> Operands;//  
+	vector<double> Operands;//
+	int OpCode = 0; // Код операции, для которой накапливаются операнды
 
 	StreamFloatALU(FU* BusContext, FU* Templ)
 	{
