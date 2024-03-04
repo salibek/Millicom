@@ -21,7 +21,9 @@ public:
 	int AngleMode = 0; //  
 	int Noperands = 2; //  
 	void* ZProg = nullptr, * NZProg = nullptr, * BProg = nullptr, * BZProg = nullptr, * LProg = nullptr, * LZProg = nullptr; //      
-	void* ErrProg = nullptr, * WrongFormatErrProg = nullptr, * OveflowErrProg = nullptr, *DivZeroErrProg=nullptr; //    
+	void* ErrProg = nullptr, * WrongFormatErrProg = nullptr, * OveflowErrProg = nullptr, *DivZeroErrProg=nullptr; //  
+	void* NoOperandErrProg = nullptr;// Ошибка нет операнда
+	void* OpIndErrProg = nullptr;// Ошибка индекса операнда
 	void* RezStackIsEmpyProg = nullptr; //     
 	void* OperetionProg = nullptr;//  
 	void* RezProg = nullptr; // ,    

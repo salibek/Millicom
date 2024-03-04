@@ -163,122 +163,127 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 	case 190: // RezProgSet Установить ссылку на подпрограмму, запускаемую при получении результата   
 		RezProg=Load.Point;
 		break;
-	case 200: // Op0Out Выдать нулевой операнд   
-		if (Operands.size() == 0)
-			break;
-		else {
-			Load.Write(Operands[0]);
-		}
-		break;
-	case 201: // Op0OutMk  Выдать МК с нулевым операндом 
-		if (Operands.size() == 0)
-			break;
-		else {
-			double temp = Operands[0];
-			MkExec(Load, { Cdouble, &temp });
-		}
-		break;
-	case 202: // Op0Set  Установить нулевой операнд
-		if (Ready)
-			Operands.clear();
-		if (Operands.size() < 1)
-		{
-			Operands.push_back(Load.toDouble());
-			Foperands.push_back(true);
-			break;
-		}
-		Operands[0] = Load.toDouble();
-		if (!Foperands[0])
-			OperandsCounter++;
-		Foperands[0] = true;
-		break;
+
+
+	case 200: // Op0Out Выдать операнд   
 	case 205: // Op1Out   
-		if (Operands.size() < 2)
-			break;
-		else {
-			Load.Write(Operands[1]);
-		}
-		break;
-	case 206: // Op1OutMk   
-		if (Operands.size() < 2)
-			break;
-		else {
-			double temp = Operands[1];
-			MkExec(Load, { Cdouble, &temp });
-		}
-		break;
-	case 207: // Op1Set    (  )
-		if (Ready)
-			Operands.clear();
-		if (Operands.size() < 2)
-		{
-			Operands.resize(2);
-			while (Foperands.size() < Operands.size())
-				Foperands.push_back(false);
-		}
-		Operands[1] = Load.toDouble();
-		if (!Foperands[0])
-			OperandsCounter++;
-		Foperands[1] = true;
-		break;
 	case 210: // Op2Out   
-		if (Operands.size() < 3)
+	case 215: // Op3Out   
+	case 220: // Op4Out   
+	case 225: // Op5Out   
+	case 230: // Op6Out   
+	case 235: // Op7Out   
+	case 240: // Op8Out   
+	case 245: // Op9Out   
+		if (Operands.size() < (MK - 200) / 5 )
+		{
+			ProgExec(ErrProg);
+			ProgExec(NoOperandErrProg);
 			break;
-		else {
-			Load.Write(Operands[2]);
 		}
+		Load.Write(Operands[(MK - 200) / 5]);
 		break;
+	case 201: // Op0OutMk  Выдать МК с операндом 0 
+	case 206: // Op1OutMk   
 	case 211: // Op2OutMk   
-		if (Operands.size() == 1)
-			break;
+	case 216: // Op3OutMk   
+	case 221: // Op4OutMk   
+	case 226: // Op5OutMk   
+	case 231: // Op6OutMk   
+	case 236: // Op7OutMk   
+	case 241: // Op8OutMk   
+	case 246: // Op9OutMk   
+		if (Operands.size() < (MK - 200) / 5)
+		{
+			ProgExec(ErrProg);
+			ProgExec(NoOperandErrProg);
+		}
 		else {
-			double temp = Operands[2];
+			double temp = Operands[(MK - 200) / 5];
 			MkExec(Load, { Cdouble, &temp });
 		}
 		break;
-	case 212: // Op2Set    (  )
+	case 202: // Op0Set  Установить операнд 0
+	case 207: // Op1Set
+	case 212: // Op2Set
+	case 217: // Op3Set
+	case 222: // Op4Set
+	case 227: // Op5Set
+	case 232: // Op6Set
+	case 237: // Op7Set
+	case 242: // Op8Set
+	case 247: // Op9Set
 		if (Ready)
-			Operands.clear();
-		if (Operands.size() < 3)
 		{
-			Operands.resize(3);
-			while (Foperands.size() < Operands.size())
-				Foperands.push_back(false);
+			Operands.clear();
+			Foperands.clear();
+			OperandsCounter = 0;
 		}
-		Operands[2] = Load.toDouble();
-		if (!Foperands[2])
+		{int t = (MK - 200) / 5;
+		while (Operands.size() < t)
+		{
+			Operands.push_back(0);
+			Foperands.push_back(false);
+		}
+
+		Operands[t] = Load.toDouble();
+		if (!Foperands[t])
 			OperandsCounter++;
-		Foperands[2] = true;
+		Foperands[t] = true;
+		}
 		break;
-	case 250: //	OpIndSet
+	case 250: //	OpIndSet Установить индекс операнда
 		OpInd = Load.toInt(0);
 		break;
-	case 251: // OpIndAdd
+	case 251: // OpIndAdd Прибавить к индексу операнда (по умолчанию 1)
 		OpInd+=Load.toInt(1);
 		break;
-	case 252: // OperandByIndSet
-		if (OpInd >= Operands.size()) break;
+	case 252: // OperandByIndSet Установить операнд по индексу
+		while (Operands.size() <= OpInd)
+		{
+			Operands.push_back(0);
+			Foperands.push_back(false);
+		}
 		Operands[OpInd] = Load.toDouble();
 		if (!Foperands[OpInd])
 			OperandsCounter++;
 		Foperands[OpInd] = true;
+		if (OperandsCounter >= Noperands) // Выполнение программы
+		{
+			ProgExec(OperetionProg);
+			RezExec();
+		}
 		break;
 	case 253: // OperandByIndOut Выдать операнд по индексу
-		if (Operands.size() >=OpInd)
+		if (Operands.size() <= OpInd || OpInd<0)
+		{
+			ProgExec(ErrProg);
+			ProgExec(OpIndErrProg);
 			break;
+		}
 		Load.Write(Operands[OpInd]);
 		break;
 	case 254: // OperandByIndOutMk Выдать МК с операндом по индексу
 	{
-		if (Operands.size() >= OpInd)
+		if (Operands.size() <= OpInd || OpInd < 0)
+		{
+			ProgExec(ErrProg);
+			ProgExec(OpIndErrProg);
 			break;
+		}
 		double temp = Operands[OpInd];
 		MkExec(Load, { Cdouble, &temp });
 		break;
 	}
-	case 260: // OperetionProgSet     
+	case 255: // OperandAdd Добавить операнд для специальной МК
+		Operands.push_back(Load.toDouble());
+		Foperands.push_back(true);
+		OperandsCounter++;
+		break;
+	case 260: // OperationProgSet Установить специальную операцию    
 		OperetionProg = Load.Point;
 		break;
+
 	case 270: // PiOut , 2, /2, e.
 		Load.Write((double)3.141592653589793);
 		break;
@@ -541,11 +546,13 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		Rez = Load.toDouble(Rez); // Поместить в аккумулятор нагрузку, если нагрузка нулевая, то поместить Rez
 		Rez = sqrt(Rez);
 		Ready = 1;
+		RezExec(); // Действия при получении результата
 		break;
 	case 526: //Sqr Квадрат
 		Rez = Load.toDouble(Rez); // Поместить в аккумулятор нагрузку, если нагрузка нулевая, то поместить Rez
 		Rez = Rez*Rez;
 		Ready = 1;
+		RezExec(); // Действия при получении результата
 		break;
 	default:
 		CommonMk(MK, Load, Sender);
