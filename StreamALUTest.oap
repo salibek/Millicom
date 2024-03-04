@@ -20,5 +20,9 @@ MainBus.ModeSet=2
 
 SALU.ReceiverMkSet=Console.OutLn
 SALU.RezProgSet={Console.Out="Rezult=" SALU.OutMk=Console.OutLn}
+SALU.ZProgSet={Console.OutLn="ZERO!!!"}
 SALU.Sub1=2
-SALU.Sub2=3
+SALU.Sub2=1
+SALU.ZExec={Console.OutLn="ZeroExec"}
+SALU.Push
+SALU.PopMk=Console.OutLn

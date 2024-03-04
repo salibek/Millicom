@@ -32,13 +32,13 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		ReseiverContext.clear();
 		AngleMode = 0;
 		break;
-	case 1: // Set  
+	case 1: // Set Установить результат вычислений
 		Rez = Load.toDouble();
 		break;
-	case 5: //Out  
+	case 5: //Out  Выдать результат
 		Load.Write(Rez);
 		break;
-	case 6: //OutMk    
+	case 6: //OutMk Выдать МК с результатом
 		MkExec(Load, { Cdouble, &Rez });
 		break;
 	case 10: //OpCounterOut Выдать счетчик накопленных операндов
@@ -53,51 +53,51 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 	case 20: // AngleModeSet     Установить режим измерения угла (0 - радианы, 1 -градусы)
 		AngleMode = Load.toInt();
 		break;
-	case 30: // OperandsReset
+	case 30: // OperandsReset Сброс операндов (все те операнды, что пришли, сбрасываются и накопление операндов начинается заново)
 		OperandsCounter = 0;
 		for (size_t i = 0; i < Foperands.size(); ++i) {
 			Foperands[i] = false;
 		}
 		break;
-	case 40: //ErrProgSet
+	case 40: //ErrProgSet Установить программу при ошибке
 		ErrProg = Load.Point;
 		break;
-	case 41: //WrongFormatErrProgSet
+	case 41: //WrongFormatErrProgSet Установить программу при неправильном формате операнда
 		WrongFormatErrProg = Load.Point;
 		break;
-	case 42: //OveflowErrProgSet
+	case 42: //OveflowErrProgSet Установить программу при переполнении
 		OveflowErrProg = Load.Point;
 		break;
-	case 43: //DivZeroErrProgSet
+	case 43: //DivZeroErrProgSet Установить программу при делении на 0
 		DivZeroErrProg = Load.Point;
 		break;
-	case 70: // ReadySet        true
+	case 70: // ReadySet Установить флаг готовности результата (по умолчанию true)
 		Redy = Load.toBool(true);
 		break;
-	case 71: // ReadyOut     
+	case 71: // ReadyOut Выдать флаг готовности результата    
 		Load.Write(Redy);
 		break;
-	case 72: // ReadyOutMk     
+	case 72: // ReadyOutMk Выдать МК с флагом готовности результата   
 		MkExec(Load, { Cbool, &Ready });
 		break;
-	case 75: // ReadyExec   ,     
+	case 75: // ReadyExec Запуск программы по флагу готовности резульатата     
 		if (Redy)
 			ProgExec(Load);
 		break;
-	case 76: // ReadyNotExec   ,      
+	case 76: // ReadyNotExec   Запуск программы при сброшенном флаге готовности резульатат,      
 		if (!Redy)
 			ProgExec(Load);
 		break;
-	case 80: // OutRezBlockSet      
+	case 80: // OutRezBlockSet Установить блокировку выдачи результата (при нулевой нагрузке true)
 		OutRezBlock = Load.toBool(true);
 		break;
-	case 90:// Push 
+	case 90:// Push Положить в стек (при нулевой нагрузке в стек помещается Rez)
 		if (Load.Point == nullptr)
 			RezStack.push_back(Rez);
 		else
 			RezStack.push_back(Load.toDouble());
 		break;
-	case 91: // Pop      
+	case 91: // Pop Вынуть из стека (при при нулевой нагрузке величина помещается в Rez)
 		if (RezStack.size() == 0) {
 			ProgExec(RezStackIsEmpyProg);
 			ProgExec(ErrProg);
@@ -109,7 +109,7 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 			Load.Write(RezStack.back());
 		RezStack.pop_back();
 		break;
-	case 92: // PopMk        
+	case 92: // PopMk Вынуть из стека и выдать МК (при при нулевой нагрузке величина помещается в Rez)        
 	{
 		if (RezStack.size() == 0)
 		{
@@ -118,7 +118,10 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 			break;
 		}
 		if (Load.Point == nullptr)
+		{
 			Rez = RezStack.back();
+			RezStack.pop_back();
+		}
 		else {
 			double temp = RezStack.back();
 			RezStack.pop_back();
@@ -126,41 +129,48 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		}
 	}
 	break;
-	case 95: // StackOut     
-		Load.Write(RezStack.back());
+	case 95: // StackOut Выдать из стека (при при нулевой нагрузке величина помещается в Rez) 
+		if (Load.isEmpty())
+			Rez = RezStack.back();
+		else
+			Load.Write(RezStack.back());
 		break;
-	case 96: // StackOutMk      
+	case 96: // StackOutMk Выдать из стека с МК (при при нулевой нагрузке величина помещается в Rez)
 	{
-		auto temp = RezStack.back();
-		MkExec(Load, { Cdouble, &temp });
+		if (Load.isEmpty())
+			Rez = RezStack.back();
+		else {
+			auto temp = RezStack.back();
+			MkExec(Load, { Cdouble, &temp });
+		}
 		break;
 	}
-	case 150: // NOperandSet   
+	case 150: // NOperandSet Установить количество операндов (по умолчанию 2)
 		OperandsCounter = Load.toInt();
 		break;
-	case 160: // ReceiverReset    
+	case 160: // ReceiverReset Сброс установок получателей результата
 		ReseiverMk.clear();
 		ReseiverContext.clear();
 		break;
-	case 161: // ReceiverSet     
-		// Implement logic
+	case 161: // ReceiverSet Установить ссылку на приемника результата (Устанавливается перед установкой МК)
+		ReseiverContext.push_back((FU*)Load.Point);
 		break;
-	case 162: // ReceiverMkSet     
+	case 162: // ReceiverMkSet Установить МК для приемника результата 
 		if (ReseiverMk.size() == ReseiverContext.size())
 			ReseiverContext.push_back(nullptr);
 		ReseiverMk.push_back(Load.toInt());
 		break;
-	case 190: // RezProgSet    ,    
+	case 190: // RezProgSet Установить ссылку на подпрограмму, запускаемую при получении результата   
 		RezProg=Load.Point;
 		break;
-	case 200: // Op0Out   
+	case 200: // Op0Out Выдать нулевой операнд   
 		if (Operands.size() == 0)
 			break;
 		else {
 			Load.Write(Operands[0]);
 		}
 		break;
-	case 201: // Op0OutMk   
+	case 201: // Op0OutMk  Выдать МК с нулевым операндом 
 		if (Operands.size() == 0)
 			break;
 		else {
@@ -168,7 +178,7 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 			MkExec(Load, { Cdouble, &temp });
 		}
 		break;
-	case 202: // Op0Set    (  )
+	case 202: // Op0Set  Установить нулевой операнд
 		if (Ready)
 			Operands.clear();
 		if (Operands.size() < 1)
@@ -240,25 +250,25 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 			OperandsCounter++;
 		Foperands[2] = true;
 		break;
-	case 220: //	OpIndSet
-		OpInd = Load.toInt();
+	case 250: //	OpIndSet
+		OpInd = Load.toInt(0);
 		break;
-	case 221: // OpIndInc;
-		OpInd++;
+	case 251: // OpIndAdd
+		OpInd+=Load.toInt(1);
 		break;
-	case 222: // OperandByIndSet
+	case 252: // OperandByIndSet
 		if (OpInd >= Operands.size()) break;
 		Operands[OpInd] = Load.toDouble();
 		if (!Foperands[OpInd])
 			OperandsCounter++;
 		Foperands[OpInd] = true;
 		break;
-	case 223: // OperandByIndOut Выдать операнд по индексу
+	case 253: // OperandByIndOut Выдать операнд по индексу
 		if (Operands.size() >=OpInd)
 			break;
 		Load.Write(Operands[OpInd]);
 		break;
-	case 224: // OperandByIndOutMk Выдать МК с операндом по индексу
+	case 254: // OperandByIndOutMk Выдать МК с операндом по индексу
 	{
 		if (Operands.size() >= OpInd)
 			break;
@@ -266,127 +276,127 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		MkExec(Load, { Cdouble, &temp });
 		break;
 	}
-	case 230: // OperetionProgSet     
+	case 260: // OperetionProgSet     
 		OperetionProg = Load.Point;
 		break;
-	case 260: // PiOut,   EOut[Mk]   , 2, /2, e.
+	case 270: // PiOut , 2, /2, e.
 		Load.Write((double)3.141592653589793);
 		break;
-	case 261: // PiOutMk
+	case 271: // PiOutMk
 	{
 		double t = 3.141592653589793;
 		MkExec(Load, { Cdouble, &t });
 		break;
 	}
-	case 262: //Pi2Out
+	case 272: //Pi2Out
 		Load.Write((double)6.283185307179586);
 		break;
-	case 263: //Pi2OutMk
+	case 273: //Pi2OutMk
 	{
 		double t = 6.283185307179586;
 		MkExec(Load, { Cdouble, &t });
 		break;
 	}
-	case 264: // EOut
+	case 274: // EOut
 		Load.Write((double)2.718281828459045);
 		break;
-	case 265: // EOutMk
+	case 275: // EOutMk
 	{
 		double e = 2.718281828459045;
 		MkExec(Load, { Cdouble, &e });
 		break;
 	}
-	case 270: // ZRrogSet      
+	case 280: // ZProgSet Установить программу при == 
 		ZProg = Load.Point;
 		break;
-	case 280: // NZRrogSet      !=
+	case 281: // NZProgSet Установить программу при !=
 		BZProg = Load.Point;
 		break;
-	case 281: // LRrogSet     <
+	case 282: // LProgSet   Установить программу при <
 		LProg = Load.Point;
 		break;
-	case 282: // BRrogSet     >
+	case 283: // BProgSet   Установить программу при >
 		BProg = Load.Point;
 		break;
-	case 283: // LZRrogSet     <=
+	case 284: // LZProgSet   Установить программу при <=
 		LZProg = Load.Point;
 		break;
-	case 284: // BZRrogSet     >=
+	case 285: // BZProgSet   Установить программу при >=
 		BZProg = Load.Point;
 		break;
-	case 290: // ZExec    ==
+	case 290: // ZExec   Выполнить программу при ==
 		if (Rez == 0)
 			ProgExec(Load);
 		break;
-	case 291: // LExec    <
+	case 291: // LExec    Выполнить программу при <
 		if (Rez < 0)
 			ProgExec(Load);
 		break;
-	case 292: // BExec    >
+	case 292: // BExec    Выполнить программу при >
 		if (Rez > 0)
 			ProgExec(Load);
 		break;
-	case 293: // LZExec    <=
+	case 293: // LZExec    Выполнить программу при <=
 		if (Rez <= 0)
 			ProgExec(Load);
 		break;
-	case 294: // BZExec    >=
+	case 294: // BZExec    Выполнить программу при >=
 		if (Rez >= 0)
 			ProgExec(Load);
 		break;
-	case 296: // NZExec    !=
+	case 296: // NZExec    Выполнить программу при !=
 		if (Rez != 0)
 			ProgExec(Load);
 		break;
-	case 300: // ZFOut 
+	case 300: // ZFOut Выдать флаг нуля
 		Load.Write(Rez == 0);
 		break;
-	case 301: // ZFOutMk  
+	case 301: // ZFOutMk Выдать МК с флагом нуля
 	{
 		bool temp = Rez == 0;
 		MkExec(Load, { Cbool, &temp });
 		break;
 	}
-	case 305: // BOut  
+	case 305: // BOut  Выдать флаг больше
 		Load.Write(Rez > 0);
 		break;
-	case 306: // BOutMk
+	case 306: // BOutMk Выдать МК с флагом больше
 	{
 		bool temp = Rez > 0;
 		MkExec(Load, { Cbool, &temp });
 	}
 	break;
-	case 310: // LOut  
+	case 310: // LOut  Выдать флаг меньше
 		Load.Write(Rez < 0);
 		break;
-	case 311: // LOutMk
+	case 311: // LOutMk BOutMk Выдать МК с флагом меньше
 	{
 		bool temp = Rez < 0;
 		MkExec(Load, { Cbool, &temp });
 		break;
 	}
-	case 315: // BZOut   
+	case 315: // BZOut Выдать флаг больше или нуль
 		Load.Write(Rez >= 0);
 		break;
-	case 316: // BZOutMk   
+	case 316: // BZOutMk BOutMk Выдать МК с флагом больше или нуль
 	{
 		bool temp = Rez >= 0;
 		MkExec(Load, { Cbool, &temp });
 		break;
 	}
-	case 320: // LZOutMk    
+	case 320: // LZOut Выдать флаг меньше или нуль
 		Load.Write(Rez <= 0);
 		break;
-	case 321: // LZOutMk    
+	case 321: // LZOutMk BOutMk Выдать МК с флагом меньше или нуль
 	{
 		bool temp = Rez <= 0;
 		MkExec(Load, { Cbool, &temp });
 		break;
 	}
-	case 325: // NZOut    
+	case 325: // NZOut  Выдать флаг не нуль
 		Load.Write(Rez != 0);
 		break;
-	case 326: // NZOutMk    
+	case 326: // NZOutMk BOutMk Выдать МК с флагом не нуль   
 	{
 		bool temp = Rez != 0;
 		MkExec(Load, { Cbool, &temp });
