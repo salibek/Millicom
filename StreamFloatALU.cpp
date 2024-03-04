@@ -71,6 +71,12 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 	case 43: //DivZeroErrProgSet Установить программу при делении на 0
 		DivZeroErrProg = Load.Point;
 		break;
+	case 44: //OpIndErrProgSet Установить программу при ошибке индекса операнда
+		OpIndErrProg = Load.Point;
+		break;
+	case 45: //RezStackIsEmpyProgSet Установить программу при чтении из пустого стека результатов
+		RezStackIsEmpyProg = Load.Point;
+		break;
 	case 70: // ReadySet Установить флаг готовности результата (по умолчанию true)
 		Redy = Load.toBool(true);
 		break;
