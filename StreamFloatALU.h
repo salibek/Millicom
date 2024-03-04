@@ -13,8 +13,7 @@ public:
 	vector<double>RezStack; //  
 	double Rez = 0; //  
 	int OperandsCounter = 0; //  
-	int OpInd = 0; // Индекс операнда
-	bool Redy = false; //   
+	int OpInd = 0; // Индекс операнда 
 	bool ErrFlag = false; // Флаг ошибки
 	vector<int>ReseiverMk; //
 	vector<FU*>ReseiverContext; //     
@@ -24,6 +23,7 @@ public:
 	void* ErrProg = nullptr, * WrongFormatErrProg = nullptr, * OveflowErrProg = nullptr, *DivZeroErrProg=nullptr; //  
 	void* NoOperandErrProg = nullptr;// Ошибка нет операнда
 	void* OpIndErrProg = nullptr;// Ошибка индекса операнда
+	void* OperationErrProg = nullptr; // Ошибка операции
 	void* RezStackIsEmpyProg = nullptr; //     
 	void* OperetionProg = nullptr;//  
 	void* RezProg = nullptr; // ,    

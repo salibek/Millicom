@@ -4,8 +4,8 @@ using namespace std;
 
 void StreamFloatALU::RezExec() // Выполнение подпрограмм при получении результата
 {
-	if (Ready == 2)return;
-	Ready = true;
+	if (Ready == 2) return;
+	Ready = 1;
 	if (!OutRezBlock)//Если не заблокирована рассылка МК с результатами вычислений
 		for (int i = 0; i < ReseiverMk.size(); i++) { // Рассылка МК с результатами
 			MkExec(ReseiverMk[i], { Cdouble, &Rez }, ReseiverContext[i]);
@@ -26,7 +26,7 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 	case 0: //Reset
 		Rez = 0;
 		OperandsCounter = 0;
-		Redy = false;
+		Ready = 0;
 		RezStack.clear();
 		ReseiverMk.clear();
 		ReseiverContext.clear();
@@ -78,20 +78,24 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		RezStackIsEmpyProg = Load.Point;
 		break;
 	case 70: // ReadySet Установить флаг готовности результата (по умолчанию true)
-		Redy = Load.toBool(true);
+		Ready = Load.toInt(1);
 		break;
 	case 71: // ReadyOut Выдать флаг готовности результата    
-		Load.Write(Redy);
+		Load.Write(Ready);
 		break;
 	case 72: // ReadyOutMk Выдать МК с флагом готовности результата   
 		MkExec(Load, { Cbool, &Ready });
 		break;
 	case 75: // ReadyExec Запуск программы по флагу готовности резульатата     
-		if (Redy)
+		if (Ready==1)
 			ProgExec(Load);
 		break;
 	case 76: // ReadyNotExec   Запуск программы при сброшенном флаге готовности резульатат,      
-		if (!Redy)
+		if (Ready==0)
+			ProgExec(Load);
+		break;
+	case 77: //ErrExec Выполнить если ошибка
+		if (Ready == 2)
 			ProgExec(Load);
 		break;
 	case 80: // OutRezBlockSet Установить блокировку выдачи результата (при нулевой нагрузке true)
@@ -135,6 +139,15 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		}
 	}
 	break;
+	case 93: // StackCounterOut Выдать количество элементов в стеке
+		Load.Write((int)RezStack.size());
+		break;
+	case 94: // StackCounterOut Выдать МК с количеством элементов в стеке
+	{
+		int t = RezStack.size();
+		MkExec(Load,{Cint,&t});
+		break;
+	}
 	case 95: // StackOut Выдать из стека (при при нулевой нагрузке величина помещается в Rez) 
 		if (Load.isEmpty())
 			Rez = RezStack.back();
@@ -151,6 +164,13 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		}
 		break;
 	}
+	case 97: //StackEmptyExec Выполнить, если стек пустой
+		if (!RezStack.size()) ProgExec(Load);
+		break;
+	case 98: //StackNotEmptyExec Выполнить, если стек не пустой
+		if (RezStack.size()) ProgExec(Load);
+		break;
+
 	case 150: // NOperandSet Установить количество операндов (по умолчанию 2)
 		OperandsCounter = Load.toInt();
 		break;
@@ -290,29 +310,47 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		OperetionProg = Load.Point;
 		break;
 
-	case 270: // PiOut , 2, /2, e.
+	case 270: // PiOut Выдать число ПИ (при нулевой нагрузке записать в аккумулятор)
+		if (Load.isEmpty()) {
+			Rez = 3.141592653589793; break;
+		}
 		Load.Write((double)3.141592653589793);
 		break;
-	case 271: // PiOutMk
+	case 271: // PiOutMk Выдать МК с числом ПИ (при нулевой нагрузке записать в аккумулятор)
 	{
+		if (Load.isEmpty()){
+			Rez = 3.141592653589793; break;
+		}
 		double t = 3.141592653589793;
 		MkExec(Load, { Cdouble, &t });
 		break;
 	}
-	case 272: //Pi2Out
+	case 272: //Pi2Out Выдать число 2ПИ (при нулевой нагрузке записать в аккумулятор)
+		if (Load.isEmpty()){
+			Rez = 6.283185307179586; break;
+		}
 		Load.Write((double)6.283185307179586);
 		break;
-	case 273: //Pi2OutMk
+	case 273: //Pi2OutMk Выдать МК с числом 2ПИ (при нулевой нагрузке записать в аккумулятор)
 	{
+		if (Load.isEmpty()){
+			Rez = 6.283185307179586; break;
+		}
 		double t = 6.283185307179586;
 		MkExec(Load, { Cdouble, &t });
 		break;
 	}
-	case 274: // EOut
+	case 274: // EOut Выдать число е (при нулевой нагрузке записать в аккумулятор)
+		if (Load.isEmpty()){
+			Rez = 2.718281828459045; break;
+		}
 		Load.Write((double)2.718281828459045);
 		break;
-	case 275: // EOutMk
+	case 275: // EOutMk Выдать МК с числом е (при нулевой нагрузке записать в аккумулятор)
 	{
+		if (Load.isEmpty()) {
+			Rez = 2.718281828459045; break;
+		}
 		double e = 2.718281828459045;
 		MkExec(Load, { Cdouble, &e });
 		break;
@@ -461,8 +499,10 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 	case 506: // Sub2
 	case 515: // Div1
 	case 516: // Div2
+	case 520: // DivInt1 Целочисленное деление
+	case 521: // DivInt2 Целочисленное деление
 		if (Ready || OpCode!=MK && OpCode != MK-1) {
-			OpCode = 505;
+			OpCode = MK;
 			Ready = 0;
 			Operands.clear();
 			Foperands.clear();
@@ -482,7 +522,6 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 				Operands.resize(1);
 				Foperands.resize(1);
 				Foperands[0] = false;
-				
 			}
 			if (Foperands[0] == false)
 			{
@@ -523,31 +562,74 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 						ProgExec(DivZeroErrProg);
 						break;
 					}
+				break;
+			case 520: // DivInt
+				Rez = int(Rez);
+				for (int i = 1; i < Noperands; i++)
+					if (int(Operands[i]) != 0)
+						Rez /= int(Operands[i]);
+					else
+					{
+						Ready = 2; // Код ошибки
+						ProgExec(ErrProg); // Деление на ноль
+						ProgExec(DivZeroErrProg);
+						break;
+					}
+				break;
 			}
 			// --------------------------
 			RezExec(); // Действия при получении результата
 		}
 		break;
-	case 520: // DivInt1 Целочисленное деление
-	case 521: // DivInt2 Целочисленное деление
-	case 522:	// Rem Остаток от целочисленного деления
-		if (!Foperands[0]) {
-			//      
-			OperandsCounter++;
-			Foperands[0] = true;
-			Operands[0] = Load.toDouble(); //    
+	case 522:	// Rem1 Число из которого извлекается остаток от целочисленного деления
+	case 523:	// Rem2 Остаток от целочисленного деления
+		if (!Load.isEmpty() && !Load.isDigit()) // Ошибка формата операнда
+		{
+			Ready = 2; // Код ошибки
+			ProgExec(ErrProg); // Неправильный формат операнда
+			ProgExec(WrongFormatErrProg);
+			break;
 		}
-		else {
-			double divisor = Load.toDouble();
-			if (divisor != 0) {
-				Operands[0] /= divisor; //       
+		if (Ready || OpCode != MK && OpCode != MK - 1) {
+			OpCode = MK;
+			Ready = 0;
+			Operands.clear();
+			Foperands.clear();
+			OperandsCounter = 0;
+		}
+		if (MK == 522)
+		{
+			if (Operands.size() == 0)
+			{
+				Operands.push_back(Load.toDouble());
+				Foperands.push_back(true);
+				OperandsCounter = 1;
+				break;
 			}
-			else {
-				//    
-				// ,        
+			Operands[0] = Load.toDouble();
+			if (Foperands[0] == false)
+				OperandsCounter += 1;
+			Foperands[0] = true;
+		}
+		else
+		{
+			while (Operands.size() < 2)
+			{
+				Operands.push_back(0);
+				Foperands.push_back(false);
 			}
+			Operands[1] = Load.toDouble();
+			if (Foperands[1] == false)
+				OperandsCounter++;
+			Foperands[1] = true;
+		}
+		if (OperandsCounter == 2)
+		{
+			Rez = int(Operands[0]) % int(Operands[1]);
+			RezExec();
 		}
 		break;
+
 	case 525: //Sqrt Квадратный корень
 		Rez = Load.toDouble(Rez); // Поместить в аккумулятор нагрузку, если нагрузка нулевая, то поместить Rez
 		Rez = sqrt(Rez);
