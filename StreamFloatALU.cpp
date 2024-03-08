@@ -21,6 +21,7 @@ void StreamFloatALU::RezExec() // Выполнение подпрограмм п
 
 void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 {
+	if (!Active && MK<900) return; //При сброшенном флаге активности выполняются общие МК
 	switch (MK)
 	{
 	case 0: //Reset
@@ -76,6 +77,8 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		break;
 	case 45: //RezStackIsEmpyProgSet Установить программу при чтении из пустого стека результатов
 		RezStackIsEmpyProg = Load.Point;
+	case 46: //MatErrProgSet Установить программу обработки ошибки математической операции
+		MatErrProg = Load.Point;
 		break;
 	case 70: // ReadySet Установить флаг готовности результата (по умолчанию true)
 		Ready = Load.toInt(1);
@@ -189,6 +192,7 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 	case 190: // RezProgSet Установить ссылку на подпрограмму, запускаемую при получении результата   
 		RezProg=Load.Point;
 		break;
+	case 191: //PreRezProgSet Программа, запускаемая перед получением результата
 
 
 	case 200: // Op0Out Выдать операнд   
@@ -543,6 +547,7 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		}
 		if (Foperands[0] && OperandsCounter >= Noperands)
 		{
+			ProgExec(PreRezProg);// Программа перед получением результата
 			Ready = 1;
 			Rez = Operands[0];
 			// Добавить проверку на ошибку
@@ -558,8 +563,9 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 					else
 					{
 						Ready = 2; // Код ошибки
-						ProgExec(ErrProg); // Деление на ноль
 						ProgExec(DivZeroErrProg);
+						ProgExec(MatErrProg);// Ошибка математической операции
+						ProgExec(ErrProg); // Деление на ноль
 						break;
 					}
 				break;
@@ -571,8 +577,9 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 					else
 					{
 						Ready = 2; // Код ошибки
-						ProgExec(ErrProg); // Деление на ноль
 						ProgExec(DivZeroErrProg);
+						ProgExec(MatErrProg);// Ошибка математической операции
+						ProgExec(ErrProg); // Деление на ноль
 						break;
 					}
 				break;
@@ -625,18 +632,29 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		}
 		if (OperandsCounter == 2)
 		{
+			ProgExec(PreRezProg);// Программа перед получением результата
 			Rez = int(Operands[0]) % int(Operands[1]);
 			RezExec();
 		}
 		break;
 
 	case 525: //Sqrt Квадратный корень
+		ProgExec(PreRezProg);// Программа перед получением результата
 		Rez = Load.toDouble(Rez); // Поместить в аккумулятор нагрузку, если нагрузка нулевая, то поместить Rez
-		Rez = sqrt(Rez);
+		if(Rez>=0)
+			Rez = sqrt(Rez);
+		else
+		{
+			Ready = 2; // Код ошибки
+			ProgExec(ErrProg); // Деление на ноль
+			ProgExec(MatErrProg); // Ошибка математических вычислений
+			break;
+		}
 		Ready = 1;
 		RezExec(); // Действия при получении результата
 		break;
 	case 526: //Sqr Квадрат
+		ProgExec(PreRezProg); // Программа перед получением результата
 		Rez = Load.toDouble(Rez); // Поместить в аккумулятор нагрузку, если нагрузка нулевая, то поместить Rez
 		Rez = Rez*Rez;
 		Ready = 1;

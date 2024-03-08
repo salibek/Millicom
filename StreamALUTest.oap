@@ -22,7 +22,7 @@ SALU.ReceiverMkSet=Console.OutLn
 SALU.RezProgSet={Console.Out="Rezult=" SALU.OutMk=Console.OutLn}
 SALU.ZProgSet={Console.OutLn="ZERO!!!"}
 SALU.Rem1=6
-SALU.Rem2=4
+SALU.Rem2=3
 SALU.ReadyExec={Console.OutLn="Ready"}
 SALU.Sqrt
 SALU.Out=Console.OutLn

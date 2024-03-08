@@ -10,24 +10,26 @@ public:
 	bool OutRezBlock = false; //    
 	void ProgFU(int MK, LoadPoint Load, FU* Sender = nullptr) override; //
 	void RezExec(); // Выполнение подпрограмм при получении результата
-	vector<double>RezStack; //  
+	vector<double>RezStack; //  Стек для хранения результатов и промежуточных данных
+	vector<bool>FRezStack; // Флаги расширенного результата операции
 	double Rez = 0; //  
 	int OperandsCounter = 0; //  
-	int OpInd = 0; // Индекс операнда 
-	bool ErrFlag = false; // Флаг ошибки
+	int OpInd = 0; // Индекс операнда
 	vector<int>ReseiverMk; //
 	vector<FU*>ReseiverContext; //     
 	int AngleMode = 0; //  
 	int Noperands = 2; //  
 	void* ZProg = nullptr, * NZProg = nullptr, * BProg = nullptr, * BZProg = nullptr, * LProg = nullptr, * LZProg = nullptr; //      
 	void* ErrProg = nullptr, * WrongFormatErrProg = nullptr, * OveflowErrProg = nullptr, *DivZeroErrProg=nullptr; //  
+	void* MatErrProg = nullptr; // Программа обработки ошибки математической операции
 	void* NoOperandErrProg = nullptr;// Ошибка нет операнда
 	void* OpIndErrProg = nullptr;// Ошибка индекса операнда
 	void* OperationErrProg = nullptr; // Ошибка операции
 	void* RezStackIsEmpyProg = nullptr; //     
 	void* OperetionProg = nullptr;//  
-	void* RezProg = nullptr; // ,    
-	vector<double> Operands;//
+	void* RezProg = nullptr; // Программа, запускаемая перед получением результата
+	void* PreRezProg = nullptr; // Программа, запускаемая перед получением результата    
+	vector<double> Operands;// 
 	int OpCode = 0; // Код операции, для которой накапливаются операнды
 
 	StreamFloatALU(FU* BusContext, FU* Templ)

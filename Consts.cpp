@@ -1608,7 +1608,7 @@ void FU::CommonMk(int Mk, LoadPoint Load, FU* Sender)
 	}
 	switch (Mk)
 	{
-	case 902: // ActiveSet Установить активность ФУ (true по умолчанию)
+	case ActiveMk: // ActiveSet Установить активность ФУ (true по умолчанию)
 		Active = Load.toBool(true);
 		break;
 	case ProgMk: // 958 Prog Вызов подпрограммы
