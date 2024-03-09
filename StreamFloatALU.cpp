@@ -29,6 +29,7 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		OperandsCounter = 0;
 		Ready = 0;
 		RezStack.clear();
+		RezExtStack.clear();
 		ReseiverMk.clear();
 		ReseiverContext.clear();
 		AngleMode = 0;
@@ -172,6 +173,42 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		break;
 	case 98: //StackNotEmptyExec Выполнить, если стек не пустой
 		if (RezStack.size()) ProgExec(Load);
+		break;
+	case 100: //RezExtOut Выдать значение из расширенного стека результата
+	case 101: // RezExtOutMk Выдать МК со значением из расширенного стера результата
+	case 102: // RezExtPop Выдавить расширенный результат (при нулевой нагрузке записывается в Rez)
+	case 103: // RezExtPopMk Выдавить МК с расширенным результатом (при нулевой нагрузке записывается в Rez)
+		if (!RezExtStack.size())
+		{
+			ProgExec(RezExtStackIsEmpyProg);
+			break;
+		}
+		switch(MK)
+		{
+			case 100:
+				Load.Write(RezExtStack.back());
+				break;
+			case 101:
+			{
+				double t = RezExtStack.back();
+				MkExec(Load, {Cdouble,&t});
+			}
+			case 102:
+			{
+				Load.Write(RezExtStack.back());
+				RezExtStack.pop_back();
+			}
+			case 103:
+			{
+				double t = RezExtStack.back();
+				RezExtStack.pop_back();
+				MkExec(Load, { Cdouble,&t });
+			}
+			break;
+		}
+		break;
+	case 105: // RezExtStackIsEmpyProgSet Установить программу при ошибке чтения из пустого стека расширенного результата
+		RezExtStackIsEmpyProg = Load.Point;
 		break;
 
 	case 150: // NOperandSet Установить количество операндов (по умолчанию 2)
@@ -464,6 +501,7 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 			Operands.clear();
 			Foperands.clear();
 			Operands.clear();
+			RezExtStack.clear();
 			OperandsCounter = 0;
 		}
 		if(Load.isEmpty())
@@ -510,6 +548,7 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 			Ready = 0;
 			Operands.clear();
 			Foperands.clear();
+			RezExtStack.clear();
 			OperandsCounter = 0;
 		}
 		if (!Load.isEmpty() && !Load.isDigit()) // Ошибка формата операнда
@@ -559,7 +598,9 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 			case 515:
 				for (int i = 1; i < Noperands; i++)
 					if (Operands[i] != 0)
+					{
 						Rez /= Operands[i];
+					}
 					else
 					{
 						Ready = 2; // Код ошибки
@@ -570,7 +611,8 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 					}
 				break;
 			case 520: // DivInt
-				Rez = int(Rez);
+				Rez = int(Operands[0]);
+				RezExtStack.push_back((int)Rez % int(Operands[1])); // Остаток от деления запись в стек расширенных результатов
 				for (int i = 1; i < Noperands; i++)
 					if (int(Operands[i]) != 0)
 						Rez /= int(Operands[i]);
@@ -602,6 +644,7 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 			Ready = 0;
 			Operands.clear();
 			Foperands.clear();
+			RezExtStack.clear();
 			OperandsCounter = 0;
 		}
 		if (MK == 522)
