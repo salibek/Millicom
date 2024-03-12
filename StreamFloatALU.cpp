@@ -482,13 +482,16 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 	case 499: // RandInt Генерация случайного числа от 0 до Load (по умолчанию от 0 до Rez)
 		if (WrongFormatCheck(Load)) break;
 		if (Load.isEmpty()) Load = { Cdouble,&Rez }; // При нулевой нагрузке берем операнд из регистра резульатта
+		OperandsClear(MK);
+		Rez = Load.toInt();
+		Operands.push_back(Rez);
+		FOperands.push_back(true);
 		if (Rez < 1)
 		{
 			Ready = 2;
 			ProgExec(ErrProg);
 			ProgExec(MatErrProg);
 		}
-		Rez = Load.toInt();
 		if (MK == 999)
 			Rez = rand() % int(Rez);
 		else
@@ -499,7 +502,8 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 	case 501: // AddSqr
 	case 510: // Mul
 		if (WrongFormatCheck(Load)) break;
-		OperandsClear(MK); // Сброс операндов при начале обоработки новой операции
+		if (Ready || OpCode != MK && OpCode != MK - 1)
+			OperandsClear(MK); // Сброс операндов при начале обоработки новой операции
 		if (Load.isEmpty()) Load = { Cdouble,&Rez }; // При нулевой нагрузке берем операнд из регистра резульатта
 
 		if(Load.isEmpty())
@@ -534,8 +538,13 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 	case 516: // Div2
 	case 520: // DivInt1 Целочисленное деление
 	case 521: // DivInt2 Целочисленное деление
+	case 540: // Pow1 Степень (основание)
+	case 541: // Pow2 Степень числа
+	case 542: // Log Логарифм
+	case 543: // LogBase Логарифм (передается основание логарифма)
 		if (WrongFormatCheck(Load)) break;
-		OperandsClear(MK); // Сброс операндов при начале обоработки новой операции
+		if (Ready || OpCode != MK && OpCode != MK - 1)
+			OperandsClear(MK); // Сброс операндов при начале обоработки новой операции
 		if (Load.isEmpty()) Load = { Cdouble,&Rez }; // При нулевой нагрузке берем операнд из регистра резульатта
 		if (MK%2) // Первый операнд (МК нечетная)
 		{
@@ -550,7 +559,7 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 				FOperands[0] = true;
 				OperandsCounter++;
 			}
-			Operands[0] = Load.toDouble(Rez);
+			Operands[0] = Load.toDouble();
 		}
 		else // Второй операнд
 		{
@@ -565,7 +574,6 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		}
 		if (FOperands[0] && OperandsCounter >= Noperands)
 		{
-		if (WrongFormatCheck(Load)) break;
 			ProgExec(PreRezProg);// Программа перед получением результата
 			Ready = 1;
 			Rez = Operands[0];
@@ -605,6 +613,12 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 						break;
 					}
 				break;
+			case 540: // Pow1 Степень (основание)
+				Rez = pow(Operands[0], Operands[1]);
+				break;
+			case 542: // Log Логарифм
+				Rez = log(Operands[0]) / log(Operands[1]);
+				break;
 			}
 			// --------------------------
 			RezExec(); // Действия при получении результата
@@ -613,7 +627,8 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 	case 522:	// Rem1 Число из которого извлекается остаток от целочисленного деления
 	case 523:	// Rem2 Остаток от целочисленного деления
 		if (WrongFormatCheck(Load)) break;
-		OperandsClear(MK); // Сброс операндов при начале обоработки новой операции
+		if (Ready || OpCode != MK && OpCode != MK - 1)
+			OperandsClear(MK); // Сброс операндов при начале обоработки новой операции
 		if (Load.isEmpty()) Load = { Cdouble,&Rez }; // При нулевой нагрузке берем операнд из регистра резульатта
 		if (MK == 522)
 		{
@@ -652,10 +667,13 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 	case 525: // Sqrt Квадратный корень
 	case 526: // Sqr Квадрат
 	case 527: // Log10 Логарифм по основанию 10
-	case 528: // Ln
-	case 529: // Log2
-	case 530: // Exp 
-	case 531: // Abs
+	case 528: // Ln Натуральный логирифм
+	case 529: // Log2 Логарифм по основанию 2
+	case 530: // Exp Экспонента
+	case 531: // Abs Модуль числа
+	case 532: // Round Округление
+	case 533: // Int Целая часть числа
+	case 534: // Ceil Округление до большего целого числа
 	case 535: // SignReverse Инфеверсия знака
 	case 536: // Reverse Обратное число (1/x)
 		if (WrongFormatCheck(Load)) break;
@@ -701,6 +719,15 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 			break;
 		case 531: // ABS Модуль числа
 			Rez = fabs(Rez);
+			break;
+		case 532: // Round Округление
+			Rez = round(Rez);
+			break;
+		case 533: // Int Целая часть числа
+			Rez = int(Rez);
+			break;
+		case 534: // Сeil Округление до большего целого числа
+			Rez = ceil(Rez);
 			break;
 		case 535: // SignReverse Инфеверсия знака
 			Rez = -Rez;
@@ -756,20 +783,6 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		RezExec(); // Действия при получении результата
 		break;
 
-	case 540: // Pow1 Степень
-	case 541: // Pow2 Степень
-		if (WrongFormatCheck(Load)) break;
-		OperandsClear(MK); // Сброс операндов при начале обоработки новой операции
-		if (Load.isEmpty()) Load = {Cdouble,&Rez}; // При нулевой нагрузке берем операнд из регистра резульатта
-		Rez = pow(Rez,Load.toDouble());
-		break;
-	case 542: // Log Логарифм (передается основание логарифма
-		if (WrongFormatCheck(Load)) break;
-		OperandsClear(MK); // Сброс операндов при начале обоработки новой операции
-		if (Load.isEmpty()) Load = { Cdouble,&Rez }; // При нулевой нагрузке берем операнд из регистра резульатта
-		Rez = log(Rez)/log(Load.toDouble());
-		break;
-
 	default:
 		CommonMk(MK, Load, Sender);
 		break;
@@ -795,7 +808,8 @@ void StreamFloatALU::RezExec() // Выполнение подпрограмм п
 
 void StreamFloatALU::OperandsClear(int MK) // Сброс операндов при начале обоработки новой операции
 {
-	if (Ready || OpCode != MK && OpCode != MK - 1) {
+//	if (Ready || OpCode != MK && OpCode != MK - 1) 
+	{
 		OpCode = MK;
 		Ready = 0;
 		Operands.clear();
