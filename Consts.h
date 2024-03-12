@@ -307,6 +307,7 @@ public:
 	void MkExec(LoadPoint MK, LoadPoint Load, FU* BusContext = nullptr, bool Ext=false); // Выдача МК с нагрузкой
 	void ProgExec(void* Uk, unsigned int CycleMode = 0, FU* Bus = nullptr, vector<ip>::iterator* Start = nullptr); // Исполнение программы из ИК
 	void ProgExec(LoadPoint Uk, unsigned int CycleMode = 0, FU* Bus = nullptr, vector<ip>::iterator* Start = nullptr); // Исполнение программы из ИК
+	void Prog2Exec(void* Uk1, void* Uk2, unsigned int CycleMode = 0, FU* Bus = nullptr); // Исполнение двух программ из ИК
 	int SubAtr=ProgMk; // Атрибут входа в подпрограмму
 
 	FU *Bus; // Ссылка на контекст Шины

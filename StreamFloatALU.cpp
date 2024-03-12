@@ -2,23 +2,6 @@
 
 using namespace std;
 
-void StreamFloatALU::RezExec() // Выполнение подпрограмм при получении результата
-{
-	if (Ready == 2) return;
-	Ready = 1;
-	if (!OutRezBlock)//Если не заблокирована рассылка МК с результатами вычислений
-		for (int i = 0; i < ReseiverMk.size(); i++) { // Рассылка МК с результатами
-			MkExec(ReseiverMk[i], { Cdouble, &Rez }, ReseiverContext[i]);
-		}
-	ProgExec(RezProg);
-	if (Rez == 0) ProgExec(ZProg);
-	if (Rez != 0) ProgExec(NZProg);
-	if (Rez >= 0) ProgExec(BZProg);
-	if (Rez <= 0) ProgExec(LZProg);
-	if (Rez > 0) ProgExec(BProg);
-	if (Rez < 0) ProgExec(LProg);
-}
-
 void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 {
 	if (!Active && MK<900) return; //При сброшенном флаге активности выполняются общие МК
@@ -57,8 +40,8 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		break;
 	case 30: // OperandsReset Сброс операндов (все те операнды, что пришли, сбрасываются и накопление операндов начинается заново)
 		OperandsCounter = 0;
-		for (size_t i = 0; i < Foperands.size(); ++i) {
-			Foperands[i] = false;
+		for (size_t i = 0; i < FOperands.size(); ++i) {
+			FOperands[i] = false;
 		}
 		break;
 	case 40: //ErrProgSet Установить программу при ошибке
@@ -88,7 +71,7 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		Load.Write(Ready);
 		break;
 	case 72: // ReadyOutMk Выдать МК с флагом готовности результата   
-		MkExec(Load, { Cbool, &Ready });
+		MkExec(Load, { Cint, &Ready });
 		break;
 	case 75: // ReadyExec Запуск программы по флагу готовности резульатата     
 		if (Ready==1)
@@ -283,20 +266,20 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		if (Ready)
 		{
 			Operands.clear();
-			Foperands.clear();
+			FOperands.clear();
 			OperandsCounter = 0;
 		}
 		{int t = (MK - 200) / 5;
 		while (Operands.size() < t)
 		{
 			Operands.push_back(0);
-			Foperands.push_back(false);
+			FOperands.push_back(false);
 		}
 
 		Operands[t] = Load.toDouble();
-		if (!Foperands[t])
+		if (!FOperands[t])
 			OperandsCounter++;
-		Foperands[t] = true;
+		FOperands[t] = true;
 		}
 		break;
 	case 250: //	OpIndSet Установить индекс операнда
@@ -309,12 +292,12 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		while (Operands.size() <= OpInd)
 		{
 			Operands.push_back(0);
-			Foperands.push_back(false);
+			FOperands.push_back(false);
 		}
 		Operands[OpInd] = Load.toDouble();
-		if (!Foperands[OpInd])
+		if (!FOperands[OpInd])
 			OperandsCounter++;
-		Foperands[OpInd] = true;
+		FOperands[OpInd] = true;
 		if (OperandsCounter >= Noperands) // Выполнение программы
 		{
 			ProgExec(OperetionProg);
@@ -344,7 +327,7 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 	}
 	case 255: // OperandAdd Добавить операнд для специальной МК
 		Operands.push_back(Load.toDouble());
-		Foperands.push_back(true);
+		FOperands.push_back(true);
 		OperandsCounter++;
 		break;
 	case 260: // OperationProgSet Установить специальную операцию    
@@ -492,30 +475,38 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		MkExec(Load, { Cbool, &temp });
 		break;
 	}
+
+	// Генерация случайных чисел
+	
+	case 498: // Rand Генерация дробного числа от 0 до Load
+	case 499: // RandInt Генерация случайного числа от 0 до Load (по умолчанию от 0 до Rez)
+		if (WrongFormatCheck(Load)) break;
+		if (Load.isEmpty()) Load = { Cdouble,&Rez }; // При нулевой нагрузке берем операнд из регистра резульатта
+		if (Rez < 1)
+		{
+			Ready = 2;
+			ProgExec(ErrProg);
+			ProgExec(MatErrProg);
+		}
+		Rez = Load.toInt();
+		if (MK == 999)
+			Rez = rand() % int(Rez);
+		else
+			Rez = (double)(rand()) / RAND_MAX * Rez;
+		break;
+	// Арифметические операции
 	case 500: // Add
 	case 501: // AddSqr
 	case 510: // Mul
-		if (Ready || OpCode!=MK) {
-			OpCode = MK; // Запомнить код операции
-			Ready = false;
-			Operands.clear();
-			Foperands.clear();
-			Operands.clear();
-			RezExtStack.clear();
-			OperandsCounter = 0;
-		}
+		if (WrongFormatCheck(Load)) break;
+		OperandsClear(MK); // Сброс операндов при начале обоработки новой операции
+		if (Load.isEmpty()) Load = { Cdouble,&Rez }; // При нулевой нагрузке берем операнд из регистра резульатта
+
 		if(Load.isEmpty())
 			Operands.push_back(Rez); // Накопление из буфера результата
-		else if(Load.isDigit())
-			Operands.push_back(Load.toDouble()); // Накопление операндов
 		else
-		{
-			Ready = 2; // Код ошибки
-			ProgExec(ErrProg); // Неправильный формат операнда
-			ProgExec(WrongFormatErrProg);
-			break;
-		}
-		Foperands.push_back(true);
+			Operands.push_back(Load.toDouble()); // Накопление операндов
+		FOperands.push_back(true);
 		OperandsCounter++;
 		if (OperandsCounter == Noperands) 
 		{ //     ->  
@@ -543,32 +534,20 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 	case 516: // Div2
 	case 520: // DivInt1 Целочисленное деление
 	case 521: // DivInt2 Целочисленное деление
-		if (Ready || OpCode!=MK && OpCode != MK-1) {
-			OpCode = MK;
-			Ready = 0;
-			Operands.clear();
-			Foperands.clear();
-			RezExtStack.clear();
-			OperandsCounter = 0;
-		}
-		if (!Load.isEmpty() && !Load.isDigit()) // Ошибка формата операнда
-		{
-			Ready = 2; // Код ошибки
-			ProgExec(ErrProg); // Неправильный формат операнда
-			ProgExec(WrongFormatErrProg);
-			break;
-		}
+		if (WrongFormatCheck(Load)) break;
+		OperandsClear(MK); // Сброс операндов при начале обоработки новой операции
+		if (Load.isEmpty()) Load = { Cdouble,&Rez }; // При нулевой нагрузке берем операнд из регистра резульатта
 		if (MK%2) // Первый операнд (МК нечетная)
 		{
 			if (Operands.size() < 1)
 			{
 				Operands.resize(1);
-				Foperands.resize(1);
-				Foperands[0] = false;
+				FOperands.resize(1);
+				FOperands[0] = false;
 			}
-			if (Foperands[0] == false)
+			if (FOperands[0] == false)
 			{
-				Foperands[0] = true;
+				FOperands[0] = true;
 				OperandsCounter++;
 			}
 			Operands[0] = Load.toDouble(Rez);
@@ -578,14 +557,15 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 			if (Operands.size() <1) // Первого операнда нет
 			{
 				Operands.resize(1);
-				Foperands.push_back(false);
+				FOperands.push_back(false);
 			}
 			Operands.push_back(Load.toDouble(Rez)); // Поместить операнд в стек операндов
-			Foperands.push_back(true);
+			FOperands.push_back(true);
 			OperandsCounter++;
 		}
-		if (Foperands[0] && OperandsCounter >= Noperands)
+		if (FOperands[0] && OperandsCounter >= Noperands)
 		{
+		if (WrongFormatCheck(Load)) break;
 			ProgExec(PreRezProg);// Программа перед получением результата
 			Ready = 1;
 			Rez = Operands[0];
@@ -632,46 +612,34 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		break;
 	case 522:	// Rem1 Число из которого извлекается остаток от целочисленного деления
 	case 523:	// Rem2 Остаток от целочисленного деления
-		if (!Load.isEmpty() && !Load.isDigit()) // Ошибка формата операнда
-		{
-			Ready = 2; // Код ошибки
-			ProgExec(ErrProg); // Неправильный формат операнда
-			ProgExec(WrongFormatErrProg);
-			break;
-		}
-		if (Ready || OpCode != MK && OpCode != MK - 1) {
-			OpCode = MK;
-			Ready = 0;
-			Operands.clear();
-			Foperands.clear();
-			RezExtStack.clear();
-			OperandsCounter = 0;
-		}
+		if (WrongFormatCheck(Load)) break;
+		OperandsClear(MK); // Сброс операндов при начале обоработки новой операции
+		if (Load.isEmpty()) Load = { Cdouble,&Rez }; // При нулевой нагрузке берем операнд из регистра резульатта
 		if (MK == 522)
 		{
 			if (Operands.size() == 0)
 			{
 				Operands.push_back(Load.toDouble());
-				Foperands.push_back(true);
+				FOperands.push_back(true);
 				OperandsCounter = 1;
 				break;
 			}
 			Operands[0] = Load.toDouble();
-			if (Foperands[0] == false)
+			if (FOperands[0] == false)
 				OperandsCounter += 1;
-			Foperands[0] = true;
+			FOperands[0] = true;
 		}
 		else
 		{
 			while (Operands.size() < 2)
 			{
 				Operands.push_back(0);
-				Foperands.push_back(false);
+				FOperands.push_back(false);
 			}
 			Operands[1] = Load.toDouble();
-			if (Foperands[1] == false)
+			if (FOperands[1] == false)
 				OperandsCounter++;
-			Foperands[1] = true;
+			FOperands[1] = true;
 		}
 		if (OperandsCounter == 2)
 		{
@@ -680,31 +648,171 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 			RezExec();
 		}
 		break;
-
-	case 525: //Sqrt Квадратный корень
+	// Однооперандные действия
+	case 525: // Sqrt Квадратный корень
+	case 526: // Sqr Квадрат
+	case 527: // Log10 Логарифм по основанию 10
+	case 528: // Ln
+	case 529: // Log2
+	case 530: // Exp 
+	case 531: // Abs
+	case 535: // SignReverse Инфеверсия знака
+	case 536: // Reverse Обратное число (1/x)
+		if (WrongFormatCheck(Load)) break;
 		ProgExec(PreRezProg);// Программа перед получением результата
 		Rez = Load.toDouble(Rez); // Поместить в аккумулятор нагрузку, если нагрузка нулевая, то поместить Rez
-		if(Rez>=0)
-			Rez = sqrt(Rez);
-		else
+		Operands.clear();
+		FOperands.clear();
+		Operands.push_back(Rez);
+		FOperands.push_back(true);
+		switch (MK)
 		{
-			Ready = 2; // Код ошибки
-			ProgExec(ErrProg); // Деление на ноль
-			ProgExec(MatErrProg); // Ошибка математических вычислений
+		case 525: // Sqrt Квадратный корень
+		case 526: // Sqr Квадрат
+		case 527: // Ln
+		case 528: // Log2
+		case 529: // Log10 Логарифм по основанию 10
+			if (Rez < 0)
+			{
+				Ready = 2; // Код ошибки
+				Prog2Exec(ErrProg, MatErrProg); // Деление на ноль  // Ошибка математических вычислений
+				break;
+			}
+			switch (MK) {
+			case 525: //Sqrt Квадратный корень
+				Rez = sqrt(Rez);
+				break;
+			case 526: //Sqr Квадрат
+				Rez = Rez * Rez;
+				break;
+			case 527: // Ln
+				Rez = log(Rez);
+				break;
+			case 528: // Log2
+				Rez = log2(Rez);
+				break;
+			case 529: // Log10 Логарифм по основанию 10
+				Rez = log10(Rez);
+				break;
+			}
 			break;
+		case 530: // Exp
+			Rez = exp(Rez);
+			break;
+		case 531: // ABS Модуль числа
+			Rez = fabs(Rez);
+			break;
+		case 535: // SignReverse Инфеверсия знака
+			Rez = -Rez;
+			break;
+		case 536: //  Reverse Обратное число (1/x)
+			Rez = 1 / Rez;
+			break;
+			// Триганометрические операции
+		case 600: // Sin
+		case 601: // Cos
+		case 602: // tan
+		case 603: // ctan
+			if (AngleMode == 1 and !Load.isEmpty()) // Радианы
+			{
+				Rez = Rez / 360 * 6.283185307179586;
+				*Operands.begin() = Rez;
+			}
+			switch (MK)
+			{
+			case 600: // Sin
+				Rez = sin(Rez);	break;
+			case 601: // Cos
+				Rez = cos(Rez);	break;
+			case 602: // tan
+				Rez = tan(Rez);	break;
+			case 603: // ctan
+				Rez = 1 / tan(Rez);
+				break;
+				// Обратные триганометрические операции
+			}
+			break;
+		case 610: // ASin
+		case 611: // ACos
+			if (Rez > 1 || Rez < 1)
+			{
+				Ready = 2; // Код ошибки
+				Prog2Exec(ErrProg, MatErrProg); // Деление на ноль  // Ошибка математических вычислений
+				break;
+			}
+			switch (MK)
+			{
+			case 610: // Asin
+				Rez = asin(Rez); break;
+			case 611: // Acos
+				Rez = acos(Rez); break;
+			}
+			break;
+		case 612: // Atan
+			Rez = atan(Rez); break;
 		}
+
 		Ready = 1;
 		RezExec(); // Действия при получении результата
 		break;
-	case 526: //Sqr Квадрат
-		ProgExec(PreRezProg); // Программа перед получением результата
-		Rez = Load.toDouble(Rez); // Поместить в аккумулятор нагрузку, если нагрузка нулевая, то поместить Rez
-		Rez = Rez*Rez;
-		Ready = 1;
-		RezExec(); // Действия при получении результата
+
+	case 540: // Pow1 Степень
+	case 541: // Pow2 Степень
+		if (WrongFormatCheck(Load)) break;
+		OperandsClear(MK); // Сброс операндов при начале обоработки новой операции
+		if (Load.isEmpty()) Load = {Cdouble,&Rez}; // При нулевой нагрузке берем операнд из регистра резульатта
+		Rez = pow(Rez,Load.toDouble());
 		break;
+	case 542: // Log Логарифм (передается основание логарифма
+		if (WrongFormatCheck(Load)) break;
+		OperandsClear(MK); // Сброс операндов при начале обоработки новой операции
+		if (Load.isEmpty()) Load = { Cdouble,&Rez }; // При нулевой нагрузке берем операнд из регистра резульатта
+		Rez = log(Rez)/log(Load.toDouble());
+		break;
+
 	default:
 		CommonMk(MK, Load, Sender);
 		break;
 	}
+}
+
+void StreamFloatALU::RezExec() // Выполнение подпрограмм при получении результата
+{
+	if (Ready == 2) return;
+	Ready = 1;
+	if (!OutRezBlock)//Если не заблокирована рассылка МК с результатами вычислений
+		for (int i = 0; i < ReseiverMk.size(); i++) { // Рассылка МК с результатами
+			MkExec(ReseiverMk[i], { Cdouble, &Rez }, ReseiverContext[i]);
+		}
+	ProgExec(RezProg);
+	if (Rez == 0) ProgExec(ZProg);
+	if (Rez != 0) ProgExec(NZProg);
+	if (Rez >= 0) ProgExec(BZProg);
+	if (Rez <= 0) ProgExec(LZProg);
+	if (Rez > 0) ProgExec(BProg);
+	if (Rez < 0) ProgExec(LProg);
+}
+
+void StreamFloatALU::OperandsClear(int MK) // Сброс операндов при начале обоработки новой операции
+{
+	if (Ready || OpCode != MK && OpCode != MK - 1) {
+		OpCode = MK;
+		Ready = 0;
+		Operands.clear();
+		FOperands.clear();
+		RezExtStack.clear();
+		OperandsCounter = 0;
+	}
+}
+
+bool StreamFloatALU::WrongFormatCheck(LoadPoint Load) // Проверка формата входных данных (возвращает true, если неправильный формат)
+{
+	if (!Load.isEmpty() && !Load.isDigit()) // Ошибка формата операнда
+	{
+		Ready = 2; // Код ошибки
+		ProgExec(ErrProg); // Неправильный формат операнда
+		ProgExec(WrongFormatErrProg);
+		return true;
+	}
+	return false;
 }

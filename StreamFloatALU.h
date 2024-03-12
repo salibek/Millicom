@@ -4,8 +4,11 @@
 
 class StreamFloatALU : public FU
 {
+	bool WrongFormatCheck(LoadPoint Load); // Проверка формата входных данных (возвращает true, если неправильный формат)
+	void OperandsClear(int MK); // Сброс операндов при начале обоработки новой операции
+
 public:
-	vector<bool> Foperands; // Флаги поступления операндов  
+	vector<bool> FOperands; // Флаги поступления операндов  
 	int Ready = 0; // Код готовности результата 0 - не готов, 1 - готов, 2 - ошибка
 	bool OutRezBlock = false; // Флаг блокирования выдачи результата  
 	void ProgFU(int MK, LoadPoint Load, FU* Sender = nullptr) override; // Программа обоработка МК
@@ -26,7 +29,7 @@ public:
 	void* OpIndErrProg = nullptr;// Ошибка индекса операнда
 	void* OperationErrProg = nullptr; // Ошибка операции
 	void* RezStackIsEmpyProg = nullptr; // Ошибка при попытке извлечения из пуского стека результатов    
-	void* RezExtStackIsEmpyProg = nullptr; // Ошибка при попытке извлечения из пуского стека расширенного результатов    
+	void* RezExtStackIsEmpyProg = nullptr; // Ошибка при попытке извлечения из пуского стека расширенного результатов
 	void* OperetionProg = nullptr;// Программа для выполнения специальной операции
 	void* RezProg = nullptr; // Программа, запускаемая перед получением результата
 	void* PreRezProg = nullptr; // Программа, запускаемая перед получением результата    
