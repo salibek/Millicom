@@ -13,16 +13,17 @@ NewFU={Mnemo="Main_Bus" MkBegRange=1000 FUType=FUBusNew} // Описание Bus
 MainBus.FUTypeCorrectSet=-96 // Корректировка номера типа ФУ для переноса на новую ОА-платформу
 
 NewFU={Mnemo="SALU" FUType=FUStreamFloatALU}
+NewFU={Mnemo="SALU1" FUType=FUStreamFloatALU}
+NewFU={Mnemo="SALU2" FUType=FUStreamFloatALU}
 NewFU={Mnemo="Console" FUType=FUConsNew}
 
 MainBus.PartialResetSet \\ Запомнить число созданных ФУ
 MainBus.ModeSet=2
 
-SALU.ReceiverMkSet=Console.OutLn
-SALU.RezProgSet={Console.Out="Rezult=" SALU.OutMk=Console.OutLn}
-SALU.ZProgSet={Console.OutLn="ZERO!!!"}
-SALU.Rem1=6
-SALU.Rem2=3
-SALU.ReadyExec={Console.OutLn="Ready"}
-SALU.Sqrt
-SALU.Out=Console.OutLn
+SALU.ReceiverMkSet=SALU1.Sqrt
+SALU1.ReceiverMkSet=SALU2.Add
+SALU2.ReceiverMkSet=Console.OutLn
+SALU2.Add=3
+SALU.Sub1=7
+SALU.Sub2=3
+

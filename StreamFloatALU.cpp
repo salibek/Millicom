@@ -520,7 +520,7 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 				for (auto i : Operands)
 					Rez += i;
 					break;
-			case 501: //AddSqrt
+			case 501: //AddSqr
 				for (auto i : Operands)
 					Rez += i*i;
 					break;
@@ -603,7 +603,13 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 				RezExtStack.push_back((int)Rez % int(Operands[1])); // Остаток от деления запись в стек расширенных результатов
 				for (int i = 1; i < Noperands; i++)
 					if (int(Operands[i]) != 0)
+					{
+						if (!RezExtStack.size()) // Сохранение остатка от деления в расширенном списке результата
+							RezExtStack.push_back(int(Rez)% int(Operands[i]));
+						else
+							RezExtStack[0]=int(Rez) % int(Operands[i]);
 						Rez /= int(Operands[i]);
+					}
 					else
 					{
 						Ready = 2; // Код ошибки
@@ -676,6 +682,13 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 	case 534: // Ceil Округление до большего целого числа
 	case 535: // SignReverse Инфеверсия знака
 	case 536: // Reverse Обратное число (1/x)
+	case 600: // Sin
+	case 601: // Cos
+	case 602: // tan
+	case 603: // ctan
+	case 610: // ASin
+	case 611: // ACos
+	case 612: // Atan
 		if (WrongFormatCheck(Load)) break;
 		ProgExec(PreRezProg);// Программа перед получением результата
 		Rez = Load.toDouble(Rez); // Поместить в аккумулятор нагрузку, если нагрузка нулевая, то поместить Rez
@@ -778,7 +791,6 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		case 612: // Atan
 			Rez = atan(Rez); break;
 		}
-
 		Ready = 1;
 		RezExec(); // Действия при получении результата
 		break;
