@@ -23,7 +23,9 @@ MainBus.ModeSet=2
 SALU.ReceiverMkSet=SALU1.Sqrt
 SALU1.ReceiverMkSet=SALU2.Add
 SALU2.ReceiverMkSet=Console.OutLn
+SALU2.BiggerProgSet={Console.OutLn="Bigger"} // Запуск программы если больше
+SALU2.RezProgSet={Console.Out="Rez=" SALU.OutMk=Console.OutLn} // Выполнить по возникновению события
 SALU2.Add=3
 SALU.Sub1=7
 SALU.Sub2=3
-
+SALU2.ReadyExec={Console.OutLn="Ready2"}
