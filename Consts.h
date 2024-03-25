@@ -291,7 +291,7 @@ public:
 	FU* Alu = nullptr; // Ссылка на АЛУ
 	bool ALUCreating = false; // Флаг создания АЛУ
 	FU* Parent = nullptr; // Ссылка на родительский ФУ
-	int FUInd = -1; // Индекс ФУ
+	int FUInd = -1, FUInd2=-1; // Индексы ФУ
 	int  FUMkGlobalRange = 0; // Глобальный адрес ФУ
 
 	FUModeling *Modeling=nullptr; // Моделирование

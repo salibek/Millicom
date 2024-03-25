@@ -175,11 +175,14 @@ void Scheduler::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		PrevTime = 0; PrevCoreCount = 0;
 		Queue.clear();
 		break;
-	case 5: //SchedulingTimeSet
+	case 5: //SchedulingTimeSet Установить время осуществления планирования выполнения МК
 		SchedulingTime = Load.toDouble();
 		break;
-	case 8: // NCoresSet
+	case 8: // NCoresSet Установить количество исполнительных устройств
 		NCores = Load.toInt();
+		break;
+	case 9: // CoresReset Сброс настроек количества исполнительных устройств
+		// ....
 		break;
 	case 10: // TimeOut
 		Load.Write(*CurrentTime);
@@ -248,11 +251,11 @@ void Scheduler::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		MkExec(Load, { Cdouble,&t });
 		break;
 	}
-	case 75: // MaxMkQueueOut Выдать максимальную длину очереди
+	case 75: // MaxMkQueueOut Выдать максимальную длину очереди МК
 		if (Modeling != nullptr)
 			Load.Write(ParallelFactor / *CurrentTime);
 		break;
-	case 76: //  MaxMkQueueOutMk Выдать МК с максимальной длиной очереди
+	case 76: //  MaxMkQueueOutMk Выдать МК с максимальной длиной очереди МК
 	{
 //		if (Modeling != nullptr)
 		{
