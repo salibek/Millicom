@@ -32,10 +32,7 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		Load.Write(OperandsCounter);
 		break;
 	case 11: //OpCounterOutMk Выдать МК со счетчиком накопленных операндов
-	{
-		int t = OperandsCounter;
-		MkExec(Load, { Cdouble, &t });
-	}
+		MkExec(Load, { Cint, &OperandsCounter });
 		break;
 	case 20: // AngleModeSet     Установить режим измерения угла (0 - радианы, 1 -градусы)
 		AngleMode = Load.toInt();
