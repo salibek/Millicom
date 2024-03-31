@@ -37,7 +37,7 @@ void BusFU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 			break;
 		case 1: // MakeFU Создать ФУ
 			FUs.push_back(FUTypes[Load.toInt() - FUTypeCorrect](this, FUTempl));
-			FUs.back()->FUMkGloabalRange = FUMkRange * (FUs.size() - 1); // Установить начало глобального диапазона МК
+			FUs.back()->FUMkGlobalRange = FUMkRange * (FUs.size() - 1); // Установить начало глобального диапазона МК
 			break;
 		case 5: // ProgExec Выполнить программу из ИК
 			ProgExec((vector<ip>*)Load.Point);

@@ -11,6 +11,7 @@ private:
 	int Ind = 0, IndGroup=0;
 	int DeviseCounter = 0;
 	void* DevNotExistErrProg = nullptr; // Подпрограмма ошибки 'Нет существует устройства'
+	vector<StreamFloatALU> Group; // Вектор группы ФУ для копирования
 public:
 	void ProgFU(int MK, LoadPoint Load, FU* Sender = nullptr) override;
 	StreamFloatALUManager(FU* BusContext, FU* Templ) 

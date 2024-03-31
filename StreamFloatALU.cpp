@@ -5,6 +5,8 @@ using namespace std;
 void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 {
 	if (!Active && MK<900) return; //При сброшенном флаге активности выполняются общие МК
+	int MKinitial = MK;
+	MK %= FUMkRange;
 	switch (MK)
 	{
 	case 0: //Reset

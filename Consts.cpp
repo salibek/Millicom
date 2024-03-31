@@ -1799,13 +1799,13 @@ void FU::CommonMk(int Mk, LoadPoint Load, FU* Sender)
 		if (CycleStop > 0) CycleStop = 0;
 		break;
 	case MkGlobalRangeSet: // Установить глобальный адрес МК для ФУ
-		FUMkGloabalRange = Load.toInt();
+		FUMkGlobalRange = Load.toInt();
 		break;
 	case MkGlobalRangeOutMk:  // Выдать глобальный адрес МК для ФУ
-		Load.Write(FUMkGloabalRange);
+		Load.Write(FUMkGlobalRange);
 		break;
 	case MkGlobalRangeOutMkMK: // Выдать МК с глобальным адресом МК для ФУ
-		MkExec(Load, { Cint, &FUMkGloabalRange });
+		MkExec(Load, { Cint, &FUMkGlobalRange });
 		break;
 	case 917: // EventserSet Установить указатель на контроллер событий
 		if (Modeling == nullptr) Modeling = new FUModeling();
