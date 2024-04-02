@@ -1899,11 +1899,11 @@ void FU::ProgExec(void* UK, unsigned int CycleMode, FU* ProgBus, vector<ip>::ite
 	} while (RepeatF || CycleMode > 0);
 }
 
-void FU::Prog2Exec(void* UK1, void* UK2, unsigned int CycleMode, FU* ProgBus) // Исполнение двух программы из ИК
+void FU::ProgNExec(vector<void *> Uk) // Исполнение нескольких программ из ИК
 {
-	ProgExec(UK1, CycleMode, ProgBus, nullptr); // Исполнение программы из ИК
-	ProgExec(UK2, CycleMode, ProgBus, nullptr); // Исполнение программы из ИК
-
+	
+	for (auto i: Uk)
+		ProgExec(i); // Выполнение каждой программы из списка
 }
 // Запуск программы по указателю из нарузки ИП
 void FU::ProgExec(LoadPoint Uk, unsigned int CycleMode, FU* Bus, vector<ip>::iterator* Start) // Исполнение программы из ИК

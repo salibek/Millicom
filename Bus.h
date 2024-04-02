@@ -22,6 +22,7 @@ public:
 	int FUMkRange = 1000; // Диапазон МК для каждого ФУ
 	int FUTypeCorrect; // Коррекция номера типы ФУ (для согласования со старой ОА-средой)
 	bool InterpretatorMode = false; // Режим интерпретатора (если установлено, то выполняется МК InterpretatorExec
+	int Ind1 = 0, Ind2 = 0; // Индексы ФУ, управляемых Шиной
 private:
 	void FUTypesIni();
 };

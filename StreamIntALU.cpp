@@ -5,6 +5,7 @@ void StreamIntALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 	if (!Active && MK < 900) return; //При сброшенном флаге активности выполняются общие МК
 	int MKinitial = MK;
 	MK %= FUMkRange;
+	if (Load.isEmpty()) Load = { Cint,&Rez }; // Если нулевая нагрузка, то операндом является аккумулятор
 	switch (MK)
 	{
 	case 0: //Reset
@@ -171,17 +172,20 @@ void StreamIntALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		{
 			double t = RezExtStack.back();
 			MkExec(Load, { Cdouble,&t });
+			break;
 		}
 		case 102:
 		{
 			Load.Write(RezExtStack.back());
 			RezExtStack.pop_back();
+			break;
 		}
 		case 103:
 		{
 			double t = RezExtStack.back();
 			RezExtStack.pop_back();
 			MkExec(Load, { Cdouble,&t });
+			break;
 		}
 		break;
 		}
@@ -426,6 +430,294 @@ void StreamIntALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		MkExec(Load, { Cbool, &temp });
 		break;
 	}
+	case 498: // Rand Генерация дробного числа от 0 до Load
+	case 499: // RandInt Генерация случайного числа от 0 до Load (по умолчанию от 0 до Rez)
+		if (WrongFormatCheck(Load)) break;
+		if (Load.isEmpty()) Load = { Cdouble,&Rez }; // При нулевой нагрузке берем операнд из регистра резульатта
+		OperandsClear(MK);
+		Rez = Load.toInt();
+		Operands.push_back(Rez);
+		FOperands.push_back(true);
+		if (Rez < 1)
+		{
+			Ready = 2;
+			ProgExec(ErrProg);
+			ProgExec(MatErrProg);
+		}
+		if (MK == 999)
+			Rez = rand() % int(Rez);
+		else
+			Rez = (double)(rand()) / RAND_MAX * Rez;
+		break;
+		// Арифметические операции
+	case 500: // Add
+	case 501: // AddSqr
+	case 510: // Mul
+		if (WrongFormatCheck(Load)) break;
+		if (Ready || OpCode != MK)
+			OperandsClear(MK); // Сброс операндов при начале обоработки новой операции
+		if (Load.isEmpty()) Load = { Cdouble,&Rez }; // При нулевой нагрузке берем операнд из регистра резульатта
+
+		if (Load.isEmpty())
+			Operands.push_back(Rez); // Накопление из буфера результата
+		else
+			Operands.push_back(Load.toDouble()); // Накопление операндов
+		FOperands.push_back(true);
+		OperandsCounter++;
+		if (OperandsCounter == Noperands)
+		{ //     ->  
+			Rez = 0;
+			switch (OpCode) {
+			case 500: //Add
+				for (auto i : Operands)
+					Rez += i;
+				break;
+			case 501: //AddSqr
+				for (auto i : Operands)
+					Rez += i * i;
+				break;
+			case 510: //Mul
+				for (auto i : Operands)
+					Rez *= i;
+				break;
+			}
+			RezExec(); // Действия при получении результата
+		}
+		break;
+	case 505: // Sub1
+	case 506: // Sub2
+//	case 515: // Div1
+//	case 516: // Div2
+	case 520: // DivInt1 Целочисленное деление
+	case 521: // DivInt2 Целочисленное деление
+	case 540: // Pow1 Степень (основание)
+	case 541: // Pow2 Степень числа
+	case 542: // Log Логарифм
+	case 543: // LogBase Логарифм (передается основание логарифма)
+	// Логические операции
+	case 600: // Or
+	case 601: // Or
+	case 605: // And
+	case 606: // And
+	case 615: // Xor
+	case 616: // Xor
+	case 650: // OrBit
+	case 651: // OrBit
+	case 655: // AndBit
+	case 656: // AndBit
+	case 665: // XorBit
+	case 666: // XorBit
+		if (WrongFormatCheck(Load)) break;
+		if (Ready || OpCode != MK && OpCode != MK - 1)
+			OperandsClear(MK); // Сброс операндов при начале обоработки новой операции
+		if (Load.isEmpty()) Load = { Cdouble,&Rez }; // При нулевой нагрузке берем операнд из регистра резульатта
+		if (MK % 5==0) // Первый операнд (МК кратна 5)
+		{
+			OpCode = MK;
+			if (Operands.size() < 1)
+			{
+				Operands.resize(1);
+				FOperands.resize(1);
+				FOperands[0] = false;
+			}
+			if (FOperands[0] == false)
+			{
+				FOperands[0] = true;
+				OperandsCounter++;
+			}
+			Operands[0] = Load.toInt();
+		}
+		else // Второй операнд
+		{
+			if (Operands.size() < 1) // Первого операнда нет
+			{
+				Operands.resize(1);
+				FOperands.push_back(false);
+			}
+			Operands.push_back(Load.toInt(Rez)); // Поместить операнд в стек операндов
+			FOperands.push_back(true);
+			OperandsCounter++;
+		}
+		if (FOperands[0] && OperandsCounter >= Noperands)
+		{
+			ProgExec(PreRezProg);// Программа перед получением результата
+			Ready = 1;
+			Rez = Operands[0];
+			// Добавить проверку на ошибку
+			switch (OpCode) {
+			case 600: // And
+				for (int i = 1; i < Noperands; i++)
+					Rez = Rez && Operands[i];
+				break;
+			case 605: // Or
+				for (int i = 1; i < Noperands; i++)
+					Rez = Rez || Operands[i];
+				break;
+			case 610: // Xor
+				for (int i = 1; i < Noperands; i++)
+					Rez = bool(Rez) ^ bool(Operands[i]);
+				break;
+			case 650: // AndBit
+				for (int i = 1; i < Noperands; i++)
+					Rez = Rez & Operands[i];
+				break;
+			case 655: // OrBit
+				for (int i = 1; i < Noperands; i++)
+					Rez = Rez | Operands[i];
+				break;
+			case 660: // XorBit
+				for (int i = 1; i < Noperands; i++)
+					Rez = (unsigned int)Rez ^ (unsigned int)Operands[i];
+				break;
+			case 565: // Sub
+				for (int i = 1; i < Noperands; i++)
+					Rez -= Operands[i];
+				break;
+			case 520: // DivInt
+				Rez = int(Operands[0]);
+				RezExtStack.push_back((int)Rez % int(Operands[1])); // Остаток от деления запись в стек расширенных результатов
+				for (int i = 1; i < Noperands; i++)
+					if (int(Operands[i]) != 0)
+					{
+						if (!RezExtStack.size()) // Сохранение остатка от деления в расширенном списке результата
+							RezExtStack.push_back(int(Rez) % int(Operands[i]));
+						else
+							RezExtStack[0] = int(Rez) % int(Operands[i]);
+						Rez /= int(Operands[i]);
+					}
+					else
+					{
+						Ready = 2; // Код ошибки
+						ProgExec(DivZeroErrProg);
+						ProgExec(MatErrProg);// Ошибка математической операции
+						ProgExec(ErrProg); // Деление на ноль
+						break;
+					}
+				break;
+			case 522:	// Rem1 Число из которого извлекается остаток от целочисленного деления
+			case 523:	// Rem2 Остаток от целочисленного деления
+				if (WrongFormatCheck(Load)) break;
+				if (Ready || OpCode != MK && OpCode != MK - 1)
+					OperandsClear(MK); // Сброс операндов при начале обоработки новой операции
+				if (Load.isEmpty()) Load = { Cdouble,&Rez }; // При нулевой нагрузке берем операнд из регистра резульатта
+				if (MK == 522)
+				{
+					if (Operands.size() == 0)
+					{
+						Operands.push_back(Load.toInt());
+						FOperands.push_back(true);
+						OperandsCounter = 1;
+						break;
+					}
+					Operands[0] = Load.toInt();
+					if (FOperands[0] == false)
+						OperandsCounter += 1;
+					FOperands[0] = true;
+				}
+				else
+				{
+					while (Operands.size() < 2)
+					{
+						Operands.push_back(0);
+						FOperands.push_back(false);
+					}
+					Operands[1] = Load.toInt();
+					if (FOperands[1] == false)
+						OperandsCounter++;
+					FOperands[1] = true;
+				}
+				if (OperandsCounter == 2)
+				{
+					ProgExec(PreRezProg);// Программа перед получением результата
+					Rez = int(Operands[0]) % int(Operands[1]);
+					RezExec();
+				}
+				break;
+			case 540: // Pow1 Степень (основание)
+				Rez = pow(Operands[0], Operands[1]);
+				break;
+			}
+			// --------------------------
+			RezExec(); // Действия при получении результата
+		}
+		break;
+	case 522:	// Rem1 Число из которого извлекается остаток от целочисленного деления
+	case 523:	// Rem2 Остаток от целочисленного деления
+		if (WrongFormatCheck(Load)) break;
+		if (Ready || OpCode != MK && OpCode != MK - 1)
+			OperandsClear(MK); // Сброс операндов при начале обоработки новой операции
+		if (Load.isEmpty()) Load = { Cdouble,&Rez }; // При нулевой нагрузке берем операнд из регистра резульатта
+		if (MK == 522)
+		{
+			OpCode = MK;
+			if (Operands.size() == 0)
+			{
+				Operands.push_back(Load.toDouble());
+				FOperands.push_back(true);
+				OperandsCounter = 1;
+				break;
+			}
+			Operands[0] = Load.toDouble();
+			if (FOperands[0] == false)
+				OperandsCounter += 1;
+			FOperands[0] = true;
+		}
+		else
+		{
+			while (Operands.size() < 2)
+			{
+				Operands.push_back(0);
+				FOperands.push_back(false);
+			}
+			Operands[1] = Load.toDouble();
+			if (FOperands[1] == false)
+				OperandsCounter++;
+			FOperands[1] = true;
+		}
+		if (OperandsCounter == 2)
+		{
+			ProgExec(PreRezProg);// Программа перед получением результата
+			Rez = int(Operands[0]) % int(Operands[1]);
+			RezExec();
+		}
+		break;
+	// Однооперандные операции
+	case 526: // Sqr
+	case 531: // Abs Модуль числа
+	case 532: // Not Логические НЕТ
+	case 533: // NotBit Побитовое логическое нет
+		if (WrongFormatCheck(Load)) break;
+		ProgExec(PreRezProg);// Программа перед получением результата
+		Rez = Load.toDouble(Rez); // Поместить в аккумулятор нагрузку, если нагрузка нулевая, то поместить Rez
+		Operands.clear();
+		FOperands.clear();
+		Operands.push_back(Rez);
+		FOperands.push_back(true);
+		switch (MK)
+		{
+		case 526: // Sqr Квадрат
+		case 531: // ABS Модуль числа
+		case 535: // SignReverse Инфеверсия знака
+			if (MK != 526 && (!Load.isEmpty() && Load.toDouble() < 0))
+			{
+				Ready = 2; // Код ошибки
+				ProgNExec({ ErrProg, MatErrProg }); // Деление на ноль  // Ошибка математических вычислений
+				break;
+			}
+			switch (MK)
+			{
+			case 526: //Sqr Квадрат
+				Rez = Load.toInt() * Load.toInt();
+				break;
+			case 531: // ABS Модуль числа
+				Rez = abs(Load.toInt());
+				break;
+			case 535: // SignReverse Инфеверсия знака
+				Rez = -Load.toInt();
+				break;
+			}
+			break;
+		}
 	default:
 		CommonMk(MK, Load, Sender);
 		break;

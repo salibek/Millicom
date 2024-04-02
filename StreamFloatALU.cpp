@@ -7,6 +7,7 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 	if (!Active && MK<900) return; //При сброшенном флаге активности выполняются общие МК
 	int MKinitial = MK;
 	MK %= FUMkRange;
+	if (Load.isEmpty()) Load = { Cdouble,&Rez }; // Если нулевая нагрузка, то операндом является аккумулятор
 	switch (MK)
 	{
 	case 0: //Reset
@@ -545,7 +546,7 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		if (Ready || OpCode != MK && OpCode != MK - 1)
 			OperandsClear(MK); // Сброс операндов при начале обоработки новой операции
 		if (Load.isEmpty()) Load = { Cdouble,&Rez }; // При нулевой нагрузке берем операнд из регистра резульатта
-		if (MK%2) // Первый операнд (МК нечетная)
+		if (MK%5==0) // Первый операнд (МК кратна 5)
 		{
 			if (Operands.size() < 1)
 			{
@@ -702,12 +703,12 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		case 527: // Ln
 		case 528: // Log2
 		case 529: // Log10 Логарифм по основанию 10
-			if (Rez < 0)
-			{
-				Ready = 2; // Код ошибки
-				Prog2Exec(ErrProg, MatErrProg); // Деление на ноль  // Ошибка математических вычислений
-				break;
-			}
+			if(MK!=526 && (!Load.isEmpty() && Load.toDouble() < 0))
+				{
+					Ready = 2; // Код ошибки
+					ProgNExec({ ErrProg, MatErrProg }); // Деление на ноль  // Ошибка математических вычислений
+					break;
+				}
 			switch (MK) {
 			case 525: //Sqrt Квадратный корень
 				Rez = sqrt(Rez);
@@ -727,25 +728,26 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 			}
 			break;
 		case 530: // Exp
-			Rez = exp(Rez);
+			Rez = exp(Load.toDouble());
 			break;
 		case 531: // ABS Модуль числа
-			Rez = fabs(Rez);
+			Rez = fabs(Load.toDouble());
 			break;
 		case 532: // Round Округление
-			Rez = round(Rez);
+			Rez = round(Load.toDouble());
 			break;
 		case 533: // Int Целая часть числа
-			Rez = int(Rez);
+			Rez = int(Load.toDouble());
 			break;
 		case 534: // Сeil Округление до большего целого числа
-			Rez = ceil(Rez);
+			Rez = ceil(Load.toDouble());
 			break;
 		case 535: // SignReverse Инфеверсия знака
-			Rez = -Rez;
+			Rez = -Load.toDouble();
 			break;
 		case 536: //  Reverse Обратное число (1/x)
-			Rez = 1 / Rez;
+			Rez = -Load.toDouble();
+
 			break;
 			// Триганометрические операции
 		case 600: // Sin
@@ -776,7 +778,7 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 			if (Rez > 1 || Rez < 1)
 			{
 				Ready = 2; // Код ошибки
-				Prog2Exec(ErrProg, MatErrProg); // Деление на ноль  // Ошибка математических вычислений
+				ProgNExec({ ErrProg, MatErrProg }); // Деление на ноль  // Ошибка математических вычислений
 				break;
 			}
 			switch (MK)
