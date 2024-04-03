@@ -43,4 +43,5 @@ public:
 		ProgFU(0, { 0,nullptr });
 	};
 	StreamFloatALU() { StreamFloatALU(nullptr, nullptr); };
+
 };
