@@ -121,17 +121,17 @@ void Scheduler::CoreFree() // Освободить ядро
 	ProgExec(SchedulingProg);
 }
 
-void Scheduler::Scheduling(FU* Context, double DTime, bool CoreContinue)
+void Scheduler::Scheduling(FU* Context, double DTime, bool CoreContinue) // Планирование одной МК
 {
 	if (CoreContinue)
 		((Eventser*)eventser)->Eventsing(Context, DTime, true);
 	else
-		if (CoreCount < NCores)
+		if (CoreCount < NCores) // Если ядер хватает
 		{
 			CoreCount++;
 			((Eventser*)eventser)->Eventsing(Context, DTime + SchedulingTime, true);
 		}
-		else
+		else // Если ядер не хватает
 		{
 			Queue.push_back(Context);
 			MkTimeQueue.push_back(DTime);

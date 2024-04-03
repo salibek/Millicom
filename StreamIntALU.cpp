@@ -490,6 +490,8 @@ void StreamIntALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 //	case 516: // Div2
 	case 520: // DivInt1 Целочисленное деление
 	case 521: // DivInt2 Целочисленное деление
+	case 522:	// Rem1 Число из которого извлекается остаток от целочисленного деления
+	case 523:	// Rem2 Остаток от целочисленного деления
 	case 540: // Pow1 Степень (основание)
 	case 541: // Pow2 Степень числа
 	case 542: // Log Логарифм
@@ -596,10 +598,7 @@ void StreamIntALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 				break;
 			case 522:	// Rem1 Число из которого извлекается остаток от целочисленного деления
 			case 523:	// Rem2 Остаток от целочисленного деления
-				if (WrongFormatCheck(Load)) break;
-				if (Ready || OpCode != MK && OpCode != MK - 1)
-					OperandsClear(MK); // Сброс операндов при начале обоработки новой операции
-				if (Load.isEmpty()) Load = { Cdouble,&Rez }; // При нулевой нагрузке берем операнд из регистра резульатта
+
 				if (MK == 522)
 				{
 					if (Operands.size() == 0)
@@ -641,54 +640,15 @@ void StreamIntALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 			RezExec(); // Действия при получении результата
 		}
 		break;
-	case 522:	// Rem1 Число из которого извлекается остаток от целочисленного деления
-	case 523:	// Rem2 Остаток от целочисленного деления
-		if (WrongFormatCheck(Load)) break;
-		if (Ready || OpCode != MK && OpCode != MK - 1)
-			OperandsClear(MK); // Сброс операндов при начале обоработки новой операции
-		if (Load.isEmpty()) Load = { Cdouble,&Rez }; // При нулевой нагрузке берем операнд из регистра резульатта
-		if (MK == 522)
-		{
-			OpCode = MK;
-			if (Operands.size() == 0)
-			{
-				Operands.push_back(Load.toDouble());
-				FOperands.push_back(true);
-				OperandsCounter = 1;
-				break;
-			}
-			Operands[0] = Load.toDouble();
-			if (FOperands[0] == false)
-				OperandsCounter += 1;
-			FOperands[0] = true;
-		}
-		else
-		{
-			while (Operands.size() < 2)
-			{
-				Operands.push_back(0);
-				FOperands.push_back(false);
-			}
-			Operands[1] = Load.toDouble();
-			if (FOperands[1] == false)
-				OperandsCounter++;
-			FOperands[1] = true;
-		}
-		if (OperandsCounter == 2)
-		{
-			ProgExec(PreRezProg);// Программа перед получением результата
-			Rez = int(Operands[0]) % int(Operands[1]);
-			RezExec();
-		}
-		break;
 	// Однооперандные операции
 	case 526: // Sqr
 	case 531: // Abs Модуль числа
 	case 532: // Not Логические НЕТ
 	case 533: // NotBit Побитовое логическое нет
+	case 535: // SignReverse Инфеверсия знака
 		if (WrongFormatCheck(Load)) break;
 		ProgExec(PreRezProg);// Программа перед получением результата
-		Rez = Load.toDouble(Rez); // Поместить в аккумулятор нагрузку, если нагрузка нулевая, то поместить Rez
+		Rez = Load.toInt(Rez); // Поместить в аккумулятор нагрузку, если нагрузка нулевая, то поместить Rez
 		Operands.clear();
 		FOperands.clear();
 		Operands.push_back(Rez);
@@ -696,28 +656,22 @@ void StreamIntALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		switch (MK)
 		{
 		case 526: // Sqr Квадрат
+			Rez *= Rez;
+			break;
 		case 531: // ABS Модуль числа
+			Rez = abs(Rez);
+			break;
+		case 532: // Not Логические НЕТ
+			Rez = !(bool(Rez));
+			break;
+		case 533: // NotBit Побитовое логическое нет
+			Rez = (unsigned int)!Rez;
+			break;
 		case 535: // SignReverse Инфеверсия знака
-			if (MK != 526 && (!Load.isEmpty() && Load.toDouble() < 0))
-			{
-				Ready = 2; // Код ошибки
-				ProgNExec({ ErrProg, MatErrProg }); // Деление на ноль  // Ошибка математических вычислений
-				break;
-			}
-			switch (MK)
-			{
-			case 526: //Sqr Квадрат
-				Rez = Load.toInt() * Load.toInt();
-				break;
-			case 531: // ABS Модуль числа
-				Rez = abs(Load.toInt());
-				break;
-			case 535: // SignReverse Инфеверсия знака
-				Rez = -Load.toInt();
-				break;
-			}
+			Rez = -Rez;
 			break;
 		}
+		break;
 	default:
 		CommonMk(MK, Load, Sender);
 		break;
