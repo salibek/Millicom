@@ -54,6 +54,7 @@ void BusFU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		{
 			int t= FUs.size();
 			MkExec(Load, {Cint,&t});
+			break;
 		}
 		case 22: // LastFuContextOut 
 			Load.Write(FUs.back());
@@ -74,6 +75,39 @@ void BusFU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 				MkExec(Load, { Cint, &t });
 			}
 			break;
+
+		case 45: // FuContextOut Выдать контекст ФУ по его МК
+			if (Ind >= FUs.size() || Ind < 0) break;
+			Load.Write(FUs[Load.toInt() / FUMkRange]);
+			break;
+		case 46: // FuContextOutMk Выдать МК с контекстом ФУ по его МК
+			if (Ind >= FUs.size() || Ind<0) break;
+			MkExec(Load, { TFU, &FUs[Ind] });
+			break;
+		case 47: // FuContestFormInd1ToInd2OutMk Последовательно выдать МК с контекстами ФУ с индекса 1 до индекса 2
+			if (Ind >= FUs.size() || Ind < 0 || Ind2 >= FUs.size() || Ind2 < 0) break;
+			for (int i = Ind; i <= Ind2; i++)
+				MkExec(Load, {TFU,&FUs[i]});
+			break;
+		case 50: // IndSet Установить индекс ФУ
+			Ind = Load.toInt();
+			break;
+		case 51: // Ind2Set Установить второй индекс ФУ
+			Ind2 = Load.toInt();
+			break;
+		case 52: // IndByMkSet Установить индекс ФУ по МК
+			Ind = Load.toInt() / FUMkRange;
+			break;
+		case 53: // Ind2ByMkSet Установить второй индекс ФУ по МК
+			Ind2 = Load.toInt() / FUMkRange;
+			break;
+		case 54: // IndAdd Увеличить индекс ФУ
+			Ind += Load.toInt();
+			break;
+		case 55: // Ind2Add Увеличить второй индекс ФУ
+			Ind2 += Load.toInt();
+			break;
+
 		case 100: // MkExec Выполнить одму МК (в нагрузке ссылка на ИП)
 			if (Load.Point!=nullptr && Load.isIP())
 				ProgFU(((ip*)Load.Point)->atr, ((ip*)Load.Point)->Load);

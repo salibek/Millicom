@@ -19,8 +19,13 @@ MainBus.PartialResetSet \\ Запомнить число созданных ФУ
 MainBus.ModeSet=2
 
 StreamALU.ReceiverMkSet=Console.OutLn
+StreamALU.ErrProgSet={Console.OutLn="Ошибка"}
+StreamALU.WrongFormatErrProgSet={Console.OutLn="Ошибка формата входных данных"}
+StreamALU.MatErrProgSet={Console.OutLn="Математическая ошибка"}
+StreamALU.OveflowErrProgSet={Console.OutLn="Переполнение разрядной сетки"}
 StreamALU.AddSqr=11
 StreamALU.AddSqr=7
 StreamALU.ABS=-6
 StreamALU.Add=9
 StreamALU.Add
+StreamALU.NOperandSet=3

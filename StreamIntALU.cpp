@@ -58,6 +58,7 @@ void StreamIntALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		break;
 	case 45: //RezStackIsEmpyProgSet Установить программу при чтении из пустого стека результатов
 		RezStackIsEmpyProg = Load.Point;
+		break;
 	case 46: //MatErrProgSet Установить программу обработки ошибки математической операции
 		MatErrProg = Load.Point;
 		break;
