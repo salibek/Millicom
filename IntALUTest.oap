@@ -19,8 +19,8 @@ MainBus.PartialResetSet \\ Запомнить число созданных ФУ
 MainBus.ModeSet=2
 
 StreamALU.ReceiverMkSet=Console.OutLn
-StreamALU.Mul=11
-StreamALU.Mul=7
+StreamALU.AddSqr=11
+StreamALU.AddSqr=7
 StreamALU.ABS=-6
 StreamALU.Add=9
 StreamALU.Add

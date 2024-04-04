@@ -5184,20 +5184,129 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 		Obj={Mk=10 Mnemo="OpCounterOut" Hint="Выдать счетчик накопленных операндов"}
 		Obj={Mk=11 Mnemo="OpCounterOutMk" Hint="Выдать МК со счетчиком накопленных операндов"}
 		Obj={Mk=20 Mnemo="AngleModeSet" Hint="Установить режим измерения угла (0 - радианы, 1 -градусы)"}
-		Obj={Mk=40 Mnemo="ErrProgSet" Hint="Установить программу обработки ошибок"}
-		Obj={Mk=75 Mnemo="ReadyExec" Hint="Запуск программы по флагу готовности резульатата"}
+		Obj={Mk=30 Mnemo="OperandsReset" Hint="Сброс операндов (все те операнды, что пришли, сбрасываются и накопление операндов начинается заново)"}
+		Obj={Mk=70 Mnemo="ReadySet" Hint="Установить флаг готовности результата (по умолчанию true)"}
+		Obj={Mk=71 Mnemo="ReadyOut" Hint="Выдать флаг готовности результата"}
+		Obj={Mk=72 Mnemo="ReadyOutMk" Hint="Выдать МК с флагом готовности результата"}
+		Obj={Mk=80 Mnemo="OutRezBlockSet" Hint="Установить блокировку выдачи результата (при нулевой нагрузке true)"}
 
-		Obj={Mk=90 Mnemo="Push" Hint="Поместить в стек результатов"}
-		Obj={Mk=91 Mnemo="Pop" Hint="Вытолкнуть значение из стека резульатов"}
-		Obj={Mk=92 Mnemo="PopMk" Hint="Вытолкнуть МК со значением из стека резульатов"}
-		Obj={Mk=95 Mnemo="StackOut" Hint="Выдать значение из стека резульатов"}
-		Obj={Mk=96 Mnemo="StackOutMk" Hint="Выдать МК со значением из стека резульатов"}
-
-		Obj={Mk=160 Mnemo="ReceiverSet" Hint="Установить ссылку на контекст получателя результата"}
+		Obj={Mk=150 Mnemo="NOperandSet" Hint="Установить количество операндов (по умолчанию 2)"}
+		Obj={Mk=160 Mnemo="ReceiverReset" Hint="Сброс установок получателей результата"}
+		Obj={Mk=161 Mnemo="ReceiverSet" Hint="Установить ссылку на контекст получателя результата"}
 		Obj={Mk=162 Mnemo="ReceiverMkSet" Hint="Установить МК для получателя результата"}
 		Obj={Mk=190 Mnemo="RezProgSet" Hint="Установить программу при получении результата"}
+		Obj={Mk=191 Mnemo="PreRezProgSet" Hint="Установить Программу, запускаемую перед получением результата"}
 
+		Obj={Mk=498 Mnemo="Rand" Hint="Генерация дробного числа от 0 до Load"}
+		Obj={Mk=499 Mnemo="RandInt" Hint="Генерация случайного числа от 0 до Load (по умолчанию от 0 до Rez)"}
+
+		Obj={Mnemo="Extented result" Hint="Расширенный результат" Comment
+			Obj={Mk=100 Mnemo="RezExtOut" Hint="Выдать значение из расширенного стека результата"}
+			Obj={Mk=101 Mnemo="RezExtOutMk" Hint="Выдать МК со значением из расширенного стера результата"}
+			Obj={Mk=102 Mnemo="RezExtPop" Hint="Выдавить расширенный результат (при нулевой нагрузке записывается в Rez)"}
+			Obj={Mk=103 Mnemo="RezExtPopMk" Hint="Выдавить МК с расширенным результатом (при нулевой нагрузке записывается в Rez)"}
+			Obj={Mk=105 Mnemo="RezExtStackIsEmpyProgSet" Hint="Установить программу при ошибке чтения из пустого стека расширенного результата"}
+		}
+		Obj={Mnemo="Math consts" Hint="Математические константы" Comment
+			Obj={Mk=270 Mnemo="PiOut" Hint="Выдать число ПИ (при нулевой нагрузке записать в аккумулятор)"}
+			Obj={Mk=271 Mnemo="PiOutMk" Hint="Выдать МК с числом ПИ (при нулевой нагрузке записать в аккумулятор)"}
+			Obj={Mk=272 Mnemo="Pi2Out" Hint="Выдать число 2ПИ (при нулевой нагрузке записать в аккумулятор)"}
+			Obj={Mk=273 Mnemo="Pi2OutMk" Hint="Выдать МК с числом 2ПИ (при нулевой нагрузке записать в аккумулятор)"}
+			Obj={Mk=274 Mnemo="EOut" Hint="Выдать число е (при нулевой нагрузке записать в аккумулятор)"}
+			Obj={Mk=275 Mnemo="EOut" Hint="Выдать МК с числом е (при нулевой нагрузке записать в аккумулятор)"}
+		}
+		Obj={Mnemo="Spesial comand" Hint="Специальная операция" Comment
+			Obj={Mk=260 Mnemo="OperationProgSet" Hint="Установить специальную операцию "}
+			Obj={Mk=250 Mnemo="OpIndSet" Hint="Установить индекс операнда"}
+			Obj={Mk=251 Mnemo="OpIndAdd" Hint="Прибавить к индексу операнда (по умолчанию 1)"}
+			Obj={Mk=252 Mnemo="OperandByIndSet" Hint="Установить операнд по индексу"}
+			Obj={Mk=253 Mnemo="OperandByIndOut" Hint="Выдать операнд по индексу"}
+			Obj={Mk=254 Mnemo="OperandByIndOutMk" Hint="Выдать МК с операндом по индексу"}
+			Obj={Mk=255 Mnemo="OperandAdd" Hint="Добавить операнд для специальной МК"}
+		}
+		Obj={Mnemo="Operands" Hint="Выдача операндов" Comment
+			Obj={Mk=200 Mnemo="Op0Out" Hint="Выдать нулевой операнд"}
+			Obj={Mk=201 Mnemo="Op0OutMk" Hint="Выдать МК с нулевым операндом"}
+			Obj={Mk=202 Mnemo="Op0Set" Hint="Установить нулевой операнд"}
+			Obj={Mk=205 Mnemo="Op1Out" Hint="Выдать первый операнд"}
+			Obj={Mk=206 Mnemo="Op1OutMk" Hint="Выдать МК с первым операндом"}
+			Obj={Mk=207 Mnemo="Op1Set" Hint="Установить первый операнд"}
+			Obj={Mk=210 Mnemo="Op2Out" Hint="Выдать второй операнд"}
+			Obj={Mk=211 Mnemo="Op2OutMk" Hint="Выдать МК со вторым операндом"}
+			Obj={Mk=212 Mnemo="Op2Set" Hint="Установить второй операнд"}
+			Obj={Mk=215 Mnemo="Op3Out" Hint="Выдать третий операнд"}
+			Obj={Mk=216 Mnemo="Op3OutMk" Hint="Выдать МК с третьим операндом"}
+			Obj={Mk=217 Mnemo="Op3Set" Hint="Установить третий операнд"}
+			Obj={Mk=220 Mnemo="Op4Out" Hint="Выдать четвертый операнд"}
+			Obj={Mk=221 Mnemo="Op4OutMk" Hint="Выдать МК с четвертым операндом"}
+			Obj={Mk=222 Mnemo="Op4Set" Hint="Установить четвертый операнд"}
+			Obj={Mk=225 Mnemo="Op5Out" Hint="Выдать пятый операнд"}
+			Obj={Mk=226 Mnemo="Op5OutMk" Hint="Выдать МК с пятым операндом"}
+			Obj={Mk=227 Mnemo="Op5Set" Hint="Установить пятый операнд"}
+			Obj={Mk=230 Mnemo="Op6Out" Hint="Выдать шестой операнд"}
+			Obj={Mk=231 Mnemo="Op6OutMk" Hint="Выдать МК с шестым операндом"}
+			Obj={Mk=232 Mnemo="Op6Set" Hint="Установить шестой операнд"}
+			Obj={Mk=235 Mnemo="Op7Out" Hint="Выдать седьмой операнд"}
+			Obj={Mk=236 Mnemo="Op7OutMk" Hint="Выдать МК с седьмым операндом"}
+			Obj={Mk=237 Mnemo="Op7Set" Hint="Установить седьмой операнд"}
+			Obj={Mk=240 Mnemo="Op8Out" Hint="Выдать восьмой операнд"}
+			Obj={Mk=241 Mnemo="Op8OutMk" Hint="Выдать МК с восьмым операндом"}
+			Obj={Mk=242 Mnemo="Op8Set" Hint="Установить восьмой операнд"}
+			Obj={Mk=245 Mnemo="Op9Out" Hint="Выдать девятый операнд"}
+			Obj={Mk=246 Mnemo="Op9OutMk" Hint="Выдать МК с девятым операндом"}
+			Obj={Mk=247 Mnemo="Op9Set" Hint="Установить девятый операнд"}
+		}
+		Obj={Mnemo="Stack" Hint="Операции со стеком резульататов" Comment
+			Obj={Mk=90 Mnemo="Push" Hint="Положить в стек (при нулевой нагрузке в стек помещается Rez)"}
+			Obj={Mk=91 Mnemo="Pop" Hint="Вынуть из стека (при при нулевой нагрузке величина помещается в Rez)"}
+			Obj={Mk=92 Mnemo="PopMk" Hint="Вынуть из стека и выдать МК (при при нулевой нагрузке величина помещается в Rez)"}
+			Obj={Mk=95 Mnemo="StackOut" Hint="Выдать из стека (при при нулевой нагрузке величина помещается в Rez)"}
+			Obj={Mk=96 Mnemo="StackOutMk" Hint="Выдать из стека с МК (при при нулевой нагрузке величина помещается в Rez)"}
+			Obj={Mk=93 Mnemo="StackCounterOut" Hint="Выдать количество элементов в стеке"}
+			Obj={Mk=94 Mnemo="StackCounterOutMk" Hint="Выдать МК с количеством элементов в стеке"}
+		}
+		Obj={Mnemo="Programms" Hint="Вызов и установка различных программ" Comment
+			Obj={Mk=40 Mnemo="ErrProgSet" Hint="Установить программу при ошибке"}
+			Obj={Mk=41 Mnemo="WrongFormatErrProgSet" Hint="Установить программу при неправильном формате операнда"}
+			Obj={Mk=42 Mnemo="OveflowErrProgSet" Hint="Установить программу при переполнении"}
+			Obj={Mk=43 Mnemo="DivZeroErrProgSet" Hint="Установить программу при делении на 0"}
+			Obj={Mk=46 Mnemo="MatErrProgSet" Hint="Установить программу обработки ошибки математической операции"}
+			Obj={Mk=44 Mnemo="OpIndErrProgSet" Hint="Установить программу при ошибке индекса операнда"}
+			Obj={Mk=45 Mnemo="RezStackIsEmpyProgSet" Hint="Установить программу при чтении из пустого стека результатов"}
+			Obj={Mk=280 Mnemo="EqProgSet" Hint="Установить программу при =="}
+			Obj={Mk=281 Mnemo="NEqProgSet" Hint="Установить программу при !="}
+			Obj={Mk=282 Mnemo="LessProgSet" Hint="Установить программу при <"}
+			Obj={Mk=283 Mnemo="BiggerProgSet" Hint="Установить программу при >"}
+			Obj={Mk=284 Mnemo="LessEqProgSet" Hint="Установить программу при <="}
+			Obj={Mk=285 Mnemo="BeggerEqProgSet" Hint="Установить программу при >="}
+			Obj={Mk=75 Mnemo="ReadyExec" Hint="Запуск программы по флагу готовности резульатата"}
+			Obj={Mk=76 Mnemo="ReadyNotExec" Hint="Запуск программы при сброшенном флаге готовности резульатата"}
+			Obj={Mk=77 Mnemo="ErrExec" Hint="Запуск программы по флагу готовности резульатата"}
+			Obj={Mk=97 Mnemo="StackEmptyExec" Hint="Выполнить, если стек пустой"}
+			Obj={Mk=98 Mnemo="StackNotEmptyExec" Hint="Выполнить, если стек не пустой"}
+			Obj={Mk=290 Mnemo="EqExec" Hint="Выполнить программу при =="}
+			Obj={Mk=291 Mnemo="LessExec" Hint="Выполнить программу при <"}
+			Obj={Mk=292 Mnemo="BiggerExec" Hint="Выполнить программу при >"}
+			Obj={Mk=293 Mnemo="LessEqExec" Hint="Выполнить программу при <="}
+			Obj={Mk=294 Mnemo="BbiggerZExec" Hint="Выполнить программу при >="}
+			Obj={Mk=295 Mnemo="NEqExec" Hint="Выполнить программу при !="}
+		}
+		Obj={Mnemo="Flags out" Hint="выдача флагов результата" Comment
+			Obj={Mk=290 Mnemo="ZFOut" Hint="Выдать флаг =="}
+			Obj={Mk=290 Mnemo="ZFOutMk" Hint="Выдать МК с флагом =="}
+			Obj={Mk=291 Mnemo="LFOut" Hint="Выдать флаг <"}
+			Obj={Mk=291 Mnemo="LFOutMk" Hint="Выдать МК с флагом <"}
+			Obj={Mk=292 Mnemo="BFOut" Hint="Выдать флаг >"}
+			Obj={Mk=292 Mnemo="BFOutMk" Hint="Выдать МК с флагом >"}
+			Obj={Mk=293 Mnemo="LZFOut" Hint="Выдать флаг <="}
+			Obj={Mk=293 Mnemo="LZFOutMk" Hint="Выдать МК с флагом <="}
+			Obj={Mk=294 Mnemo="BZFOut" Hint="Выдать флаг >="}
+			Obj={Mk=294 Mnemo="BZFOutMk" Hint="Выдать МК с флагом >="}
+			Obj={Mk=295 Mnemo="NFOut" Hint="Выдать флаг !="}
+			Obj={Mk=295 Mnemo="NZFOutMk" Hint="Выдать МК с флагом !="}
+		}
 		Obj={Mnemo="Arithmetic" Hint="Арифметические операции" Comment
+			
 			Obj={Mk=500 Mnemo="Add" Hint="Сложение"}
 			Obj={Mk=501 Mnemo="AddSqr" Hint="Сложение квадратов"}
 			Obj={Mk=505 Mnemo="Sub1" Hint="Вычитаемое"}
@@ -5207,31 +5316,36 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 			Obj={Mk=516 Mnemo="Div2" Hint="Делитель"}
 			Obj={Mk=520 Mnemo="DivInt1" Hint="Цедлчисленное делимое"}
 			Obj={Mk=521 Mnemo="DivInt2" Hint="Целочисленный делитель"}
-			Obj={Mk=522 Mnemo="Rem" Hint="Остаток от целочисленного деления"}
+			Obj={Mk=522 Mnemo="Rem1" Hint="Число из которого извлекается остаток от целочисленного деления"}
+			Obj={Mk=523 Mnemo="Rem2" Hint="Остаток от целочисленного деления"}
 			Obj={Mk=525 Mnemo="Sqrt" Hint="Квадратный корень"}
 			Obj={Mk=526 Mnemo="Sqr" Hint="Квадрат"}
+			Obj={Mk=527 Mnemo="Log10" Hint="Логарифм по основанию 10"}
+			Obj={Mk=528 Mnemo="Ln" Hint="Натуральный логирифм"}
+			Obj={Mk=529 Mnemo="Log2" Hint="Логарифм по основанию 2"}
+			Obj={Mk=530 Mnemo="Exp" Hint="Экспонента"}
+			Obj={Mk=531 Mnemo="Abs" Hint="Модуль числа"}
+			Obj={Mk=532 Mnemo="Round" Hint="Округление"}
+			Obj={Mk=533 Mnemo="Int" Hint="Целая часть числа"}
+			Obj={Mk=534 Mnemo="Ceil" Hint="Округление до большего целого"}
+			Obj={Mk=535 Mnemo="SignReverse" Hint="Инферсия знака числа"}
+			Obj={Mk=536 Mnemo="Reverse" Hint="Обратное число"}
+			Obj={Mk=540 Mnemo="Pow1" Hint="Степень (основание)"}
+			Obj={Mk=541 Mnemo="Pow2" Hint="Степень числа"}
+			Obj={Mk=542 Mnemo="Log" Hint="Логарифм"}
+			Obj={Mk=543 Mnemo="LogBase" Hint="Логарифм (передается основание логарифма)"}
+		}
+		Obj={Mnemo="Trigonometry" Hint="Тригонометрические операции операции" Comment
+			Obj={Mk=600 Mnemo="Sin" Hint="Синус"}
+			Obj={Mk=601 Mnemo="Cos" Hint="Косинус"}
+			Obj={Mk=602 Mnemo="Tan" Hint="Тангенс"}
+			Obj={Mk=603 Mnemo="Ctan" Hint="Котангенс"}
+			Obj={Mk=610 Mnemo="Asin" Hint="Аргсинус"}
+			Obj={Mk=611 Mnemo="Acos" Hint="Аргкосинус"}
+			Obj={Mk=612 Mnemo="Atan" Hint="Аргтангенс"}
 		}
 		Obj=CommonMkList
 	}
-/*
-// BagManager
-	FuTypeIndexes.CellSet=111 FuTypeMkTrees.CellSet=
-   {
-	 Obj={Mk=1 Mnemo="Start" Hint="Начало вычислений (в нагрузке имя файла с исходными данными)"}
-	 Obj={Mk=10 Mnemo="RezOur" Hint="Выдать результат вычислений"}
-	 Obj={Mk=11 Mnemo="ResOutMk" Hint="Выдать МК с результатами вычислений"}
-
-	 Obj={Mk=90 Mnemo="WMaxSet" Hint="Установить максимальный объем рюкзака"}
-	 Obj={Mk=91 Mnemo="WMaxOfItem" Hint="Установить максимальный размер одной вещи"}
-	 Obj={Mk=92 Mnemo="PMaxOfItem" Hint="Установить максимальный размер одной вещи"}
-	 Obj={Mk=93 Mnemo="NItemSet" Hint="становить количество предметов для укладки и начать вычисление"}
-
-	 Obj={Mk=100 Mnemo="CalcTimeSet" Hint="Установить время вычисления результата"}
-	 Obj={Mk=101 Mnemo="SendTimeSet" Hint="Установить время пересылки данных"}
-
-      Obj=CommonMkList
-   }
-*/
 
 // GaussManager
 	FuTypeIndexes.CellSet=112 FuTypeMkTrees.CellSet=
@@ -5794,6 +5908,175 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
       Obj={Mk=70 Mnemo="DataCountOutMk" Hint="Выдать МК с объемом принятых данных через шлюз"}
 //      Obj={Mk= Mnemo="" Hint=""}
 
+	 Obj=CommonMkList
+	}
+
+// StreamFloatALUManeger Шлюз для передачи даннных
+     FuTypeIndexes.CellSet=118 FuTypeMkTrees.CellSet=
+	{
+	 Obj=CommonMkList
+	}
+// StreamIntALU Шлюз для передачи даннных
+     FuTypeIndexes.CellSet=119 FuTypeMkTrees.CellSet=
+	{
+		Obj={Mk=1 Mnemo="Set" Hint="Установить результат"}
+		Obj={Mk=5 Mnemo="Out" Hint="Выдать результат"}
+		Obj={Mk=6 Mnemo="OutMk" Hint="Выдать МК с результатом"}
+		Obj={Mk=10 Mnemo="OpCounterOut" Hint="Выдать счетчик накопленных операндов"}
+		Obj={Mk=11 Mnemo="OpCounterOutMk" Hint="Выдать МК со счетчиком накопленных операндов"}
+		Obj={Mk=20 Mnemo="AngleModeSet" Hint="Установить режим измерения угла (0 - радианы, 1 -градусы)"}
+		Obj={Mk=30 Mnemo="OperandsReset" Hint="Сброс операндов (все те операнды, что пришли, сбрасываются и накопление операндов начинается заново)"}
+		Obj={Mk=70 Mnemo="ReadySet" Hint="Установить флаг готовности результата (по умолчанию true)"}
+		Obj={Mk=71 Mnemo="ReadyOut" Hint="Выдать флаг готовности результата"}
+		Obj={Mk=72 Mnemo="ReadyOutMk" Hint="Выдать МК с флагом готовности результата"}
+		Obj={Mk=80 Mnemo="OutRezBlockSet" Hint="Установить блокировку выдачи результата (при нулевой нагрузке true)"}
+
+		Obj={Mk=150 Mnemo="NOperandSet" Hint="Установить количество операндов (по умолчанию 2)"}
+		Obj={Mk=160 Mnemo="ReceiverReset" Hint="Сброс установок получателей результата"}
+		Obj={Mk=161 Mnemo="ReceiverSet" Hint="Установить ссылку на контекст получателя результата"}
+		Obj={Mk=162 Mnemo="ReceiverMkSet" Hint="Установить МК для получателя результата"}
+		Obj={Mk=190 Mnemo="RezProgSet" Hint="Установить программу при получении результата"}
+		Obj={Mk=191 Mnemo="PreRezProgSet" Hint="Установить Программу, запускаемую перед получением результата"}
+
+		Obj={Mk=499 Mnemo="RandInt" Hint="Генерация случайного числа от 0 до Load (по умолчанию от 0 до Rez)"}
+
+		Obj={Mnemo="Extented result" Hint="Расширенный результат" Comment
+			Obj={Mk=100 Mnemo="RezExtOut" Hint="Выдать значение из расширенного стека результата"}
+			Obj={Mk=101 Mnemo="RezExtOutMk" Hint="Выдать МК со значением из расширенного стера результата"}
+			Obj={Mk=102 Mnemo="RezExtPop" Hint="Выдавить расширенный результат (при нулевой нагрузке записывается в Rez)"}
+			Obj={Mk=103 Mnemo="RezExtPopMk" Hint="Выдавить МК с расширенным результатом (при нулевой нагрузке записывается в Rez)"}
+			Obj={Mk=105 Mnemo="RezExtStackIsEmpyProgSet" Hint="Установить программу при ошибке чтения из пустого стека расширенного результата"}
+		}
+		Obj={Mnemo="Math consts" Hint="Математические константы" Comment
+			Obj={Mk=270 Mnemo="PiOut" Hint="Выдать число ПИ (при нулевой нагрузке записать в аккумулятор)"}
+			Obj={Mk=271 Mnemo="PiOutMk" Hint="Выдать МК с числом ПИ (при нулевой нагрузке записать в аккумулятор)"}
+			Obj={Mk=272 Mnemo="Pi2Out" Hint="Выдать число 2ПИ (при нулевой нагрузке записать в аккумулятор)"}
+			Obj={Mk=273 Mnemo="Pi2OutMk" Hint="Выдать МК с числом 2ПИ (при нулевой нагрузке записать в аккумулятор)"}
+			Obj={Mk=274 Mnemo="EOut" Hint="Выдать число е (при нулевой нагрузке записать в аккумулятор)"}
+			Obj={Mk=275 Mnemo="EOut" Hint="Выдать МК с числом е (при нулевой нагрузке записать в аккумулятор)"}
+		}
+		Obj={Mnemo="Spesial comand" Hint="Специальная операция" Comment
+			Obj={Mk=260 Mnemo="OperationProgSet" Hint="Установить специальную операцию "}
+			Obj={Mk=250 Mnemo="OpIndSet" Hint="Установить индекс операнда"}
+			Obj={Mk=251 Mnemo="OpIndAdd" Hint="Прибавить к индексу операнда (по умолчанию 1)"}
+			Obj={Mk=252 Mnemo="OperandByIndSet" Hint="Установить операнд по индексу"}
+			Obj={Mk=253 Mnemo="OperandByIndOut" Hint="Выдать операнд по индексу"}
+			Obj={Mk=254 Mnemo="OperandByIndOutMk" Hint="Выдать МК с операндом по индексу"}
+			Obj={Mk=255 Mnemo="OperandAdd" Hint="Добавить операнд для специальной МК"}
+		}
+		Obj={Mnemo="Operands" Hint="Выдача операндов" Comment
+			Obj={Mk=200 Mnemo="Op0Out" Hint="Выдать нулевой операнд"}
+			Obj={Mk=201 Mnemo="Op0OutMk" Hint="Выдать МК с нулевым операндом"}
+			Obj={Mk=202 Mnemo="Op0Set" Hint="Установить нулевой операнд"}
+			Obj={Mk=205 Mnemo="Op1Out" Hint="Выдать первый операнд"}
+			Obj={Mk=206 Mnemo="Op1OutMk" Hint="Выдать МК с первым операндом"}
+			Obj={Mk=207 Mnemo="Op1Set" Hint="Установить первый операнд"}
+			Obj={Mk=210 Mnemo="Op2Out" Hint="Выдать второй операнд"}
+			Obj={Mk=211 Mnemo="Op2OutMk" Hint="Выдать МК со вторым операндом"}
+			Obj={Mk=212 Mnemo="Op2Set" Hint="Установить второй операнд"}
+			Obj={Mk=215 Mnemo="Op3Out" Hint="Выдать третий операнд"}
+			Obj={Mk=216 Mnemo="Op3OutMk" Hint="Выдать МК с третьим операндом"}
+			Obj={Mk=217 Mnemo="Op3Set" Hint="Установить третий операнд"}
+			Obj={Mk=220 Mnemo="Op4Out" Hint="Выдать четвертый операнд"}
+			Obj={Mk=221 Mnemo="Op4OutMk" Hint="Выдать МК с четвертым операндом"}
+			Obj={Mk=222 Mnemo="Op4Set" Hint="Установить четвертый операнд"}
+			Obj={Mk=225 Mnemo="Op5Out" Hint="Выдать пятый операнд"}
+			Obj={Mk=226 Mnemo="Op5OutMk" Hint="Выдать МК с пятым операндом"}
+			Obj={Mk=227 Mnemo="Op5Set" Hint="Установить пятый операнд"}
+			Obj={Mk=230 Mnemo="Op6Out" Hint="Выдать шестой операнд"}
+			Obj={Mk=231 Mnemo="Op6OutMk" Hint="Выдать МК с шестым операндом"}
+			Obj={Mk=232 Mnemo="Op6Set" Hint="Установить шестой операнд"}
+			Obj={Mk=235 Mnemo="Op7Out" Hint="Выдать седьмой операнд"}
+			Obj={Mk=236 Mnemo="Op7OutMk" Hint="Выдать МК с седьмым операндом"}
+			Obj={Mk=237 Mnemo="Op7Set" Hint="Установить седьмой операнд"}
+			Obj={Mk=240 Mnemo="Op8Out" Hint="Выдать восьмой операнд"}
+			Obj={Mk=241 Mnemo="Op8OutMk" Hint="Выдать МК с восьмым операндом"}
+			Obj={Mk=242 Mnemo="Op8Set" Hint="Установить восьмой операнд"}
+			Obj={Mk=245 Mnemo="Op9Out" Hint="Выдать девятый операнд"}
+			Obj={Mk=246 Mnemo="Op9OutMk" Hint="Выдать МК с девятым операндом"}
+			Obj={Mk=247 Mnemo="Op9Set" Hint="Установить девятый операнд"}
+		}
+		Obj={Mnemo="Stack" Hint="Операции со стеком резульататов" Comment
+			Obj={Mk=90 Mnemo="Push" Hint="Положить в стек (при нулевой нагрузке в стек помещается Rez)"}
+			Obj={Mk=91 Mnemo="Pop" Hint="Вынуть из стека (при при нулевой нагрузке величина помещается в Rez)"}
+			Obj={Mk=92 Mnemo="PopMk" Hint="Вынуть из стека и выдать МК (при при нулевой нагрузке величина помещается в Rez)"}
+			Obj={Mk=95 Mnemo="StackOut" Hint="Выдать из стека (при при нулевой нагрузке величина помещается в Rez)"}
+			Obj={Mk=96 Mnemo="StackOutMk" Hint="Выдать из стека с МК (при при нулевой нагрузке величина помещается в Rez)"}
+			Obj={Mk=93 Mnemo="StackCounterOut" Hint="Выдать количество элементов в стеке"}
+			Obj={Mk=94 Mnemo="StackCounterOutMk" Hint="Выдать МК с количеством элементов в стеке"}
+		}
+		Obj={Mnemo="Programms" Hint="Вызов и установка различных программ" Comment
+			Obj={Mk=40 Mnemo="ErrProgSet" Hint="Установить программу при ошибке"}
+			Obj={Mk=41 Mnemo="WrongFormatErrProgSet" Hint="Установить программу при неправильном формате операнда"}
+			Obj={Mk=42 Mnemo="OveflowErrProgSet" Hint="Установить программу при переполнении"}
+			Obj={Mk=43 Mnemo="DivZeroErrProgSet" Hint="Установить программу при делении на 0"}
+			Obj={Mk=46 Mnemo="MatErrProgSet" Hint="Установить программу обработки ошибки математической операции"}
+			Obj={Mk=44 Mnemo="OpIndErrProgSet" Hint="Установить программу при ошибке индекса операнда"}
+			Obj={Mk=45 Mnemo="RezStackIsEmpyProgSet" Hint="Установить программу при чтении из пустого стека результатов"}
+			Obj={Mk=280 Mnemo="EqProgSet" Hint="Установить программу при =="}
+			Obj={Mk=281 Mnemo="NEqProgSet" Hint="Установить программу при !="}
+			Obj={Mk=282 Mnemo="LessProgSet" Hint="Установить программу при <"}
+			Obj={Mk=283 Mnemo="BiggerProgSet" Hint="Установить программу при >"}
+			Obj={Mk=284 Mnemo="LessEqProgSet" Hint="Установить программу при <="}
+			Obj={Mk=285 Mnemo="BeggerEqProgSet" Hint="Установить программу при >="}
+			Obj={Mk=75 Mnemo="ReadyExec" Hint="Запуск программы по флагу готовности резульатата"}
+			Obj={Mk=76 Mnemo="ReadyNotExec" Hint="Запуск программы при сброшенном флаге готовности резульатата"}
+			Obj={Mk=77 Mnemo="ErrExec" Hint="Запуск программы по флагу готовности резульатата"}
+			Obj={Mk=97 Mnemo="StackEmptyExec" Hint="Выполнить, если стек пустой"}
+			Obj={Mk=98 Mnemo="StackNotEmptyExec" Hint="Выполнить, если стек не пустой"}
+			Obj={Mk=290 Mnemo="EqExec" Hint="Выполнить программу при =="}
+			Obj={Mk=291 Mnemo="LessExec" Hint="Выполнить программу при <"}
+			Obj={Mk=292 Mnemo="BiggerExec" Hint="Выполнить программу при >"}
+			Obj={Mk=293 Mnemo="LessEqExec" Hint="Выполнить программу при <="}
+			Obj={Mk=294 Mnemo="BbiggerZExec" Hint="Выполнить программу при >="}
+			Obj={Mk=295 Mnemo="NEqExec" Hint="Выполнить программу при !="}
+		}
+		Obj={Mnemo="Flags out" Hint="выдача флагов результата" Comment
+			Obj={Mk=290 Mnemo="ZFOut" Hint="Выдать флаг =="}
+			Obj={Mk=290 Mnemo="ZFOutMk" Hint="Выдать МК с флагом =="}
+			Obj={Mk=291 Mnemo="LFOut" Hint="Выдать флаг <"}
+			Obj={Mk=291 Mnemo="LFOutMk" Hint="Выдать МК с флагом <"}
+			Obj={Mk=292 Mnemo="BFOut" Hint="Выдать флаг >"}
+			Obj={Mk=292 Mnemo="BFOutMk" Hint="Выдать МК с флагом >"}
+			Obj={Mk=293 Mnemo="LZFOut" Hint="Выдать флаг <="}
+			Obj={Mk=293 Mnemo="LZFOutMk" Hint="Выдать МК с флагом <="}
+			Obj={Mk=294 Mnemo="BZFOut" Hint="Выдать флаг >="}
+			Obj={Mk=294 Mnemo="BZFOutMk" Hint="Выдать МК с флагом >="}
+			Obj={Mk=295 Mnemo="NFOut" Hint="Выдать флаг !="}
+			Obj={Mk=295 Mnemo="NZFOutMk" Hint="Выдать МК с флагом !="}
+		}
+		Obj={Mnemo="Arithmetic" Hint="Арифметические операции" Comment
+			Obj={Mk=526 Mnemo="Sqr" Hint="Квадрат числа"}
+			Obj={Mk=531 Mnemo="ABS" Hint="Модуль числа"}
+			Obj={Mk=535 Mnemo="SignRevers" Hint="Инфеверсия знака числа"}
+
+			Obj={Mk=500 Mnemo="Add" Hint="Сложение"}
+			Obj={Mk=501 Mnemo="AddSqr" Hint="Сложение квадратов"}
+			Obj={Mk=510 Mnemo="Mul" Hint="Умножение"}
+			Obj={Mk=505 Mnemo="Sub1" Hint="Вычитаемое"}
+			Obj={Mk=506 Mnemo="Sub2" Hint="Вычитатель"}
+			Obj={Mk=520 Mnemo="Div1" Hint="Делимое"}
+			Obj={Mk=521 Mnemo="Div2" Hint="Делитель"}
+			Obj={Mk=522 Mnemo="Rem1" Hint="Остаток от целочисленного деления"}
+			Obj={Mk=523 Mnemo="Rem2" Hint="Остаток от целочисленного деления"}
+			Obj={Mk=540 Mnemo="Pow1" Hint="Степень"}
+			Obj={Mk=541 Mnemo="Pow2" Hint="Степень"}
+		}
+		Obj={Mnemo="Boolean" Hint="Логические операции" Comment
+			Obj={Mk=532 Mnemo="Not" Hint="Логические НЕТ"}
+			Obj={Mk=533 Mnemo="NotBit" Hint="Побитовое логическое НЕТ"}
+			Obj={Mk=600 Mnemo="And" Hint="Логические И"}
+			Obj={Mk=601 Mnemo="Or" Hint="Логические ИЛИ"}
+			Obj={Mk=602 Mnemo="Xor" Hint="Логическое исключающее ИЛИ"}
+			Obj={Mk=610 Mnemo="AndBit" Hint="Побитовое И"}
+			Obj={Mk=611 Mnemo="OrBit" Hint="Побитовое ИЛИ"}
+			Obj={Mk=612 Mnemo="XorBit" Hint="Побитовое исключающее ИЛИ"}
+		}
+	 Obj=CommonMkList
+	}
+// StreamIntManeger Шлюз для передачи даннных
+     FuTypeIndexes.CellSet=120 FuTypeMkTrees.CellSet=
+	{
 	 Obj=CommonMkList
 	}
   FuTypeMkTrees.CellSet=nil
@@ -7219,6 +7502,17 @@ Bus={FuTypeMkList.RowSet=FUBus; FuTypeMkList.CellPop=temp
  	MnemoServiceTable.LineAdd={Mnemo="FUGateway" TreeParentLevelAtr=1 MkList=temp(nil)! MkTree=temp2(nil)!
  	FUType=117 FUTypeDef=117 Hint="Сетевой шлюз"}
 
+     FuTypeMkList.CellPop=temp FuTypeMkTrees.CellPop=temp2
+ 	MnemoServiceTable.LineAdd={Mnemo="FUStreamFloatALUManager" TreeParentLevelAtr=1 MkList=temp(nil)! MkTree=temp2(nil)!
+ 	FUType=118 FUTypeDef=118 Hint="Менеджер дробных потоковых устройств"}
+
+     FuTypeMkList.CellPop=temp FuTypeMkTrees.CellPop=temp2
+ 	MnemoServiceTable.LineAdd={Mnemo="FUStreamIntALU" TreeParentLevelAtr=1 MkList=temp(nil)! MkTree=temp2(nil)!
+ 	FUType=119 FUTypeDef=119 Hint="Целочисленное потоковое АЛУ"}
+
+     FuTypeMkList.CellPop=temp FuTypeMkTrees.CellPop=temp2
+ 	MnemoServiceTable.LineAdd={Mnemo="FUIntStreamALUManager" TreeParentLevelAtr=1 MkList=temp(nil)! MkTree=temp2(nil)!
+ 	FUType=120 FUTypeDef=120 Hint="Менеджер целочисленных потоковых АЛУ"}
 }
 FuTypeMkList.IndexModeSet=1
 FuTypeMkTrees.IndexModeSet=1

@@ -213,8 +213,8 @@ void StreamIntALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		RezProg = Load.Point;
 		break;
 	case 191: //PreRezProgSet Программа, запускаемая перед получением результата
-
-
+		PreRezProg = Load.Point;
+		break;
 	case 200: // Op0Out Выдать операнд   
 	case 205: // Op1Out   
 	case 210: // Op2Out   

@@ -25,7 +25,7 @@ int main(int argc, char* argv[])
 	string STR;
 	StreamFloatALU ALU;
 
-	ALU.ProgFU(0, { 0, nullptr });
+	//ALU.ProgFU(0, { 0, nullptr });
 	/*
 	* 
 	if (argc == 1)
