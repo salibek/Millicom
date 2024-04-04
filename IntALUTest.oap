@@ -23,6 +23,9 @@ StreamALU.ErrProgSet={Console.OutLn="Ошибка"}
 StreamALU.WrongFormatErrProgSet={Console.OutLn="Ошибка формата входных данных"}
 StreamALU.MatErrProgSet={Console.OutLn="Математическая ошибка"}
 StreamALU.OveflowErrProgSet={Console.OutLn="Переполнение разрядной сетки"}
+StreamALU.Pow1=0
+StreamALU.Pow2=0
+
 StreamALU.AddSqr=11
 StreamALU.AddSqr=7
 StreamALU.ABS=-6

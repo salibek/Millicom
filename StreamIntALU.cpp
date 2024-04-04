@@ -550,8 +550,6 @@ void StreamIntALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 	case 523:	// Rem2 Остаток от целочисленного деления
 	case 540: // Pow1 Степень (основание)
 	case 541: // Pow2 Степень числа
-	case 542: // Log Логарифм
-	case 543: // LogBase Логарифм (передается основание логарифма)
 		if (WrongFormatCheck(Load)) break;
 		if (Ready || OpCode != MK &&  OpCode != MK - 1 && OpCode-1 != MK )
 			OperandsClear(MK); // Сброс операндов при начале обоработки новой операции
@@ -632,6 +630,7 @@ void StreamIntALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 						Operands.push_back(Load.toInt());
 						FOperands.push_back(true);
 						OperandsCounter = 1;
+						Ready = 2;
 						break;
 					}
 					Operands[0] = Load.toInt();
@@ -653,17 +652,25 @@ void StreamIntALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 				}
 				if (OperandsCounter == 2)
 				{
-					ProgExec(PreRezProg);// Программа перед получением результата
+					if(int(Operands[1]) != 0)
+					{
+						ProgNExec({ DivZeroErrProg, MatErrProg, ErrProg });
+						Ready = 2;
+						break;
+					}
+					//ProgExec(PreRezProg);// Программа перед получением результата
 					Rez = int(Operands[0]) % int(Operands[1]);
-					RezExec();
+					//RezExec();
 				}
 				break;
 			case 540: // Pow1 Степень (основание)
 			{
+			//	ProgExec(PreRezProg);// Программа перед получением результата
 				long int t= pow(Operands[0], Operands[1]);
 				if (abs(t) > INT_MAX)
 				{
 					ProgNExec({ ErrProg, MatErrProg, OveflowErrProg });
+					Ready = 2;
 					break;
 				}
 				Rez = t;
@@ -671,7 +678,7 @@ void StreamIntALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 			}
 			}
 			// --------------------------
-			RezExec(); // Действия при получении результата
+			if(Ready==1)RezExec(); // Действия при получении результата
 		}
 		break;
 	// Однооперандные операции
