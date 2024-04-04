@@ -514,17 +514,19 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		OperandsCounter++;
 		if (OperandsCounter == Noperands) 
 		{ //     ->  
-			Rez = 0;
 			switch (OpCode) {
 			case 500: //Add
+				Rez = 0;
 				for (auto i : Operands)
 					Rez += i;
 					break;
 			case 501: //AddSqr
+				Rez = 0;
 				for (auto i : Operands)
 					Rez += i*i;
 					break;
 			case 510: //Mul
+				Rez = 1;
 				for (auto i : Operands)
 					Rez *= i;
 					break;

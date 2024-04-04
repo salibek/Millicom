@@ -117,9 +117,9 @@ void StreamIntALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 			RezStack.pop_back();
 		}
 		else {
-			double temp = RezStack.back();
+			int temp = RezStack.back();
 			RezStack.pop_back();
-			MkExec(Load, { Cdouble, &temp });
+			MkExec(Load, { Cint, &temp });
 		}
 	}
 	break;
@@ -144,7 +144,7 @@ void StreamIntALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 			Rez = RezStack.back();
 		else {
 			auto temp = RezStack.back();
-			MkExec(Load, { Cdouble, &temp });
+			MkExec(Load, { Cint, &temp });
 		}
 		break;
 	}
@@ -170,8 +170,8 @@ void StreamIntALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 			break;
 		case 101:
 		{
-			double t = RezExtStack.back();
-			MkExec(Load, { Cdouble,&t });
+			int t = RezExtStack.back();
+			MkExec(Load, { Cint,&t });
 			break;
 		}
 		case 102:
@@ -182,9 +182,9 @@ void StreamIntALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		}
 		case 103:
 		{
-			double t = RezExtStack.back();
+			int t = RezExtStack.back();
 			RezExtStack.pop_back();
-			MkExec(Load, { Cdouble,&t });
+			MkExec(Load, { Cint,&t });
 			break;
 		}
 		break;
@@ -249,8 +249,8 @@ void StreamIntALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 			ProgExec(NoOperandErrProg);
 		}
 		else {
-			double temp = Operands[(MK - 200) / 5];
-			MkExec(Load, { Cdouble, &temp });
+			int temp = Operands[(MK - 200) / 5];
+			MkExec(Load, { Cint, &temp });
 		}
 		break;
 	case 202: // Op0Set  Установить операнд 0
@@ -277,7 +277,7 @@ void StreamIntALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 				FOperands.push_back(false);
 			}
 
-			Operands[t] = Load.toDouble();
+			Operands[t] = Load.toInt();
 			if (!FOperands[t])
 				OperandsCounter++;
 			FOperands[t] = true;
@@ -295,7 +295,7 @@ void StreamIntALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 			Operands.push_back(0);
 			FOperands.push_back(false);
 		}
-		Operands[OpInd] = Load.toDouble();
+		Operands[OpInd] = Load.toInt();
 		if (!FOperands[OpInd])
 			OperandsCounter++;
 		FOperands[OpInd] = true;
@@ -322,12 +322,12 @@ void StreamIntALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 			ProgExec(OpIndErrProg);
 			break;
 		}
-		double temp = Operands[OpInd];
-		MkExec(Load, { Cdouble, &temp });
+		int temp = Operands[OpInd];
+		MkExec(Load, { Cint, &temp });
 		break;
 	}
 	case 255: // OperandAdd Добавить операнд для специальной МК
-		Operands.push_back(Load.toDouble());
+		Operands.push_back(Load.toInt());
 		FOperands.push_back(true);
 		OperandsCounter++;
 		break;
@@ -430,10 +430,10 @@ void StreamIntALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		MkExec(Load, { Cbool, &temp });
 		break;
 	}
-	case 498: // Rand Генерация дробного числа от 0 до Load
+//	case 498: // Rand Генерация дробного числа от 0 до Load
 	case 499: // RandInt Генерация случайного числа от 0 до Load (по умолчанию от 0 до Rez)
 		if (WrongFormatCheck(Load)) break;
-		if (Load.isEmpty()) Load = { Cdouble,&Rez }; // При нулевой нагрузке берем операнд из регистра резульатта
+		if (Load.isEmpty()) Load = { Cint,&Rez }; // При нулевой нагрузке берем операнд из регистра резульатта
 		OperandsClear(MK);
 		Rez = Load.toInt();
 		Operands.push_back(Rez);
@@ -447,38 +447,72 @@ void StreamIntALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		if (MK == 999)
 			Rez = rand() % int(Rez);
 		else
-			Rez = (double)(rand()) / RAND_MAX * Rez;
+			Rez = (int)(rand()) / RAND_MAX * Rez;
 		break;
 		// Арифметические операции
 	case 500: // Add
 	case 501: // AddSqr
 	case 510: // Mul
+		// Логические операции
+	case 600: // Or
+	case 601: // And
+	case 602: // Xor
+	case 610: // OrBit
+	case 611: // AndBit
+	case 612: // XorBit
 		if (WrongFormatCheck(Load)) break;
 		if (Ready || OpCode != MK)
 			OperandsClear(MK); // Сброс операндов при начале обоработки новой операции
-		if (Load.isEmpty()) Load = { Cdouble,&Rez }; // При нулевой нагрузке берем операнд из регистра резульатта
+		if (Load.isEmpty()) Load = { Cint,&Rez }; // При нулевой нагрузке берем операнд из регистра резульатта
 
 		if (Load.isEmpty())
 			Operands.push_back(Rez); // Накопление из буфера результата
 		else
-			Operands.push_back(Load.toDouble()); // Накопление операндов
+			Operands.push_back(Load.toInt()); // Накопление операндов
 		FOperands.push_back(true);
 		OperandsCounter++;
 		if (OperandsCounter == Noperands)
 		{ //     ->  
-			Rez = 0;
+			ProgExec(PreRezProg);// Программа перед получением результата
+			Rez = Operands[0];
 			switch (OpCode) {
 			case 500: //Add
-				for (auto i : Operands)
-					Rez += i;
+				for(int i = 1; i < Noperands; i++)
+					Rez += Operands[i];
 				break;
 			case 501: //AddSqr
-				for (auto i : Operands)
-					Rez += i * i;
+				Rez *= Rez;
+				for(int i = 1; i < Noperands; i++)
+					Rez += Operands[i] * Operands[i];
 				break;
 			case 510: //Mul
-				for (auto i : Operands)
-					Rez *= i;
+				for(int i = 1; i < Noperands; i++)
+					Rez *= Operands[i];
+				break;
+
+			case 600: // And Логические И
+				for (int i = 1; i < Noperands; i++)
+					Rez = (bool) Rez && Operands[i];
+				break;
+			case 601: // Or Логические ИЛИ
+				for (int i = 1; i < Noperands; i++)
+					Rez = (bool) bool(Rez) || bool(Operands[i]);
+				break;
+			case 602: // Xor Логическое исключающее ИЛИ
+				for (int i = 1; i < Noperands; i++)
+					Rez =(bool) bool(Rez) ^ bool(Operands[i]);
+				break;
+			case 610: // AndBit Побитовое И
+				for (int i = 1; i < Noperands; i++)
+					Rez = Rez & Operands[i];
+				break;
+			case 611: // OrBit Побитовое ИЛИ
+				for (int i = 1; i < Noperands; i++)
+					Rez = Rez | Operands[i];
+				break;
+			case 612: // XorBit Побитовое исключающее ИЛИ
+				for (int i = 1; i < Noperands; i++)
+					Rez = (unsigned int)Rez ^ (unsigned int)Operands[i];
 				break;
 			}
 			RezExec(); // Действия при получении результата
@@ -496,23 +530,10 @@ void StreamIntALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 	case 541: // Pow2 Степень числа
 	case 542: // Log Логарифм
 	case 543: // LogBase Логарифм (передается основание логарифма)
-	// Логические операции
-	case 600: // Or
-	case 601: // Or
-	case 605: // And
-	case 606: // And
-	case 615: // Xor
-	case 616: // Xor
-	case 650: // OrBit
-	case 651: // OrBit
-	case 655: // AndBit
-	case 656: // AndBit
-	case 665: // XorBit
-	case 666: // XorBit
 		if (WrongFormatCheck(Load)) break;
-		if (Ready || OpCode != MK && OpCode != MK - 1)
+		if (Ready || OpCode != MK &&  OpCode != MK - 1 && OpCode-1 != MK )
 			OperandsClear(MK); // Сброс операндов при начале обоработки новой операции
-		if (Load.isEmpty()) Load = { Cdouble,&Rez }; // При нулевой нагрузке берем операнд из регистра резульатта
+		if (Load.isEmpty()) Load = { Cint,&Rez }; // При нулевой нагрузке берем операнд из регистра резульатта
 		if (MK % 5==0) // Первый операнд (МК кратна 5)
 		{
 			OpCode = MK;
@@ -547,31 +568,12 @@ void StreamIntALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 			Rez = Operands[0];
 			// Добавить проверку на ошибку
 			switch (OpCode) {
-			case 600: // And
+			case 505: // Sub
 				for (int i = 1; i < Noperands; i++)
-					Rez = Rez && Operands[i];
+					Rez = Rez - Operands[i];
 				break;
-			case 605: // Or
-				for (int i = 1; i < Noperands; i++)
-					Rez = Rez || Operands[i];
-				break;
-			case 610: // Xor
-				for (int i = 1; i < Noperands; i++)
-					Rez = bool(Rez) ^ bool(Operands[i]);
-				break;
-			case 650: // AndBit
-				for (int i = 1; i < Noperands; i++)
-					Rez = Rez & Operands[i];
-				break;
-			case 655: // OrBit
-				for (int i = 1; i < Noperands; i++)
-					Rez = Rez | Operands[i];
-				break;
-			case 660: // XorBit
-				for (int i = 1; i < Noperands; i++)
-					Rez = (unsigned int)Rez ^ (unsigned int)Operands[i];
-				break;
-			case 565: // Sub
+
+			case 535: // Sub
 				for (int i = 1; i < Noperands; i++)
 					Rez -= Operands[i];
 				break;
@@ -644,7 +646,7 @@ void StreamIntALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 	case 526: // Sqr
 	case 531: // Abs Модуль числа
 	case 532: // Not Логические НЕТ
-	case 533: // NotBit Побитовое логическое нет
+	case 533: // NotBit Побитовое логическое НЕТ
 	case 535: // SignReverse Инфеверсия знака
 		if (WrongFormatCheck(Load)) break;
 		ProgExec(PreRezProg);// Программа перед получением результата
@@ -655,7 +657,7 @@ void StreamIntALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		FOperands.push_back(true);
 		switch (MK)
 		{
-		case 526: // Sqr Квадрат
+		case 526: // Sqr Квадрат числа
 			Rez *= Rez;
 			break;
 		case 531: // ABS Модуль числа
@@ -667,10 +669,11 @@ void StreamIntALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		case 533: // NotBit Побитовое логическое нет
 			Rez = (unsigned int)!Rez;
 			break;
-		case 535: // SignReverse Инфеверсия знака
+		case 535: // SignReverse Инфеверсия знака числа
 			Rez = -Rez;
 			break;
 		}
+		RezExec(); // Действия при получении результата
 		break;
 	default:
 		CommonMk(MK, Load, Sender);
@@ -684,7 +687,7 @@ void StreamIntALU::RezExec() // Выполнение подпрограмм при получении результата
 	Ready = 1;
 	if (!OutRezBlock)//Если не заблокирована рассылка МК с результатами вычислений
 		for (int i = 0; i < ReseiverMk.size(); i++) { // Рассылка МК с результатами
-			MkExec(ReseiverMk[i], { Cdouble, &Rez }, ReseiverContext[i]);
+			MkExec(ReseiverMk[i], { Cint, &Rez }, ReseiverContext[i]);
 		}
 	ProgExec(RezProg);
 	if (Rez == 0) ProgExec(ZProg);
