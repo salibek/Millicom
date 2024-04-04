@@ -1,5 +1,5 @@
 #include "StreamIntALU.h"
-
+#include <limits>
 void StreamIntALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 {
 	if (!Active && MK < 900) return; //При сброшенном флаге активности выполняются общие МК
@@ -478,17 +478,38 @@ void StreamIntALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 			Rez = Operands[0];
 			switch (OpCode) {
 			case 500: //Add
-				for(int i = 1; i < Noperands; i++)
+				for (int i = 1; i < Noperands; i++)
+				{
+					if (abs((long int)Rez + Operands[i]) > INT_MAX)
+					{
+						ProgNExec({ ErrProg, MatErrProg, OveflowErrProg });
+						break;
+					}
 					Rez += Operands[i];
+				}
 				break;
 			case 501: //AddSqr
 				Rez *= Rez;
-				for(int i = 1; i < Noperands; i++)
+				for (int i = 1; i < Noperands; i++)
+				{
+					if (abs((long int)Rez + Operands[i] * Operands[i]) > INT_MAX)
+					{
+						ProgNExec({ ErrProg, MatErrProg, OveflowErrProg });
+						break;
+					}
 					Rez += Operands[i] * Operands[i];
+				}
 				break;
 			case 510: //Mul
-				for(int i = 1; i < Noperands; i++)
+				for (int i = 1; i < Noperands; i++)
+				{
+					if (abs((long int)Rez * Operands[i]) > INT_MAX)
+					{
+						ProgNExec({ ErrProg, MatErrProg, OveflowErrProg });
+						break;
+					}
 					Rez *= Operands[i];
+				}
 				break;
 
 			case 600: // And Логические И
@@ -571,12 +592,14 @@ void StreamIntALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 			switch (OpCode) {
 			case 505: // Sub
 				for (int i = 1; i < Noperands; i++)
-					Rez = Rez - Operands[i];
-				break;
-
-			case 535: // Sub
-				for (int i = 1; i < Noperands; i++)
+				{
+					if (abs((long int)Rez  - Operands[i] > INT_MAX))
+					{
+						ProgNExec({ ErrProg, MatErrProg, OveflowErrProg });
+						break;
+					}
 					Rez -= Operands[i];
+				}
 				break;
 			case 520: // DivInt
 				Rez = int(Operands[0]);
@@ -636,8 +659,16 @@ void StreamIntALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 				}
 				break;
 			case 540: // Pow1 Степень (основание)
-				Rez = pow(Operands[0], Operands[1]);
+			{
+				long int t= pow(Operands[0], Operands[1]);
+				if (abs(t) > INT_MAX)
+				{
+					ProgNExec({ ErrProg, MatErrProg, OveflowErrProg });
+					break;
+				}
+				Rez = t;
 				break;
+			}
 			}
 			// --------------------------
 			RezExec(); // Действия при получении результата
