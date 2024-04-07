@@ -1608,7 +1608,7 @@ void FU::CommonMk(int Mk, LoadPoint Load, FU* Sender)
 	}
 	switch (Mk)
 	{
-	case 902: // ActiveSet Установить активность ФУ (true по умолчанию)
+	case ActiveMk: // ActiveSet Установить активность ФУ (true по умолчанию)
 		Active = Load.toBool(true);
 		break;
 	case ProgMk: // 958 Prog Вызов подпрограммы
@@ -1799,13 +1799,13 @@ void FU::CommonMk(int Mk, LoadPoint Load, FU* Sender)
 		if (CycleStop > 0) CycleStop = 0;
 		break;
 	case MkGlobalRangeSet: // Установить глобальный адрес МК для ФУ
-		FUMkGloabalRange = Load.toInt();
+		FUMkGlobalRange = Load.toInt();
 		break;
 	case MkGlobalRangeOutMk:  // Выдать глобальный адрес МК для ФУ
-		Load.Write(FUMkGloabalRange);
+		Load.Write(FUMkGlobalRange);
 		break;
 	case MkGlobalRangeOutMkMK: // Выдать МК с глобальным адресом МК для ФУ
-		MkExec(Load, { Cint, &FUMkGloabalRange });
+		MkExec(Load, { Cint, &FUMkGlobalRange });
 		break;
 	case 917: // EventserSet Установить указатель на контроллер событий
 		if (Modeling == nullptr) Modeling = new FUModeling();
@@ -1899,6 +1899,12 @@ void FU::ProgExec(void* UK, unsigned int CycleMode, FU* ProgBus, vector<ip>::ite
 	} while (RepeatF || CycleMode > 0);
 }
 
+void FU::ProgNExec(vector<void *> Uk) // Исполнение нескольких программ из ИК
+{
+	
+	for (auto i: Uk)
+		ProgExec(i); // Выполнение каждой программы из списка
+}
 // Запуск программы по указателю из нарузки ИП
 void FU::ProgExec(LoadPoint Uk, unsigned int CycleMode, FU* Bus, vector<ip>::iterator* Start) // Исполнение программы из ИК
 {

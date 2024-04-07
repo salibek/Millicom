@@ -16,12 +16,15 @@
 #include "SchedulerEventser.h"
 #include "MeanShift.h"
 #include "Gauss.h"
-#include "Bag.h"
 #include "Gauss.h"
 #include "CellularAutomata.h"
 #include "IntAlu.h"
 #include "Router.h"
 #include "Gateway.h"
+#include "StreamFloatALU.h"
+#include "StreamManager.h"
+#include "StreamIntALU.h"
+#include "MatPlot.h"
 
 using namespace std;
 
@@ -44,7 +47,7 @@ int SizeOfFUType(unsigned int Type) // Объём данных, занимаемый ФУ определенного
 	case 13: return sizeof(Scheduler);
 	case 14: return sizeof(Eventser);
 	case 15: return sizeof(MeanShift);
-	case 16: return sizeof(Bag);
+	case 16: return sizeof(StreamFloatALU);
 	case 17: return sizeof(Gauss);
 	case 18: return sizeof(ALU);
 	case 19: return sizeof(CellularAutomat);
@@ -130,11 +133,6 @@ FU* MeanShiftIni(FU* BusContext, FU* TEmpl)
 	return (FU*) new MeanShift(BusContext, TEmpl);
 }
 
-FU* BagIni(FU* BusContext, FU* TEmpl)
-{
-	return (FU*) new Bag(BusContext, TEmpl);
-}
-
 FU* GaussIni(FU* BusContext, FU* TEmpl)
 {
 	return (FU*) new Gauss(BusContext, TEmpl);
@@ -163,4 +161,29 @@ FU* RouterIni(FU* BusContext, FU* TEmpl)
 FU* GatewayIni(FU* BusContext, FU* TEmpl)
 {
 	return (FU*) new Gateway(BusContext, TEmpl);
+}
+
+FU* StreamFloatALUIni(FU* BusContext, FU* TEmpl)
+{
+	return (FU*) new StreamFloatALU(BusContext, TEmpl);
+}
+
+FU* StreamFloatALUManagerIni(FU* BusContext, FU* TEmpl)
+{
+	return (FU*) new StreamManager(BusContext, TEmpl);
+}
+
+FU* StreamIntALUIni(FU* BusContext, FU* TEmpl)
+{
+	return (FU*) new StreamIntALU(BusContext, TEmpl);
+}
+
+FU* StreamIntALUManagerIni(FU* BusContext, FU* TEmpl)
+{
+	return (FU*) new StreamManager(BusContext, TEmpl);
+}
+
+FU* MatPlotIni(FU* BusContext, FU* TEmpl)
+{
+	return (FU*) new MatPlot(BusContext, TEmpl);
 }

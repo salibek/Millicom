@@ -64,7 +64,7 @@ void CellularAutomat::ProgFU(int MK, LoadPoint Load, FU* Sender)
 	// -------------------
 	
 	// Доделать буфер ИП с лексемами ???
-	if (ReceiveProg != nullptr && Mode == 0) // Запуск программы автоматного режима, т.е. конгда автомат самостоятельно обрабатывает приходящие МК
+	if (ReceiveProg != nullptr && Mode == 0) // Запуск программы автоматного режима, т.е. когда автомат самостоятельно обрабатывает приходящие МК
 	{
 		int t = Mode; 
 		Mode = 0; // Сменить режим работы на нулевой
@@ -1127,7 +1127,7 @@ void CellularAutomatManager::DistrebuteModelGenerate() // Генерация модели распр
 {
 	for (auto& i : Net) // Простановка индексов МК автоматов для маршрутизации
 	{
-		i.FUMkGloabalRange = (i.FUInd + 1) * i.FUMkRange; // Коррекция глобального диапазона МК для ФУ
+		i.FUMkGlobalRange = (i.FUInd + 1) * i.FUMkRange; // Коррекция глобального диапазона МК для ФУ
 		auto k = i.NeighboursMk.begin();
 		if (i.Neighbours.size())
 			for (auto j = i.Neighbours.begin(); j != i.Neighbours.end(); j++, k++)

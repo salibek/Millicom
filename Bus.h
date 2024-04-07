@@ -3,7 +3,7 @@
 #include "FUini.h"
 #include <vector>
 
-const int NFUTypes = 23;
+const int NFUTypes = 27;
 
 typedef FU*(*FUiniArr[NFUTypes])(FU*, FU*);
 
@@ -14,13 +14,15 @@ public:
 	void ProgFU(int MK, LoadPoint Load, FU* Sender = nullptr) override;
 	FU* (*FUTypes[NFUTypes])(FU*, FU*) = {BusIni, ConsIni, StrGenIni, LexIni, FindIni, 
 		ListIni, GraphTrasfIni, IntAluIni, InOutIni, AutomatManagerIni, NeuroIni,
-		NetManagerIni,SchedulerIni,EventserIni, MeanShiftIni, BagIni, GaussIni, ALUIni,
-		CellularAutomatIni, CellularAutomatManagerIni, RouterIni, GatewayIni};
+		NetManagerIni,SchedulerIni,EventserIni, MeanShiftIni, StreamFloatALUIni, GaussIni, ALUIni,
+		CellularAutomatIni, CellularAutomatManagerIni, RouterIni, GatewayIni, StreamFloatALUManagerIni, 
+		StreamIntALUIni, StreamIntALUManagerIni, MatPlotIni };
 	vector <FU *> FUs; // Вектор указателей на контексты ФУ
 	FU * FUTempl = nullptr; // Указатель на контекст шаблона ФУ
 	int FUMkRange = 1000; // Диапазон МК для каждого ФУ
 	int FUTypeCorrect; // Коррекция номера типы ФУ (для согласования со старой ОА-средой)
 	bool InterpretatorMode = false; // Режим интерпретатора (если установлено, то выполняется МК InterpretatorExec
+	int Ind = 0, Ind2 = 0; // Индексы ФУ, управляемых Шиной
 private:
 	void FUTypesIni();
 };

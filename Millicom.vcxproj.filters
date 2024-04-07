@@ -78,9 +78,6 @@
     <ClCompile Include="Gauss.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="Bag.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
     <ClCompile Include="CellularAutomata.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
@@ -97,6 +94,15 @@
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="StreamFloatALU.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="StreamManager.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="StreamIntALU.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="MatPlot.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>
@@ -170,9 +176,6 @@
     <ClInclude Include="GaussMatr.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="Bag.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
     <ClInclude Include="CellularAutomata.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
@@ -186,6 +189,18 @@
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="StreamFloatALU.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Header.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="StreamManager.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="StreamIntALU.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="MatPlot.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

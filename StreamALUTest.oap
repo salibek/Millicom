@@ -1,0 +1,31 @@
+// - обозначение переведенных в комментарии старых ФУ
+\* date *\ //- последняя дата изменения или добавления строк и ФУ
+
+NewFU={Mnemo="Main_Bus" MkBegRange=1000 FUType=FUBusNew} // Описание Bus
+
+\\ Для создания индексного файла сначала надо запустить программу !!!!
+ CapsManager.IndexVectCreate=20000
+ CapsManager.IpIcIdOutMk=MainBus.IpIcIdSet
+ CapsManager.IpIcIdOutMk=VariableManager.IpIcIdSet
+ CapsManager.IpIcIdOutMk=ListSyntez.IpIcIdSet
+ MainBus.ModeSet=1
+\\ -------------------------------------- \\
+MainBus.FUTypeCorrectSet=-96 // Корректировка номера типа ФУ для переноса на новую ОА-платформу
+
+NewFU={Mnemo="SALU" FUType=FUStreamFloatALU}
+NewFU={Mnemo="SALU1" FUType=FUStreamFloatALU}
+NewFU={Mnemo="SALU2" FUType=FUStreamFloatALU}
+NewFU={Mnemo="Console" FUType=FUConsNew}
+
+MainBus.PartialResetSet \\ Запомнить число созданных ФУ
+MainBus.ModeSet=2
+
+SALU.ReceiverMkSet=SALU1.Sqrt
+SALU1.ReceiverMkSet=SALU2.Add
+SALU2.ReceiverMkSet=Console.OutLn
+SALU2.BiggerProgSet={Console.OutLn="Bigger"} // Запуск программы если больше
+SALU2.RezProgSet={Console.Out="Rez=" SALU.OutMk=Console.OutLn} // Выполнить по возникновению события
+SALU2.Add=3
+SALU.Sub1=7
+SALU.Sub2=3
+SALU2.ReadyExec={Console.OutLn="Ready2"}
