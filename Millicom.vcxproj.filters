@@ -96,7 +96,7 @@
     <ClCompile Include="StreamFloatALU.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="StreamFloatALUManager.cpp">
+    <ClCompile Include="StreamManager.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="StreamIntALU.cpp">
@@ -194,7 +194,7 @@
     <ClInclude Include="Header.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="StreamFloatALUManager.h">
+    <ClInclude Include="StreamManager.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="StreamIntALU.h">

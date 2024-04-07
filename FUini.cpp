@@ -22,7 +22,7 @@
 #include "Router.h"
 #include "Gateway.h"
 #include "StreamFloatALU.h"
-#include "StreamFloatALUManager.h"
+#include "StreamManager.h"
 #include "StreamIntALU.h"
 #include "MatPlot.h"
 
@@ -170,7 +170,7 @@ FU* StreamFloatALUIni(FU* BusContext, FU* TEmpl)
 
 FU* StreamFloatALUManagerIni(FU* BusContext, FU* TEmpl)
 {
-	return (FU*) new StreamFloatALUManager(BusContext, TEmpl);
+	return (FU*) new StreamManager(BusContext, TEmpl);
 }
 
 FU* StreamIntALUIni(FU* BusContext, FU* TEmpl)
@@ -180,7 +180,7 @@ FU* StreamIntALUIni(FU* BusContext, FU* TEmpl)
 
 FU* StreamIntALUManagerIni(FU* BusContext, FU* TEmpl)
 {
-	return (FU*) new StreamIntALUManager(BusContext, TEmpl);
+	return (FU*) new StreamManager(BusContext, TEmpl);
 }
 
 FU* MatPlotIni(FU* BusContext, FU* TEmpl)

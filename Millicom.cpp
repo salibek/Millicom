@@ -78,8 +78,8 @@ int main(int argc, char* argv[])
 //	STR = "Termo.ind";
 	//	string STR = "ControlAoutomat.ind";
 
-	//STR = "StreamFloatALUTest.ind";
-	STR = "StreamIntALUTest.ind";
+	STR = "StreamFloatALUTest.ind";
+	//STR = "StreamIntALUTest.ind";
 	Bus.ProgFU(10, {Cstring, &STR}); //Запуск индексного файла
 
 	system("pause");

@@ -1,22 +1,8 @@
 #pragma once
 #include "Consts.h"
-#include "StreamFloatALUManager.h"
+#include "StreamManager.h"
 
 using namespace std;
-
-class StreamIntALUManager : public FU
-{
-private:
-public:
-	void ProgFU(int MK, LoadPoint Load, FU* Sender = nullptr) override;
-	StreamIntALUManager(FU* BusContext, FU* Templ)
-	{
-		Bus = BusContext;
-		FUtype = 24;
-		ProgFU(0, { 0,nullptr });
-	};
-	StreamIntALUManager() { StreamIntALUManager(nullptr, nullptr); };
-};
 
 class StreamIntALU : public FU
 {
@@ -32,7 +18,7 @@ private:
 	int OpInd = 0; // Индекс операнда
 	vector<int> Operands;// Стек операндов
 	vector<int>ReseiverMk; // МК для получателя результата
-	vector<FU*>ReseiverContext; // Контекст получателя результата
+	vector<FU*>ReseiverContexts; // Контекст получателя результата
 	int Noperands = 2; // Количество операндов для операции
 	void* ZProg = nullptr, * NZProg = nullptr, * BProg = nullptr, * BZProg = nullptr, * LProg = nullptr, * LZProg = nullptr; //      
 	void* ErrProg = nullptr, * WrongFormatErrProg = nullptr, * OveflowErrProg = nullptr, * DivZeroErrProg = nullptr; //  
@@ -58,4 +44,5 @@ public:
 		ProgFU(0, { 0,nullptr });
 	};
 	StreamIntALU() { StreamIntALU(nullptr, nullptr); };
+	StreamIntALU(void* Dev); // Копирующий конструктор
 };

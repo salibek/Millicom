@@ -15,7 +15,7 @@ void StreamIntALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		RezStack.clear();
 		RezExtStack.clear();
 		ReseiverMk.clear();
-		ReseiverContext.clear();
+		ReseiverContexts.clear();
 		break;
 	case 1: // Set Установить результат вычислений
 		Rez = Load.toInt();
@@ -200,14 +200,14 @@ void StreamIntALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		break;
 	case 160: // ReceiverReset Сброс установок получателей результата
 		ReseiverMk.clear();
-		ReseiverContext.clear();
+		ReseiverContexts.clear();
 		break;
 	case 161: // ReceiverSet Установить ссылку на приемника результата (Устанавливается перед установкой МК)
-		ReseiverContext.push_back((FU*)Load.Point);
+		ReseiverContexts.push_back((FU*)Load.Point);
 		break;
 	case 162: // ReceiverMkSet Установить МК для приемника результата 
-		if (ReseiverMk.size() == ReseiverContext.size())
-			ReseiverContext.push_back(nullptr);
+		if (ReseiverMk.size() == ReseiverContexts.size())
+			ReseiverContexts.push_back(nullptr);
 		ReseiverMk.push_back(Load.toInt());
 		break;
 	case 190: // RezProgSet Установить ссылку на подпрограмму, запускаемую при получении результата   
@@ -726,7 +726,7 @@ void StreamIntALU::RezExec() // Выполнение подпрограмм при получении результата
 	Ready = 1;
 	if (!OutRezBlock)//Если не заблокирована рассылка МК с результатами вычислений
 		for (int i = 0; i < ReseiverMk.size(); i++) { // Рассылка МК с результатами
-			MkExec(ReseiverMk[i], { Cint, &Rez }, ReseiverContext[i]);
+			MkExec(ReseiverMk[i], { Cint, &Rez }, ReseiverContexts[i]);
 		}
 	ProgExec(RezProg);
 	if (Rez == 0) ProgExec(ZProg);
@@ -762,17 +762,46 @@ bool StreamIntALU::WrongFormatCheck(LoadPoint Load) // Проверка формата входных 
 	return false;
 }
 
-void StreamIntALUManager::ProgFU(int MK, LoadPoint Load, FU* Sender)
+StreamIntALU::StreamIntALU(void* Dev1) // Копирующий конструктор
 {
-	if (!Active && MK < 900) return; //При сброшенном флаге активности выполняются общие МК
-	int MKinitial = MK;
-	MK %= FUMkRange;
-	switch (MK)
-	{
-	case 0: //Reset
-		break;
-	default:
-		CommonMk(MK, Load, Sender);
-		break;
-	}
+	StreamIntALU* Dev = (StreamIntALU*)Dev1;
+	if (Dev == nullptr || Dev->FUtype != FUtype) return;
+	FOperands.resize(Dev->FOperands.size());
+	copy(Dev->FOperands.begin(), Dev->FOperands.end(), FOperands.begin());
+	Operands.resize(Dev->Operands.size());
+	copy(Dev->Operands.begin(), Dev->Operands.end(), Operands.begin());
+	RezStack.resize(Dev->RezStack.size());
+	copy(Dev->RezStack.begin(), Dev->RezStack.end(), RezStack.begin());
+	Operands.resize(Dev->RezExtStack.size());
+	copy(Dev->RezExtStack.begin(), Dev->RezExtStack.end(), RezExtStack.begin());
+	RezStack.resize(Dev->ReseiverMk.size());
+	copy(Dev->ReseiverMk.begin(), Dev->ReseiverMk.end(), ReseiverMk.begin());
+	Operands.resize(Dev->ReseiverContexts.size());
+	copy(Dev->ReseiverContexts.begin(), Dev->ReseiverContexts.end(), ReseiverContexts.begin());
+	Ready = Dev->Ready;
+	OutRezBlock = Dev->OutRezBlock;
+	Rez = Dev->Rez;
+	OperandsCounter = Dev->OperandsCounter;
+	OpInd = Dev->OpInd;
+	Noperands = Dev->Noperands;
+	ZProg = Dev->ZProg;
+	NZProg = Dev->NZProg;
+	BProg = Dev->BProg;
+	BZProg = Dev->BZProg;
+	LProg = Dev->LProg;
+	LZProg = Dev->LZProg;
+	ErrProg = Dev->ErrProg;
+	WrongFormatErrProg = Dev->WrongFormatErrProg;
+	OveflowErrProg = Dev->OveflowErrProg;
+	DivZeroErrProg = Dev->DivZeroErrProg; //  
+	MatErrProg = Dev->MatErrProg; // Программа обработки ошибки математической операции
+	NoOperandErrProg = NoOperandErrProg;// Ошибка нет операнда
+	OpIndErrProg = Dev->OpIndErrProg;// Ошибка индекса операнда
+	OperationErrProg = Dev->OperationErrProg; // Ошибка операции
+	RezStackIsEmpyProg = Dev->RezStackIsEmpyProg; // Ошибка при попытке извлечения из пуского стека результатов
+	RezExtStackIsEmpyProg = Dev->RezExtStackIsEmpyProg; // Ошибка при попытке извлечения из пуского стека расширенного результатов
+	OperetionProg = Dev->OperetionProg;// Программа для выполнения специальной операции
+	RezProg = Dev->RezProg; // Программа, запускаемая перед получением результата
+	PreRezProg = Dev->PreRezProg; // Программа, запускаемая перед получением результата
+	OpCode = Dev->OpCode;
 }

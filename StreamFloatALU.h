@@ -19,7 +19,7 @@ public:
 	int OperandsCounter = 0; // Счетчик количества полученных операндов
 	int OpInd = 0; // Индекс операнда
 	vector<int>ReseiverMk; // МК для получателя результата
-	vector<FU*>ReseiverContext; // Контекст получателя результата
+	vector<FU*>ReseiverContexts; // Контекст получателя результата
 	int AngleMode = 0; // Режим измерения угла (0 - радианы, 1 -градусы)
 	int Noperands = 2; // Количество операндов для операции
 	void* ZProg = nullptr, * NZProg = nullptr, * BProg = nullptr, * BZProg = nullptr, * LProg = nullptr, * LZProg = nullptr; //      
@@ -28,11 +28,11 @@ public:
 	void* NoOperandErrProg = nullptr;// Ошибка нет операнда
 	void* OpIndErrProg = nullptr;// Ошибка индекса операнда
 	void* OperationErrProg = nullptr; // Ошибка операции
-	void* RezStackIsEmpyProg = nullptr; // Ошибка при попытке извлечения из пуского стека результатов    
+	void* RezStackIsEmpyProg = nullptr; // Ошибка при попытке извлечения из пуского стека результатов
 	void* RezExtStackIsEmpyProg = nullptr; // Ошибка при попытке извлечения из пуского стека расширенного результатов
 	void* OperetionProg = nullptr;// Программа для выполнения специальной операции
 	void* RezProg = nullptr; // Программа, запускаемая перед получением результата
-	void* PreRezProg = nullptr; // Программа, запускаемая перед получением результата    
+	void* PreRezProg = nullptr; // Программа, запускаемая перед получением результата
 	vector<double> Operands;// Стек операндов
 	int OpCode = 0; // Код операции, для которой накапливаются операнды
 
@@ -41,7 +41,9 @@ public:
 		Bus = BusContext;
 		FUtype = 12;
 		ProgFU(0, { 0,nullptr });
+		StreamFloatALU((void *)Templ);
+
 	};
 	StreamFloatALU() { StreamFloatALU(nullptr, nullptr); };
-
+	StreamFloatALU(void *); // Копирующий конструктор
 };

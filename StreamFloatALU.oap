@@ -18,6 +18,9 @@ NewFU={Mnemo="Console" FUType=FUConsNew}
 MainBus.PartialResetSet \\ Запомнить число созданных ФУ
 MainBus.ModeSet=2
 
-StreamALU.RezSet=10
-StreamALU.RezOutMk=Console.OutLn
+StreamALU.Set=10
+StreamALU.OutMk=Console.OutLn
 
+StreamALU.ReceiverMkSet=Console.OutLn
+StreamALU.Add
+StreamALU.Add=3
