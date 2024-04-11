@@ -2,7 +2,7 @@
 #include "SchedulerEventser.h"
 
 // Простейший клеточный автомат (устройство для вычисления сеточных функций)
-void CellularAutomat::ProgFU(int MK, LoadPoint Load, FU* Sender)
+void CellularAutomata::ProgFU(int MK, LoadPoint Load, FU* Sender)
 {
 	MK %= FUMkRange;
 	// Режим моделирования
@@ -1127,7 +1127,7 @@ void CellularAutomatManager::DistrebuteModelGenerate() // Генерация модели распр
 {
 	for (auto& i : Net) // Простановка индексов МК автоматов для маршрутизации
 	{
-		i.FUMkGlobalRange = (i.FUInd + 1) * i.FUMkRange; // Коррекция глобального диапазона МК для ФУ
+		i.FUMkGlobalAdr = (i.FUInd + 1) * i.FUMkRange; // Коррекция глобального диапазона МК для ФУ
 		auto k = i.NeighboursMk.begin();
 		if (i.Neighbours.size())
 			for (auto j = i.Neighbours.begin(); j != i.Neighbours.end(); j++, k++)
@@ -1244,4 +1244,15 @@ void CellularAutomatManager::DistrebuteModelGenerate() // Генерация модели распр
 
 	}
 	//	cout << "End Sectoring\n";
+}
+
+
+FU* CellularAutomata::Copy() // Программа копирования ФУ
+{
+	return new CellularAutomata(Bus, this);
+}
+
+FU* CellularAutomata::TypeCopy() // Создать ФУ такого же типа (не копируя контекст
+{
+	return new CellularAutomata(Bus, nullptr);
 }

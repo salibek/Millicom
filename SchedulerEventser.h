@@ -11,8 +11,10 @@ class Eventser: public FU
 	double Time = 0; // Время для установки события
 	bool SchedulerF = true; // Флаг для установки события
 	double Delay = 0; // Задержка МК для Выполнения МК или для ожидания МК
-FU* FUContext = nullptr; public:
+	FU* FUContext = nullptr; public:
 	void ProgFU(int MK, LoadPoint Load, FU* Sender = nullptr) override;
+	FU* Copy() override; // Программа копирования ФУ
+	FU* TypeCopy() override; // Создать ФУ такого же типа (не копируя контекст
 	void Eventsing(FU* Context, double tay, bool SchedulerFlag);
 	Eventser(FU* BusContext, FU* Templ)
 	{
@@ -25,7 +27,7 @@ public:
 	double CurrentTime = 0; // Текущее время моделирования
 	void EventsPrint() // Распечатать собырия в хронологии
 	{
-		for (auto i : Events)
+		for (auto &i : Events)
 			cout << i.first << " : ShFlag " << i.second.SchedulerFlag << " FU: " << i.second.Receiver->FUName << endl;
 	};
 };
@@ -46,7 +48,9 @@ public:
 	FU* eventser = nullptr; // Указатель на контроллер событий
 	void* SchedulingProg = nullptr;
 	void ProgFU(int MK, LoadPoint Load, FU* Sender = nullptr) override;
-	void Scheduling(FU*, double DTime, bool CoreContinue=false); // CoreContinue - флаг удержания вычислительного ядра
+	FU* Copy() override; // Программа копирования ФУ
+	FU* TypeCopy() override; // Создать ФУ такого же типа (не копируя контекст	void Scheduling(FU*, double DTime, bool CoreContinue=false); // CoreContinue - флаг удержания вычислительного ядра
+	void Scheduling(FU*, double DTime, bool CoreContinue = false); // CoreContinue - флаг удержания вычислительного ядра
 	void CoreFree(); // Освободить ядро
 	Scheduler(FU* BusContext, FU* Templ)
 	{

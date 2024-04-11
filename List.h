@@ -7,6 +7,8 @@ class List : public FU
 {
 public:
 	void ProgFU(int MK, LoadPoint Load, FU* Sender=nullptr) override;
+	FU* Copy() override; // Программа копирования ФУ
+	FU* TypeCopy() override; // Создать ФУ такого же типа (не копируя контекст
 	vector<IC_type> ListHead; // Ссылка на голову списка (вектор, т.к. список может быть многоуровневым)
 
 //	ip* LineUk = nullptr; // Указатель на найленную строку списка

@@ -270,3 +270,25 @@ void Scheduler::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		break;
 	}
 }
+
+
+FU* Eventser::Copy() // Программа копирования ФУ
+{
+	return new Eventser(Bus, this);
+}
+
+FU* Eventser::TypeCopy() // Создать ФУ такого же типа (не копируя контекст
+{
+	return new Eventser(Bus, nullptr);
+}
+
+
+FU* Scheduler::Copy() // Программа копирования ФУ
+{
+	return new Scheduler(Bus, this);
+}
+
+FU* Scheduler::TypeCopy() // Создать ФУ такого же типа (не копируя контекст
+{
+	return new Scheduler(Bus, nullptr);
+}

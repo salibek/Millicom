@@ -254,3 +254,13 @@ void IntAlu::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		if (*AccumulatUk <= *CompareUk) ProgExec(LessEQProg);
 	}
 }
+
+FU* IntAlu::Copy() // Программа копирования ФУ
+{
+	return new IntAlu(Bus, this);
+}
+
+FU* IntAlu::TypeCopy() // Создать ФУ такого же типа (не копируя контекст
+{
+	return new IntAlu(Bus, nullptr);
+}

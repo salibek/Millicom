@@ -61,6 +61,8 @@ public:
 	vector <vector<MeanShiftPoint*>> VXY; // Указатели на точки, упорядоченные по координате X и Y и т.д.
 											// Каждое изменение - это отдельная линия в векторе
 	void ProgFU(int MK, LoadPoint Load, FU* Sender=nullptr) override;
+	FU* Copy() override; // Программа копирования ФУ
+	FU* TypeCopy() override; // Создать ФУ такого же типа (не копируя контекст
 	MeanShift(FU* BusContext, FU* Templ) : FU(BusContext) { FUtype = 14; ProbMaxMin = { {0,1},{0,1} }; eps = { 15,15 }; eps.resize(2);  Bus = BusContext; };
 	MeanShift() : FU() { ProbMaxMin = { {0,1},{0,1} }; eps = { 16,16 }; Bus = nullptr; };
 private:

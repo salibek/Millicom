@@ -93,3 +93,13 @@ void Find::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		CommonMk(MK, Load);
 	}
 }
+
+FU* Find::Copy() // Программа копирования ФУ
+{
+	return new Find(Bus, this);
+}
+
+FU* Find::TypeCopy() // Создать ФУ такого же типа (не копируя контекст
+{
+	return new Find(Bus, nullptr);
+}

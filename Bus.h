@@ -3,7 +3,7 @@
 #include "FUini.h"
 #include <vector>
 
-const int NFUTypes = 27;
+//const int NFUTypes = 27;
 
 typedef FU*(*FUiniArr[NFUTypes])(FU*, FU*);
 
@@ -12,11 +12,14 @@ public:
 	BusFU(FU* BusContext, FU* Templ) : FU(BusContext) { Bus = BusContext; FUTypesIni(); FUtype = 0; };
 	BusFU() : FU() { Bus = this; FUTypesIni(); };
 	void ProgFU(int MK, LoadPoint Load, FU* Sender = nullptr) override;
-	FU* (*FUTypes[NFUTypes])(FU*, FU*) = {BusIni, ConsIni, StrGenIni, LexIni, FindIni, 
-		ListIni, GraphTrasfIni, IntAluIni, InOutIni, AutomatManagerIni, NeuroIni,
-		NetManagerIni,SchedulerIni,EventserIni, MeanShiftIni, StreamFloatALUIni, GaussIni, ALUIni,
-		CellularAutomatIni, CellularAutomatManagerIni, RouterIni, GatewayIni, StreamFloatALUManagerIni, 
-		StreamIntALUIni, StreamIntALUManagerIni, MatPlotIni };
+	FU* Copy() override; // Программа копирования ФУ
+	FU* TypeCopy() override; // Создать ФУ такого же типа (не копируя контекст
+	FuFabric FUTypes;
+//	FU* (*FUTypes[NFUTypes])(FU*, FU*) = {BusIni, ConsIni, StrGenIni, LexIni, FindIni,
+//		ListIni, GraphTrasfIni, IntAluIni, InOutIni, AutomatManagerIni, NeuroIni,
+//		NetManagerIni,SchedulerIni,EventserIni, MeanShiftIni, StreamFloatALUIni, GaussIni, ALUIni,
+//		CellularAutomatIni, CellularAutomatManagerIni, RouterIni, GatewayIni, StreamFloatALUManagerIni, 
+//		StreamIntALUIni, StreamIntALUManagerIni, MatPlotIni };
 	vector <FU *> FUs; // Вектор указателей на контексты ФУ
 	FU * FUTempl = nullptr; // Указатель на контекст шаблона ФУ
 	int FUMkRange = 1000; // Диапазон МК для каждого ФУ

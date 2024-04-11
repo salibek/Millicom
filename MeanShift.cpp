@@ -602,3 +602,12 @@ void  MeanShift::NetGen() // Генерация сетки
 //	for (auto FUuk : VXY[0])
 //		FUuk->ProgFU(102, { 0,nullptr });// Милликоманда коррекции связей сетки
 }
+
+FU* MeanShift::Copy() // Программа копирования ФУ
+{
+	return new MeanShift(Bus, this);
+}
+FU* MeanShift::TypeCopy() // Создать ФУ такого же типа (не копируя контекст
+{
+	return new MeanShift(Bus, nullptr);
+}

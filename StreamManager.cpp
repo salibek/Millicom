@@ -74,16 +74,18 @@ void StreamManager::ProgFU(int MK, LoadPoint Load, FU* Sender)
 			ProgExec(DevNotExistErrProg);
 			break;
 		}
-		switch (Mode)
-		{
-		case 0: Field[IndGroup].push_back(new StreamFloatALU(this, (FU*)Load.Point)); break;
-		case 1: Field[IndGroup].push_back(new StreamIntALU(this, (FU*)Load.Point)); break;
-		}
+		if (!Load.isEmpty())
+			;//Field[IndGroup].push_back();
+		else
+			switch (Mode)
+			{
+			case 0: Field[IndGroup].push_back(new StreamFloatALU(this, (FU*)Load.Point)); break;
+			case 1: Field[IndGroup].push_back(new StreamIntALU(this, (FU*)Load.Point)); break;
+			}
 		break;
 	case 12: // CreateLastDev Создать АЛУ в последней группе
 		if (Field.size() == 0) // Если список пустой, то добавить одно строку
 			Field.push_back({});
-
 		switch (Mode)
 		{
 		case 0: Field.back().push_back(new StreamFloatALU((FU*)this, (FU*)Load.Point)); break;
@@ -221,3 +223,14 @@ StreamManager::~StreamManager() // Деструктор
 	ProgFU(0, {0,nullptr},nullptr);
 	Field.clear();
 }
+
+FU* StreamManager::Copy() // Программа копирования ФУ
+{
+	return new StreamManager(Bus, this);
+}
+
+FU* StreamManager::TypeCopy() // Создать ФУ такого же типа (не копируя контекст
+{
+	return new StreamManager(Bus, nullptr);
+}
+

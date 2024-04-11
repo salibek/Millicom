@@ -26,6 +26,8 @@ public:
 	int AutoInc = 0; // Шаг автоматичекой инкрементация
 	int Fin = 0; // Конечное значение цикла
 	void ProgFU(int MK, LoadPoint Load, FU* Sender=nullptr);
+	FU* Copy() override; // Программа копирования ФУ
+	FU* TypeCopy() override; // Создать ФУ такого же типа (не копируя контекст
 	IntAlu(FU* BusContext, FU* Templ=nullptr) : FU(BusContext) { ProgFU(0, { 0, nullptr }); Bus = BusContext; FUtype = 7; };
 	IntAlu(){ IntAlu(nullptr, nullptr); };
 };

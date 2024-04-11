@@ -6,12 +6,14 @@
 #include "Gateway.h"
 
 // Простейший клеточный автомат (устройство для вычисления сеточных функций)
-class CellularAutomat : public FU {
+class CellularAutomata : public FU {
 //private:
 public:
 	void ProgFU(int MK, LoadPoint Load, FU* Sender = nullptr) override;
-	CellularAutomat(FU* BusContext, FU* Templ) : FU(BusContext) { FUtype = 18; Bus = BusContext; ProgFU(0, { 0,nullptr }); };
-	CellularAutomat() : FU() { CellularAutomat(nullptr, nullptr); };
+	FU* Copy() override; // Программа копирования ФУ
+	FU* TypeCopy() override; // Создать ФУ такого же типа (не копируя контекст
+	CellularAutomata(FU* BusContext, FU* Templ) : FU(BusContext) { FUtype = 18; Bus = BusContext; ProgFU(0, { 0,nullptr }); };
+	CellularAutomata() : FU() { CellularAutomata(nullptr, nullptr); };
 	void* Manager = nullptr;// Ссылка на менеджера
 	vector<FU*> Neighbours;//Ссылки на соседей
 	vector<int> NeighboursMk;// МК для соседей
@@ -56,7 +58,7 @@ public:
 	int NetType = 0;// Тип автоматной сетки 0 - не задано, 1- квадратная, 2 - треугольная, 3 гексагональная
 	CellularAutomatManager(FU* BusContext, FU* Templ) : FU(BusContext) { FUtype = 19; Bus = BusContext; ProgFU(0, { 0,nullptr });};
 	CellularAutomatManager() : FU() { Bus = nullptr; };
-	vector<CellularAutomat> Net; //вектор сеточных автоматов
+	vector<CellularAutomata> Net; //вектор сеточных автоматов
 	int Dim = 0; // Размерность поля автоматов (количество ФУ для каждого измерения)
 	bool NilRefMode = false; // Режим добавления нулевых ссылок, если ссылка устанавливается на несуществующий элемент вычислительной сетки
 	void* Collector = nullptr; // Ссылка на коллектор

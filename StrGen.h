@@ -21,6 +21,8 @@ private:
 	string finStr = ""; // Строка, выдаваемая при окончании геренации строк
 public:
 	void ProgFU(int MK, LoadPoint Load, FU* Sender = nullptr) override;
+	FU* Copy() override; // Программа копирования ФУ
+	FU* TypeCopy() override; // Создать ФУ такого же типа (не копируя контекст
 	StrGen(FU* BusContext, FU* Templ) : FU(BusContext) { ProgFU(0, { 0, nullptr }); Bus = BusContext; FUtype = 2; };
 	StrGen(): FU() { StrGen(nullptr, nullptr); };
 };

@@ -1,6 +1,7 @@
 // Подпрограммы инициализации ФУ
 #pragma once
 #include "Consts.h"
+#include <array>
 
 int SizeOfFUType(unsigned int Type); // Объём данных, занимаемый ФУ определенного типа
 
@@ -31,3 +32,44 @@ FU* StreamFloatALUManagerIni(FU* BusContext, FU* TEmpl);
 FU* StreamIntALUIni(FU* BusContext, FU* TEmpl);
 FU* StreamIntALUManagerIni(FU* BusContext, FU* TEmpl);
 FU* MatPlotIni(FU* BusContext, FU* TEmpl);
+
+const int NFUTypes = 27;
+
+typedef FU* (*FUiniProg)(FU*, FU*);
+
+class FuFabric // Фабрика по созданию ФУ
+{
+private:
+	 array<FUiniProg, NFUTypes> FUTypes = {BusIni, ConsIni, StrGenIni, LexIni, FindIni,
+		ListIni, GraphTrasfIni, IntAluIni, InOutIni, AutomatManagerIni, NeuroIni,
+		NetManagerIni,SchedulerIni,EventserIni, MeanShiftIni, StreamFloatALUIni, GaussIni, ALUIni,
+		CellularAutomatIni, CellularAutomatManagerIni, RouterIni, GatewayIni, StreamFloatALUManagerIni,
+		StreamIntALUIni, StreamIntALUManagerIni, MatPlotIni };
+	 bool FErr = false; // Флаг ошибки создани ФУ
+public:
+	int GetFuTypeCount(int i) // Выдать количество типов ФУ
+	{
+		return FUTypes.size();
+	};
+	bool GerFErr() // Выдать флаг ошибки создания ФУ
+	{ return FErr; };
+	FU* MakeFu(int t, void* BusUk = nullptr, void* Templ = nullptr) // Создать ФУ по индексу типа
+	{
+		if (t<0 || t>FUTypes.size())
+		{
+			FErr = true;
+			return nullptr;
+		}
+		return FUTypes[t]((FU*)BusUk, (FU*)Templ);
+	};
+
+	FU* MakeFu(void* Templ) // Создать ФУ по шаблону
+	{
+		if (((FU*)Templ)->GetFuType()<0 || ((FU*)Templ)->GetFuType() > FUTypes.size())
+		{
+			FErr = true;
+			return nullptr;
+		}
+		return FUTypes[((FU*)Templ)->FUtype](((FU*)Templ), (FU*)Templ);
+	};
+};

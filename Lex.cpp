@@ -1123,3 +1123,13 @@
 		LexBuf[0].atr = SeperatAtr;
 		ProgFU(0, {0,nullptr});
 	}
+
+	FU* Lex::Copy() // Программа копирования ФУ
+	{
+		return new Lex(Bus, this);
+	}
+
+	FU* Lex::TypeCopy() // Создать ФУ такого же типа (не копируя контекст
+	{
+		return new Lex(Bus, nullptr);
+	}

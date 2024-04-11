@@ -16,7 +16,9 @@ private:
 	vector<StreamFloatALU> Group; // Вектор группы ФУ для копирования
 public:
 	void ProgFU(int MK, LoadPoint Load, FU* Sender = nullptr) override;
-	StreamManager(FU* BusContext, FU* Templ) 
+	FU* Copy() override; // Программа копирования ФУ
+	FU* TypeCopy() override; // Создать ФУ такого же типа (не копируя контекст
+	StreamManager(FU* BusContext, FU* Templ)
 	{
 		Bus = BusContext;
 		FUtype = 23;

@@ -891,3 +891,13 @@ StreamFloatALU::StreamFloatALU(void* Dev1) // Копирующий констр�
 	PreRezProg = Dev->PreRezProg; // Программа, запускаемая перед получением результата
 	OpCode = Dev->OpCode;
 }
+
+FU* StreamFloatALU::Copy() // Программа копирования ФУ
+{
+	return new StreamFloatALU(Bus,this);
+}
+
+FU* StreamFloatALU::TypeCopy() // Создать ФУ такого же типа (не копируя контекст
+{
+	return new StreamFloatALU(Bus, nullptr);
+}

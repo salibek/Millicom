@@ -167,3 +167,13 @@ double Porog(double S, vector<double> Args) // 1. x, при котором переход на боле
 		else
 			return Args[2];
 };
+
+FU* Neuro::Copy() // Программа копирования ФУ
+{
+	return new Neuro(Bus, this);
+}
+
+FU* Neuro::TypeCopy() // Создать ФУ такого же типа (не копируя контекст
+{
+	return new Neuro(Bus, nullptr);
+}

@@ -28,6 +28,8 @@
 
 using namespace std;
 
+
+
 int SizeOfFUType(unsigned int Type) // Объём данных, занимаемый ФУ определенного типа
 {
 	switch (Type)
@@ -50,7 +52,7 @@ int SizeOfFUType(unsigned int Type) // Объём данных, занимаемый ФУ определенного
 	case 16: return sizeof(StreamFloatALU);
 	case 17: return sizeof(Gauss);
 	case 18: return sizeof(ALU);
-	case 19: return sizeof(CellularAutomat);
+	case 19: return sizeof(CellularAutomata);
 	case 20: return sizeof(CellularAutomatManager);
 	case 21: return sizeof(Router);
 	case 22: return sizeof(Gateway);
@@ -140,7 +142,7 @@ FU* GaussIni(FU* BusContext, FU* TEmpl)
 
 FU* CellularAutomatIni(FU* BusContext, FU* TEmpl)
 {
-	return (FU*) new CellularAutomat(BusContext, TEmpl);
+	return (FU*) new CellularAutomata(BusContext, TEmpl);
 }
 
 FU* CellularAutomatManagerIni(FU* BusContext, FU* TEmpl)

@@ -128,3 +128,13 @@ void StrGen::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		break;
 	}
 }
+
+FU* StrGen::Copy() // Программа копирования ФУ
+{
+	return new StrGen(Bus, this);
+}
+
+FU* StrGen::TypeCopy() // Создать ФУ такого же типа (не копируя контекст
+{
+	return new StrGen(Bus, nullptr);
+}

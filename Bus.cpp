@@ -29,15 +29,15 @@ void BusFU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		switch (MK%FUMkRange)
 		{
 		case 0: // Сброс
-	//		for (int i = 2; i < FUs.size(); i++)
-		//		delete FUs[i];
-		//	FUs.clear();
-		//	FUs.push_back(this);
-		//	FUs.push_back(this); // Первой ФУ - это сам Bus
+	    	for (int i = 1; i < FUs.size(); i++)
+				delete FUs[i];
+			FUs.clear();
+			FUs.push_back(this);
+			FUs.push_back(this); // Первой ФУ - это сам Bus
 			break;
 		case 1: // MakeFU Создать ФУ
-			FUs.push_back(FUTypes[Load.toInt() - FUTypeCorrect](this, FUTempl));
-			FUs.back()->FUMkGlobalRange = FUMkRange * (FUs.size() - 1); // Установить начало глобального диапазона МК
+			FUs.push_back(FUTypes.MakeFu(Load.toInt() - FUTypeCorrect,this, FUTempl));
+			FUs.back()->FUMkGlobalAdr = FUMkRange * (FUs.size() - 1); // Установить начало глобального диапазона МК
 			break;
 		case 5: // ProgExec Выполнить программу из ИК
 			ProgExec((vector<ip>*)Load.Point);
@@ -87,25 +87,30 @@ void BusFU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		case 47: // FuContestFormInd1ToInd2OutMk Последовательно выдать МК с контекстами ФУ с индекса 1 до индекса 2
 			if (Ind >= FUs.size() || Ind < 0 || Ind2 >= FUs.size() || Ind2 < 0) break;
 			for (int i = Ind; i <= Ind2; i++)
-				MkExec(Load, {TFU,&FUs[i]});
+				MkExec(Load, { TFU,&FUs[i] });
+			break;
+		case 48: // FuContestFormInd1ToEndOutMk Последовательно выдать МК с контекстами ФУ с индекса 1 до конца списка ФУ
+			if (Ind >= FUs.size() || Ind < 0) break;
+			for (int i = Ind; i <= FUs.size(); i++)
+				MkExec(Load, { TFU,&FUs[i] });
 			break;
 		case 50: // IndSet Установить индекс ФУ
-			Ind = Load.toInt();
+			Ind = Load.toInt(0);
 			break;
 		case 51: // Ind2Set Установить второй индекс ФУ
-			Ind2 = Load.toInt();
+			Ind2 = Load.toInt(0);
 			break;
 		case 52: // IndByMkSet Установить индекс ФУ по МК
-			Ind = Load.toInt() / FUMkRange;
+			Ind = Load.toInt(0) / FUMkRange;
 			break;
 		case 53: // Ind2ByMkSet Установить второй индекс ФУ по МК
-			Ind2 = Load.toInt() / FUMkRange;
+			Ind2 = Load.toInt(0) / FUMkRange;
 			break;
 		case 54: // IndAdd Увеличить индекс ФУ
-			Ind += Load.toInt();
+			Ind += Load.toInt(1);
 			break;
 		case 55: // Ind2Add Увеличить второй индекс ФУ
-			Ind2 += Load.toInt();
+			Ind2 += Load.toInt(1);
 			break;
 
 		case 100: // MkExec Выполнить одму МК (в нагрузке ссылка на ИП)
@@ -130,4 +135,14 @@ void BusFU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 			CommonMk(MK, Load);
 			break;
 		}
+}
+
+FU* BusFU::Copy() // Программа копирования ФУ
+{
+	return new BusFU(Bus, this);
+}
+
+FU* BusFU::TypeCopy() // Создать ФУ такого же типа (не копируя контекст
+{
+	return new BusFU(Bus, nullptr);
 }

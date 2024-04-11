@@ -26,6 +26,8 @@ private:
 	double delta = 0, Z=0, Y=0;
 public:
 	void ProgFU(int MK, LoadPoint Load, FU* Sender=nullptr) override;
+	FU* Copy() override; // Программа копирования ФУ
+	FU* TypeCopy() override; // Создать ФУ такого же типа (не копируя контекст
 	Neuro(FU* BusContext, FU* Templ) : FU(BusContext) { Bus = BusContext; FUtype = 10; ProgFU(0, { 0,nullptr }); };
 	Neuro(){ Neuro(nullptr, nullptr); };
 private:

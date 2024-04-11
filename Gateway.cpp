@@ -13,7 +13,7 @@ double Gateway::DelayFunc() // Функция вычисления задержки передачи данных
 
 void Gateway::ProgFU(int MK, LoadPoint Load, FU* Sender)
 {
-	if (MK<0 || !(MK < FUMkRange || MK >= FUMkGlobalRange && MK < FUMkGlobalRange + FUMkRange)) // Мк не передачи
+	if (MK<0 || !(MK < FUMkRange || MK >= FUMkGlobalAdr && MK < FUMkGlobalAdr + FUMkRange)) // Мк не передачи
 	{
 //		cout << FUName <<" " << MK << endl;
 //		Modeling->EventModelingPrint();
@@ -137,4 +137,14 @@ void Gateway::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		break;
 	}
 
+}
+
+FU* Gateway::Copy() // Программа копирования ФУ
+{
+	return new Gateway(Bus, this);
+}
+
+FU* Gateway::TypeCopy() // Создать ФУ такого же типа (не копируя контекст
+{
+	return new Gateway(Bus, nullptr);
 }

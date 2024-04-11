@@ -227,7 +227,7 @@ void ALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 			MkExec(MKExt, Load);
 			break;
 		case 502: // MkOutExtExec Выполнить внешнюю Мк для выдачи данных (на вход внешней команды автоматически дается Мк установки значения аккумулятора
-			MkExec(Load, LoadNew(FUMkGlobalRange + E_MK::SET));
+			MkExec(Load, LoadNew(FUMkGlobalAdr + E_MK::SET));
 			break;
 		case 505: // AnsFix Зафиксировать текущий уровень аккумулятора как ans
 			if (Stack.size() - 1 == Anses.back()) break; // ans уже добавлен
@@ -3124,4 +3124,15 @@ void ALU::Sort(LoadPoint Load, bool revers) {
 		ProgExec(ErrProg);
 		ProgExec(TypeMismatchErrProg);
 	}
+}
+
+
+FU* ALU::Copy() // Программа копирования ФУ
+{
+	return new ALU(Bus, this);
+}
+
+FU* ALU::TypeCopy() // Создать ФУ такого же типа (не копируя контекст
+{
+	return new ALU(Bus, nullptr);
 }

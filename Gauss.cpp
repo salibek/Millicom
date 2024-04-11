@@ -163,4 +163,14 @@ void Gauss::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		break;
 	}
 }
+/*
+FU* Gauss::Copy() // Программа копирования ФУ
+{
+	return new Gauss(Bus, this);
+}
 
+FU* Gauss::TypeCopy() // Создать ФУ такого же типа (не копируя контекст)
+{
+	return new Gauss(Bus, nullptr);
+}
+*/

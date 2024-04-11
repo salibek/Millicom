@@ -257,3 +257,23 @@ void NetManager::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		break;
 	}
 }
+
+FU* NetManager::Copy() // Программа копирования ФУ
+{
+	return new NetManager(Bus, this);
+}
+
+FU* NetManager::TypeCopy() // Создать ФУ такого же типа (не копируя контекст
+{
+	return new NetManager(Bus, nullptr);
+}
+
+FU* TemperatEx::Copy() // Программа копирования ФУ
+{
+	return new TemperatEx(Bus, this);
+}
+
+FU* TemperatEx::TypeCopy() // Создать ФУ такого же типа (не копируя контекст
+{
+	return new TemperatEx(Bus, nullptr);
+}

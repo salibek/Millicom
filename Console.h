@@ -19,7 +19,7 @@ private:
 	string filename = "";
 	ofstream fout; // ??
 	ofstream fin; // ??
-	FILE* streamOut, *streamIn; // Входной/выходной файлы
+	FILE* streamOut=nullptr, *streamIn=nullptr; // Входной/выходной файлы
 	string Sep = " ", VectSep=",", End = "\n"; // Строка-разделитель и строка в конце вывода
 	string quote = ""; // Символ кавычек при выводе строки
 	string FloatPoint = "."; // Разделитель дробной части
@@ -38,6 +38,8 @@ private:
 	void* InputFormatErrProg = nullptr; // Программа ошибки формата входных данных
 public:
 	void ProgFU(int MK, LoadPoint Load, FU* Sender = nullptr) override;
+	FU* Copy() override; // Программа копирования ФУ
+	FU* TypeCopy() override; // Создать ФУ такого же типа (не копируя контекст
 	Console(FU* BusContext, FU* Templ) : FU(BusContext) { Bus = BusContext; FUtype = 1; };
 	Console() : FU() { Console(nullptr, nullptr); };
 private:

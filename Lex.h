@@ -43,6 +43,8 @@ private:
 	bool TabMode = false; // Режим расстановки скобок по знакам табуляции
 public:
 	void ProgFU(int MK, LoadPoint Load, FU* Sender=nullptr);
+	FU* Copy() override; // Программа копирования ФУ
+	FU* TypeCopy() override; // Создать ФУ такого же типа (не копируя контекст
 	Lex(FU *BusContext=nullptr, FU *Templ=nullptr);
 	Lex() { Lex(nullptr, nullptr); };
 	vector<FU*> Receiver = { nullptr }; // Стек указаталей не ФУ-приемники

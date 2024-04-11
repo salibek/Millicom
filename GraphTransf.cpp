@@ -283,3 +283,13 @@ void GraphTransf::ProgFU(int MK, LoadPoint Load, FU* Sender)
 			CommonMk(MK, Load, Sender);
 	}
 }
+
+FU* GraphTransf::Copy() // Программа копирования ФУ
+{
+	return new GraphTransf(Bus, this);
+}
+
+FU* GraphTransf::TypeCopy() // Создать ФУ такого же типа (не копируя контекст
+{
+	return new GraphTransf(Bus, nullptr);
+}

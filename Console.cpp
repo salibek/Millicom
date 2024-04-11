@@ -297,3 +297,13 @@ void Console::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		break;
 	}
 }
+
+FU* Console::Copy() // Программа копирования ФУ
+{
+	return new Console(Bus, this);
+}
+
+FU* Console::TypeCopy() // Создать ФУ такого же типа (не копируя контекст
+{
+	return new Console(Bus, nullptr);
+}

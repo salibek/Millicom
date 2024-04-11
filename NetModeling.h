@@ -13,6 +13,8 @@ public:
 		T.clear();
 	};
 	void ProgFU(int MK, LoadPoint Load, FU* Sender = nullptr) override;
+	FU* Copy() override; // Программа копирования ФУ
+	FU* TypeCopy() override; // Создать ФУ такого же типа (не копируя контекст
 	TemperatEx(FU* BusContext, FU* Templ) : FU(BusContext) { Bus = BusContext; ProgFU(0, { 0,nullptr }); };
 	TemperatEx() { TemperatEx(nullptr, nullptr); };
 	vector<double> T; // Текущая температура
@@ -31,6 +33,8 @@ class NetManager: public FU // Менеджер сетевых расчетов
 public:
 	void ProgFU(int MK, LoadPoint Load, FU* Sender = nullptr) override;
 	NetManager(FU* BusContext, FU* Templ) : FU(BusContext) { Bus = BusContext; FUtype = 11; ProgFU(0, { 0,nullptr }); };
+	FU* Copy() override; // Программа копирования ФУ
+	FU* TypeCopy() override; // Создать ФУ такого же типа (не копируя контекст
 	NetManager() : FU() { Bus = nullptr; };
 private:
 	double ManageTime = 0; // Время работы менеджера вычислительной сетки

@@ -47,7 +47,7 @@ void Router::NetRouting(int MK, LoadPoint Load, FU* Sender) // Маршрутизация в с
 
 void Router::ProgFU(int MK, LoadPoint Load, FU* Sender)
 {
-	if (!(MK < FUMkRange || MK >= FUMkGlobalRange && MK < FUMkGlobalRange + FUMkRange)) // Routing
+	if (!(MK < FUMkRange || MK >= FUMkGlobalAdr && MK < FUMkGlobalAdr + FUMkRange)) // Routing
 	{
 //		cout << FUName << " " << MK << endl;
 //		Modeling->EventModelingPrint();
@@ -126,7 +126,7 @@ void Router::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		Ind = Load.toInt();
 		break;
 	case 5: // RangeSet Установить верхний диапазон МК для роутера (нижний диапазон подразумевается, как верхний плюс диапазон МК)
-		FUMkGlobalRange = Load.toInt();
+		FUMkGlobalAdr = Load.toInt();
 		break;
 	case 6: // RouterTimeSet Установить время маршрутизации
 		RoutingTime = Load.toDouble();
@@ -305,4 +305,14 @@ void Router::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		CommonMk(MK, Load, Sender);
 		break;
 	}
+}
+
+FU* Router::Copy() // Программа копирования ФУ
+{
+	return new Router(Bus, this);
+}
+
+FU* Router::TypeCopy() // Создать ФУ такого же типа (не копируя контекст
+{
+	return new Router(Bus, nullptr);
 }

@@ -1294,3 +1294,13 @@ void List::ProgFU(int MK, LoadPoint Load, FU* Sender)
 	if (ListHead.size() == 1 && PostfixProg!=nullptr)
 		ProgExec(PostfixProg); // Выполнить финальную программу
 }
+
+FU* List::Copy() // Программа копирования ФУ
+{
+	return new List(Bus, this);
+}
+
+FU* List::TypeCopy() // Создать ФУ такого же типа (не копируя контекст
+{
+	return new List(Bus, nullptr);
+}

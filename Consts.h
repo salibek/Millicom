@@ -292,7 +292,7 @@ public:
 	bool ALUCreating = false; // Флаг создания АЛУ
 	FU* Parent = nullptr; // Ссылка на родительский ФУ
 	int FUInd = -1, FUInd2=-1; // Индексы ФУ
-	int  FUMkGlobalRange = 0; // Глобальный адрес ФУ
+	int  FUMkGlobalAdr = 0; // Глобальный адрес ФУ
 
 	FUModeling *Modeling=nullptr; // Моделирование
 
@@ -323,6 +323,16 @@ public:
 	int YesContinueAtr = YesContinueMk, NoContinueAtr = NoContinueMk; // МК условного выхода из программы
 	void CommonMk(int Mk, LoadPoint Uk, FU* Sender=nullptr); // Выполнение общих МК для ФУ
 	IC_type PrefixProg = nullptr, PostfixProg = nullptr, Prog = nullptr, ElseProg = nullptr; // Программы презапуска и послезапуска во время прихода МК, просто программа, альтернативная программа
+	int GetFuType() { return FUtype; }; // Выдать тип ФУ
+	int GetFUMkGlobalAdr() { return FUMkGlobalAdr; }; // Выдать глобальный адрес ФУ
+	void SetFUMkGlobalAdr(int t) { FUMkGlobalAdr = t; }; // Установить глобальный адрес ФУ
+	int GetFUMkRange() { return FUMkRange; }; // Выдать глобальный адрес ФУ
+	void SetFUMkRange(int t) { FUMkRange = t; }; // Установить глобальный адрес ФУ
+	FU* GetBus() { return Bus; }; // Выдать ссылку на шину
+	void SetBus(FU* t) { Bus = t; }; // Установить глобальный адрес ФУ
+	virtual FU* Copy() { return nullptr; }; // Копирование ФУ
+	virtual FU* TypeCopy() { return nullptr; }; // Создать ФУ такого же типа (не копируя контекст)
+
 private:
 //	int ProgSetFaze = 0; // Фаза для установки программы ProgSet, ElseProgSet
 };

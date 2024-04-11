@@ -805,3 +805,13 @@ StreamIntALU::StreamIntALU(void* Dev1) // Копирующий конструктор
 	PreRezProg = Dev->PreRezProg; // Программа, запускаемая перед получением результата
 	OpCode = Dev->OpCode;
 }
+
+FU* StreamIntALU::Copy() // Программа копирования ФУ
+{
+	return new StreamIntALU(Bus, this);
+}
+
+FU* StreamIntALU::TypeCopy() // Создать ФУ такого же типа (не копируя контекст
+{
+	return new StreamIntALU(Bus, nullptr);
+}
