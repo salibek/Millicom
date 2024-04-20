@@ -5,7 +5,7 @@
 
 using namespace std;
 
-int Router::ChennelSearch(int MK) // Поиск канала по МК (Возврашает -1, если канал не найден)
+long int Router::ChennelSearch(long int MK) // Поиск канала по МК (Возврашает -1, если канал не найден)
 {
 	auto i = Channels.begin();
 	for (; i != Channels.end(); i++)
@@ -21,7 +21,7 @@ double Router::DelayGen(channel ch) //Генерация задержки передачи данных
 	return ch.Delay; // Постоянная задержка
 }
 
-void Router::NetRouting(int MK, LoadPoint Load, FU* Sender) // Маршрутизация в сети ФУ, разделенные на распределенные сетора
+void Router::NetRouting(long int MK, LoadPoint Load, FU* Sender) // Маршрутизация в сети ФУ, разделенные на распределенные сетора
 {
 	MK -= FUMkRange; // Убираем лишний индекс
 	vector<int> D; // Дифференциал при отправке по сетке
@@ -45,7 +45,7 @@ void Router::NetRouting(int MK, LoadPoint Load, FU* Sender) // Маршрутизация в с
 		}
 }
 
-void Router::ProgFU(int MK, LoadPoint Load, FU* Sender)
+void Router::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 {
 	if (!(MK < FUMkRange || MK >= FUMkGlobalAdr && MK < FUMkGlobalAdr + FUMkRange)) // Routing
 	{
@@ -67,8 +67,8 @@ void Router::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		DataCount += Load.DataSize() + 4;
 		if (Modeling != nullptr)
 		{
-			MaxMKQueue = max(MaxMKQueue, (int)Modeling->qmk.size()); // Вычисление максимальной длины очереди
-			MaxDataSize =max(MaxDataSize, DataSize); // Вычисление максимального объема данных в буфере
+			MaxMKQueue = max(int(MaxMKQueue), (int)Modeling->qmk.size()); // Вычисление максимальной длины очереди
+			MaxDataSize =max(int(MaxDataSize), int(DataSize)); // Вычисление максимального объема данных в буфере
 			DataSize -= Load.DataSize() + 4; // Обработка МК
 		}
 		LaslMkIp = {MK,Load}; // Запоминание последней пришедшей для маршрутизации МК
@@ -149,7 +149,7 @@ void Router::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		break;
 	case 20: // ChNumOutMk Выдать МК с количеством каналов на роутере
 	{
-		int t = Channels.size();
+		long int t = Channels.size();
 		MkExec(Load, { Cint, &t });
 		break;	}
 	case 25: // ChGatewayOut Выдать указатель на шлюз для текущего канала

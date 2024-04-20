@@ -8,7 +8,7 @@
 #include <regex>
 
 
-void Console::ProgFU(int MK, LoadPoint Load, FU* Sender)
+void Console::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 {
 	MK %= FUMkRange; // Оставить только свои МК
 	switch (MK)

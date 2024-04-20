@@ -61,8 +61,9 @@ void MeanShiftCluster::MoveToPoint(MeanShiftPoint* CenterStart) // Метод установ
 	}	
 }
 
-void MeanShiftCluster::ProgFU(int MK, LoadPoint Load, FU* Sender) // Область для поиска максимума концентрации
+void MeanShiftCluster::ProgFU(long int MK, LoadPoint Load, FU* Sender) // Область для поиска максимума концентрации
 {
+	MK %= FUMkRange;
 	switch (MK)
 	{
 	case 0: // Reset
@@ -109,7 +110,7 @@ double  MeanShiftPoint::dist(vector<double> &a, vector<double> &b) // Вычисление
 	return D;
 }
 
-void MeanShiftPoint::ProgFU(int MK, LoadPoint Load, FU* Sender) // Поведение точки фазового пространства
+void MeanShiftPoint::ProgFU(long int MK, LoadPoint Load, FU* Sender) // Поведение точки фазового пространства
 {
 	switch (MK)
 	{
@@ -233,7 +234,7 @@ void MeanShiftPoint::ProgFU(int MK, LoadPoint Load, FU* Sender) // Поведение точ
 
 }
 
-void MeanShift::ProgFU(int MK, LoadPoint Load, FU* Sender) // Поведение ФУ MeanShift
+void MeanShift::ProgFU(long int MK, LoadPoint Load, FU* Sender) // Поведение ФУ MeanShift
 {
 	switch (MK)
 	{
@@ -300,7 +301,7 @@ void MeanShift::ProgFU(int MK, LoadPoint Load, FU* Sender) // Поведение ФУ MeanS
 		break;
 	case 24: // NRigionOutMk Выдать МК с количеством регионов
 	{
-		int t = Clusters.size();
+		long int t = Clusters.size();
 		MkExec(Load, { Cint,&t });
 		break;
 	}
@@ -409,7 +410,8 @@ void MeanShift::ProgFU(int MK, LoadPoint Load, FU* Sender) // Поведение ФУ MeanS
 		EpsFaze = (EpsFaze + 1) % NDim;
 		break;
 	case 72: // epsAllSet Установить одинаковое количество анализируемых точек для всех осей (по умолчанию 20)
-	{	int t = Load.toInt(20) / 2;
+	{
+		long int t = Load.toInt(20) / 2;
 		for (auto& i : eps)
 			i = t;
 		break;
@@ -430,7 +432,7 @@ void MeanShift::ProgFU(int MK, LoadPoint Load, FU* Sender) // Поведение ФУ MeanS
 	case 87: // NAveragePointCallOut  Выдать среднее количество миграций на один кластер
 	case 88: // NAveragePointCallOutMk Выдать МК со средним количеством миграций на один кластер
 	{
-		int t = 0;
+		long int t = 0;
 		for (auto & i : Clusters)
 			t += i.NExUFCall;
 		if(MK==85)
@@ -455,7 +457,7 @@ void MeanShift::ProgFU(int MK, LoadPoint Load, FU* Sender) // Поведение ФУ MeanS
 	case 91: // NClusterMovesOutMk Выдать МК с количетством итераций миграции кластера с индексом ClusterID во время миграции
 		if (ClusterID >= 0 && ClusterID <= Clusters.size())
 		{
-			int t = Clusters[ClusterID].MigrationHistory.size();
+			long int t = Clusters[ClusterID].MigrationHistory.size();
 			MkExec(Load, { Cint,&t });
 		}
 		break;
@@ -464,7 +466,7 @@ void MeanShift::ProgFU(int MK, LoadPoint Load, FU* Sender) // Поведение ФУ MeanS
 	case 94: // NAverageClusterMovesOut Выдать среднее количетство итераций миграции кластера
 	case 95: // NAverageClusterMovesOutMk Выдать МК со средним количетством итераций миграции кластера
 	{
-		int t = 0;
+		long int t = 0;
 		for (auto i : Clusters)
 			t += i.MigrationHistory.size();
 		if(MK==92)

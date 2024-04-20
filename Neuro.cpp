@@ -1,8 +1,9 @@
 #include "stdafx.h"
 #include "Neuro.h"
 
-void Neuro::ProgFU(int MK, LoadPoint Load, FU* Sender)
+void Neuro::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 {
+	MK %= FUMkRange;
 	switch (MK)
 	{
 	case 0:// Reset

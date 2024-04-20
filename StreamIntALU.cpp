@@ -1,7 +1,8 @@
 #include "StreamIntALU.h"
 #include <limits>
-void StreamIntALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
+void StreamIntALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 {
+	if (PrefixProg!=nullptr) ProgExec(PrefixProg); // Запуск предварительной программы
 	if (!Active && MK < 900) return; //При сброшенном флаге активности выполняются общие МК
 	int MKinitial = MK;
 	MK %= FUMkRange;
@@ -14,11 +15,17 @@ void StreamIntALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		Ready = 0;
 		RezStack.clear();
 		RezExtStack.clear();
-		ReseiverMk.clear();
-		ReseiverContexts.clear();
+		ReceiverMk.clear();
+		ReceiverContexts.clear();
 		break;
 	case 1: // Set Установить результат вычислений
 		Rez = Load.toInt();
+		break;
+	case 3: // RoutProg Программа при несовпадении адреса ФУ с его собственным адресом
+		RoutProg = Load.Point;
+		break;
+	case 4: // SelfAdrProg Программа при совпадении адреса ФУ с его собственным адресом
+		RoutProg = Load.Point;
 		break;
 	case 5: //Out  Выдать результат
 		Load.Write(Rez);
@@ -31,7 +38,7 @@ void StreamIntALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		break;
 	case 11: //OpCounterOutMk Выдать МК со счетчиком накопленных операндов
 	{
-		int t = OperandsCounter;
+		long int t = OperandsCounter;
 		MkExec(Load, { Cint, &t });
 	}
 	break;
@@ -118,18 +125,18 @@ void StreamIntALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 			RezStack.pop_back();
 		}
 		else {
-			int temp = RezStack.back();
+			long int temp = RezStack.back();
 			RezStack.pop_back();
 			MkExec(Load, { Cint, &temp });
 		}
 	}
 	break;
 	case 93: // StackCounterOut Выдать количество элементов в стеке
-		Load.Write((int)RezStack.size());
+		Load.Write((long int)RezStack.size());
 		break;
 	case 94: // StackCounterOut Выдать МК с количеством элементов в стеке
 	{
-		int t = RezStack.size();
+		long int t = RezStack.size();
 		MkExec(Load, { Cint,&t });
 		break;
 	}
@@ -171,7 +178,7 @@ void StreamIntALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 			break;
 		case 101:
 		{
-			int t = RezExtStack.back();
+			long int t = RezExtStack.back();
 			MkExec(Load, { Cint,&t });
 			break;
 		}
@@ -183,7 +190,7 @@ void StreamIntALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		}
 		case 103:
 		{
-			int t = RezExtStack.back();
+			long int t = RezExtStack.back();
 			RezExtStack.pop_back();
 			MkExec(Load, { Cint,&t });
 			break;
@@ -199,16 +206,22 @@ void StreamIntALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		OperandsCounter = Load.toInt();
 		break;
 	case 160: // ReceiverReset Сброс установок получателей результата
-		ReseiverMk.clear();
-		ReseiverContexts.clear();
+		ReceiverMk.clear();
+		ReceiverContexts.clear();
 		break;
-	case 161: // ReceiverSet Установить ссылку на приемника результата (Устанавливается перед установкой МК)
-		ReseiverContexts.push_back((FU*)Load.Point);
+	case 161: // ReceiverAdd Установить ссылку на приемника результата (Устанавливается перед установкой МК)
+		ReceiverContexts.push_back((FU*)Load.Point);
 		break;
-	case 162: // ReceiverMkSet Установить МК для приемника результата 
-		if (ReseiverMk.size() == ReseiverContexts.size())
-			ReseiverContexts.push_back(nullptr);
-		ReseiverMk.push_back(Load.toInt());
+	case 162: // ReceiverMkAdd Установить МК для приемника результата 
+		if (ReceiverMk.size() == ReceiverContexts.size())
+			ReceiverContexts.push_back(nullptr);
+		ReceiverMk.push_back(Load.toInt());
+		break;
+	case 165: // OutVarReset Добавить переменную для записи результата
+		OutVars.clear();
+		break;
+	case 166: // OutVarSet Добавить переменную для записи результата
+		OutVars.push_back(Load);
 		break;
 	case 190: // RezProgSet Установить ссылку на подпрограмму, запускаемую при получении результата   
 		RezProg = Load.Point;
@@ -250,7 +263,7 @@ void StreamIntALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 			ProgExec(NoOperandErrProg);
 		}
 		else {
-			int temp = Operands[(MK - 200) / 5];
+			long int temp = Operands[(MK - 200) / 5];
 			MkExec(Load, { Cint, &temp });
 		}
 		break;
@@ -271,7 +284,7 @@ void StreamIntALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 			OperandsCounter = 0;
 		}
 		{
-			int t = (MK - 200) / 5;
+			long int t = (MK - 200) / 5;
 			while (Operands.size() < t)
 			{
 				Operands.push_back(0);
@@ -323,7 +336,7 @@ void StreamIntALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 			ProgExec(OpIndErrProg);
 			break;
 		}
-		int temp = Operands[OpInd];
+		long int temp = Operands[OpInd];
 		MkExec(Load, { Cint, &temp });
 		break;
 	}
@@ -335,102 +348,186 @@ void StreamIntALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 	case 260: // OperationProgSet Установить специальную операцию    
 		OperetionProg = Load.Point;
 		break;
-	case 280: // ZProgSet Установить программу при == 
+	case 280: // ZeroProgSet Установить программу при == 
 		ZProg = Load.Point;
 		break;
-	case 281: // NZProgSet Установить программу при !=
+	case 281: // NotZeroProgSet Установить программу при !=
 		BZProg = Load.Point;
 		break;
-	case 282: // LProgSet   Установить программу при <
+	case 282: // LessProgSet   Установить программу при <
 		LProg = Load.Point;
 		break;
-	case 283: // BProgSet   Установить программу при >
+	case 283: // BiggerProgSet   Установить программу при >
 		BProg = Load.Point;
 		break;
-	case 284: // LZProgSet   Установить программу при <=
+	case 284: // LessZeroProgSet   Установить программу при <=
 		LZProg = Load.Point;
 		break;
-	case 285: // BZProgSet   Установить программу при >=
+	case 285: // BiggerZProgSet   Установить программу при >=
 		BZProg = Load.Point;
 		break;
-	case 290: // ZExec   Выполнить программу при ==
+	case 290: // ZeroExec   Выполнить программу при ==
 		if (Rez == 0)
 			ProgExec(Load);
 		break;
-	case 291: // LExec    Выполнить программу при <
+	case 291: // LessExec    Выполнить программу при <
 		if (Rez < 0)
 			ProgExec(Load);
 		break;
-	case 292: // BExec    Выполнить программу при >
+	case 292: // BiggerExec    Выполнить программу при >
 		if (Rez > 0)
 			ProgExec(Load);
 		break;
-	case 293: // LZExec    Выполнить программу при <=
+	case 293: // LessZeroExec    Выполнить программу при <=
 		if (Rez <= 0)
 			ProgExec(Load);
 		break;
-	case 294: // BZExec    Выполнить программу при >=
+	case 294: // BiggerZeroExec    Выполнить программу при >=
 		if (Rez >= 0)
 			ProgExec(Load);
 		break;
-	case 296: // NZExec    Выполнить программу при !=
+	case 296: // NotZeroExec    Выполнить программу при !=
 		if (Rez != 0)
 			ProgExec(Load);
 		break;
-	case 300: // ZFOut Выдать флаг нуля
+	case 300: // ZeroOut Выдать флаг нуля
 		Load.Write(Rez == 0);
 		break;
-	case 301: // ZFOutMk Выдать МК с флагом нуля
+	case 301: // ZeroOutMk Выдать МК с флагом нуля
 	{
 		bool temp = Rez == 0;
 		MkExec(Load, { Cbool, &temp });
 		break;
 	}
-	case 305: // BOut  Выдать флаг больше
+	case 305: // BiggerOut  Выдать флаг больше
 		Load.Write(Rez > 0);
 		break;
-	case 306: // BOutMk Выдать МК с флагом больше
+	case 306: // BiggerOutMk Выдать МК с флагом больше
 	{
 		bool temp = Rez > 0;
 		MkExec(Load, { Cbool, &temp });
 	}
 	break;
-	case 310: // LOut  Выдать флаг меньше
+	case 310: // LessOut  Выдать флаг меньше
 		Load.Write(Rez < 0);
 		break;
-	case 311: // LOutMk BOutMk Выдать МК с флагом меньше
+	case 311: // LessOutMk BOutMk Выдать МК с флагом меньше
 	{
 		bool temp = Rez < 0;
 		MkExec(Load, { Cbool, &temp });
 		break;
 	}
-	case 315: // BZOut Выдать флаг больше или нуль
+	case 315: // BiggerZeroOut Выдать флаг больше или нуль
 		Load.Write(Rez >= 0);
 		break;
-	case 316: // BZOutMk BOutMk Выдать МК с флагом больше или нуль
+	case 316: // BiggerZeroOutMk BOutMk Выдать МК с флагом больше или нуль
 	{
 		bool temp = Rez >= 0;
 		MkExec(Load, { Cbool, &temp });
 		break;
 	}
-	case 320: // LZOut Выдать флаг меньше или нуль
+	case 320: // LessZeroOut Выдать флаг меньше или нуль
 		Load.Write(Rez <= 0);
 		break;
-	case 321: // LZOutMk BOutMk Выдать МК с флагом меньше или нуль
+	case 321: // LessZeroOutMk BOutMk Выдать МК с флагом меньше или нуль
 	{
 		bool temp = Rez <= 0;
 		MkExec(Load, { Cbool, &temp });
 		break;
 	}
-	case 325: // NZOut  Выдать флаг не нуль
+	case 325: // NotZeroOut  Выдать флаг не нуль
 		Load.Write(Rez != 0);
 		break;
-	case 326: // NZOutMk BOutMk Выдать МК с флагом не нуль   
+	case 326: // NotZeroOutMk Выдать МК с флагом не нуль   
 	{
 		bool temp = Rez != 0;
 		MkExec(Load, { Cbool, &temp });
 		break;
 	}
+
+
+	case 335: // RoutedMkOut Выдать маршрутизированную МК
+		Load.Write(IpForMkAdrOut.atr);
+		break;
+	case 336: // RoutedMkOutMk Выдать МК с маршрутизированной МК
+		MkExec(Load, { Cint, &IpForMkAdrOut.atr });
+		break;
+	case 337: // RoutedLoadOut  Выдать маршрутизированную нагрзуку МК
+		Load.Write(IpForMkAdrOut.atr);
+		break;
+	case 338: // RoutedLoadOutMk Выдать МК с маршрутизированной нагрузкой МК
+		MkExec(Load, IpForMkAdrOut.Load);
+		break;
+	case 339: // RoutedIpOut  Выдать маршрутизированную ИП
+		//Load.Write(IpForMkAdrOut);
+		break;
+	case 340: // RoutedIpOutMk Выдать МК с маршрутизированной ИП
+		MkExec(Load, { CIP, &IpForMkAdrOut });
+		break;
+
+	case 345: // AdrBufAdd Добавить адрес в буфер адресов
+		AdrBuf.push_back(Load.Point);
+		break;
+	case 346: // AdrBufClear Очистить буфер адресов
+		AdrBuf.clear();
+		break;
+	case 347: // AdrBufAllOutMk Выдать МК на все адреса из AdrBuf (на входе МК)
+		for (auto& i : AdrBuf)
+			if (Load.isEmpty())
+				MkExec(MK, Load, i);//??? Проверить правильность работы
+			else
+				MkExec(Load, Load, i);
+		break;
+
+	case 350: // AdrBuf_0_OutMk Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 0
+		if (Load.isEmpty()) MkExec(MK, Load, (FU*)AdrBuf[0]); else MkExec(Load, Load, (FU*)AdrBuf[0]);
+		break;
+	case 351: // AdrBuf_1_OutMk Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 1
+		if (Load.isEmpty()) MkExec(MK, Load, (FU*)AdrBuf[1]); else MkExec(Load, Load, (FU*)AdrBuf[1]);
+		break;
+	case 352: // AdrBuf_2_OutMk Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 2
+		if (Load.isEmpty()) MkExec(MK, Load, (FU*)AdrBuf[2]); else MkExec(Load, Load, (FU*)AdrBuf[2]);
+		break;
+	case 353: // AdrBuf_3_OutMk Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 3
+		if (Load.isEmpty()) MkExec(MK, Load, (FU*)AdrBuf[3]); else MkExec(Load, Load, (FU*)AdrBuf[3]);
+		break;
+	case 354: // AdrBuf_4_OutMk Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 4
+		if (Load.isEmpty()) MkExec(MK, Load, (FU*)AdrBuf[4]); else MkExec(Load, Load, (FU*)AdrBuf[4]);
+		break;
+	case 355: // AdrBuf_5_OutMk Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 5
+		if (Load.isEmpty()) MkExec(MK, Load, (FU*)AdrBuf[5]); else MkExec(Load, Load, (FU*)AdrBuf[5]);
+		break;
+	case 356: // AdrBuf_6_OutMk Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 6
+		if (Load.isEmpty()) MkExec(MK, Load, (FU*)AdrBuf[6]); else MkExec(Load, Load, (FU*)AdrBuf[6]);
+		break;
+	case 357: // AdrBuf_7_OutMk Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 7
+		if (Load.isEmpty()) MkExec(MK, Load, (FU*)AdrBuf[7]); else MkExec(Load, Load, (FU*)AdrBuf[7]);
+		break;
+	case 358: // AdrBuf_8_OutMk Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 8
+		if (Load.isEmpty()) MkExec(MK, Load, (FU*)AdrBuf[8]); else MkExec(Load, Load, (FU*)AdrBuf[8]);
+		break;
+	case 359: // AdrBuf_9_OutMk Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 9
+		if (Load.isEmpty()) MkExec(MK, Load, (FU*)AdrBuf[9]); else MkExec(Load, Load, (FU*)AdrBuf[9]);
+		break;
+	case 360: // AdrBuf_10_OutMk Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 10
+		if (Load.isEmpty()) MkExec(MK, Load, (FU*)AdrBuf[10]); else MkExec(Load, Load, (FU*)AdrBuf[10]);
+		break;
+	case 361: // AdrBuf_11_OutMk Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 11
+		if (Load.isEmpty()) MkExec(MK, Load, (FU*)AdrBuf[11]); else MkExec(Load, Load, (FU*)AdrBuf[11]);
+		break;
+	case 362: // AdrBuf_12_OutMk Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 12
+		if (Load.isEmpty()) MkExec(MK, Load, (FU*)AdrBuf[12]); else MkExec(Load, Load, (FU*)AdrBuf[12]);
+		break;
+	case 363: // AdrBuf_13_OutMk Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 13
+		if (Load.isEmpty()) MkExec(MK, Load, (FU*)AdrBuf[13]); else MkExec(Load, Load, (FU*)AdrBuf[13]);
+		break;
+	case 364: // AdrBuf_14_OutMk Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 14
+		if (Load.isEmpty()) MkExec(MK, Load, (FU*)AdrBuf[14]); else MkExec(Load, Load, (FU*)AdrBuf[14]);
+		break;
+	case 365: // AdrBuf_15_OutMk Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 15
+		if (Load.isEmpty()) MkExec(MK, Load, (FU*)AdrBuf[15]); else MkExec(Load, Load, (FU*)AdrBuf[15]);
+		break;
+
 //	case 498: // Rand Генерация дробного числа от 0 до Load
 	case 499: // RandInt Генерация случайного числа от 0 до Load (по умолчанию от 0 до Rez)
 		if (WrongFormatCheck(Load)) break;
@@ -718,6 +815,7 @@ void StreamIntALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		CommonMk(MK, Load, Sender);
 		break;
 	}
+	if (PostfixProg != nullptr) ProgExec(PostfixProg); // Запуск предварительной программы
 }
 
 void StreamIntALU::RezExec() // Выполнение подпрограмм при получении результата
@@ -725,9 +823,11 @@ void StreamIntALU::RezExec() // Выполнение подпрограмм при получении результата
 	if (Ready == 2) return;
 	Ready = 1;
 	if (!OutRezBlock)//Если не заблокирована рассылка МК с результатами вычислений
-		for (int i = 0; i < ReseiverMk.size(); i++) { // Рассылка МК с результатами
-			MkExec(ReseiverMk[i], { Cint, &Rez }, ReseiverContexts[i]);
+		for (int i = 0; i < ReceiverMk.size(); i++) { // Рассылка МК с результатами
+			MkExec(ReceiverMk[i], { Cint, &Rez }, ReceiverContexts[i]);
 		}
+	for (auto& i : OutVars) // Записать результат в выходные переменные
+		i.Write(Rez);
 	ProgExec(RezProg);
 	if (Rez == 0) ProgExec(ZProg);
 	if (Rez != 0) ProgExec(NZProg);
@@ -737,7 +837,7 @@ void StreamIntALU::RezExec() // Выполнение подпрограмм при получении результата
 	if (Rez < 0) ProgExec(LProg);
 }
 
-void StreamIntALU::OperandsClear(int MK) // Сброс операндов при начале обоработки новой операции
+void StreamIntALU::OperandsClear(long int MK) // Сброс операндов при начале обоработки новой операции
 {
 	//	if (Ready || OpCode != MK && OpCode != MK - 1) 
 	{
@@ -774,10 +874,10 @@ StreamIntALU::StreamIntALU(void* Dev1) // Копирующий конструктор
 	copy(Dev->RezStack.begin(), Dev->RezStack.end(), RezStack.begin());
 	Operands.resize(Dev->RezExtStack.size());
 	copy(Dev->RezExtStack.begin(), Dev->RezExtStack.end(), RezExtStack.begin());
-	RezStack.resize(Dev->ReseiverMk.size());
-	copy(Dev->ReseiverMk.begin(), Dev->ReseiverMk.end(), ReseiverMk.begin());
-	Operands.resize(Dev->ReseiverContexts.size());
-	copy(Dev->ReseiverContexts.begin(), Dev->ReseiverContexts.end(), ReseiverContexts.begin());
+	RezStack.resize(Dev->ReceiverMk.size());
+	copy(Dev->ReceiverMk.begin(), Dev->ReceiverMk.end(), ReceiverMk.begin());
+	Operands.resize(Dev->ReceiverContexts.size());
+	copy(Dev->ReceiverContexts.begin(), Dev->ReceiverContexts.end(), ReceiverContexts.begin());
 	Ready = Dev->Ready;
 	OutRezBlock = Dev->OutRezBlock;
 	Rez = Dev->Rez;

@@ -7,14 +7,14 @@
 
 class MkRef { // Парочка Мк и ссылка для записи результата
 public:
-	int Mk = -1;
+	long int Mk = -1;
 	LoadPoint Ref = {0,nullptr};
 };
 
 class Console : public FU
 {
 private:
-	map<int, string> AtrMnemo; // Атрибуты мнемоник
+	map<long int, string> AtrMnemo; // Атрибуты мнемоник
 	string prefix="";
 	string filename = "";
 	ofstream fout; // ??
@@ -37,7 +37,7 @@ private:
 	string inStr; // Последняя введенная строка
 	void* InputFormatErrProg = nullptr; // Программа ошибки формата входных данных
 public:
-	void ProgFU(int MK, LoadPoint Load, FU* Sender = nullptr) override;
+	void ProgFU(long int MK, LoadPoint Load, FU* Sender = nullptr) override;
 	FU* Copy() override; // Программа копирования ФУ
 	FU* TypeCopy() override; // Создать ФУ такого же типа (не копируя контекст
 	Console(FU* BusContext, FU* Templ) : FU(BusContext) { Bus = BusContext; FUtype = 1; };

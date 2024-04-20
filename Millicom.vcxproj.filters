@@ -173,9 +173,6 @@
     <ClInclude Include="Gauss.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="GaussMatr.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
     <ClInclude Include="CellularAutomata.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
@@ -189,9 +186,6 @@
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="StreamFloatALU.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="Header.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="StreamManager.h">

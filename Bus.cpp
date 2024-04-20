@@ -16,14 +16,14 @@ void BusFU::FUTypesIni()
 	FUTypeCorrect = 0;
 }
 
-void BusFU::ProgFU(int MK, LoadPoint Load, FU* Sender)
+void BusFU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 {
 	ICVect* ipVect; // Указатель на вектор ИК
 	if (MK >= FUMkRange*2)
 	{
 		int FU_num = MK / FUMkRange;
 		if(FU_num<FUs.size())
-			FUs[FU_num]->ProgFU(MK%FUMkRange, Load, this);
+			FUs[FU_num]->ProgFU(MK, Load, this);
 	}
 	else
 		switch (MK%FUMkRange)
@@ -52,7 +52,7 @@ void BusFU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 			break;
 		case 21: // NFUOutMk
 		{
-			int t= FUs.size();
+			long int t= FUs.size();
 			MkExec(Load, {Cint,&t});
 			break;
 		}
@@ -71,7 +71,7 @@ void BusFU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 			break;
 		case 41: // LastFUMkRangeOutMk Выдать МК с началом МК-диапазона последнего ФУ 
 			{
-				int t = FUMkRange * (FUs.size() - 1);
+				long int t = FUMkRange * (FUs.size() - 1);
 				MkExec(Load, { Cint, &t });
 			}
 			break;
@@ -129,7 +129,7 @@ void BusFU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 				ProgExec(Load);
 			break;
 		case 155:// FUTypeCorrectSet Установить коррекцию номера типа ФУ (для переноса ОА-программы на другую ОА-платформу)
-			FUTypeCorrect = *(int *)Load.Point;
+			FUTypeCorrect = Load.toInt();
 			break;
 		default:
 			CommonMk(MK, Load);

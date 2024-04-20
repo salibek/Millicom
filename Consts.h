@@ -39,6 +39,7 @@ const unsigned int DIPArray2 = 1007, DICArray2 = 1008, DPPointArray2 = 1009, DGr
 
 // Типы ФУ
 const int FUBus = 0, FUCons = 1, FUStrGen = 2, FULex = 3, FUList = 4, FUFind = 5;
+const int FUStreamIntALU = 25, FUStreamFloatALU = 12;
 
 // Общие атрибуты
 const int ProgAtr = -100, Atr = -60, SubObj = -6, GotoAtr=-99;
@@ -59,16 +60,21 @@ const int SchedulerSetMk = 918; // МК установка планировщи�
 const int MkGlobalRangeSet = 949; // Установить глобальный адрес МК для ФУ
 const int MkGlobalRangeOutMk = 948; // Выдать глобальный адрес МК для ФУ
 const int MkGlobalRangeOutMkMK = 947; // Выдать МК с глобальным адресом МК для ФУ
-const int EventserCurrentTimeOutMk = 50; // Ìê äëÿ êîíòðîëëåðà ñîáûòèé, ÷òîáû âûäàòü òåêóùåå ìîäåëüíîå âðåìÿ
-const int EventserFUSetMk = 10; // ÌÊ êîíòðîëëåðà ñîáûòèé äëÿ óñòàíîâêè êîíòåêñòà ÔÓ äëÿ îïèñàíèÿ ñîáûòèÿ
-const int EventTimeSetMk = 11; // ÌÊ êîíòðîëëåðà ñîáûòèé äëÿ óñòàíîâêè âðåìåíè ñîáûòèÿ, èíèöèèðîâàííîãî ïëàíèðîâùèêîì âû÷èñëèòåëüíîãî ïðîöåññà
-const int AwaitMkSetMk = 15; //  ÌÊ êîíòðîëëåðà ñîáûòèé äëÿ óñòàíîâêè âðåìåíè ïðèõîäà óäàëåííîé ÌÊ
+const int EventserCurrentTimeOutMk = 50; // Мк для контроллера событий, чтобы выдать текущее модельное время
+const int EventserFUSetMk = 10; // МК контроллера событий для установки контекста ФУ для описания события
+const int EventTimeSetMk = 11; // МК контроллера событий для установки времени события, инициированного планировщиком вычислительного процесса
+const int AwaitMkSetMk = 15; //  МК контроллера событий для установки времени прихода удаленной МК
 const int ActiveMk = 902; // МК установки флага активности ФУ
+const int FUMkRangeSetMk = 946; // Устаровить интервал индексов МК
+const int ParentSetMk = 945; // Устаровить интервал индексов МК
+const int ParentOutMk = 944; // Выдать ссылку на родителя
+const int ParentOutMkMk = 943; // Выдать МК со ссылкой на родителя
+
 bool isIPinIC(void* iP, void* iC); //проверка, что ИК входит в ИП
 
-class FU;
-class LoadPoint;
-class ip;
+class FU; // ФУ
+class LoadPoint; // Указатель на нагрзуку
+class ip; // Информационная пара
 
 typedef  vector<vector<ip>*> ICVect;
 typedef  vector<ip>* IC_type;
@@ -76,14 +82,14 @@ typedef  vector<LoadPoint>* LoadVect_type;
 
 class LoadPoint
 {
-	void VectorPrint(unsigned int Type, void* P, map<int, string > AtrMnemo, string offset, string Sep, string End, string ArrayBracketStart, string ArrayBracketFin); // Печать вектора
-	void MatrixPrint(unsigned int Type, void* P, map<int, string > AtrMnemo, string offset, string Sep, string End, string ArrayBracketStart, string ArrayBracketFin); // Пачать матрицы
+	void VectorPrint(unsigned int Type, void* P, map<long int, string > AtrMnemo, string offset, string Sep, string End, string ArrayBracketStart, string ArrayBracketFin); // Печать вектора
+	void MatrixPrint(unsigned int Type, void* P, map<long int, string > AtrMnemo, string offset, string Sep, string End, string ArrayBracketStart, string ArrayBracketFin); // Пачать матрицы
 public:
 	unsigned int Type = 0; // Неизвестный тип
 	void *Point=nullptr; // Указатель на локацию данных
-	int Ind = -1; // Индекс поля в ИК или векторе  Для ИК по модулю 3. 0 - адрес ИП, 1- адрес Атрибута, 2 - адрес нагрузки
+	long int Ind = -1; // Индекс поля в ИК или векторе  Для ИК по модулю 3. 0 - адрес ИП, 1- адрес Атрибута, 2 - адрес нагрузки
 	unsigned int getType(); // Выдать тип нагрузки
-	int DataSize(); // Выдать размер данных в нагрузке
+	long int DataSize(); // Выдать размер данных в нагрузке
 	bool isDigit(); // Число?}
 	static bool isDigit(unsigned int type) { unsigned int t = type; return t >> 1 == Dint || t >> 1 == Dchar || t >> 1 == Dfloat || t >> 1 == Ddouble; }; // 
 	bool isDigitBool(); // Число или булеан?
@@ -130,7 +136,10 @@ public:
 	static LoadPoint IndLoadReturn(LoadPoint LP); // Возвратить указатель на нагрузку индексированного элемента
 	bool isEmpty() { return Point == nullptr; }; // Проветка указателя на null
 	bool isVect(); // Вектор ли нагрузка
+	bool isConst() { return Type % 2; }; // Определить является ли ссылка константой
 	static bool isVect(unsigned int type) { return (type >> 1) == DLoadVect; }; // Вектор ли нагрузка
+	bool isFU() { return Type == TFU || Type == CFU; };// Определить указатель на ФУ
+	int Write(long int x); // return 0 - корректная запись, 1 - несоотвествие типов
 	int Write(int x); // return 0 - корректная запись, 1 - несоотвествие типов
 	int Write(size_t x);
 	int Write(double x);
@@ -154,7 +163,9 @@ public:
 	static unsigned int  TypeMinimize(double x); // Минимизировать тип, т.е. было целое число - возвращается int и т.д.
 
 	int Write(void* x) { Point = x; return 0; };
-	int Write(FU* x) { if (Type == TFU) Point = x; else return 1; return 0;}; // Ссылка на контекст ФУ
+	int Write(FU* x) { if (Type == TFU) Point = x; else return 1; return 0; }; // Ссылка на контекст ФУ
+	//int Write(ip x) {};
+	//int Write(ip x) { if (Type == TIP) ((ip*)Point)->atr = x.atr; else return 1; return 0; }; // Ссылка на контекст ФУ
 
 	void WriteVar(LoadPoint x) { Point = x.Point; Type = x.Type; Type |= 1; Type--; }; //Записать ссылку и сделать ее переменной
 	void WriteConst(LoadPoint x) {Point = x.Point; Type = x.Type; Type |= 1;}; // Записать ссылку и сделать ее константой
@@ -166,7 +177,7 @@ public:
 
 	string toStr(string define=""); // Первод в string
 	bool toBool(bool define = false); // Перевод в bool
-	int toInt(int define=0); // Перевод в integer
+	long int toInt(long int define=0); // Перевод в integer
 	double toDouble(double define=0); // Перевод в double
 	float toFloat(float define=0);// Перевод во float
 	char toChar() { return Point == nullptr ? 0 : *(char*)Point; }; // Перевод в integer
@@ -176,7 +187,7 @@ public:
 	void VarClear(); // Сброс нагрузки ИП в том числе и с переменной (переменная стирается)
 	void* VarClone(); // Копирование значения нагрузки
 	void VarDel();// Удаление нагрузки ИП
-	void print(map<int, string > AtrMnemo = {}, string offset = "", string Sep = " ", string End = "\n", string quote = """",  string ArrayBracketStart = "[", string ArrayBracketFin = "]", map<void*, int> *AdrMap = nullptr); // Параметр - указатель на табл. мнемоник атрибутов
+	void print(map<long int, string > AtrMnemo = {}, string offset = "", string Sep = " ", string End = "\n", string quote = """",  string ArrayBracketStart = "[", string ArrayBracketFin = "]", map<void*, int> *AdrMap = nullptr); // Параметр - указатель на табл. мнемоник атрибутов
 	LoadPoint Clone(bool All=false); // Дублировать нагрузку (All - флаг копирования любых нагрузок, в том числе и переменных)
 	static LoadPoint Clone(LoadPoint LP); // // Дублировать нагрузку (вариант с передаваемой в качестве параметра нагрузки)
 	void ConstTypeSet(bool F = true) { if (F)Type |= 1; else VarTypeSet(); }; // Установить тип 'константа'
@@ -197,7 +208,7 @@ public:
 class ip // Информационная пара
 {
 public:
-	int atr = 0;
+	long int atr = 0;
 	LoadPoint Load = {0, nullptr }; // Указатель на нагрузку с типом даннных
 	~ip() { }//Load.Clear(); };
 	void copy(ip *IP)// Копирование ИП
@@ -272,7 +283,7 @@ public:
 	vector<ipSender> qmk; // Очередь МК для моделирования
 	multimap<double, ipSender> qAwaitMk; // Очередь ожидающих МК для моделирования (на находятся в процессе передачи к ФУ, например, во время передачи по сети)
 	bool ManualMode = false; // Режим ручного управления (для моделирования)
-	map<int, double> MkTime; // Время выполнения операций (для моделирования)
+	map<long int, double> MkTime; // Время выполнения операций (для моделирования)
 	void* scheduler = nullptr; // Указатель на контекст планировщика вычислений
 	FU* eventser = nullptr; // Ссылка на контроллер событий
 	void EventModelingPrint(); // Вывести состояние моделирования ФУ
@@ -280,7 +291,7 @@ public:
 
 class FU {  // Ядро функционального устройства
 public:
-	virtual void ProgFU(int MK, LoadPoint Load, FU* Sender) {}; // Реализация логики работы ФУ
+	virtual void ProgFU(long int MK, LoadPoint Load, FU* Sender) {}; // Реализация логики работы ФУ
 	void Scheduling(bool SchedulerFlag); // Запуск МК после разрешенрия планировщика
 	void MkAwait(int MK, LoadPoint Load, FU* Sender, double Delay); // Постановка МК для ожидания прихода
 	int FUtype = 0; // Тип ФУ
@@ -291,7 +302,7 @@ public:
 	FU* Alu = nullptr; // Ссылка на АЛУ
 	bool ALUCreating = false; // Флаг создания АЛУ
 	FU* Parent = nullptr; // Ссылка на родительский ФУ
-	int FUInd = -1, FUInd2=-1; // Индексы ФУ
+	long int FUInd = -1, FUInd2=-1; // Индексы ФУ
 	int  FUMkGlobalAdr = 0; // Глобальный адрес ФУ
 
 	FUModeling *Modeling=nullptr; // Моделирование
@@ -303,8 +314,8 @@ public:
 		if (ALUCreating) delete Alu; // Уничтожаем самостоятельно созданнного АЛУ
 	};
 
-	void MkExec(int MK, LoadPoint Load, FU* BusContext = nullptr, bool Ext = false); // Выполнить одну милликоманду 
-	void MkExec(LoadPoint MK, LoadPoint Load, FU* BusContext = nullptr, bool Ext=false); // Выдача МК с нагрузкой
+	void MkExec(int MK, LoadPoint Load, void* BusContext = nullptr, bool Ext = false); // Выполнить одну милликоманду 
+	void MkExec(LoadPoint MK, LoadPoint Load, void* BusContext = nullptr, bool Ext=false); // Выдача МК с нагрузкой
 	void ProgExec(void* Uk, unsigned int CycleMode = 0, FU* Bus = nullptr, vector<ip>::iterator* Start = nullptr); // Исполнение программы из ИК
 	void ProgExec(LoadPoint Uk, unsigned int CycleMode = 0, FU* Bus = nullptr, vector<ip>::iterator* Start = nullptr); // Исполнение программы из ИК
 	void ProgNExec(vector<void*> Uk); // Исполнение нескольких программ из ИК

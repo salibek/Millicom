@@ -11,7 +11,7 @@ class BusFU : public FU {
 public:
 	BusFU(FU* BusContext, FU* Templ) : FU(BusContext) { Bus = BusContext; FUTypesIni(); FUtype = 0; };
 	BusFU() : FU() { Bus = this; FUTypesIni(); };
-	void ProgFU(int MK, LoadPoint Load, FU* Sender = nullptr) override;
+	void ProgFU(long int MK, LoadPoint Load, FU* Sender = nullptr) override;
 	FU* Copy() override; // Программа копирования ФУ
 	FU* TypeCopy() override; // Создать ФУ такого же типа (не копируя контекст
 	FuFabric FUTypes;
@@ -22,10 +22,10 @@ public:
 //		StreamIntALUIni, StreamIntALUManagerIni, MatPlotIni };
 	vector <FU *> FUs; // Вектор указателей на контексты ФУ
 	FU * FUTempl = nullptr; // Указатель на контекст шаблона ФУ
-	int FUMkRange = 1000; // Диапазон МК для каждого ФУ
-	int FUTypeCorrect; // Коррекция номера типы ФУ (для согласования со старой ОА-средой)
+	long int FUMkRange = 1000; // Диапазон МК для каждого ФУ
+	long int FUTypeCorrect; // Коррекция номера типы ФУ (для согласования со старой ОА-средой)
 	bool InterpretatorMode = false; // Режим интерпретатора (если установлено, то выполняется МК InterpretatorExec
-	int Ind = 0, Ind2 = 0; // Индексы ФУ, управляемых Шиной
+	long int Ind = 0, Ind2 = 0; // Индексы ФУ, управляемых Шиной
 private:
 	void FUTypesIni();
 };

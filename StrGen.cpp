@@ -5,8 +5,9 @@
 #include <iostream>
 using namespace std;
 
-void StrGen::ProgFU(int MK, LoadPoint Load, FU* Sender)
+void StrGen::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 {
+	MK %= FUMkRange;
 	switch (MK)
 	{
 	case 0: //Reset

@@ -76,6 +76,6 @@ void Navigator::IpLoadPushGoTo()
 	}
 }
 
-int Navigator::size() {
+long int Navigator::size() {
 	return currentPos->size();
 }

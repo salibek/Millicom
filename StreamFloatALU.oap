@@ -14,6 +14,7 @@ MainBus.FUTypeCorrectSet=-96 // Корректировка номера типа ФУ для переноса на нов
 
 NewFU={Mnemo="StreamALU" FUType=FUStreamFloatALU} // Создание АЛУ 
 NewFU={Mnemo="StreamALU2" FUType=FUStreamFloatALU} // Создание второго АЛУ
+NewFU={Mnemo="StreamManager" FUType=FUStreamManager} // Создание второго АЛУ
 NewFU={Mnemo="Console" FUType=FUConsNew} // Создание консоли вывода
 
 MainBus.PartialResetSet \\ Запомнить число созданных ФУ
@@ -22,7 +23,20 @@ MainBus.ModeSet=2
 StreamALU.Set=10 // Установка регистра результата
 StreamALU.OutMk=Console.OutLn // Вывод на консоль содержимого регистра результата
 
-StreamALU.ReceiverMkSet=StreamALU2.Sub2 //Назначение приемником реультата второго АЛУ
-StreamALU.ReceiverMkSet=Console.OutLn//Назначение приемником реультата консоли
+StreamALU.ReceiverMkAdd=StreamALU2.Sub2 //Назначение приемником реультата второго АЛУ
+StreamALU.ReceiverMkAdd=Console.OutLn//Назначение приемником реультата консоли
 StreamALU.Add // Первый операнд сложения из регистра результата
 StreamALU.Add=3 // Второй операнд сложения
+
+StreamALU.ContextOutMk=StreamALU2.AdrBufAdd
+StreamALU2.NoSelfAdrProg={FUStreamFloatALU.AdrBuf_0_OutMk}
+
+StreamALU.ContextOutMk=StreamManager.DevAdd
+StreamALU2.ContextOutMk=StreamManager.DevAdd
+
+StreamManager.Mk0Set=StreamALU.Sqr
+StreamManager.IndSet=1
+StreamManager.MkSet=StreamALU.Sqr
+StreamALU2.PrefixProgSet={Console.LnOut="StreamALU2: "}
+StreamManager.MkExec=4
+

@@ -5,8 +5,9 @@
 
 using namespace std;
 
-void GraphTransf::ProgFU(int MK, LoadPoint Load, FU* Sender)
+void GraphTransf::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 {
+	MK %= FUMkRange;
 	switch (MK)
 	{
 		case 0:// —брос

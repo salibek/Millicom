@@ -11,7 +11,7 @@ private:
 	deletedIC delIC = { nullptr, nullptr }; //буфер удаленной ИП
 	Search Searcher;  //поисковик
 	Navigator navigator = {nullptr}; //бегунок
-	void ProgFU(int MK, LoadPoint Load, FU* Sender = nullptr) override;
+	void ProgFU(long int MK, LoadPoint Load, FU* Sender = nullptr) override;
 	FU* Copy() override; // Программа копирования ФУ
 	FU* TypeCopy() override; // Создать ФУ такого же типа (не копируя контекст
 	vector<IC_type> Operands; // Аккумулятор для операций (первый операнд)

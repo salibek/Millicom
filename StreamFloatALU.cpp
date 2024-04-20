@@ -2,12 +2,21 @@
 
 using namespace std;
 
-void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
+void StreamFloatALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 {
-	if (!Active && MK<900) return; //РџСЂРё СЃР±СЂРѕС€РµРЅРЅРѕРј С„Р»Р°РіРµ Р°РєС‚РёРІРЅРѕСЃС‚Рё РІС‹РїРѕР»РЅСЏСЋС‚СЃСЏ РѕР±С‰РёРµ РњРљ
+	if (PrefixProg != nullptr) ProgExec(PrefixProg); // Запуск предварительной программы
+	if (!Active && MK<900) return; //При сброшенном флаге активности выполняются общие МК
+	if (MK >= FUMkRange && MK < FUMkGlobalAdr && MK >= FUMkGlobalAdr + FUMkRange)
+	{
+		
+		ProgExec(RoutProg);
+		return;
+	}
+	else
+		ProgExec(FUSelfAdrProg);
 	int MKinitial = MK;
 	MK %= FUMkRange;
-	if (Load.isEmpty()) Load = { Cdouble,&Rez }; // Р•СЃР»Рё РЅСѓР»РµРІР°СЏ РЅР°РіСЂСѓР·РєР°, С‚Рѕ РѕРїРµСЂР°РЅРґРѕРј СЏРІР»СЏРµС‚СЃСЏ Р°РєРєСѓРјСѓР»СЏС‚РѕСЂ
+	if (Load.isEmpty()) Load = { Cdouble,&Rez }; // Если нулевая нагрузка, то операндом является аккумулятор
 	switch (MK)
 	{
 	case 0: //Reset
@@ -16,79 +25,86 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		Ready = 0;
 		RezStack.clear();
 		RezExtStack.clear();
-		ReseiverMk.clear();
-		ReseiverContexts.clear();
+		ReceiverMk.clear();
+		ReceiverContexts.clear();
 		AngleMode = 0;
 		break;
-	case 1: // Set РЈСЃС‚Р°РЅРѕРІРёС‚СЊ СЂРµР·СѓР»СЊС‚Р°С‚ РІС‹С‡РёСЃР»РµРЅРёР№
+	case 1: // Set Установить результат вычислений
 		Rez = Load.toDouble();
 		break;
-	case 5: //Out  Р’С‹РґР°С‚СЊ СЂРµР·СѓР»СЊС‚Р°С‚
+	case 3: // RoutProg Программа при несовпадении адреса ФУ с его собственным адресом
+		RoutProg = Load.Point;
+		break;
+	case 4: // SelfAdrProg Программа при совпадении адреса ФУ с его собственным адресом
+		FUSelfAdrProg = Load.Point;
+		break;
+	case 5: //Out   Выдать результат
 		Load.Write(Rez);
 		break;
-	case 6: //OutMk Р’С‹РґР°С‚СЊ РњРљ СЃ СЂРµР·СѓР»СЊС‚Р°С‚РѕРј
+	case 6: //OutMk  Выдать МК с результатом
 		MkExec(Load, { Cdouble, &Rez });
 		break;
-	case 10: //OpCounterOut Р’С‹РґР°С‚СЊ СЃС‡РµС‚С‡РёРє РЅР°РєРѕРїР»РµРЅРЅС‹С… РѕРїРµСЂР°РЅРґРѕРІ
+	case 10: //OpCounterOut Выдать счетчик накопленных операндов
 		Load.Write(OperandsCounter);
 		break;
-	case 11: //OpCounterOutMk Р’С‹РґР°С‚СЊ РњРљ СЃРѕ СЃС‡РµС‚С‡РёРєРѕРј РЅР°РєРѕРїР»РµРЅРЅС‹С… РѕРїРµСЂР°РЅРґРѕРІ
+	case 11: //OpCounterOutMk Выдать МК со счетчиком накопленных операндов
 		MkExec(Load, { Cint, &OperandsCounter });
 		break;
-	case 20: // AngleModeSet     РЈСЃС‚Р°РЅРѕРІРёС‚СЊ СЂРµР¶РёРј РёР·РјРµСЂРµРЅРёСЏ СѓРіР»Р° (0 - СЂР°РґРёР°РЅС‹, 1 -РіСЂР°РґСѓСЃС‹)
+	case 20: // AngleModeSet   Установить режим измерения угла (0 - радианы, 1 -градусы)
 		AngleMode = Load.toInt();
 		break;
-	case 30: // OperandsReset РЎР±СЂРѕСЃ РѕРїРµСЂР°РЅРґРѕРІ (РІСЃРµ С‚Рµ РѕРїРµСЂР°РЅРґС‹, С‡С‚Рѕ РїСЂРёС€Р»Рё, СЃР±СЂР°СЃС‹РІР°СЋС‚СЃСЏ Рё РЅР°РєРѕРїР»РµРЅРёРµ РѕРїРµСЂР°РЅРґРѕРІ РЅР°С‡РёРЅР°РµС‚СЃСЏ Р·Р°РЅРѕРІРѕ)
+	case 30: // OperandsReset Сброс операндов (все те операнды, что пришли, сбрасываются и накопление операндов начинается заново)
 		OperandsCounter = 0;
 		for (size_t i = 0; i < FOperands.size(); ++i) {
 			FOperands[i] = false;
 		}
 		break;
-	case 40: //ErrProgSet РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РїСЂРѕРіСЂР°РјРјСѓ РїСЂРё РѕС€РёР±РєРµ
+	case 40: //ErrProgSet Установить программу при ошибке
 		ErrProg = Load.Point;
 		break;
-	case 41: //WrongFormatErrProgSet РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РїСЂРѕРіСЂР°РјРјСѓ РїСЂРё РЅРµРїСЂР°РІРёР»СЊРЅРѕРј С„РѕСЂРјР°С‚Рµ РѕРїРµСЂР°РЅРґР°
+	case 41: //WrongFormatErrProgSet  Установить программу при неправильном формате операнда
 		WrongFormatErrProg = Load.Point;
 		break;
-	case 42: //OveflowErrProgSet РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РїСЂРѕРіСЂР°РјРјСѓ РїСЂРё РїРµСЂРµРїРѕР»РЅРµРЅРёРё
+	case 42: //OveflowErrProgSet Установить программу при переполнении
 		OveflowErrProg = Load.Point;
 		break;
-	case 43: //DivZeroErrProgSet РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РїСЂРѕРіСЂР°РјРјСѓ РїСЂРё РґРµР»РµРЅРёРё РЅР° 0
+	case 43: //DivZeroErrProgSet Установить программу при делении на 0
 		DivZeroErrProg = Load.Point;
 		break;
-	case 44: //OpIndErrProgSet РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РїСЂРѕРіСЂР°РјРјСѓ РїСЂРё РѕС€РёР±РєРµ РёРЅРґРµРєСЃР° РѕРїРµСЂР°РЅРґР°
+	case 44: //OpIndErrProgSet Установить программу при ошибке индекса операнда
 		OpIndErrProg = Load.Point;
 		break;
-	case 45: //RezStackIsEmpyProgSet РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РїСЂРѕРіСЂР°РјРјСѓ РїСЂРё С‡С‚РµРЅРёРё РёР· РїСѓСЃС‚РѕРіРѕ СЃС‚РµРєР° СЂРµР·СѓР»СЊС‚Р°С‚РѕРІ
+	case 45: //RezStackIsEmpyProgSet Установить программу при чтении из пустого стека результатов
 		RezStackIsEmpyProg = Load.Point;
-	case 46: //MatErrProgSet РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РїСЂРѕРіСЂР°РјРјСѓ РѕР±СЂР°Р±РѕС‚РєРё РѕС€РёР±РєРё РјР°С‚РµРјР°С‚РёС‡РµСЃРєРѕР№ РѕРїРµСЂР°С†РёРё
+		break;
+	case 46: //MatErrProgSet Установить программу обработки ошибки математической операции
 		MatErrProg = Load.Point;
 		break;
-	case 70: // ReadySet РЈСЃС‚Р°РЅРѕРІРёС‚СЊ С„Р»Р°Рі РіРѕС‚РѕРІРЅРѕСЃС‚Рё СЂРµР·СѓР»СЊС‚Р°С‚Р° (РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ true)
+	case 70: // ReadySet Установить флаг готовности результата (по умолчанию true)
 		Ready = Load.toInt(1);
 		break;
-	case 71: // ReadyOut Р’С‹РґР°С‚СЊ С„Р»Р°Рі РіРѕС‚РѕРІРЅРѕСЃС‚Рё СЂРµР·СѓР»СЊС‚Р°С‚Р°    
+	case 71: // ReadyOut Выдать флаг готовности результата   
 		Load.Write(Ready);
 		break;
-	case 72: // ReadyOutMk Р’С‹РґР°С‚СЊ РњРљ СЃ С„Р»Р°РіРѕРј РіРѕС‚РѕРІРЅРѕСЃС‚Рё СЂРµР·СѓР»СЊС‚Р°С‚Р°   
+	case 72: // ReadyOutMk Выдать МК с флагом готовности результата    
 		MkExec(Load, { Cint, &Ready });
 		break;
-	case 75: // ReadyExec Р—Р°РїСѓСЃРє РїСЂРѕРіСЂР°РјРјС‹ РїРѕ С„Р»Р°РіСѓ РіРѕС‚РѕРІРЅРѕСЃС‚Рё СЂРµР·СѓР»СЊР°С‚Р°С‚Р°     
+	case 75: // ReadyExec Запуск программы по флагу готовности резульатата    
 		if (Ready==1)
 			ProgExec(Load);
 		break;
-	case 76: // ReadyNotExec   Р—Р°РїСѓСЃРє РїСЂРѕРіСЂР°РјРјС‹ РїСЂРё СЃР±СЂРѕС€РµРЅРЅРѕРј С„Р»Р°РіРµ РіРѕС‚РѕРІРЅРѕСЃС‚Рё СЂРµР·СѓР»СЊР°С‚Р°С‚,      
+	case 76: // ReadyNotExec   Запуск программы при сброшенном флаге готовности резульатата      
 		if (Ready==0)
 			ProgExec(Load);
 		break;
-	case 77: //ErrExec Р’С‹РїРѕР»РЅРёС‚СЊ РµСЃР»Рё РѕС€РёР±РєР°
+	case 77: //ErrExec Выполнить если ошибка
 		if (Ready == 2)
 			ProgExec(Load);
 		break;
-	case 80: // OutRezBlockSet РЈСЃС‚Р°РЅРѕРІРёС‚СЊ Р±Р»РѕРєРёСЂРѕРІРєСѓ РІС‹РґР°С‡Рё СЂРµР·СѓР»СЊС‚Р°С‚Р° (РїСЂРё РЅСѓР»РµРІРѕР№ РЅР°РіСЂСѓР·РєРµ true)
+	case 80: // OutRezBlockSet Установить блокировку выдачи результата (при нулевой нагрузке true)
 		OutRezBlock = Load.toBool(true);
 		break;
-	case 90:// Push РџРѕР»РѕР¶РёС‚СЊ РІ СЃС‚РµРє (РїСЂРё РЅСѓР»РµРІРѕР№ РЅР°РіСЂСѓР·РєРµ РІ СЃС‚РµРє РїРѕРјРµС‰Р°РµС‚СЃСЏ Rez)
+	case 90:// Push Положить в стек (при нулевой нагрузке в стек помещается Rez)
 		if (Load.Point == nullptr)
 			RezStack.push_back(Rez);
 		else
@@ -106,7 +122,7 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 			Load.Write(RezStack.back());
 		RezStack.pop_back();
 		break;
-	case 92: // PopMk Р’С‹РЅСѓС‚СЊ РёР· СЃС‚РµРєР° Рё РІС‹РґР°С‚СЊ РњРљ (РїСЂРё РїСЂРё РЅСѓР»РµРІРѕР№ РЅР°РіСЂСѓР·РєРµ РІРµР»РёС‡РёРЅР° РїРѕРјРµС‰Р°РµС‚СЃСЏ РІ Rez)        
+	case 92: // PopMk Вынуть из стека (при при нулевой нагрузке величина помещается в Rez)        
 	{
 		if (RezStack.size() == 0)
 		{
@@ -126,22 +142,22 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		}
 	}
 	break;
-	case 93: // StackCounterOut Р’С‹РґР°С‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ СЌР»РµРјРµРЅС‚РѕРІ РІ СЃС‚РµРєРµ
+	case 93: // StackCounterOut Выдать количество элементов в стеке
 		Load.Write((int)RezStack.size());
 		break;
-	case 94: // StackCounterOut Р’С‹РґР°С‚СЊ РњРљ СЃ РєРѕР»РёС‡РµСЃС‚РІРѕРј СЌР»РµРјРµРЅС‚РѕРІ РІ СЃС‚РµРєРµ
+	case 94: // StackCounterOut Выдать МК с количеством элементов в стеке
 	{
-		int t = RezStack.size();
+		long int t = RezStack.size();
 		MkExec(Load,{Cint,&t});
 		break;
 	}
-	case 95: // StackOut Р’С‹РґР°С‚СЊ РёР· СЃС‚РµРєР° (РїСЂРё РїСЂРё РЅСѓР»РµРІРѕР№ РЅР°РіСЂСѓР·РєРµ РІРµР»РёС‡РёРЅР° РїРѕРјРµС‰Р°РµС‚СЃСЏ РІ Rez) 
+	case 95: // StackOut Выдать из стека (при при нулевой нагрузке величина помещается в Rez)  
 		if (Load.isEmpty())
 			Rez = RezStack.back();
 		else
 			Load.Write(RezStack.back());
 		break;
-	case 96: // StackOutMk Р’С‹РґР°С‚СЊ РёР· СЃС‚РµРєР° СЃ РњРљ (РїСЂРё РїСЂРё РЅСѓР»РµРІРѕР№ РЅР°РіСЂСѓР·РєРµ РІРµР»РёС‡РёРЅР° РїРѕРјРµС‰Р°РµС‚СЃСЏ РІ Rez)
+	case 96: // StackOutMk Выдать из стека с МК (при при нулевой нагрузке величина помещается в Rez)
 	{
 		if (Load.isEmpty())
 			Rez = RezStack.back();
@@ -151,16 +167,16 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		}
 		break;
 	}
-	case 97: //StackEmptyExec Р’С‹РїРѕР»РЅРёС‚СЊ, РµСЃР»Рё СЃС‚РµРє РїСѓСЃС‚РѕР№
+	case 97: //StackEmptyExec Выполнить, если стек пустой
 		if (!RezStack.size()) ProgExec(Load);
 		break;
-	case 98: //StackNotEmptyExec Р’С‹РїРѕР»РЅРёС‚СЊ, РµСЃР»Рё СЃС‚РµРє РЅРµ РїСѓСЃС‚РѕР№
+	case 98: //StackNotEmptyExec Выполнить, если стек не пустой
 		if (RezStack.size()) ProgExec(Load);
 		break;
-	case 100: //RezExtOut Р’С‹РґР°С‚СЊ Р·РЅР°С‡РµРЅРёРµ РёР· СЂР°СЃС€РёСЂРµРЅРЅРѕРіРѕ СЃС‚РµРєР° СЂРµР·СѓР»СЊС‚Р°С‚Р°
-	case 101: // RezExtOutMk Р’С‹РґР°С‚СЊ РњРљ СЃРѕ Р·РЅР°С‡РµРЅРёРµРј РёР· СЂР°СЃС€РёСЂРµРЅРЅРѕРіРѕ СЃС‚РµСЂР° СЂРµР·СѓР»СЊС‚Р°С‚Р°
-	case 102: // RezExtPop Р’С‹РґР°РІРёС‚СЊ СЂР°СЃС€РёСЂРµРЅРЅС‹Р№ СЂРµР·СѓР»СЊС‚Р°С‚ (РїСЂРё РЅСѓР»РµРІРѕР№ РЅР°РіСЂСѓР·РєРµ Р·Р°РїРёСЃС‹РІР°РµС‚СЃСЏ РІ Rez)
-	case 103: // RezExtPopMk Р’С‹РґР°РІРёС‚СЊ РњРљ СЃ СЂР°СЃС€РёСЂРµРЅРЅС‹Рј СЂРµР·СѓР»СЊС‚Р°С‚РѕРј (РїСЂРё РЅСѓР»РµРІРѕР№ РЅР°РіСЂСѓР·РєРµ Р·Р°РїРёСЃС‹РІР°РµС‚СЃСЏ РІ Rez)
+	case 100: //RezExtOut Выдать значение из расширенного стека результата
+	case 101: // RezExtOutMk Выдать МК со значением из расширенного стера результата
+	case 102: // RezExtPop Выдавить расширенный результат (при нулевой нагрузке записывается в Rez)
+	case 103: // RezExtPopMk Выдавить МК с расширенным результатом (при нулевой нагрузке записывается в Rez)
 		if (!RezExtStack.size())
 		{
 			ProgExec(RezExtStackIsEmpyProg);
@@ -190,33 +206,40 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 			break;
 		}
 		break;
-	case 105: // RezExtStackIsEmpyProgSet РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РїСЂРѕРіСЂР°РјРјСѓ РїСЂРё РѕС€РёР±РєРµ С‡С‚РµРЅРёСЏ РёР· РїСѓСЃС‚РѕРіРѕ СЃС‚РµРєР° СЂР°СЃС€РёСЂРµРЅРЅРѕРіРѕ СЂРµР·СѓР»СЊС‚Р°С‚Р°
+	case 105: // RezExtStackIsEmpyProgSet Установить программу при ошибке чтения из пустого стека расширенного результата
 		RezExtStackIsEmpyProg = Load.Point;
 		break;
 
-	case 150: // NOperandSet РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ РѕРїРµСЂР°РЅРґРѕРІ (РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ 2)
+	case 150: // NOperandSet Установить количество операндов (по умолчанию 2)
 		OperandsCounter = Load.toInt();
 		break;
-	case 160: // ReceiverReset РЎР±СЂРѕСЃ СѓСЃС‚Р°РЅРѕРІРѕРє РїРѕР»СѓС‡Р°С‚РµР»РµР№ СЂРµР·СѓР»СЊС‚Р°С‚Р°
-		ReseiverMk.clear();
-		ReseiverContexts.clear();
+	case 160: // ReceiverReset Сброс установок получателей результата
+		ReceiverMk.clear();
+		ReceiverContexts.clear();
 		break;
-	case 161: // ReceiverSet РЈСЃС‚Р°РЅРѕРІРёС‚СЊ СЃСЃС‹Р»РєСѓ РЅР° РїСЂРёРµРјРЅРёРєР° СЂРµР·СѓР»СЊС‚Р°С‚Р° (РЈСЃС‚Р°РЅР°РІР»РёРІР°РµС‚СЃСЏ РїРµСЂРµРґ СѓСЃС‚Р°РЅРѕРІРєРѕР№ РњРљ)
-		ReseiverContexts.push_back((FU*)Load.Point);
+	case 161: // ReceiverSet Установить ссылку на приемника результата (Устанавливается перед установкой МК)
+		ReceiverContexts.push_back((FU*)Load.Point);
 		break;
-	case 162: // ReceiverMkSet РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РњРљ РґР»СЏ РїСЂРёРµРјРЅРёРєР° СЂРµР·СѓР»СЊС‚Р°С‚Р° 
-		if (ReseiverMk.size() == ReseiverContexts.size())
-			ReseiverContexts.push_back(nullptr);
-		ReseiverMk.push_back(Load.toInt());
+	case 162: // ReceiverMkSet Установить МК для приемника результата 
+		if (ReceiverMk.size() == ReceiverContexts.size())
+			ReceiverContexts.push_back(nullptr);
+		ReceiverMk.push_back(Load.toInt());
 		break;
-	case 190: // RezProgSet РЈСЃС‚Р°РЅРѕРІРёС‚СЊ СЃСЃС‹Р»РєСѓ РЅР° РїРѕРґРїСЂРѕРіСЂР°РјРјСѓ, Р·Р°РїСѓСЃРєР°РµРјСѓСЋ РїСЂРё РїРѕР»СѓС‡РµРЅРёРё СЂРµР·СѓР»СЊС‚Р°С‚Р°   
+	case 165: // OutVarReset Очистить список переменных для записи результата
+		OutVars.clear();
+		break;
+	case 166: // OutVarAdd Установить адрес для записи результата
+		OutVars.push_back(Load);
+		break;
+
+	case 190: // RezProgSet Установить ссылку на подпрограмму, запускаемую при получении результата   
 		RezProg=Load.Point;
 		break;
-	case 191: //PreRezProgSet РџСЂРѕРіСЂР°РјРјР°, Р·Р°РїСѓСЃРєР°РµРјР°СЏ РїРµСЂРµРґ РїРѕР»СѓС‡РµРЅРёРµРј СЂРµР·СѓР»СЊС‚Р°С‚Р°
+	case 191: //PreRezProgSet Программа, запускаемая перед получением результата
 		PreRezProg = Load.Point;
 		break;
 
-	case 200: // Op0Out Р’С‹РґР°С‚СЊ РѕРїРµСЂР°РЅРґ   
+	case 200: // Op0Out Выдать операнд  
 	case 205: // Op1Out   
 	case 210: // Op2Out   
 	case 215: // Op3Out   
@@ -234,7 +257,7 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		}
 		Load.Write(Operands[(MK - 200) / 5]);
 		break;
-	case 201: // Op0OutMk  Р’С‹РґР°С‚СЊ РњРљ СЃ РѕРїРµСЂР°РЅРґРѕРј 0 
+	case 201: // Op0OutMk  Выдать МК с операндом 0
 	case 206: // Op1OutMk   
 	case 211: // Op2OutMk   
 	case 216: // Op3OutMk   
@@ -254,7 +277,7 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 			MkExec(Load, { Cdouble, &temp });
 		}
 		break;
-	case 202: // Op0Set  РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РѕРїРµСЂР°РЅРґ 0
+	case 202: // Op0Set  Установить операнд 0
 	case 207: // Op1Set
 	case 212: // Op2Set
 	case 217: // Op3Set
@@ -270,7 +293,7 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 			FOperands.clear();
 			OperandsCounter = 0;
 		}
-		{int t = (MK - 200) / 5;
+		{long int t = (MK - 200) / 5;
 		while (Operands.size() < t)
 		{
 			Operands.push_back(0);
@@ -283,13 +306,13 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		FOperands[t] = true;
 		}
 		break;
-	case 250: //	OpIndSet РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РёРЅРґРµРєСЃ РѕРїРµСЂР°РЅРґР°
+	case 250: //	OpIndSet Установить индекс операнда
 		OpInd = Load.toInt(0);
 		break;
-	case 251: // OpIndAdd РџСЂРёР±Р°РІРёС‚СЊ Рє РёРЅРґРµРєСЃСѓ РѕРїРµСЂР°РЅРґР° (РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ 1)
+	case 251: // OpIndAdd Прибавить к индексу операнда (по умолчанию 1)
 		OpInd+=Load.toInt(1);
 		break;
-	case 252: // OperandByIndSet РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РѕРїРµСЂР°РЅРґ РїРѕ РёРЅРґРµРєСЃСѓ
+	case 252: // OperandByIndSet Установить операнд по индексу
 		while (Operands.size() <= OpInd)
 		{
 			Operands.push_back(0);
@@ -305,7 +328,7 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 			RezExec();
 		}
 		break;
-	case 253: // OperandByIndOut Р’С‹РґР°С‚СЊ РѕРїРµСЂР°РЅРґ РїРѕ РёРЅРґРµРєСЃСѓ
+	case 253: // OperandByIndOut Выдать операнд по индексу
 		if (Operands.size() <= OpInd || OpInd<0)
 		{
 			ProgExec(ErrProg);
@@ -314,7 +337,7 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		}
 		Load.Write(Operands[OpInd]);
 		break;
-	case 254: // OperandByIndOutMk Р’С‹РґР°С‚СЊ РњРљ СЃ РѕРїРµСЂР°РЅРґРѕРј РїРѕ РёРЅРґРµРєСЃСѓ
+	case 254: // OperandByIndOutMk Выдать МК с операндом по индексу
 	{
 		if (Operands.size() <= OpInd || OpInd < 0)
 		{
@@ -326,22 +349,22 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		MkExec(Load, { Cdouble, &temp });
 		break;
 	}
-	case 255: // OperandAdd Р”РѕР±Р°РІРёС‚СЊ РѕРїРµСЂР°РЅРґ РґР»СЏ СЃРїРµС†РёР°Р»СЊРЅРѕР№ РњРљ
+	case 255: // OperandAdd Добавить операнд для специальной МК
 		Operands.push_back(Load.toDouble());
 		FOperands.push_back(true);
 		OperandsCounter++;
 		break;
-	case 260: // OperationProgSet РЈСЃС‚Р°РЅРѕРІРёС‚СЊ СЃРїРµС†РёР°Р»СЊРЅСѓСЋ РѕРїРµСЂР°С†РёСЋ    
+	case 260: // OperationProgSet Установить специальную операцию    
 		OperetionProg = Load.Point;
 		break;
 
-	case 270: // PiOut Р’С‹РґР°С‚СЊ С‡РёСЃР»Рѕ РџР (РїСЂРё РЅСѓР»РµРІРѕР№ РЅР°РіСЂСѓР·РєРµ Р·Р°РїРёСЃР°С‚СЊ РІ Р°РєРєСѓРјСѓР»СЏС‚РѕСЂ)
+	case 270: // PiOut Выдать число ПИ (при нулевой нагрузке записать в аккумулятор)
 		if (Load.isEmpty()) {
 			Rez = 3.141592653589793; break;
 		}
 		Load.Write((double)3.141592653589793);
 		break;
-	case 271: // PiOutMk Р’С‹РґР°С‚СЊ РњРљ СЃ С‡РёСЃР»РѕРј РџР (РїСЂРё РЅСѓР»РµРІРѕР№ РЅР°РіСЂСѓР·РєРµ Р·Р°РїРёСЃР°С‚СЊ РІ Р°РєРєСѓРјСѓР»СЏС‚РѕСЂ)
+	case 271: // PiOutMk Выдать МК с числом ПИ (при нулевой нагрузке записать в аккумулятор)
 	{
 		if (Load.isEmpty()){
 			Rez = 3.141592653589793; break;
@@ -350,13 +373,13 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		MkExec(Load, { Cdouble, &t });
 		break;
 	}
-	case 272: //Pi2Out Р’С‹РґР°С‚СЊ С‡РёСЃР»Рѕ 2РџР (РїСЂРё РЅСѓР»РµРІРѕР№ РЅР°РіСЂСѓР·РєРµ Р·Р°РїРёСЃР°С‚СЊ РІ Р°РєРєСѓРјСѓР»СЏС‚РѕСЂ)
+	case 272: //Pi2Out Выдать число 2ПИ (при нулевой нагрузке записать в аккумулятор)
 		if (Load.isEmpty()){
 			Rez = 6.283185307179586; break;
 		}
 		Load.Write((double)6.283185307179586);
 		break;
-	case 273: //Pi2OutMk Р’С‹РґР°С‚СЊ РњРљ СЃ С‡РёСЃР»РѕРј 2РџР (РїСЂРё РЅСѓР»РµРІРѕР№ РЅР°РіСЂСѓР·РєРµ Р·Р°РїРёСЃР°С‚СЊ РІ Р°РєРєСѓРјСѓР»СЏС‚РѕСЂ)
+	case 273: //Pi2OutMk Выдать МК с числом 2ПИ (при нулевой нагрузке записать в аккумулятор)
 	{
 		if (Load.isEmpty()){
 			Rez = 6.283185307179586; break;
@@ -365,13 +388,13 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		MkExec(Load, { Cdouble, &t });
 		break;
 	}
-	case 274: // EOut Р’С‹РґР°С‚СЊ С‡РёСЃР»Рѕ Рµ (РїСЂРё РЅСѓР»РµРІРѕР№ РЅР°РіСЂСѓР·РєРµ Р·Р°РїРёСЃР°С‚СЊ РІ Р°РєРєСѓРјСѓР»СЏС‚РѕСЂ)
+	case 274: // EOut Выдать число е (при нулевой нагрузке записать в аккумулятор)
 		if (Load.isEmpty()){
 			Rez = 2.718281828459045; break;
 		}
 		Load.Write((double)2.718281828459045);
 		break;
-	case 275: // EOutMk Р’С‹РґР°С‚СЊ РњРљ СЃ С‡РёСЃР»РѕРј Рµ (РїСЂРё РЅСѓР»РµРІРѕР№ РЅР°РіСЂСѓР·РєРµ Р·Р°РїРёСЃР°С‚СЊ РІ Р°РєРєСѓРјСѓР»СЏС‚РѕСЂ)
+	case 275: // EOutMk Выдать МК с числом е (при нулевой нагрузке записать в аккумулятор)
 	{
 		if (Load.isEmpty()) {
 			Rez = 2.718281828459045; break;
@@ -380,107 +403,168 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		MkExec(Load, { Cdouble, &e });
 		break;
 	}
-	case 280: // ZProgSet РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РїСЂРѕРіСЂР°РјРјСѓ РїСЂРё == 
+	case 280: // ZeroProgSet Установить программу при == 
 		ZProg = Load.Point;
 		break;
-	case 281: // NZProgSet РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РїСЂРѕРіСЂР°РјРјСѓ РїСЂРё !=
+	case 281: // NotZeroProgSet Установить программу при !=
 		BZProg = Load.Point;
 		break;
-	case 282: // LProgSet   РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РїСЂРѕРіСЂР°РјРјСѓ РїСЂРё <
+	case 282: // LessProgSet   Установить программу при <
 		LProg = Load.Point;
 		break;
-	case 283: // BProgSet   РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РїСЂРѕРіСЂР°РјРјСѓ РїСЂРё >
+	case 283: // BiggerProgSet   Установить программу при <
 		BProg = Load.Point;
 		break;
-	case 284: // LZProgSet   РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РїСЂРѕРіСЂР°РјРјСѓ РїСЂРё <=
+	case 284: // LessZeroProgSet   Установить программу при <=
 		LZProg = Load.Point;
 		break;
-	case 285: // BZProgSet   РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РїСЂРѕРіСЂР°РјРјСѓ РїСЂРё >=
+	case 285: // BiggerZeroProgSet  Установить программу при >=
 		BZProg = Load.Point;
 		break;
-	case 290: // ZExec   Р’С‹РїРѕР»РЅРёС‚СЊ РїСЂРѕРіСЂР°РјРјСѓ РїСЂРё ==
+	case 290: // ZeroExec   Выполнить программу при ==
 		if (Rez == 0)
 			ProgExec(Load);
 		break;
-	case 291: // LExec    Р’С‹РїРѕР»РЅРёС‚СЊ РїСЂРѕРіСЂР°РјРјСѓ РїСЂРё <
+	case 291: // LessExec    Выполнить программу при <
 		if (Rez < 0)
 			ProgExec(Load);
 		break;
-	case 292: // BExec    Р’С‹РїРѕР»РЅРёС‚СЊ РїСЂРѕРіСЂР°РјРјСѓ РїСЂРё >
+	case 292: // BiggerExec    Выполнить программу при >
 		if (Rez > 0)
 			ProgExec(Load);
 		break;
-	case 293: // LZExec    Р’С‹РїРѕР»РЅРёС‚СЊ РїСЂРѕРіСЂР°РјРјСѓ РїСЂРё <=
+	case 293: // LessZeroExec    Выполнить программу при <=
 		if (Rez <= 0)
 			ProgExec(Load);
 		break;
-	case 294: // BZExec    Р’С‹РїРѕР»РЅРёС‚СЊ РїСЂРѕРіСЂР°РјРјСѓ РїСЂРё >=
+	case 294: // BiggerZeroExec    Выполнить программу при >=
 		if (Rez >= 0)
 			ProgExec(Load);
 		break;
-	case 296: // NZExec    Р’С‹РїРѕР»РЅРёС‚СЊ РїСЂРѕРіСЂР°РјРјСѓ РїСЂРё !=
+	case 296: // NotZeroExec    Выполнить программу при !=
 		if (Rez != 0)
 			ProgExec(Load);
 		break;
-	case 300: // ZFOut Р’С‹РґР°С‚СЊ С„Р»Р°Рі РЅСѓР»СЏ
+	case 300: // ZeroOut Выдать флаг нуля
 		Load.Write(Rez == 0);
 		break;
-	case 301: // ZFOutMk Р’С‹РґР°С‚СЊ РњРљ СЃ С„Р»Р°РіРѕРј РЅСѓР»СЏ
+	case 301: // ZeroOutMk Выдать МК с флагом нуля
 	{
 		bool temp = Rez == 0;
 		MkExec(Load, { Cbool, &temp });
 		break;
 	}
-	case 305: // BOut  Р’С‹РґР°С‚СЊ С„Р»Р°Рі Р±РѕР»СЊС€Рµ
+	case 305: // BiggerOut  Выдать флаг больше
 		Load.Write(Rez > 0);
 		break;
-	case 306: // BOutMk Р’С‹РґР°С‚СЊ РњРљ СЃ С„Р»Р°РіРѕРј Р±РѕР»СЊС€Рµ
+	case 306: // BiggerOutMk Выдать МК с флагом больше
 	{
 		bool temp = Rez > 0;
 		MkExec(Load, { Cbool, &temp });
 	}
 	break;
-	case 310: // LOut  Р’С‹РґР°С‚СЊ С„Р»Р°Рі РјРµРЅСЊС€Рµ
+	case 310: // LessOut  Выдать флаг меньше
 		Load.Write(Rez < 0);
 		break;
-	case 311: // LOutMk BOutMk Р’С‹РґР°С‚СЊ РњРљ СЃ С„Р»Р°РіРѕРј РјРµРЅСЊС€Рµ
+	case 311: // LessOutMk BOutMk Выдать МК с флагом меньше
 	{
 		bool temp = Rez < 0;
 		MkExec(Load, { Cbool, &temp });
 		break;
 	}
-	case 315: // BZOut Р’С‹РґР°С‚СЊ С„Р»Р°Рі Р±РѕР»СЊС€Рµ РёР»Рё РЅСѓР»СЊ
+	case 315: // BiggerZeroOut Выдать флаг больше или нуль
 		Load.Write(Rez >= 0);
 		break;
-	case 316: // BZOutMk BOutMk Р’С‹РґР°С‚СЊ РњРљ СЃ С„Р»Р°РіРѕРј Р±РѕР»СЊС€Рµ РёР»Рё РЅСѓР»СЊ
+	case 316: // BiggerZeroOutMk Выдать МК с флагом больше или нуль
 	{
 		bool temp = Rez >= 0;
 		MkExec(Load, { Cbool, &temp });
 		break;
 	}
-	case 320: // LZOut Р’С‹РґР°С‚СЊ С„Р»Р°Рі РјРµРЅСЊС€Рµ РёР»Рё РЅСѓР»СЊ
+	case 320: // LessZeroOut Выдать флаг меньше или нуль
 		Load.Write(Rez <= 0);
 		break;
-	case 321: // LZOutMk BOutMk Р’С‹РґР°С‚СЊ РњРљ СЃ С„Р»Р°РіРѕРј РјРµРЅСЊС€Рµ РёР»Рё РЅСѓР»СЊ
+	case 321: // LessZeroOutMk Выдать МК с флагом меньше или нуль
 	{
 		bool temp = Rez <= 0;
 		MkExec(Load, { Cbool, &temp });
 		break;
 	}
-	case 325: // NZOut  Р’С‹РґР°С‚СЊ С„Р»Р°Рі РЅРµ РЅСѓР»СЊ
+	case 325: // NotZeroOut  Выдать флаг не нуль
 		Load.Write(Rez != 0);
 		break;
-	case 326: // NZOutMk BOutMk Р’С‹РґР°С‚СЊ РњРљ СЃ С„Р»Р°РіРѕРј РЅРµ РЅСѓР»СЊ   
+	case 326: // NotZeroOutMk Выдать МК с флагом не нуль    
 	{
 		bool temp = Rez != 0;
 		MkExec(Load, { Cbool, &temp });
 		break;
 	}
 
-	// Р“РµРЅРµСЂР°С†РёСЏ СЃР»СѓС‡Р°Р№РЅС‹С… С‡РёСЃРµР»
-	
-	case 498: // Rand Р“РµРЅРµСЂР°С†РёСЏ РґСЂРѕР±РЅРѕРіРѕ С‡РёСЃР»Р° РѕС‚ 0 РґРѕ Load
-	case 499: // RandInt Р“РµРЅРµСЂР°С†РёСЏ СЃР»СѓС‡Р°Р№РЅРѕРіРѕ С‡РёСЃР»Р° РѕС‚ 0 РґРѕ Load (РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ РѕС‚ 0 РґРѕ Rez)
+	case 340: // RoutMkOut Выдать маршрутизированную МК
+		Load.Write(IpForMkAdrOut.atr);
+		break;
+	case 341: // RoutMkOutMk
+		MkExec(Load, { Cint, &IpForMkAdrOut.atr });
+		break;
+	case 342: // RoutLoadOut
+		Load.Write(IpForMkAdrOut.atr);
+		break;
+	case 343: // RoutLoadOutMk
+		MkExec(Load, IpForMkAdrOut.Load);
+		break;
+
+	case 350: // AdrBuf_0_OutMk Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 0
+		if (Load.isEmpty()) MkExec(MK, Load, (FU*)AdrBuf[0]); else MkExec(Load, Load, (FU*)AdrBuf[0]);
+		break;
+	case 351: // AdrBuf_1_OutMk Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 1
+		if (Load.isEmpty()) MkExec(MK, Load, (FU*)AdrBuf[1]); else MkExec(Load, Load, (FU*)AdrBuf[1]);
+		break;
+	case 352: // AdrBuf_2_OutMk Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 2
+		if (Load.isEmpty()) MkExec(MK, Load, (FU*)AdrBuf[2]); else MkExec(Load, Load, (FU*)AdrBuf[2]);
+		break;
+	case 353: // AdrBuf_3_OutMk Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 3
+		if (Load.isEmpty()) MkExec(MK, Load, (FU*)AdrBuf[3]); else MkExec(Load, Load, (FU*)AdrBuf[3]);
+		break;
+	case 354: // AdrBuf_4_OutMk Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 4
+		if (Load.isEmpty()) MkExec(MK, Load, (FU*)AdrBuf[4]); else MkExec(Load, Load, (FU*)AdrBuf[4]);
+		break;
+	case 355: // AdrBuf_5_OutMk Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 5
+		if (Load.isEmpty()) MkExec(MK, Load, (FU*)AdrBuf[5]); else MkExec(Load, Load, (FU*)AdrBuf[5]);
+		break;
+	case 356: // AdrBuf_6_OutMk Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 6
+		if (Load.isEmpty()) MkExec(MK, Load, (FU*)AdrBuf[6]); else MkExec(Load, Load, (FU*)AdrBuf[6]);
+		break;
+	case 357: // AdrBuf_7_OutMk Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 7
+		if (Load.isEmpty()) MkExec(MK, Load, (FU*)AdrBuf[7]); else MkExec(Load, Load, (FU*)AdrBuf[7]);
+		break;
+	case 358: // AdrBuf_8_OutMk Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 8
+		if (Load.isEmpty()) MkExec(MK, Load, (FU*)AdrBuf[8]); else MkExec(Load, Load, (FU*)AdrBuf[8]);
+		break;
+	case 359: // AdrBuf_9_OutMk Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 9
+		if (Load.isEmpty()) MkExec(MK, Load, (FU*)AdrBuf[9]); else MkExec(Load, Load, (FU*)AdrBuf[9]);
+		break;
+	case 360: // AdrBuf_10_OutMk Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 10
+		if (Load.isEmpty()) MkExec(MK, Load, (FU*)AdrBuf[10]); else MkExec(Load, Load, (FU*)AdrBuf[10]);
+		break;
+	case 361: // AdrBuf_11_OutMk Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 11
+		if (Load.isEmpty()) MkExec(MK, Load, (FU*)AdrBuf[11]); else MkExec(Load, Load, (FU*)AdrBuf[11]);
+		break;
+	case 362: // AdrBuf_12_OutMk Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 12
+		if (Load.isEmpty()) MkExec(MK, Load, (FU*)AdrBuf[12]); else MkExec(Load, Load, (FU*)AdrBuf[12]);
+		break;
+	case 363: // AdrBuf_13_OutMk Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 13
+		if (Load.isEmpty()) MkExec(MK, Load, (FU*)AdrBuf[13]); else MkExec(Load, Load, (FU*)AdrBuf[13]);
+		break;
+	case 364: // AdrBuf_14_OutMk Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 14
+		if (Load.isEmpty()) MkExec(MK, Load, (FU*)AdrBuf[14]); else MkExec(Load, Load, (FU*)AdrBuf[14]);
+		break;
+	case 365: // AdrBuf_15_OutMk Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 15
+		if (Load.isEmpty()) MkExec(MK, Load, (FU*)AdrBuf[15]); else MkExec(Load, Load, (FU*)AdrBuf[15]);
+		break;
+		
+	// Генерация случайных чисел
+	case 498: // Rand Генерация дробного числа от 0 до Load
+	case 499: // RandInt Генерация случайного числа от 0 до Load (по умолчанию от 0 до Rez)
 		if (WrongFormatCheck(Load)) break;
 		if (Load.isEmpty()) Load = { Cdouble,&Rez }; // РџСЂРё РЅСѓР»РµРІРѕР№ РЅР°РіСЂСѓР·РєРµ Р±РµСЂРµРј РѕРїРµСЂР°РЅРґ РёР· СЂРµРіРёСЃС‚СЂР° СЂРµР·СѓР»СЊР°С‚С‚Р°
 		OperandsClear(MK);
@@ -498,7 +582,7 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		else
 			Rez = (double)(rand()) / RAND_MAX * Rez;
 		break;
-	// РђСЂРёС„РјРµС‚РёС‡РµСЃРєРёРµ РѕРїРµСЂР°С†РёРё
+	// Арифметические операции
 	case 500: // Add
 	case 501: // AddSqr
 	case 510: // Mul
@@ -803,6 +887,7 @@ void StreamFloatALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		CommonMk(MK, Load, Sender);
 		break;
 	}
+	if (PostfixProg != nullptr) ProgExec(PostfixProg); // Р—Р°РїСѓСЃРє РїСЂРµРґРІР°СЂРёС‚РµР»СЊРЅРѕР№ РїСЂРѕРіСЂР°РјРјС‹
 }
 
 void StreamFloatALU::RezExec() // Р’С‹РїРѕР»РЅРµРЅРёРµ РїРѕРґРїСЂРѕРіСЂР°РјРј РїСЂРё РїРѕР»СѓС‡РµРЅРёРё СЂРµР·СѓР»СЊС‚Р°С‚Р°
@@ -810,9 +895,11 @@ void StreamFloatALU::RezExec() // Р’С‹РїРѕР»РЅРµРЅРёРµ РїРѕРґРїСЂРѕРіСЂР°РјРј Рї
 	if (Ready == 2) return;
 	Ready = 1;
 	if (!OutRezBlock)//Р•СЃР»Рё РЅРµ Р·Р°Р±Р»РѕРєРёСЂРѕРІР°РЅР° СЂР°СЃСЃС‹Р»РєР° РњРљ СЃ СЂРµР·СѓР»СЊС‚Р°С‚Р°РјРё РІС‹С‡РёСЃР»РµРЅРёР№
-		for (int i = 0; i < ReseiverMk.size(); i++) { // Р Р°СЃСЃС‹Р»РєР° РњРљ СЃ СЂРµР·СѓР»СЊС‚Р°С‚Р°РјРё
-			MkExec(ReseiverMk[i], { Cdouble, &Rez }, ReseiverContexts[i]);
+		for (int i = 0; i < ReceiverMk.size(); i++) { // Р Р°СЃСЃС‹Р»РєР° РњРљ СЃ СЂРµР·СѓР»СЊС‚Р°С‚Р°РјРё
+			MkExec(ReceiverMk[i], { Cdouble, &Rez }, ReceiverContexts[i]);
 		}
+	for (auto& i : OutVars) // Р—Р°РїРёСЃР°С‚СЊ СЂРµР·СѓР»СЊС‚Р°С‚ РІ РІС‹С…РѕРґРЅС‹Рµ РїРµСЂРµРјРµРЅРЅС‹Рµ
+		i.Write(Rez);
 	ProgExec(RezProg);
 	if (Rez == 0) ProgExec(ZProg);
 	if (Rez != 0) ProgExec(NZProg);
@@ -822,7 +909,7 @@ void StreamFloatALU::RezExec() // Р’С‹РїРѕР»РЅРµРЅРёРµ РїРѕРґРїСЂРѕРіСЂР°РјРј Рї
 	if (Rez < 0) ProgExec(LProg);
 }
 
-void StreamFloatALU::OperandsClear(int MK) // РЎР±СЂРѕСЃ РѕРїРµСЂР°РЅРґРѕРІ РїСЂРё РЅР°С‡Р°Р»Рµ РѕР±РѕСЂР°Р±РѕС‚РєРё РЅРѕРІРѕР№ РѕРїРµСЂР°С†РёРё
+void StreamFloatALU::OperandsClear(long int MK) // РЎР±СЂРѕСЃ РѕРїРµСЂР°РЅРґРѕРІ РїСЂРё РЅР°С‡Р°Р»Рµ РѕР±РѕСЂР°Р±РѕС‚РєРё РЅРѕРІРѕР№ РѕРїРµСЂР°С†РёРё
 {
 //	if (Ready || OpCode != MK && OpCode != MK - 1) 
 	{
@@ -859,10 +946,10 @@ StreamFloatALU::StreamFloatALU(void* Dev1) // РљРѕРїРёСЂСѓСЋС‰РёР№ РєРѕРЅСЃС‚СЂС
 	copy(Dev->RezStack.begin(), Dev->RezStack.end(), RezStack.begin());
 	Operands.resize(Dev->RezExtStack.size());
 	copy(Dev->RezExtStack.begin(), Dev->RezExtStack.end(), RezExtStack.begin());
-	RezStack.resize(Dev->ReseiverMk.size());
-	copy(Dev->ReseiverMk.begin(), Dev->ReseiverMk.end(), ReseiverMk.begin());
-	Operands.resize(Dev->ReseiverContexts.size());
-	copy(Dev->ReseiverContexts.begin(), Dev->ReseiverContexts.end(), ReseiverContexts.begin());
+	RezStack.resize(Dev->ReceiverMk.size());
+	copy(Dev->ReceiverMk.begin(), Dev->ReceiverMk.end(), ReceiverMk.begin());
+	Operands.resize(Dev->ReceiverContexts.size());
+	copy(Dev->ReceiverContexts.begin(), Dev->ReceiverContexts.end(), ReceiverContexts.begin());
 	Ready = Dev->Ready;
 	OutRezBlock = Dev->OutRezBlock;
 	Rez = Dev->Rez;

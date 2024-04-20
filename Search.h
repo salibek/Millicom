@@ -12,23 +12,23 @@ private:
 public:
 	~Search() { if (Alu != nullptr) delete Alu; };
 //	vector<ip>* Template; // Шаблон для поиска
-	int _CalcMk = CalcMk; // Атрибут вычисления АЛВ
+	long int _CalcMk = CalcMk; // Атрибут вычисления АЛВ
 	bool CalcMode = false; // Режим вычисления предиката
 	FU* Alu = nullptr; // Ссылка на АЛУ
 	bool PredicatCalc(IC_type Templ); // Функция вычисления предиката, если он присутствует в ИК
 	LoadPoint Template={0, nullptr}; // Шаблон для поиска
 	LoadPoint Obj = { 0, nullptr }; //ИК для поиска
 	bool MkMode = true; //  Режим выполнения всех МК в ИК-шаблоне (МК-ой считается любой атрибут, индекс которого больше 0)
-	set<int> MkAtr; // Список атрибтов, представляющих МК, выполняющиеся в случае успешного поиска
+	set<long int> MkAtr; // Список атрибтов, представляющих МК, выполняющиеся в случае успешного поиска
 	FU *MainFU; // Ссылка на главное ФУ, короторое пользуется функционалом searcher-а
 	bool Rez=false; // Результат поиска
 	vector<ip> *SuccessProg = nullptr, *FailProg = nullptr; // Указатели на программы по успеху и неуспеху поиска
 	vector<ip> *SuccessAfterProg = nullptr, *FailAfterProg = nullptr; // Указатели на программы по успеху и неуспеху поиска, выполняющиеся после обработки программы линии
 	ip *IPTemplRezPoint = nullptr, *IPRezPoint = nullptr; // Указатели на найденные ИП в шаблоне и в ИК
-	int IP_Num = -1, IPTempl_Num=-1; // Номер первой найденной ИП и ИП в шаблоне
+	long int IP_Num = -1, IPTempl_Num=-1; // Номер первой найденной ИП и ИП в шаблоне
 	vector<ip>* BiggerProg = nullptr, *EqProg = nullptr, * SmallerProg = nullptr; // Указатели на программы по запуску подпрограммы по номеру найденной ИП в шаблоне
-	int Prog_atr = ProgAtr; // Атрибут программы, выполняющейся при успешном поиске (<0 атрибут не учитывается)
-	int Sub_atr = ProgMk; // Атрибут программы, выполняющейся при успешном поиске (<0 атрибут не учитывается)
+	long int Prog_atr = ProgAtr; // Атрибут программы, выполняющейся при успешном поиске (<0 атрибут не учитывается)
+	long int Sub_atr = ProgMk; // Атрибут программы, выполняющейся при успешном поиске (<0 атрибут не учитывается)
 	void Clear();
 	void MkAtrAdd(int MK) { MkAtr.insert(MK); };
 	void MkAtrClear() { MkAtr.clear(); };

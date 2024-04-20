@@ -24,7 +24,7 @@ unsigned int LoadPoint::getType() // Выдать тип нагрузки
 		}
 }
 
-int LoadPoint::DataSize() // Выдать размер данных в нагрузке
+long int LoadPoint::DataSize() // Выдать размер данных в нагрузке
 {
 	LoadPoint LP = *this;
 	while (LP.Type >> 1 == DLoadVectInd || LP.Type >> 1 == DICInd)
@@ -506,7 +506,7 @@ bool LoadPoint::toBool(bool define) // Перевод в bool (по умолча
 	}
 }
 
-int LoadPoint::toInt(int define) { // Перевод в integer
+long int LoadPoint::toInt(long int define) { // Перевод в integer
 	if (Point == nullptr)
 		return define;
 	LoadPoint LP = *this;
@@ -803,6 +803,51 @@ int LoadPoint::Write(size_t x)
 	return 0;
 }
 
+int LoadPoint::Write(long int x)
+{
+	if (Point == nullptr) return 1;
+	LoadPoint LP = *this;
+	if (Type >> 1 == DLoadVectInd) {
+		register int N = ((LoadVect_type)Point)->size();
+		if (N <= Ind || N < -Ind || ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind).Point == nullptr) return 2; // Ошибка индекса
+		LP = ((LoadVect_type)Point)->at(N * (Ind < 0) + Ind);
+	}
+	else if (Type >> 1 == DICInd)
+		if (Ind < 0 || Ind / 3 >= ((IC_type)Point)->size()) return 2; // Ошибка индекса
+		else switch (Ind % 3) {
+		case 0: LP = { TIP, &((IC_type)Point)->at(Ind / 3) }; break;
+		case 1: LP = { Tint, &((IC_type)Point)->at(Ind / 3).atr }; break;
+		case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return 1; LP = ((IC_type)Point)->at(Ind / 3).Load;
+		}
+	switch (LP.Type)
+	{
+	case Tdouble:
+		*((double*)LP.Point) = x;
+		break;
+	case Tfloat:
+		*((float*)LP.Point) = x;
+		break;
+	case Tint:
+		*((long int*)LP.Point) = x;
+		break;
+	case Tbool:
+		*((bool*)LP.Point) = x;
+		break;
+	case Tchar:
+		if (x >= 0 && x < 256)
+			*((char*)LP.Point) = x;
+		else
+			return 1; // Несоответствие типов
+		break;
+	case Tstring:
+		*((string*)LP.Point) = to_string(x);
+		break;
+	default:
+		return 1; // Несоответствие типов
+	}
+	return 0;
+}
+
 int LoadPoint::Write(int x)
 {
 	if (Point == nullptr) return 1;
@@ -828,7 +873,7 @@ int LoadPoint::Write(int x)
 		*((float*)LP.Point) = x;
 		break;
 	case Tint:
-		*((int*)LP.Point) = x;
+		*((long int*)LP.Point) = x;
 		break;
 	case Tbool:
 		*((bool*)LP.Point) = x;
@@ -1334,7 +1379,7 @@ void LoadPoint::LoadPoint::VarClear() // Сброс нагрузки ИП в т�
 	Clear();
 }
 
-void LoadPoint::VectorPrint(unsigned int Type, void* P, map<int, string > AtrMnemo, string offset, string Sep, string End, string ArrayBracketStart, string ArrayBracketFin)
+void LoadPoint::VectorPrint(unsigned int Type, void* P, map<long int, string > AtrMnemo, string offset, string Sep, string End, string ArrayBracketStart, string ArrayBracketFin)
 {
 	switch ((Type % 1000) >> 1)
 	{
@@ -1393,7 +1438,7 @@ void LoadPoint::VectorPrint(unsigned int Type, void* P, map<int, string > AtrMne
 	}
 }
 // Печать матрицы
-void LoadPoint::MatrixPrint(unsigned int Type, void* P, map<int, string > AtrMnemo, string offset, string Sep, string End, string ArrayBracketStart, string ArrayBracketFin)
+void LoadPoint::MatrixPrint(unsigned int Type, void* P, map<long int, string > AtrMnemo, string offset, string Sep, string End, string ArrayBracketStart, string ArrayBracketFin)
 {
 	switch ((Type % 1000) >> 1)
 	{
@@ -1405,7 +1450,7 @@ void LoadPoint::MatrixPrint(unsigned int Type, void* P, map<int, string > AtrMne
 		break; }
 	case Dint: {
 		cout << ArrayBracketStart;
-		for (auto t = (*((vector < vector<int>>*)P)).begin(); t != (*(vector < vector<int>>*)P).end(); t++)
+		for (auto t = (*((vector < vector<long int>>*)P)).begin(); t != (*(vector < vector<long int>>*)P).end(); t++)
 			VectorPrint(Type - 1000, (void*)&(*t), AtrMnemo, offset, Sep, End, ArrayBracketStart, ArrayBracketFin);
 		cout << ArrayBracketFin;
 	}break;
@@ -1454,7 +1499,7 @@ void LoadPoint::MatrixPrint(unsigned int Type, void* P, map<int, string > AtrMne
 }
 // AtrMnemo - словарь мнемоник атрибутов
 // AdrMap - список ссылок уже пройденных ИК при выводе ОА-графа
-void LoadPoint::print(map<int, string > AtrMnemo, string offset, string Sep, string End, string quote, string ArrayBracketStart, string ArrayBracketFin, map<void*, int>* AdrMap)
+void LoadPoint::print(map<long int, string > AtrMnemo, string offset, string Sep, string End, string quote, string ArrayBracketStart, string ArrayBracketFin, map<void*, int>* AdrMap)
 {
 	LoadPoint LP =IndLoadReturn();
 	if (LP.Point == nullptr)
@@ -1665,6 +1710,18 @@ void FU::CommonMk(int Mk, LoadPoint Load, FU* Sender)
 				((ALU*)Alu)->Stack.pop_back(); // Отмена буферизации текущего стека
 			ProgStop += PB; // Выйти из главной программы
 		}
+		break;
+	case 946: // FUMkRangeSet Устаровить интервал индексов МК
+		FUMkRange = Load.toInt();
+		break;
+	case 945: // ParentSet Установить родителя
+		Parent = (FU*)Load.Point;
+		break;
+	case 944: // ParentOut Выдать ссылку на родителя
+		Load.Write(Parent);
+		break;
+	case 943: // ParentOutMk Выдать МК со ссылкой на родителя
+		MkExec(Load, {CFU,Parent });
 		break;
 	case 919: // AccumPointerSet Установить ссылку на аккумулятор
 		if (Load.Type >> 1 == Ddouble)
@@ -1912,18 +1969,18 @@ void FU::ProgExec(LoadPoint Uk, unsigned int CycleMode, FU* Bus, vector<ip>::ite
 		ProgExec(Uk.Point, CycleMode, Bus, Start);
 }
 
-void FU::MkExec(int MK, LoadPoint Load, FU* BusContext, bool Ext) // Выдача МК с нагрузкой
+void FU::MkExec(int MK, LoadPoint Load, void* Receiver, bool Ext) // Выдача МК с нагрузкой
 {
-	if (MK < FUMkRange && !Ext) // Если МК адресована сомому ФУ
+	if (MK < FUMkRange && !Ext) // Если МК адресована самому ФУ
 		ProgFU(MK, Load, this);
 	else
-		if (BusContext != nullptr)
-			BusContext->ProgFU(MK, Load, this);
+		if (Receiver != nullptr)
+			((FU*)Receiver)->ProgFU(MK, Load, this);
 		else
 			Bus->ProgFU(MK, Load, this);
 }
 
-void FU::MkExec(LoadPoint Mk, LoadPoint Load, FU* BusContext, bool Ext) // Выдача МК с нагрузкой
+void FU::MkExec(LoadPoint Mk, LoadPoint Load, void* Receiver, bool Ext) // Выдача МК с нагрузкой
 {
 	if (Mk.Point!=nullptr && Mk.Type >> 1 == Dint && Mk.Point != nullptr)
 	{
@@ -1931,8 +1988,8 @@ void FU::MkExec(LoadPoint Mk, LoadPoint Load, FU* BusContext, bool Ext) // Вы�
 		if (MK < FUMkRange && !Ext) // Если МК адресована сомому ФУ
 			ProgFU(MK, Load, this);
 		else
-			if (BusContext != nullptr)
-				BusContext->ProgFU(MK, Load, this);
+			if (Receiver != nullptr)
+				((FU*)Receiver)->ProgFU(MK, Load, this);
 			else
 				Bus->ProgFU(MK, Load, this);
 	}

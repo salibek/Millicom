@@ -5,8 +5,9 @@
 
 using namespace std;
 
-void Find::ProgFU(int MK, LoadPoint Load, FU* Sender)
+void Find::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 {
+	MK %= FUMkRange;
 	switch (MK)
 	{
 	case 0: // Reset

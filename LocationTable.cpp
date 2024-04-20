@@ -35,7 +35,7 @@ void* LocatTable::EqLoacat(void* Point, int index) // ¬озвращает адрес, соответс
 	}
 	return nullptr;
 }
-int LocatTable::Index(void* Point) // ¬озвращаетс€ индекс найденного указател€ (если указатель не найден, возвращаетс€ -1)
+long int LocatTable::Index(void* Point) // ¬озвращаетс€ индекс найденного указател€ (если указатель не найден, возвращаетс€ -1)
 {
 	for (int _i = 0; _i < Table->size(); _i++) {
 		for (int _j = 0; _j < Table->at(_i).size(); _j++) {
@@ -93,13 +93,13 @@ bool LocatTable::Empty() // ѕроверка на пустоту таблицы
 {
 	return Table == nullptr || LineCount() == 0;
 }
-int  LocatTable::LineCount() // ¬озвращает количество линий в таблице
+long int  LocatTable::LineCount() // ¬озвращает количество линий в таблице
 {
 	return Table->size();
 }
-void LocatTable::DelLastLine(int Count) // ”дал€ет Count последних строк таблицы 
+void LocatTable::DelLastLine(long int Count) // ”дал€ет Count последних строк таблицы 
 {
-	for (int _i = LineCount(), _j = 0; _j < Count; _i--, _j++) {
+	for (long int _i = LineCount(), _j = 0; _j < Count; _i--, _j++) {
 		Table[_i-1].clear();
 		indVect[_i-1] = -1;
 	}

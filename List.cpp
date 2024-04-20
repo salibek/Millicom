@@ -4,7 +4,7 @@
 
 using namespace std;
 
-void List::ProgFU(int MK, LoadPoint Load, FU* Sender)
+void List::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 {
 	if (PrefixProg != nullptr)
 	{
@@ -13,6 +13,7 @@ void List::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		ProgExec(t); // Предварительная программа, вызываемая при приходе любой МК
 		PrefixProg = t;
 	}
+	MK %= FUMkRange;
 	switch (MK)
 	{
 	case 0: // Reset
@@ -161,7 +162,7 @@ void List::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		break;
 	case 38: // LineCountOutMK Выдать Мк с количеством линий в списке
 	{
-		int t = 0;
+		long int t = 0;
 		if (ListHead.back() != nullptr)
 			t = ListHead.back()->size();
 		MkExec(Load, { Cint, &t });
@@ -1085,7 +1086,7 @@ void List::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		break;
 	case 250: // SubUp Перейти на уровень выше (на входе количество уровней наверх, по умолчанию 1)
 		{
-			int t = Load.toInt(1);
+			long int t = Load.toInt(1);
 			for (; ListHead.size() > 1 && t > 0; ListHead.pop_back(), t--);
 			break;
 	}
@@ -1102,7 +1103,7 @@ void List::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		break;
 	case 254: // SubDeepOutMk Выдать МК с номером текущего уровня
 	{
-		int t = ListHead.size();
+		long int t = ListHead.size();
 		MkExec(MK, {Cint,&t});
 		break;
 	}
@@ -1242,7 +1243,7 @@ void List::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		break;
 	case 456: // DifferenceOutMk Выдать МК с различием старой найденной линии и новой
 	{
-		int temp = LineNum - LineNumOld;
+		long int temp = LineNum - LineNumOld;
 		MkExec(Load, { Cint,&temp });
 		break; }
 	case 459: // LineNumSet Установить номер найденной строки (нужно для организации операций сравнения)

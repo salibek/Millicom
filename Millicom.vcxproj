@@ -178,7 +178,6 @@
   <ItemGroup>
     <ClInclude Include="ALU.h" />
     <ClInclude Include="CellularAutomata.h" />
-    <ClInclude Include="Header.h" />
     <ClInclude Include="IntAlu.h" />
     <ClInclude Include="Bus.h" />
     <ClInclude Include="Console.h" />
@@ -188,7 +187,6 @@
     <ClInclude Include="FUini.h" />
     <ClInclude Include="Gateway.h" />
     <ClInclude Include="Gauss.h" />
-    <ClInclude Include="GaussMatr.h" />
     <ClInclude Include="GraphTransf.h" />
     <ClInclude Include="IndFileConvertOld.h" />
     <ClInclude Include="InOut.h" />

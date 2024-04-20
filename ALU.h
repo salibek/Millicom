@@ -18,9 +18,9 @@ public:
 	unsigned int accumType = 0; // Тип данных
 	double		accum = 0;		// Скалярный аккумулятор
 	string		accumStr;		// строковой аккулятор
-	int Ind = 0; // Индекс элемента вектора
+	long int Ind = 0; // Индекс элемента вектора
 	bool IndF = false; // флаг установки индекса
-	int IndAutoInc = 0; // Величина автоинкрементации индекса вектора
+	long int IndAutoInc = 0; // Величина автоинкрементации индекса вектора
 	void* ConfineStart = nullptr, * ConfineExpression = nullptr, * ConfineBorder = nullptr, * ConfineInc = nullptr; // Конфайн
 	// TLoadArray - тип нагрузка, обозначающий вектор нагрузок
 		vector<LoadPoint>* accumPoint = nullptr;	// Указатель на аккумулятор (вектор, матрица и т.п.)
@@ -39,24 +39,24 @@ public:
 	double		accum = 0;		// Скалярный выходной аккумулятор (из него другие ФУ могут считать значение аккумулятора по ссылке)
 	string		accumStr;		// строковой аккулятор
 	void* accumVect = nullptr;	// Указатель на аккумулятор (вектор, матрица и т.п.)
-	int Ind = -1; // Индекс вектора или ИК
+	long int Ind = -1; // Индекс вектора или ИК
 
 	vector<ALUContext> Stack = {}; // Стек аккумуляторов
-	vector<int> Anses = {}; // Стек ans (хранятся индексы уровней аккумулятора, которые являютс ans-ами
+	vector<long int> Anses = {}; // Стек ans (хранятся индексы уровней аккумулятора, которые являютс ans-ами
 	vector<LoadVect_type> VectStore = {}; // Вектор временных векторных аккумуляторов
 
 	ALU(FU* parent, FU* Templ = nullptr) { Bus = (FU*)parent; Parent = parent; FUtype = 17; ProgFU(0, { 0, nullptr });
 	Alu = (FU*)this; // Настроить ссылку на АЛУ на самого себя
 	ALUCreating = false;
 	};
-	void ProgFU(int MK, LoadPoint Load, FU* Sender = nullptr) override;
+	void ProgFU(long int MK, LoadPoint Load, FU* Sender = nullptr) override;
 	FU* Copy() override; // Программа копирования ФУ
 	FU* TypeCopy() override; // Создать ФУ такого же типа (не копируя контекст
-	void VectOperation(int MK, LoadPoint Load); // Реализацая векторных операций
+	void VectOperation(long int MK, LoadPoint Load); // Реализацая векторных операций
 	void		add(LoadPoint load);
 	void		Clear();
 	void* VarNew(LoadPoint load); // New value of accum
-	int   MKExt=-1, MkOutExt; // Внешняя МК для выполнения
+	long int   MKExt=-1, MkOutExt; // Внешняя МК для выполнения
 	void* ErrProg = nullptr; // Программа ошибки вычислений
 	void* VectErrProg = nullptr; // Программа ошибки векторной операции
 	void* OutOfRangeErrProg = nullptr; // Программа ошибки Выход индекса за пределы разрешенного диапазона

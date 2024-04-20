@@ -47,7 +47,7 @@ private:
 		StreamIntALUIni, StreamIntALUManagerIni, MatPlotIni };
 	 bool FErr = false; // Флаг ошибки создани ФУ
 public:
-	int GetFuTypeCount(int i) // Выдать количество типов ФУ
+	int GetFuTypeCount() // Выдать количество типов ФУ
 	{
 		return FUTypes.size();
 	};

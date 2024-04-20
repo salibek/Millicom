@@ -8,18 +8,19 @@ class StreamIntALU : public FU
 {
 private:
 	vector<bool> FOperands; // Флаги поступления операндов  
-	int Ready = 0; // Код готовности результата 0 - не готов, 1 - готов, 2 - ошибка
+	long int Ready = 0; // Код готовности результата 0 - не готов, 1 - готов, 2 - ошибка
 	bool OutRezBlock = false; // Флаг блокирования выдачи результата  
 	void RezExec(); // Выполнение подпрограмм при получении результата
-	vector<int>RezStack; //  Стек для хранения результатов и промежуточных данных
-	vector<int>RezExtStack; // Стек расширеного резульатата (например, остаток при операции целочисленного деления)
-	int Rez = 0; //  Результат операции
-	int OperandsCounter = 0; // Счетчик количества полученных операндов
-	int OpInd = 0; // Индекс операнда
-	vector<int> Operands;// Стек операндов
-	vector<int>ReseiverMk; // МК для получателя результата
-	vector<FU*>ReseiverContexts; // Контекст получателя результата
-	int Noperands = 2; // Количество операндов для операции
+	vector<long int>RezStack; //  Стек для хранения результатов и промежуточных данных
+	vector<long int>RezExtStack; // Стек расширеного резульатата (например, остаток при операции целочисленного деления)
+	long int Rez = 0; //  Результат операции
+	long int OperandsCounter = 0; // Счетчик количества полученных операндов
+	long int OpInd = 0; // Индекс операнда
+	vector<long int> Operands;// Стек операндов
+	vector<long int>ReceiverMk; // МК для получателя результата
+	vector<FU*>ReceiverContexts; // Контекст получателя результата
+	vector<LoadPoint>OutVars; // Ссылки на переменные для результата вычислений
+	long int Noperands = 2; // Количество операндов для операции
 	void* ZProg = nullptr, * NZProg = nullptr, * BProg = nullptr, * BZProg = nullptr, * LProg = nullptr, * LZProg = nullptr; //      
 	void* ErrProg = nullptr, * WrongFormatErrProg = nullptr, * OveflowErrProg = nullptr, * DivZeroErrProg = nullptr; //  
 	void* MatErrProg = nullptr; // Программа обработки ошибки математической операции
@@ -31,12 +32,17 @@ private:
 	void* OperetionProg = nullptr;// Программа для выполнения специальной операции
 	void* RezProg = nullptr; // Программа, запускаемая перед получением результата
 	void* PreRezProg = nullptr; // Программа, запускаемая перед получением результата    
-	int OpCode = 0; // Код операции, для которой накапливаются операнды
+	long int OpCode = 0; // Код операции, для которой накапливаются операнды
 	bool WrongFormatCheck(LoadPoint Load); // Проверка формата входных данных (возвращает true, если неправильный формат)
-	void OperandsClear(int MK); // Сброс операндов при начале обоработки новой операции
+	void OperandsClear(long int MK); // Сброс операндов при начале обоработки новой операции
+	void* RoutProg = nullptr; // Программа при несовпадении адреса ФУ с его собственным адресом
+	void* SelfAdrProg = nullptr; // Программа при совпадении адреса ФУ с его собственным адресом
+	vector<void*> AdrBuf; // Буфер адресов ФУ для пересылок
+	ip IpForMkAdrOut = { 0,{0,0} }; // Сохраненная МК при обнаружении, что МК вне адресного диапазона ФУ
+	bool RoutiMkAbort = false; // Флаг прерывания после обоработки марштуризируемой команды
 
 public:
-	void ProgFU(int MK, LoadPoint Load, FU* Sender = nullptr) override;
+	void ProgFU(long int MK, LoadPoint Load, FU* Sender = nullptr) override;
 	FU* Copy() override; // Программа копирования ФУ
 	FU* TypeCopy() override; // Создать ФУ такого же типа (не копируя контекст
 

@@ -11,7 +11,7 @@ double Gateway::DelayFunc() // Функция вычисления задержки передачи данных
 	return MkTranslTime;
 }
 
-void Gateway::ProgFU(int MK, LoadPoint Load, FU* Sender)
+void Gateway::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 {
 	if (MK<0 || !(MK < FUMkRange || MK >= FUMkGlobalAdr && MK < FUMkGlobalAdr + FUMkRange)) // Мк не передачи
 	{
@@ -35,7 +35,7 @@ void Gateway::ProgFU(int MK, LoadPoint Load, FU* Sender)
 
 		if (Modeling != nullptr)
 		{
-			MaxMKQueue = max(MaxMKQueue, (int)Modeling->qmk.size()); // Вычисление максимальной длины очереди
+			MaxMKQueue = max(int(MaxMKQueue), (int)Modeling->qmk.size()); // Вычисление максимальной длины очереди
 			MaxDataSize = max(MaxDataSize, DataSize); // Вычисление максимального объема данных в буфере
 			DataSize -= Load.DataSize() + 4; // Обработка МК
 		}

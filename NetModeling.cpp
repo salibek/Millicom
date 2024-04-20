@@ -2,7 +2,7 @@
 #include "SchedulerEventser.h"
 
 // Формат входного токена:
-void TemperatEx::ProgFU(int MK, LoadPoint Load, FU* Sender)
+void TemperatEx::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 {
 	if (Modeling!=nullptr && Modeling->ManualMode && Modeling->scheduler != nullptr && !Modeling->SchedulerFlag)
 	{
@@ -21,7 +21,7 @@ void TemperatEx::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		Modeling->SchedulerFlag = false;
 		SchedulerFlag = true;
 	}
-	int it = MK >> 2; // Номер итерации
+	long int it = MK >> 2; // Номер итерации
 	MK &= 3;
 
 	if (T.size() >= it) // Если данные от новой интерации и длина вектора еще не соответствует номеру итерации 
@@ -62,8 +62,9 @@ void TemperatEx::ProgFU(int MK, LoadPoint Load, FU* Sender)
 	if(SchedulerFlag)
 		((Scheduler*)Modeling->scheduler)->CoreFree();
 }
-void NetManager::ProgFU(int MK, LoadPoint Load, FU* Sender)
+void NetManager::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 {
+	MK %= FUMkRange;
 	switch (MK)
 	{
 	case 0: //Reset

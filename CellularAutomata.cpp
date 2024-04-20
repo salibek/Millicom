@@ -2,7 +2,7 @@
 #include "SchedulerEventser.h"
 
 // Простейший клеточный автомат (устройство для вычисления сеточных функций)
-void CellularAutomata::ProgFU(int MK, LoadPoint Load, FU* Sender)
+void CellularAutomata::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 {
 	MK %= FUMkRange;
 	// Режим моделирования
@@ -66,7 +66,7 @@ void CellularAutomata::ProgFU(int MK, LoadPoint Load, FU* Sender)
 	// Доделать буфер ИП с лексемами ???
 	if (ReceiveProg != nullptr && Mode == 0) // Запуск программы автоматного режима, т.е. когда автомат самостоятельно обрабатывает приходящие МК
 	{
-		int t = Mode; 
+		long int t = Mode;
 		Mode = 0; // Сменить режим работы на нулевой
 		ProgExec(ReceiveProg);
 		if(!Mode)
@@ -320,7 +320,7 @@ void CellularAutomata::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		break;
 	case 861: //ParametersCountOutMk
 	{
-		int t = parameters.size();
+		long int t = parameters.size();
 		MkExec(Load, { Cint,&t });
 		break;
 	}
@@ -499,8 +499,7 @@ void CellularAutomata::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		break;
 	case 43: // N_Neighbour_OutMk Выдать МК с количеством получателей результата
 	{
-		int t;
-		t = Neighbours.size();
+		long int t = Neighbours.size();
 		MkExec(Load, { Cint, &t });
 	}
 	break;
@@ -789,7 +788,7 @@ void CellularAutomata::ProgFU(int MK, LoadPoint Load, FU* Sender)
 	// -------------------
 }
 
-void CellularAutomatManager::ProgFU(int MK, LoadPoint Load, FU* Sender)
+void CellularAutomatManager::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 {
 	MK %= FUMkRange;
 	// Доделать буфер ИП с лексемами
@@ -992,7 +991,7 @@ void CellularAutomatManager::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		break;
 	case 80: // Ind1N_inOutMk Вывести МК с количеством ожидаемых входных данных
 	{
-		int t = Net[Ind1].Plys[Net[Ind1].PlyCurrent].size();
+		long int t = Net[Ind1].Plys[Net[Ind1].PlyCurrent].size();
 		MkExec(Load, { Cint, &t });
 		break;
 	}
@@ -1001,8 +1000,8 @@ void CellularAutomatManager::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		break;
 	case 85: // ForExec Выполнить цикл (на входе программа для выполнени цикла или количество итераций (тогда выполняется программа по указателю Prog из контекста)
 	{
-		int N_it = -1; // Количество итераций 
-		int  step1 = Step1, step2 = Step2;
+		long int N_it = -1; // Количество итераций 
+		long int  step1 = Step1, step2 = Step2;
 		Step1 = 0; Step2 = 0; // Обнуление шагов, чтобы не увеличивать индекс по каждой коменде
 
 		void* Pr = Prog;

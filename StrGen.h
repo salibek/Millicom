@@ -6,21 +6,21 @@
 using namespace std;
 class StrGen : public FU {
 private:
-	int LineCount = 0;
+	long int LineCount = 0;
 	void *Receiver = nullptr;
-	int ReceiverMK = 0;
+	long int ReceiverMK = 0;
 	bool work = true;
 	ifstream Source;
 	string Filename;
-	int TimeStart = 0, TimeLong = 0;// Время начала компиляции, время конца компиляции
-	int str_count = 0; // счетчик считанных строк
+	long int TimeStart = 0, TimeLong = 0;// Время начала компиляции, время конца компиляции
+	long int str_count = 0; // счетчик считанных строк
 	vector<string> str_buf; // Буфер строк
-	int str_buf_size;// Размер буфера строк
-	int str_bufCount = 0; // Индекс текущей строки в буфере
+	long int str_buf_size;// Размер буфера строк
+	long int str_bufCount = 0; // Индекс текущей строки в буфере
 	void *StartProg = nullptr, *FinProg = nullptr, *StopProg = nullptr; // Ссылки на программы, аапускаемые при начале, оокончании и прерывании генерации строк
 	string finStr = ""; // Строка, выдаваемая при окончании геренации строк
 public:
-	void ProgFU(int MK, LoadPoint Load, FU* Sender = nullptr) override;
+	void ProgFU(long int MK, LoadPoint Load, FU* Sender = nullptr) override;
 	FU* Copy() override; // Программа копирования ФУ
 	FU* TypeCopy() override; // Создать ФУ такого же типа (не копируя контекст
 	StrGen(FU* BusContext, FU* Templ) : FU(BusContext) { ProgFU(0, { 0, nullptr }); Bus = BusContext; FUtype = 2; };

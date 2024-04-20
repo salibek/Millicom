@@ -9,17 +9,17 @@ class AutomatManager : public FU
 {
 private:
 	bool TemplAutoClear = true;  // флаг автоматическогог сброса шаблона поиска при установке МК для получателя
-	int ReceiverMk = -1;  // МК для текущего ФУ-состояния
+	long int ReceiverMk = -1;  // МК для текущего ФУ-состояния
 	void* Receiver = nullptr;  // Указатель для текущего ФУ-состояния
 	IC_type Template = nullptr;  // ссылка на эталонную ИК ic*
 	vector<ip> Var;  // ИК переменных ic*
 	ip IPout = { 0, {0,new double(0)} };  // ИП сиграла (сигнал и его атрибут) ip
 	ip IPoutPrev = { 0, {0,new double(0)} };  // ИП предыдущего сигнала (сигнал и его атрибут) ip
-	map<int, void*> StageInProg;  // программы на состояних автомата (запуск программы по атрибуту для reciever-a)
-	map<int, void*> StageOutProg;  // программы на состояних автомата (запуск программы по атрибуту для reciever-a)
-	int StageProgMk = -1;  // МК для установки программы для состояния
+	map<long int, void*> StageInProg;  // программы на состояних автомата (запуск программы по атрибуту для reciever-a)
+	map<long int, void*> StageOutProg;  // программы на состояних автомата (запуск программы по атрибуту для reciever-a)
+	long int StageProgMk = -1;  // МК для установки программы для состояния
 public:
-	void ProgFU(int MK, LoadPoint Load, FU* Sender = nullptr) override;
+	void ProgFU(long int MK, LoadPoint Load, FU* Sender = nullptr) override;
 	FU* Copy() override; // Программа копирования ФУ
 	FU* TypeCopy() override; // Создать ФУ такого же типа (не копируя контекст
 	AutomatManager(FU* BusContext, FU* Templ) : FU(BusContext) { Bus = BusContext;  Template = new vector<ip>; ProgFU(0, { 0,0 }); };
@@ -109,7 +109,7 @@ private:
 public:
 	int CurrentCh = -1;  // ??? номер текущего канала, на который пришли данные
 	int ChMkAtrCount = 0;  // счётчик фаз команды
-	void ProgFU(int MK, LoadPoint Load, FU* Sender=nullptr) override;
+	void ProgFU(long int MK, LoadPoint Load, FU* Sender=nullptr) override;
 	FU* Copy() override; // Программа копирования ФУ
 	FU* TypeCopy() override; // Создать ФУ такого же типа (не копируя контекст
 	InOut(FU* BusContext, FU* Templ) : FU(BusContext) { Bus = BusContext; ProgFU(0, { 0,0 }); };

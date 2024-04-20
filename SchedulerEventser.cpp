@@ -5,7 +5,6 @@ void Eventser::Eventsing(FU* Context, double tay, bool SchedulerFlag) // Зап�
 {
 	if (Events.size() == 0)
 	{
-//		Events.insert(pair<double, FU*>(CurrentTime+tay, Context));
 		Events.insert(pair<double, Event>(CurrentTime + tay, { true, Context }));
 		//return;
 		if (work && !start)// ProgFU(1, { 0,nullptr });
@@ -21,14 +20,13 @@ void Eventser::Eventsing(FU* Context, double tay, bool SchedulerFlag) // Зап�
 	}
 	else
 	{
-//		Events.insert(pair<double, FU*>(Events.begin()->first+tay, Context));
 		Events.insert(pair<double, Event>(Events.begin()->first + tay, { true, Context }));
 	}
 }
 
-void Eventser::ProgFU(int MK, LoadPoint Load, FU* Sender)
+void Eventser::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 {
-	switch (MK)
+	switch (MK%FUMkRange)
 	{
 	case 0: // Reset
 		Events.clear();
@@ -126,10 +124,11 @@ void Scheduler::Scheduling(FU* Context, double DTime, bool CoreContinue) // Пл
 	if (CoreContinue)
 		((Eventser*)eventser)->Eventsing(Context, DTime, true);
 	else
-		if (CoreCount < NCores) // Если ядер хватает
+		if (CoreCount < NCores && BusyCounter>0) // Если ядер хватает
 		{
 			CoreCount++;
 			((Eventser*)eventser)->Eventsing(Context, DTime + SchedulingTime, true);
+			BusyCounter--;
 		}
 		else // Если ядер не хватает
 		{
@@ -138,11 +137,13 @@ void Scheduler::Scheduling(FU* Context, double DTime, bool CoreContinue) // Пл
 			MkQueuePrev++;
 			if (Queue.size() > MaxMkQueue)
 				MaxMkQueue = Queue.size();
+			if(BusyCounter==0)
+				((Eventser*)eventser)->Eventsing(this, SchedulingTime, true);
 		}
 	ProgExec(SchedulingProg);
 }
 
-void Scheduler::ProgFU(int MK, LoadPoint Load, FU* Sender)
+void Scheduler::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 {
 	switch (MK)
 	{
@@ -178,6 +179,12 @@ void Scheduler::ProgFU(int MK, LoadPoint Load, FU* Sender)
 	case 5: //SchedulingTimeSet Установить время осуществления планирования выполнения МК
 		SchedulingTime = Load.toDouble();
 		break;
+	case 6: // BusyAdd Увеличить счетчик занятости (по умолчанию -1)
+		BusyCounter += Load.toInt(-1);
+		break;
+	case 7: // SchedulingParallelFactorSet Установить коэффициент параллелизма для планирования
+		SchedulingParallelFactor = Load.toInt();
+		break;
 	case 8: // NCoresSet Установить количество исполнительных устройств
 		NCores = Load.toInt();
 		break;
@@ -208,7 +215,7 @@ void Scheduler::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		break;
 	case 56: // MkQueueOutMk Выдать МК с количеством МК в очереди на выполнение
 	{
-		int t = Queue.size();
+		long int t = Queue.size();
 		MkExec(Load, { Cint,&t });
 		break;
 	}
@@ -217,7 +224,7 @@ void Scheduler::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		break;
 	case 61: // MkCountOutMk Выдать МК с количеством МК на выполнении и ожидании
 	{
-		int t = Queue.size() + CoreCount;
+		long int t = Queue.size() + CoreCount;
 		MkExec(Load, { Cint,&t });
 		break;
 	}
@@ -226,7 +233,6 @@ void Scheduler::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		Load.Write(ParallelFactor / *CurrentTime);
 		break;
 	case 66: //  ParallelFactorOutMk Выдать МК с коэффициентом параллелизма
-//	if(Modeling!=nullptr)
 	{
 		double t;
 		if (*CurrentTime > 0)
@@ -237,11 +243,9 @@ void Scheduler::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		break;
 	}
 	case 70: // AverageMkQueueOut Выдать среднюю длину очереди
-//		if (Modeling != nullptr)
 			Load.Write(AverageMkQueue);
 		break;
 	case 71: //  AverageMkQueueOutMk Выдать МК со средней длиной очереди
-//		if (Modeling != nullptr)
 		{
 			double t;
 		if (*CurrentTime > 0)
@@ -257,12 +261,9 @@ void Scheduler::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		break;
 	case 76: //  MaxMkQueueOutMk Выдать МК с максимальной длиной очереди МК
 	{
-//		if (Modeling != nullptr)
-		{
-			int t = MaxMkQueue;
-			MkExec(Load, { Cint,&t });
-			break;
-		}
+		long int t = MaxMkQueue;
+		MkExec(Load, { Cint,&t });
+		break;
 	}
 
 	default:

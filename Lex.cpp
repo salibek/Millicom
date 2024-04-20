@@ -24,10 +24,10 @@
 					Receiver.back()->ProgFU(MK, { TIP, &LexBuf[ib] }, this);
 	}
 
-	void Lex::ProgFU(int MK, LoadPoint Load, FU* Sender)
+	void Lex::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 	{
 		// Доделать буфер ИП с лексемами
-	//	MK %= FUMkRange;
+		MK %= FUMkRange;
 		switch (MK)
  		{
 		case 0: // Reset
@@ -50,7 +50,7 @@
 			break;
 		case 3: // ReceiverPop Вытолкнуть Мк премника из стека и записать ее
 			{
-			int t = ReceiverMK.back();
+			long int t = ReceiverMK.back();
 			if (!ReceiverMK.size()) break;
 			ReceiverMK.pop_back();
 			Receiver.pop_back();
@@ -326,7 +326,7 @@
 			}
 			Work = true;
 			if (TabMode) {
-				int tabCounter = 0;
+				long int tabCounter = 0;
 				while (str[tabCounter] == '\t')
 					tabCounter++;
 				if (tabCounter > ProgLevel + 1) // Табуляция больше чем на одну позицию

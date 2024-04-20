@@ -1,5 +1,6 @@
 #pragma once
 #include "Consts.h"
+#include "FUIni.h"
 #include "StreamFloatALU.h"
 #include "StreamIntALU.h"
 
@@ -9,20 +10,23 @@ class StreamManager : public FU
 {
 private:
 	vector<vector<FU*> > Field; // Поле АЛУ
-	int Ind = 0, IndGroup=0;
-	int Mode = 0; //  Режим работы ФУ (0 - дробное АЛУ, 1 - целочисленное АЛУ)
-	int DeviseCounter = 0;
+	long int Ind = 0, IndGroup = 0; // Индексы ФУ и группы
+	long int Ind2 = 0, IndGroup2 = 0; // Вторые индексы ФУ и группы
+	long int Mk1 = -1, Mk2=-1; // Милликоманды для выполнения на ФУ по первому и второму индексам
+	long int Counter = 1; // Счетчик действий при создании ФУ (сколько раз необходимо создавать устройства)
+	long int DeviseCounter = 0;
 	void* DevNotExistErrProg = nullptr; // Подпрограмма ошибки 'Нет существует устройства'
 	vector<StreamFloatALU> Group; // Вектор группы ФУ для копирования
+	FuFabric MakeFU;
 public:
-	void ProgFU(int MK, LoadPoint Load, FU* Sender = nullptr) override;
+	void ProgFU(long int MK, LoadPoint Load, FU* Sender = nullptr) override;
 	FU* Copy() override; // Программа копирования ФУ
 	FU* TypeCopy() override; // Создать ФУ такого же типа (не копируя контекст
 	StreamManager(FU* BusContext, FU* Templ)
 	{
 		Bus = BusContext;
 		FUtype = 23;
-		ProgFU(0, { 0,nullptr },nullptr);
+		ProgFU(0, { 0,nullptr });
 	};
 	StreamManager() { StreamManager(nullptr, nullptr); };
 	~StreamManager();

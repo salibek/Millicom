@@ -91,7 +91,7 @@ void	ALU::error_msg(int error_code)
 	}
 }
 
-void ALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
+void ALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 {
 	MK %= FUMkRange;
 	if (MK == 1) MK = E_MK::SET; // Заменить МК установки аккумулятора
@@ -111,7 +111,7 @@ void ALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 			else if (i.Mk >= 0)
 			{
 				double tt_double = 0; // Хранилище аккумулятора предыдущего уровня
-				int tt_int = 0;
+				long int tt_int = 0;
 				float tt_float = 0;
 				bool tt_bool = 0;
 				char tt_char = 0;
@@ -135,7 +135,7 @@ void ALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 					MkExec(i.Mk, { Stack.back().accumType | 1, &tt_float }); // Сделать преобразование типов попозже
 				}
 				else if (LoadPoint::isInt(Stack.back().accumType)) {
-					int tt_int = Stack.back().accum;
+					long int tt_int = Stack.back().accum;
 					MkExec(i.Mk, { Stack.back().accumType | 1, &tt_int }); // Сделать преобразование типов попозже
 				}
 				else if (LoadPoint::isBool(Stack.back().accumType)) {
@@ -169,7 +169,7 @@ void ALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 			return;
 		}
 		double tt_double=0; // Хранилище аккумулятора предыдущего уровня
-		int tt_int = 0;
+		long tt_int = 0;
 		float tt_float = 0;
 		bool tt_bool = 0;
 		char tt_char = 0;
@@ -310,7 +310,7 @@ void ALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 			ALUContext* ta = (MK == 2 || MK == 3) ? &Stack.back() : &Stack[Anses.back()];
 			if ((MK == 2 || MK == 3) && LoadPoint::isVectInd(Stack.back().accumType) || (MK == 506 || MK == 507) && LoadPoint::isVectInd(Stack[Anses.back()].accumType))
 			{
-				int Ind =  ta->Ind;
+				long int Ind =  ta->Ind;
 				if (Ind < 0) Ind = ta->accumVect->size() + Ind;
 				if (!(Ind >= 0 && Ind < ta->accumVect->size())){
 					ProgExec(OutOfRangeErrProg); // Ошибка выхода индекса за пределы диапазона
@@ -360,7 +360,7 @@ void ALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 				}
 				case Dint:
 				{
-					int t = ta->accum;
+					long int t = ta->accum;
 					switch (MK){
 					case 506:
 					case 2:  Load.Write(t); break;
@@ -783,7 +783,7 @@ void ALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 
 			if (Load.isVect() && LoadPoint::isInt(Stack.back().accumType) && Load.toInt() >= 0) // Мультиплексия вектора
 			{
-				int N = *(int*)Load.Point;
+				long int N = Load.toInt();
 				for (int i = 0; i < N; i++)
 					for (auto& j : *Stack.back().accumVect)
 						Rez.push_back(j.Clone());
@@ -854,7 +854,8 @@ void ALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 				Stack.back().Ind += Load.toInt();
 			break;
 		case 274: // VectValByIndSet Установить значение аккумулятора по индексу в нагрузке
-		{	int i = Load.toInt();
+		{
+			long int i = Load.toInt();
 		if (Stack.size() < 1 || 1 >= Stack.back().accumVect->size() || i < 0)
 		{
 			ProgExec(ErrProg);
@@ -865,7 +866,8 @@ void ALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		ProgFU(E_MK::SET, Stack.back().accumVect->at(i));
 		}
 		case 275: // ConfineAppend Добавить элемент в предпредпредыдущий аккумулятор из векторa предыдущего аккумулятора по индексу из текущего аккумулятора (для конфайна)
-		{	int i = Load.toInt();
+		{
+			long int i = Load.toInt();
 		if (Stack.size() < 3 || !LoadPoint::isVect((Stack.end() - 3)->accumType))
 		{
 			ProgExec(ErrProg);
@@ -880,7 +882,7 @@ void ALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 			ProgStopAll = true;
 			break;
 		}
-		(Stack.end() - 3)->accumVect->push_back((Stack.end() - 2)->accumVect->at((int)Stack.back().accum).Clone());
+		(Stack.end() - 3)->accumVect->push_back((Stack.end() - 2)->accumVect->at((long int)Stack.back().accum).Clone());
 		}
 		case 276: // PrevIndSet Установить индекс у предыдущего аккумулятора
 			if (!Load.isDigitBool() || Stack.size() < 2)
@@ -967,7 +969,7 @@ void ALU::ProgFU(int MK, LoadPoint Load, FU* Sender)
 	ProgExec(PostfixProg); // Выполнить постфиксную программу
 }
 
-void ALU::VectOperation(int MK, LoadPoint Load) // Реализацая векторных операций
+void ALU::VectOperation(long int MK, LoadPoint Load) // Реализацая векторных операций
 {
 	if (MK == E_MK::SUM && Load.isVect()) // Конкатенация векторов
 	{
@@ -1048,7 +1050,7 @@ void ALU::XOR_BIT(LoadPoint Load)
 	else if (Load.isDigitBool() && Load.isDigitBool(Stack.back().accumType))
 	{
 
-		Stack.back().accum = static_cast<int>(Stack.back().accum) ^ Load.toInt();
+		Stack.back().accum = static_cast<long int>(Stack.back().accum) ^ Load.toInt();
 		if (LoadPoint::isDigitBool(Stack.back().accumType) && LoadPoint::isDigitBool(Load.Type))
 			Stack.back().accumType = Cint;
 		else
@@ -1078,7 +1080,6 @@ void ALU::emptyvect() {
 void ALU::append(LoadPoint Load) //добавление
 {
 	Stack.back().accumVect->push_back(Load.Clone());
-//	Stack.back().accumVect->back().Type = (Stack.back().accumVect->back().Type | 1) - 1; // Установить флаг переменной!!!
 }
 void ALU::concat(LoadPoint Load) // Конкатенация векторов
 {
@@ -1149,7 +1150,6 @@ void	ALU::add(LoadPoint Load) // Сложение
 void	ALU::sub(LoadPoint Load)
 {
 	if (Load.Point == nullptr) {
-		//((Threader*)Parent)->ProgExec(((Threader*)Parent)->NoOperandErrProg); // Запуск подпрограммы ошибки "Нет операнда"
 		return;
 	}
 
@@ -1164,7 +1164,6 @@ void	ALU::sub(LoadPoint Load)
 			}
 		}
 		else
-			//	((Threader*)Parent)->ProgExec(((Threader*)Parent)->UncompatableTypesErrProg);
 			return;
 	}
 
@@ -1187,7 +1186,6 @@ void	ALU::sub(LoadPoint Load)
 		}
 	}
 	else {
-		//	 ((Threader*)Parent)->ProgExec(((Threader*)Parent)->UncompatableTypesErrProg);
 		return;
 	}
 }
@@ -1195,7 +1193,6 @@ void	ALU::sub(LoadPoint Load)
 void	ALU::mult(LoadPoint Load)
 {
 	if (Load.Point == nullptr) {
-		//	((Threader*)Parent)->ProgExec(((Threader*)Parent)->NoOperandErrProg); // Запуск подпрограммы ошибки "Нет операнда"
 		return;
 	}
 	if (LoadPoint::isVect(Load.Type)) {
@@ -1216,16 +1213,12 @@ void	ALU::mult(LoadPoint Load)
 			}
 		}
 		else
-			//	((Threader*)Parent)->ProgExec(((Threader*)Parent)->UncompatableTypesErrProg);
 			return;
 	}
 	else if (LoadPoint::isStr(Stack.back().accumType)) {
 		string k;
 		int l;
-		//l = Load.toStr();
 		l = Load.toInt();
-		//for (int i = 0; i < l.size(); i++)
-		//	k += Stack.back().accumStr;
 		for (int i = 0; i < l; i++)
 			k += Stack.back().accumStr;
 		Stack.back().accumStr = k;
@@ -1255,7 +1248,6 @@ void	ALU::mult(LoadPoint Load)
 	}
 
 	else {
-		//((Threader*)Parent)->ProgExec(((Threader*)Parent)->UncompatableTypesErrProg);
 		return;
 	}
 }
@@ -1277,7 +1269,6 @@ void	ALU::div(LoadPoint Load)
 			}
 		}
 		else
-			//	((Threader*)Parent)->ProgExec(((Threader*)Parent)->UncompatableTypesErrProg);
 			return;
 	}
 
@@ -1315,7 +1306,6 @@ void	ALU::div(LoadPoint Load)
 void	ALU::div_int(LoadPoint Load)
 {
 	if (Load.Point == nullptr) {
-		//		((Threader*)Parent)->ProgExec(((Threader*)Parent)->NoOperandErrProg); // Запуск подпрограммы ошибки "Нет операнда"
 		return;
 	}
 	if (Load.isVect() && LoadPoint::isVect(Stack.back().accumType)) {
@@ -1329,7 +1319,6 @@ void	ALU::div_int(LoadPoint Load)
 			}
 		}
 		else
-			//	((Threader*)Parent)->ProgExec(((Threader*)Parent)->UncompatableTypesErrProg);
 			return;
 	}
 
@@ -1364,7 +1353,7 @@ LoadPoint ALU::get()// выдать , проверку на данные нуж�
 	{
 	case Dint:
 	{
-		int t = round(Stack.back().accum);
+		long int t = round(Stack.back().accum);
 		return{
 			Stack.back().accumType, &t
 		};
@@ -1374,11 +1363,9 @@ LoadPoint ALU::get()// выдать , проверку на данные нуж�
 		return{ 0,nullptr };
 	}
 
-	//	ALU.print();
-
 }
 
-void ALU::Out(LoadPoint Load) // �������� ����������� � ����������
+void ALU::Out(LoadPoint Load) //
 {
 	if (Load.Type % 2 != 0) return; // Если константа, то запись в нее не производим
 	if (Load.Point == nullptr) {
@@ -1403,7 +1390,6 @@ void ALU::Out(LoadPoint Load) // �������� ��������
 	}
 
 	else {
-		//		((Threader*)Parent)->ProgExec(((Threader*)Parent)->UncompatableTypesErrProg);
 		return;
 	}
 }
@@ -1452,14 +1438,11 @@ void		ALU::set(LoadPoint Load) // Установить значение в ак�
 		Stack.back().accumType = Load.Type;
 	}
 	else {
-		//((Threader*)Parent)->ProgExec(((Threader*)Parent)->UncompatableTypesErrProg);
-		//return;
 	}
 	if (Stack.size() == 1) // Переписать в выходной аккумулятор
 	{
 		accumType = Stack.back().accumType;
 		accum = Stack.back().accum;
-		//	accumPoint = Stack.back().accumPoint;
 	}
 }
 
@@ -1489,7 +1472,6 @@ bool		ALU::getLogic(LoadPoint Load) // ����������� ���
 void	ALU::fu_max(LoadPoint Load)
 {
 	if (Load.Point == nullptr) {
-		//((Threader*)Parent)->ProgExec(((Threader*)Parent)->NoOperandErrProg); // Запуск подпрограммы ошибки "Нет операнда"
 		return;
 	}
 	if (LoadPoint::isVect(Load.Type)) {
@@ -1503,7 +1485,6 @@ void	ALU::fu_max(LoadPoint Load)
 			}
 		}
 		else
-			//	((Threader*)Parent)->ProgExec(((Threader*)Parent)->UncompatableTypesErrProg);
 			return;
 	}
 	if (Load.isDigitBool() && Load.isDigitBool(Stack.back().accumType))
@@ -1524,7 +1505,6 @@ void	ALU::fu_max(LoadPoint Load)
 		}
 	}
 	else {
-		//	((Threader*)Parent)->ProgExec(((Threader*)Parent)->UncompatableTypesErrProg);
 		return;
 	}
 }
@@ -1532,7 +1512,6 @@ void	ALU::fu_max(LoadPoint Load)
 void	ALU::fu_min(LoadPoint Load)
 {
 	if (Load.Point == nullptr) {
-		//((Threader*)Parent)->ProgExec(((Threader*)Parent)->NoOperandErrProg); // Запуск подпрограммы ошибки "Нет операнда"
 		return;
 	}
 	if (Load.isVect()) {
@@ -1567,7 +1546,6 @@ void	ALU::fu_min(LoadPoint Load)
 		}
 	}
 	else {
-		//	((Threader*)Parent)->ProgExec(((Threader*)Parent)->UncompatableTypesErrProg);
 		return;
 	}
 }
@@ -1576,8 +1554,6 @@ void	ALU::fu_cos(LoadPoint Load)
 {
 	if (Load.Point == nullptr) {
 		int i = 0;
-
-		//		if (Stack.back().accumType >> 1 == DLoadVect) {
 		if (LoadPoint::isVect(Stack.back().accumType)) {
 			for (i = 0; i < min(Stack.back().accumVect->size(), ((vector<LoadPoint>*)Load.Point)->size()); i++) {
 				if (Stack.back().accumVect->at(i).isDigit() && (((vector<LoadPoint>*)Load.Point)->begin() + i)->isDigit()) {
@@ -1590,11 +1566,9 @@ void	ALU::fu_cos(LoadPoint Load)
 		{
 			Stack.back().accum = cos(Stack.back().accum);
 			Stack.back().accumType = Tdouble | (Stack.back().accumType & 1);
-			//Enver//Stack.back().accumType = Cdouble;
 		}
 
 		else
-			//	((Threader*)Parent)->ProgExec(((Threader*)Parent)->NoOperandErrProg); // Запуск подпрограммы ошибки "Нет операнда"
 
 			return;
 	}
@@ -1602,7 +1576,6 @@ void	ALU::fu_cos(LoadPoint Load)
 	{
 		Stack.back().accum = cos(Load.toDouble());
 		Stack.back().accumType = Tdouble | (Stack.back().accumType & 1);
-		//Enver//Stack.back().accumType = Cdouble;
 	}
 	else
 		if (Load.isVect()) {
@@ -1619,19 +1592,16 @@ void	ALU::fu_cos(LoadPoint Load)
 				}
 			}
 			else
-				//	((Threader*)Parent)->ProgExec(((Threader*)Parent)->UncompatableTypesErrProg);
 				return;
 		}
 	if (Load.isDigitBool() && Load.isDigitBool(Stack.back().accumType))
 	{
 		Stack.back().accum = cos(Load.toDouble());
-		//		if (Stack.back().accumType >> 1 == Dbool && Load.Type >> 1 == Dbool)
 		if (LoadPoint::isBool(Stack.back().accumType) && LoadPoint::isBool(Load.Type))
 			Stack.back().accumType = Cint;
 		else
 			Stack.back().accumType = max(Stack.back().accumType, Load.Type);
 	}
-	//	else if (Load.isDigitBool() && Stack.back().accumType >> 1 == DLoadVect)
 	else if (Load.isDigitBool() && LoadPoint::isVect(Stack.back().accumType))
 	{
 
@@ -1651,8 +1621,6 @@ void	ALU::fu_sin(LoadPoint Load)
 {
 	if (Load.Point == nullptr) {
 		int i = 0;
-
-		//		if (Stack.back().accumType >> 1 == DLoadVect) {
 		if (LoadPoint::isVect(Stack.back().accumType)) {
 			for (i = 0; i < min(Stack.back().accumVect->size(), ((vector<LoadPoint>*)Load.Point)->size()); i++) {
 				if (Stack.back().accumVect->at(i).isDigit() && (((vector<LoadPoint>*)Load.Point)->begin() + i)->isDigit()) {
@@ -1665,7 +1633,6 @@ void	ALU::fu_sin(LoadPoint Load)
 		{
 			Stack.back().accum = sin(Stack.back().accum);
 			Stack.back().accumType = Tdouble | (Stack.back().accumType & 1);
-			//Enver//Stack.back().accumType = Cdouble;
 		}
 		return;
 	}
@@ -1673,10 +1640,8 @@ void	ALU::fu_sin(LoadPoint Load)
 	{
 		Stack.back().accum = sin(Load.toDouble());
 		Stack.back().accumType = Tdouble | (Stack.back().accumType & 1);
-		//Enver//Stack.back().accumType = Cdouble;
 	}
 	else
-		//	if (Load.Type >> 1 == DLoadVect) {
 		if (LoadPoint::isVect(Load.Type)) {
 			int i = 0;
 			if (Stack.back().accumType >> 1 == DLoadVect) {
@@ -1688,19 +1653,16 @@ void	ALU::fu_sin(LoadPoint Load)
 				}
 			}
 			else
-				//	((Threader*)Parent)->ProgExec(((Threader*)Parent)->UncompatableTypesErrProg);
 				return;
 		}
 	if (Load.isDigitBool() && Load.isDigitBool(Stack.back().accumType))
 	{
 		Stack.back().accum = sin(Load.toDouble());
-		//		if (Stack.back().accumType >> 1 == Dbool && Load.Type >> 1 == Dbool)
 		if (LoadPoint::isBool(Stack.back().accumType) && LoadPoint::isBool(Load.Type))
 			Stack.back().accumType = Cint;
 		else
 			Stack.back().accumType = max(Stack.back().accumType, Load.Type);
 	}
-	//	else if (Load.isDigitBool() && Stack.back().accumType >> 1 == DLoadVect)
 	else if (Load.isDigitBool() && LoadPoint::isVect(Stack.back().accumType))
 	{
 
@@ -1712,7 +1674,6 @@ void	ALU::fu_sin(LoadPoint Load)
 		}
 	}
 	else {
-		//	((Threader*)Parent)->ProgExec(((Threader*)Parent)->UncompatableTypesErrProg);
 		return;
 	}
 }
@@ -1721,8 +1682,6 @@ void	ALU::fu_acos(LoadPoint Load)
 {
 	if (Load.Point == nullptr) {
 		int i = 0;
-
-		//		if (Stack.back().accumType >> 1 == DLoadVect) {
 		if (LoadPoint::isVect(Stack.back().accumType)) {
 			for (i = 0; i < min(Stack.back().accumVect->size(), ((vector<LoadPoint>*)Load.Point)->size()); i++) {
 				if (Stack.back().accumVect->at(i).isDigit() && (((vector<LoadPoint>*)Load.Point)->begin() + i)->isDigit()) {
@@ -1735,11 +1694,9 @@ void	ALU::fu_acos(LoadPoint Load)
 		{
 			Stack.back().accum = acos(Stack.back().accum);
 			Stack.back().accumType = Tdouble | (Stack.back().accumType & 1);
-			//Enver//Stack.back().accumType = Cdouble;
 		}
 
 		else
-			//	((Threader*)Parent)->ProgExec(((Threader*)Parent)->NoOperandErrProg); // Запуск подпрограммы ошибки "Нет операнда"
 			return;
 	}
 	if (Load.isDigitBool()) //Enver//
@@ -1747,10 +1704,8 @@ void	ALU::fu_acos(LoadPoint Load)
 		Stack.back().accum = acos(Load.toDouble());
 		Stack.back().accumType = Tdouble | (Stack.back().accumType & 1);
 	}
-	//	if (Load.Type >> 1 == DLoadVect) {
 	if (LoadPoint::isVect(Load.Type)) {
 		int i = 0;
-		//		if (Stack.back().accumType >> 1 == DLoadVect) {
 		if (LoadPoint::isVect(Stack.back().accumType)) {
 			for (i = 0; i < min(Stack.back().accumVect->size(), ((vector<LoadPoint>*)Load.Point)->size()); i++) {
 				if (Stack.back().accumVect->at(i).isDigit() && (((vector<LoadPoint>*)Load.Point)->begin() + i)->isDigit()) {
@@ -1760,7 +1715,6 @@ void	ALU::fu_acos(LoadPoint Load)
 			}
 		}
 		else
-			//	((Threader*)Parent)->ProgExec(((Threader*)Parent)->UncompatableTypesErrProg);
 			return;
 	}
 	if (Load.isDigitBool() && Load.isDigitBool(Stack.back().accumType))
@@ -1772,7 +1726,6 @@ void	ALU::fu_acos(LoadPoint Load)
 		else
 			Stack.back().accumType = max(Stack.back().accumType, Load.Type);
 	}
-	//	else if (Load.isDigitBool() && Stack.back().accumType >> 1 == DLoadVect)
 	else if (Load.isDigitBool() && LoadPoint::isVect(Stack.back().accumType))
 	{
 		int i;
@@ -1783,7 +1736,6 @@ void	ALU::fu_acos(LoadPoint Load)
 		}
 	}
 	else {
-		//	((Threader*)Parent)->ProgExec(((Threader*)Parent)->UncompatableTypesErrProg);
 		return;
 	}
 }
@@ -1793,7 +1745,6 @@ void	ALU::fu_asin(LoadPoint Load)
 	if (Load.Point == nullptr) {
 		int i = 0;
 
-		//		if (Stack.back().accumType >> 1 == DLoadVect) {
 		if (LoadPoint::isVect(Stack.back().accumType)) {
 			for (i = 0; i < min(Stack.back().accumVect->size(), ((vector<LoadPoint>*)Load.Point)->size()); i++) {
 				if (Stack.back().accumVect->at(i).isDigit() && (((vector<LoadPoint>*)Load.Point)->begin() + i)->isDigit()) {
@@ -1806,13 +1757,10 @@ void	ALU::fu_asin(LoadPoint Load)
 		{
 			Stack.back().accum = asin(Stack.back().accum);
 			Stack.back().accumType = Tdouble | (Stack.back().accumType & 1);
-			//Enver//Stack.back().accumType = Cdouble;
 		}
 		else
-			//	((Threader*)Parent)->ProgExec(((Threader*)Parent)->NoOperandErrProg); // Запуск подпрограммы ошибки "Нет операнда"
 			return;
 	}
-	//	if (Load.Type >> 1 == DLoadVect) {
 	if (LoadPoint::isVect(Load.Type)) {
 		int i = 0;
 		if (Stack.back().accumType >> 1 == DLoadVect) {
@@ -1824,16 +1772,13 @@ void	ALU::fu_asin(LoadPoint Load)
 			}
 		}
 		else
-			//	((Threader*)Parent)->ProgExec(((Threader*)Parent)->UncompatableTypesErrProg);
 			return;
 	}
 	if (Load.isDigitBool() && Load.isDigitBool(Stack.back().accumType))
 	{
 		Stack.back().accum = asin(Load.toDouble());
 		Stack.back().accumType = Tdouble | (Stack.back().accumType & 1);
-		//Enver//Stack.back().accumType = Cdouble;
 	}
-	//	else if (Load.isDigitBool() && Stack.back().accumType >> 1 == DLoadVect)
 	else if (Load.isDigitBool() && LoadPoint::isVect(Stack.back().accumType))
 	{
 
@@ -1845,7 +1790,6 @@ void	ALU::fu_asin(LoadPoint Load)
 		}
 	}
 	else {
-		//	((Threader*)Parent)->ProgExec(((Threader*)Parent)->UncompatableTypesErrProg);
 		return;
 	}
 }
@@ -1871,13 +1815,10 @@ void	ALU::fu_tan(LoadPoint Load)
 			Stack.back().accumType = Tdouble | (Stack.back().accumType & 1);
 		}
 		else
-			//	((Threader*)Parent)->ProgExec(((Threader*)Parent)->NoOperandErrProg); // Запуск подпрограммы ошибки "Нет операнда"
 			return;
 	}
-	//	if (Load.Type >> 1 == DLoadVect) {
 	if (LoadPoint::isVect(Load.Type)) {
 		int i = 0;
-		//		if (Stack.back().accumType >> 1 == DLoadVect) {
 		if (LoadPoint::isVect(Stack.back().accumType)) {
 			for (i = 0; i < min(Stack.back().accumVect->size(), ((vector<LoadPoint>*)Load.Point)->size()); i++) {
 				if (Stack.back().accumVect->at(i).isDigit() && (((vector<LoadPoint>*)Load.Point)->begin() + i)->isDigit()) {
@@ -1887,16 +1828,13 @@ void	ALU::fu_tan(LoadPoint Load)
 			}
 		}
 		else
-			//	((Threader*)Parent)->ProgExec(((Threader*)Parent)->UncompatableTypesErrProg);
 			return;
 	}
 	if (Load.isDigitBool() && Load.isDigitBool(Stack.back().accumType))
 	{
 		Stack.back().accum = tan(Load.toDouble());
 		Stack.back().accumType = Tdouble | (Stack.back().accumType & 1);
-		//Enver//Stack.back().accumType = Cdouble;
 	}
-	//	else if (Load.isDigitBool() && Stack.back().accumType >> 1 == DLoadVect)
 	else if (Load.isDigitBool() && LoadPoint::isVect(Stack.back().accumType))
 	{
 
@@ -1908,7 +1846,6 @@ void	ALU::fu_tan(LoadPoint Load)
 		}
 	}
 	else {
-		//	((Threader*)Parent)->ProgExec(((Threader*)Parent)->UncompatableTypesErrProg);
 		return;
 	}
 }
@@ -1918,7 +1855,6 @@ void	ALU::fu_atan(LoadPoint Load)
 	if (Load.Point == nullptr) {
 		int i = 0;
 
-		//		if (Stack.back().accumType >> 1 == DLoadVect) {
 		if (LoadPoint::isVect(Stack.back().accumType)) {
 			for (i = 0; i < min(Stack.back().accumVect->size(), ((vector<LoadPoint>*)Load.Point)->size()); i++) {
 				if (Stack.back().accumVect->at(i).isDigit() && (((vector<LoadPoint>*)Load.Point)->begin() + i)->isDigit()) {
@@ -1935,13 +1871,10 @@ void	ALU::fu_atan(LoadPoint Load)
 		}
 
 		else
-			//	((Threader*)Parent)->ProgExec(((Threader*)Parent)->NoOperandErrProg); // Запуск подпрограммы ошибки "Нет операнда"
 			return;
 	}
-	//	if (Load.Type >> 1 == DLoadVect) {
 	if (LoadPoint::isVect(Load.Type)) {
 		int i = 0;
-		//		if (Stack.back().accumType >> 1 == DLoadVect) {
 		if (LoadPoint::isVect(Stack.back().accumType)) {
 			for (i = 0; i < min(Stack.back().accumVect->size(), ((vector<LoadPoint>*)Load.Point)->size()); i++) {
 				if (Stack.back().accumVect->at(i).isDigit() && (((vector<LoadPoint>*)Load.Point)->begin() + i)->isDigit()) {
@@ -1951,16 +1884,13 @@ void	ALU::fu_atan(LoadPoint Load)
 			}
 		}
 		else
-			//	((Threader*)Parent)->ProgExec(((Threader*)Parent)->UncompatableTypesErrProg);
 			return;
 	}
 	if (Load.isDigitBool() && Load.isDigitBool(Stack.back().accumType))
 	{
 		Stack.back().accum = atan(Load.toDouble());
 		Stack.back().accumType = Tdouble | (Stack.back().accumType & 1);
-		//Enver//Stack.back().accumType = Cdouble;
 	}
-	//	else if (Load.isDigitBool() && Stack.back().accumType >> 1 == DLoadVect)
 	else if (Load.isDigitBool() && LoadPoint::isVect(Stack.back().accumType))
 	{
 
@@ -1972,7 +1902,6 @@ void	ALU::fu_atan(LoadPoint Load)
 		}
 	}
 	else {
-		//((Threader*)Parent)->ProgExec(((Threader*)Parent)->UncompatableTypesErrProg);
 		return;
 	}
 }
@@ -1980,13 +1909,10 @@ void	ALU::fu_atan(LoadPoint Load)
 void	ALU::fu_mod(LoadPoint Load)//остаток
 {
 	if (Load.Point == nullptr) {
-		//((Threader*)Parent)->ProgExec(((Threader*)Parent)->NoOperandErrProg); // Запуск подпрограммы ошибки "Нет операнда"
 		return;
 	}
-	//	if (Load.Type >> 1 == DLoadVect) {
 	if (LoadPoint::isVect(Load.Type)) {
 		int i = 0;
-		//		if (Stack.back().accumType >> 1 == DLoadVect) {
 		if (LoadPoint::isVect(Stack.back().accumType)) {
 			for (i = 0; i < min(Stack.back().accumVect->size(), ((vector<LoadPoint>*)Load.Point)->size()); i++) {
 				if (Stack.back().accumVect->at(i).isDigit() && (((vector<LoadPoint>*)Load.Point)->begin() + i)->isDigit()) {
@@ -1996,7 +1922,6 @@ void	ALU::fu_mod(LoadPoint Load)//остаток
 			}
 		}
 		else
-			//	((Threader*)Parent)->ProgExec(((Threader*)Parent)->UncompatableTypesErrProg);
 			return;
 	}
 	if (Load.isDigitBool() && Load.isDigitBool(Stack.back().accumType))
@@ -2005,7 +1930,6 @@ void	ALU::fu_mod(LoadPoint Load)//остаток
 		Stack.back().accum = static_cast<int>((int)Stack.back().accum) % Load.toInt();
 		Stack.back().accumType = Cint;
 	}
-	//	else if (Load.isDigitBool() && Stack.back().accumType >> 1 == DLoadVect)
 	else if (Load.isDigitBool() && LoadPoint::isVect(Stack.back().accumType))
 	{
 
@@ -2026,7 +1950,6 @@ void	ALU::fu_sqrt(LoadPoint Load)
 	if (Load.Point == nullptr) {
 		int i = 0;
 
-		//		if (Stack.back().accumType >> 1 == DLoadVect) {
 		if (LoadPoint::isVect(Stack.back().accumType)) {
 			for (i = 0; i < min(Stack.back().accumVect->size(), ((vector<LoadPoint>*)Load.Point)->size()); i++) {
 				if (Stack.back().accumVect->at(i).isDigit() && (((vector<LoadPoint>*)Load.Point)->begin() + i)->isDigit()) {
@@ -2044,10 +1967,8 @@ void	ALU::fu_sqrt(LoadPoint Load)
 		else
 			return;
 	}
-	//	if (Load.Type >> 1 == DLoadVect) {
 	if (LoadPoint::isVect(Load.Type)) {
 		int i = 0;
-		//		if (Stack.back().accumType >> 1 == DLoadVect) {
 		if (LoadPoint::isVect(Stack.back().accumType)) {
 			for (i = 0; i < min(Stack.back().accumVect->size(), ((vector<LoadPoint>*)Load.Point)->size()); i++) {
 				if (Stack.back().accumVect->at(i).isDigit() && (((vector<LoadPoint>*)Load.Point)->begin() + i)->isDigit()) {
@@ -2063,9 +1984,7 @@ void	ALU::fu_sqrt(LoadPoint Load)
 	{
 		Stack.back().accum = sqrt(Load.toDouble());
 		Stack.back().accumType = Tdouble | (Stack.back().accumType & 1);
-		//Enver//Stack.back().accumType = Cdouble;
 	}
-	//	else if (Load.isDigitBool() && Stack.back().accumType >> 1 == DLoadVect)
 	else if (Load.isDigitBool() && LoadPoint::isVect(Stack.back().accumType))
 	{
 
@@ -2084,10 +2003,8 @@ void	ALU::fu_sqrt(LoadPoint Load)
 void	ALU::fu_pow(LoadPoint Load)
 {
 	if (Load.Point == nullptr) {
-		//((Threader*)Parent)->ProgExec(((Threader*)Parent)->NoOperandErrProg); // Запуск подпрограммы ошибки "Нет операнда"
 		return;
 	}
-	//	if (Load.Type >> 1 == DLoadVect) {
 	if (LoadPoint::isVect(Load.Type)) {
 		int i = 0;
 		if (Stack.back().accumType >> 1 == DLoadVect) {
@@ -2106,7 +2023,6 @@ void	ALU::fu_pow(LoadPoint Load)
 		Stack.back().accum = pow(Stack.back().accum, Load.toDouble());
 		Stack.back().accumType = max(Stack.back().accumType, Load.Type); // Коррекция типа результата
 	}
-	//	else if (Load.isDigitBool() && Stack.back().accumType >> 1 == DLoadVect)
 	else if (Load.isDigitBool() && LoadPoint::isVect(Stack.back().accumType))
 	{
 
@@ -2127,7 +2043,6 @@ void	ALU::fu_abs(LoadPoint Load)
 	if (Load.Point == nullptr) {
 		int i = 0;
 
-		//		if (Stack.back().accumType >> 1 == DLoadVect) {
 		if (LoadPoint::isVect(Stack.back().accumType)) {
 			for (i = 0; i < min(Stack.back().accumVect->size(), ((vector<LoadPoint>*)Load.Point)->size()); i++) {
 				if (Stack.back().accumVect->at(i).isDigit() && (((vector<LoadPoint>*)Load.Point)->begin() + i)->isDigit()) {
@@ -2142,10 +2057,8 @@ void	ALU::fu_abs(LoadPoint Load)
 			// Запуск подпрограммы ошибки "Нет операнда"
 			return;
 	}
-	//	if (Load.Type >> 1 == DLoadVect) {
 	if (Load.isVect()) {
 		int i = 0;
-		//		if (Stack.back().accumType >> 1 == DLoadVect) {
 		if (LoadPoint::isVect(Stack.back().accumType)) {
 			for (i = 0; i < min(Stack.back().accumVect->size(), ((vector<LoadPoint>*)Load.Point)->size()); i++) {
 				if (Stack.back().accumVect->at(i).isDigit() && (((vector<LoadPoint>*)Load.Point)->begin() + i)->isDigit()) {
@@ -2162,7 +2075,6 @@ void	ALU::fu_abs(LoadPoint Load)
 	{
 		Stack.back().accum = abs(Load.toDouble());
 	}
-	//	else if (Load.isDigitBool() && Stack.back().accumType >> 1 == DLoadVect)
 	else if (Load.isDigitBool() && LoadPoint::isVect(Stack.back().accumType))
 	{
 
@@ -2221,13 +2133,11 @@ void	ALU::fu_ceil(LoadPoint Load)//округление вверх
 	if (Load.isDigitBool() && Load.isDigitBool(Stack.back().accumType))
 	{
 		Stack.back().accum = ceil(Load.toDouble());
-		//		if (Stack.back().accumType >> 1 == Dbool && Load.Type >> 1 == Dbool)
 		if (LoadPoint::isBool(Stack.back().accumType) && LoadPoint::isBool(Load.Type))
 			Stack.back().accumType = Cbool;
 		else
 			Stack.back().accumType = Cint;
 	}
-	//	else if (Load.isDigitBool() && Stack.back().accumType >> 1 == DLoadVect)
 	else if (Load.isDigitBool() && LoadPoint::isVect(Stack.back().accumType))
 	{
 
@@ -2248,7 +2158,6 @@ void	ALU::fu_floor(LoadPoint Load)//округление вниз
 	if (Load.Point == nullptr) {
 		int i = 0;
 
-		//		if (Stack.back().accumType >> 1 == DLoadVect) {
 		if (LoadPoint::isVect(Stack.back().accumType)) {
 			for (i = 0; i < min(Stack.back().accumVect->size(), ((vector<LoadPoint>*)Load.Point)->size()); i++) {
 				if (Stack.back().accumVect->at(i).isDigit() && (((vector<LoadPoint>*)Load.Point)->begin() + i)->isDigit()) {
@@ -2264,10 +2173,8 @@ void	ALU::fu_floor(LoadPoint Load)//округление вниз
 		}
 		return;
 	}
-	//	if (Load.Type >> 1 == DLoadVect) {
 	if (LoadPoint::isVect(Load.Type)) {
 		int i = 0;
-		//		if (Stack.back().accumType >> 1 == DLoadVect) {
 		if (LoadPoint::isVect(Stack.back().accumType)) {
 			for (i = 0; i < min(Stack.back().accumVect->size(), ((vector<LoadPoint>*)Load.Point)->size()); i++) {
 				if (Stack.back().accumVect->at(i).isDigit() && (((vector<LoadPoint>*)Load.Point)->begin() + i)->isDigit()) {
@@ -2276,19 +2183,16 @@ void	ALU::fu_floor(LoadPoint Load)//округление вниз
 			}
 		}
 		else
-			//	((Threader*)Parent)->ProgExec(((Threader*)Parent)->UncompatableTypesErrProg);
 			return;
 	}
 	if (Load.isDigitBool() && Load.isDigitBool(Stack.back().accumType))
 	{
 		Stack.back().accum = floor(Load.toDouble());
-		//		if (Stack.back().accumType >> 1 == Dbool && Load.Type >> 1 == Dbool)
 		if (LoadPoint::isBool(Stack.back().accumType) && LoadPoint::isBool(Load.Type))
 			Stack.back().accumType = Cint;
 		else
 			Stack.back().accumType = max(Stack.back().accumType, Load.Type);
 	}
-	//	else if (Load.isDigitBool() && Stack.back().accumType >> 1 == DLoadVect)
 	else if (Load.isDigitBool() && LoadPoint::isVect(Stack.back().accumType))
 	{
 
@@ -2300,7 +2204,6 @@ void	ALU::fu_floor(LoadPoint Load)//округление вниз
 		}
 	}
 	else {
-		//((Threader*)Parent)->ProgExec(((Threader*)Parent)->UncompatableTypesErrProg);
 		return;
 	}
 }
@@ -2310,7 +2213,6 @@ void	ALU::fu_round(LoadPoint Load)//просто округление
 	if (Load.Point == nullptr) {
 		int i = 0;
 
-		//		if (Stack.back().accumType >> 1 == DLoadVect) {
 		if (LoadPoint::isVect(Stack.back().accumType)) {
 			for (i = 0; i < min(Stack.back().accumVect->size(), ((vector<LoadPoint>*)Load.Point)->size()); i++) {
 				if (Stack.back().accumVect->at(i).isDigit() && (((vector<LoadPoint>*)Load.Point)->begin() + i)->isDigit()) {
@@ -2326,10 +2228,8 @@ void	ALU::fu_round(LoadPoint Load)//просто округление
 		}
 		return;
 	}
-	//	if (Load.Type >> 1 == DLoadVect) {
 	if (LoadPoint::isVect(Load.Type)) {
 		int i = 0;
-		//		if (Stack.back().accumType >> 1 == DLoadVect) {
 		if (LoadPoint::isVect(Stack.back().accumType)) {
 			for (i = 0; i < min(Stack.back().accumVect->size(), ((vector<LoadPoint>*)Load.Point)->size()); i++) {
 				if (Stack.back().accumVect->at(i).isDigit() && (((vector<LoadPoint>*)Load.Point)->begin() + i)->isDigit()) {
@@ -2339,19 +2239,16 @@ void	ALU::fu_round(LoadPoint Load)//просто округление
 			}
 		}
 		else
-			//	((Threader*)Parent)->ProgExec(((Threader*)Parent)->UncompatableTypesErrProg);
 			return;
 	}
 	if (Load.isDigitBool() && Load.isDigitBool(Stack.back().accumType))
 	{
 		Stack.back().accum = round(Load.toDouble());
-		//		if (Stack.back().accumType >> 1 == Dbool && Load.Type >> 1 == Dbool)
 		if (LoadPoint::isBool(Stack.back().accumType) && LoadPoint::isBool(Load.Type))
 			Stack.back().accumType = Cint;
 		else
 			Stack.back().accumType = max(Stack.back().accumType, Load.Type);
 	}
-	//	else if (Load.isDigitBool() && Stack.back().accumType >> 1 == DLoadVect)
 	else if (Load.isDigitBool() && LoadPoint::isVect(Stack.back().accumType))
 	{
 
@@ -2363,7 +2260,6 @@ void	ALU::fu_round(LoadPoint Load)//просто округление
 		}
 	}
 	else {
-		//((Threader*)Parent)->ProgExec(((Threader*)Parent)->UncompatableTypesErrProg);
 		return;
 	}
 }
@@ -2373,7 +2269,6 @@ void	ALU::fu_log(LoadPoint Load)
 	if (Load.Point == nullptr) {
 		int i = 0;
 
-		//		if (Stack.back().accumType >> 1 == DLoadVect) {
 		if (LoadPoint::isVect(Stack.back().accumType)) {
 			for (i = 0; i < min(Stack.back().accumVect->size(), ((vector<LoadPoint>*)Load.Point)->size()); i++) {
 				if (Stack.back().accumVect->at(i).isDigit() && (((vector<LoadPoint>*)Load.Point)->begin() + i)->isDigit()) {
@@ -2397,10 +2292,8 @@ void	ALU::fu_log(LoadPoint Load)
 		Stack.back().accum = log(Load.toDouble());
 		Stack.back().accumType = Tdouble | (Stack.back().accumType & 1);
 	}
-	//	if (Load.Type >> 1 == DLoadVect) {
 	if (LoadPoint::isVect(Load.Type)) {
 		int i = 0;
-		//		if (Stack.back().accumType >> 1 == DLoadVect) {
 		if (LoadPoint::isVect(Stack.back().accumType)) {
 			for (i = 0; i < min(Stack.back().accumVect->size(), ((vector<LoadPoint>*)Load.Point)->size()); i++) {
 				if (Stack.back().accumVect->at(i).isDigit() && (((vector<LoadPoint>*)Load.Point)->begin() + i)->isDigit()) {
@@ -2415,13 +2308,11 @@ void	ALU::fu_log(LoadPoint Load)
 	if (Load.isDigitBool() && Load.isDigitBool(Stack.back().accumType))
 	{
 		Stack.back().accum = log(Load.toDouble());
-		//		if (Stack.back().accumType >> 1 == Dbool && Load.Type >> 1 == Dbool)
 		if (LoadPoint::isBool(Stack.back().accumType) && LoadPoint::isBool(Load.Type))
 			Stack.back().accumType = Cint;
 		else
 			Stack.back().accumType = max(Stack.back().accumType, Load.Type);
 	}
-	//	else if (Load.isDigitBool() && Stack.back().accumType >> 1 == DLoadVect)
 	else if (Load.isDigitBool() && LoadPoint::isVect(Stack.back().accumType))
 	{
 
@@ -2441,8 +2332,6 @@ void	ALU::fu_log10(LoadPoint Load)
 {
 	if (Load.Point == nullptr) {
 		int i = 0;
-
-		//		if (Stack.back().accumType >> 1 == DLoadVect) {
 		if (LoadPoint::isVect(Stack.back().accumType)) {
 			for (i = 0; i < min(Stack.back().accumVect->size(), ((vector<LoadPoint>*)Load.Point)->size()); i++) {
 				if (Stack.back().accumVect->at(i).isDigit() && (((vector<LoadPoint>*)Load.Point)->begin() + i)->isDigit()) {
@@ -2466,7 +2355,6 @@ void	ALU::fu_log10(LoadPoint Load)
 		Stack.back().accum = log10(Load.toDouble());
 		Stack.back().accumType = Tdouble | (Stack.back().accumType & 1);
 	}
-	//	if (Load.Type >> 1 == DLoadVect) {
 	if (LoadPoint::isVect(Load.Type)) {
 		int i = 0;
 		//		if (Stack.back().accumType >> 1 == DLoadVect) {
@@ -2484,13 +2372,11 @@ void	ALU::fu_log10(LoadPoint Load)
 	if (Load.isDigitBool() && Load.isDigitBool(Stack.back().accumType))
 	{
 		Stack.back().accum = log10(Load.toDouble());
-		//		if (Stack.back().accumType >> 1 == Dbool && Load.Type >> 1 == Dbool)
 		if (LoadPoint::isBool(Stack.back().accumType) && LoadPoint::isBool(Load.Type))
 			Stack.back().accumType = Cint;
 		else
 			Stack.back().accumType = max(Stack.back().accumType, Load.Type);
 	}
-	//	else if (Load.isDigitBool() && Stack.back().accumType >> 1 == DLoadVect)
 	else if (Load.isDigitBool() && LoadPoint::isVect(Stack.back().accumType))
 	{
 
@@ -2511,7 +2397,6 @@ void	ALU::fu_log2(LoadPoint Load)
 	if (Load.Point == nullptr) {
 		int i = 0;
 
-		//		if (Stack.back().accumType >> 1 == DLoadVect) {
 		if (LoadPoint::isVect(Stack.back().accumType)) {
 			for (i = 0; i < min(Stack.back().accumVect->size(), ((vector<LoadPoint>*)Load.Point)->size()); i++) {
 				if (Stack.back().accumVect->at(i).isDigit() && (((vector<LoadPoint>*)Load.Point)->begin() + i)->isDigit()) {
@@ -2535,10 +2420,8 @@ void	ALU::fu_log2(LoadPoint Load)
 		Stack.back().accum = log2(Load.toDouble());
 		Stack.back().accumType = Tdouble | (Stack.back().accumType & 1);
 	}
-	//	if (Load.Type >> 1 == DLoadVect) {
 	if (LoadPoint::isVect(Load.Type)) {
 		int i = 0;
-		//		if (Stack.back().accumType >> 1 == DLoadVect) {
 		if (LoadPoint::isVect(Stack.back().accumType)) {
 			for (i = 0; i < min(Stack.back().accumVect->size(), ((vector<LoadPoint>*)Load.Point)->size()); i++) {
 				if (Stack.back().accumVect->at(i).isDigit() && (((vector<LoadPoint>*)Load.Point)->begin() + i)->isDigit()) {
@@ -2553,13 +2436,11 @@ void	ALU::fu_log2(LoadPoint Load)
 	if (Load.isDigitBool() && Load.isDigitBool(Stack.back().accumType))
 	{
 		Stack.back().accum = log2(Load.toDouble());
-		//		if (Stack.back().accumType >> 1 == Dbool && Load.Type >> 1 == Dbool)
 		if (LoadPoint::isBool(Stack.back().accumType) && LoadPoint::isBool(Load.Type))
 			Stack.back().accumType = Cint;
 		else
 			Stack.back().accumType = max(Stack.back().accumType, Load.Type);
 	}
-	//	else if (Load.isDigitBool() && Stack.back().accumType >> 1 == DLoadVect)
 	else if (Load.isDigitBool() && LoadPoint::isVect(Stack.back().accumType))
 	{
 
@@ -2580,7 +2461,6 @@ void	ALU::fu_exp(LoadPoint Load)
 	if (Load.Point == nullptr) {
 		int i = 0;
 
-		//		if (Stack.back().accumType >> 1 == DLoadVect) {
 		if (LoadPoint::isVect(Stack.back().accumType)) {
 			for (i = 0; i < min(Stack.back().accumVect->size(), ((vector<LoadPoint>*)Load.Point)->size()); i++) {
 				if (Stack.back().accumVect->at(i).isDigit() && (((vector<LoadPoint>*)Load.Point)->begin() + i)->isDigit()) {
@@ -2603,10 +2483,8 @@ void	ALU::fu_exp(LoadPoint Load)
 		Stack.back().accum = exp(Load.toDouble());
 		Stack.back().accumType = Tdouble | (Stack.back().accumType & 1);
 	}
-	//	if (Load.Type >> 1 == DLoadVect) {
 	if (LoadPoint::isVect(Load.Type)) {
 		int i = 0;
-		//		if (Stack.back().accumType >> 1 == DLoadVect) {
 		if (LoadPoint::isVect(Stack.back().accumType)) {
 			for (i = 0; i < min(Stack.back().accumVect->size(), ((vector<LoadPoint>*)Load.Point)->size()); i++) {
 				if (Stack.back().accumVect->at(i).isDigit() && (((vector<LoadPoint>*)Load.Point)->begin() + i)->isDigit()) {
@@ -2621,13 +2499,11 @@ void	ALU::fu_exp(LoadPoint Load)
 	if (Load.isDigitBool() && Load.isDigitBool(Stack.back().accumType))
 	{
 		Stack.back().accum = exp(Load.toDouble());
-		//		if (Stack.back().accumType >> 1 == Dbool && Load.Type >> 1 == Dbool)
 		if (LoadPoint::isBool(Stack.back().accumType) && LoadPoint::isBool(Load.Type))
 			Stack.back().accumType = Cint;
 		else
 			Stack.back().accumType = max(Stack.back().accumType, Load.Type);
 	}
-	//	else if (Load.isDigitBool() && Stack.back().accumType >> 1 == DLoadVect)
 	else if (Load.isDigitBool() && LoadPoint::isVect(Stack.back().accumType))
 	{
 
@@ -2680,7 +2556,6 @@ void		ALU::fu_inverse(LoadPoint Load)//обратное
 
 		return;
 	}
-	//	if (Load.Type >> 1 == Dstring)
 	if (LoadPoint::isStr(Load.Type))
 	{
 		if (Load.toStr().length() != 0)
@@ -2698,7 +2573,6 @@ void		ALU::fu_inverse(LoadPoint Load)//обратное
 	}
 
 	else {
-		//	((Threader*)Parent)->ProgExec(((Threader*)Parent)->UncompatableTypesErrProg);
 		return;
 	}
 }
@@ -2708,10 +2582,8 @@ void		ALU::fu_and(LoadPoint Load)
 	if (Load.Point == nullptr) {
 		return;
 	}
-	//	if (Load.Type >> 1 == Dstring)
 	if (LoadPoint::isStr(Load.Type))
 	{
-		//		if (Stack.back().accumType >> 1 == Dstring)
 		if (LoadPoint::isStr(Stack.back().accumType))
 			if (Load.toStr().length() != 0 && Stack.back().accumStr.length() != 0)
 				Stack.back().accum = 1;
@@ -2725,7 +2597,6 @@ void		ALU::fu_and(LoadPoint Load)
 			Stack.back().accum = 0;
 		else
 			Stack.back().accum = 1;
-		//		if (Stack.back().accumType >> 1 == Dbool && Load.Type >> 1 == Dbool)
 		if (LoadPoint::isBool(Stack.back().accumType) && LoadPoint::isBool(Load.Type))
 			Stack.back().accumType = Cint;
 		else
@@ -2733,7 +2604,6 @@ void		ALU::fu_and(LoadPoint Load)
 	}
 
 	else {
-		//	((Threader*)Parent)->ProgExec(((Threader*)Parent)->UncompatableTypesErrProg);
 		return;
 	}
 }
@@ -2741,20 +2611,16 @@ void		ALU::fu_and(LoadPoint Load)
 void		ALU::fu_or(LoadPoint Load)
 {
 	if (Load.Point == nullptr) {
-		//((Threader*)Parent)->ProgExec(((Threader*)Parent)->NoOperandErrProg); // Запуск подпрограммы ошибки "Нет операнда"
 		return;
 	}
-	//	if (Load.Type >> 1 == Dstring)
 	if (LoadPoint::isStr(Load.Type))
 	{
-		//		if (Stack.back().accumType >> 1 == Dstring)
 		if (LoadPoint::isStr(Stack.back().accumType))
 			if (Load.toStr().length() != 0 || Stack.back().accumStr.length() != 0)
 				Stack.back().accum = 1;
 			else
 				Stack.back().accum = 0;
 		else
-			//((Threader*)Parent)->ProgExec(((Threader*)Parent)->UncompatableTypesErrProg);
 			return;
 	}
 	else if (Load.isDigitBool() && Load.isDigitBool(Stack.back().accumType))
@@ -2763,7 +2629,6 @@ void		ALU::fu_or(LoadPoint Load)
 			Stack.back().accum = 0;
 		else
 			Stack.back().accum = 1;
-		//		if (Stack.back().accumType >> 1 == Dbool && Load.Type >> 1 == Dbool)
 		if (LoadPoint::isBool(Stack.back().accumType) && LoadPoint::isBool(Load.Type))
 			Stack.back().accumType = Cint;
 		else
@@ -2771,7 +2636,6 @@ void		ALU::fu_or(LoadPoint Load)
 	}
 
 	else {
-		//((Threader*)Parent)->ProgExec(((Threader*)Parent)->UncompatableTypesErrProg);
 		return;
 	}
 }
@@ -2779,20 +2643,16 @@ void		ALU::fu_or(LoadPoint Load)
 void		ALU::fu_xor(LoadPoint Load)
 {
 	if (Load.Point == nullptr) {
-		//((Threader*)Parent)->ProgExec(((Threader*)Parent)->NoOperandErrProg); // Запуск подпрограммы ошибки "Нет операнда"
 		return;
 	}
-	//	if (Load.Type >> 1 == Dstring)
 	if (LoadPoint::isStr(Load.Type))
 	{
-		//		if (Stack.back().accumType >> 1 == Dstring)
 		if (LoadPoint::isStr(Stack.back().accumType))
 			if (Load.toStr().length() != 0 || Stack.back().accumStr.length() != 0)
 				Stack.back().accum = 1;
 			else
 				Stack.back().accum = 0;
 		else
-			//((Threader*)Parent)->ProgExec(((Threader*)Parent)->UncompatableTypesErrProg);
 			return;
 	}
 	else if (Load.isDigitBool() && Load.isDigitBool(Stack.back().accumType))
@@ -2801,7 +2661,6 @@ void		ALU::fu_xor(LoadPoint Load)
 			Stack.back().accum = 1;
 		else
 			Stack.back().accum = 0;
-		//		if (Stack.back().accumType >> 1 == Dbool && Load.Type >> 1 == Dbool)
 		if (LoadPoint::isBool(Stack.back().accumType) && LoadPoint::isBool(Load.Type))
 			Stack.back().accumType = Cint;
 		else
@@ -2809,7 +2668,6 @@ void		ALU::fu_xor(LoadPoint Load)
 	}
 
 	else {
-		//((Threader*)Parent)->ProgExec(((Threader*)Parent)->UncompatableTypesErrProg);
 		return;
 	}
 }
@@ -2818,14 +2676,12 @@ void		ALU::fu_or_bit(LoadPoint Load)//bit побитовые логически�
 {
 	{
 		if (Load.Point == nullptr) {
-			//	((Threader*)Parent)->ProgExec(((Threader*)Parent)->NoOperandErrProg); // Запуск подпрограммы ошибки "Нет операнда"
 			return;
 		}
 		else if (Load.isDigitBool() && Load.isDigitBool(Stack.back().accumType))
 		{
 
 			Stack.back().accum = static_cast<int>(Stack.back().accum) | Load.toInt();
-			//			if (Stack.back().accumType >> 1 == Dbool && Load.Type >> 1 == Dbool)
 			if (LoadPoint::isBool(Stack.back().accumType) && LoadPoint::isBool(Load.Type))
 				Stack.back().accumType = Cint;
 			else
@@ -2833,7 +2689,6 @@ void		ALU::fu_or_bit(LoadPoint Load)//bit побитовые логически�
 		}
 
 		else {
-			//((Threader*)Parent)->ProgExec(((Threader*)Parent)->UncompatableTypesErrProg);
 			return;
 		}
 	}
@@ -2849,7 +2704,6 @@ void		ALU::fu_and_bit(LoadPoint Load)
 	else if (Load.isDigitBool() && Load.isDigitBool(Stack.back().accumType))
 	{
 		Stack.back().accum = static_cast<int>(Stack.back().accum) & Load.toInt();
-		//		if (Stack.back().accumType >> 1 == Dbool && Load.Type >> 1 == Dbool)
 		if (LoadPoint::isBool(Stack.back().accumType) && LoadPoint::isBool(Load.Type))
 			Stack.back().accumType = Cint;
 		else
@@ -2857,7 +2711,6 @@ void		ALU::fu_and_bit(LoadPoint Load)
 	}
 
 	else {
-		//((Threader*)Parent)->ProgExec(((Threader*)Parent)->UncompatableTypesErrProg);
 		return;
 	}
 }
@@ -2871,7 +2724,6 @@ void		ALU::fu_mr_bit(LoadPoint Load)
 	if (Load.isDigitBool() && Load.isDigitBool(Stack.back().accumType))
 	{
 		Stack.back().accum = static_cast<int>(Stack.back().accum) >> Load.toInt();
-		//		if (Stack.back().accumType >> 1 == Dbool && Load.Type >> 1 == Dbool)
 		if (LoadPoint::isBool(Stack.back().accumType) && LoadPoint::isBool(Load.Type))
 			Stack.back().accumType = Cint;
 		else
@@ -2892,7 +2744,6 @@ void		ALU::fu_ml_bit(LoadPoint Load)
 	if (Load.isDigitBool() && Load.isDigitBool(Stack.back().accumType))
 	{
 		Stack.back().accum = static_cast<int>(Stack.back().accum) << Load.toInt();
-		//		if (Stack.back().accumType >> 1 == Dbool && Load.Type >> 1 == Dbool)
 		if (LoadPoint::isBool(Stack.back().accumType) && LoadPoint::isBool(Load.Type))
 			Stack.back().accumType = Cint;
 		else
@@ -2900,7 +2751,6 @@ void		ALU::fu_ml_bit(LoadPoint Load)
 	}
 
 	else {
-		//((Threader*)Parent)->ProgExec(((Threader*)Parent)->UncompatableTypesErrProg);
 		return;
 	}
 }
@@ -2908,13 +2758,11 @@ void		ALU::fu_ml_bit(LoadPoint Load)
 void		ALU::fu_inv_bit(LoadPoint Load)
 {
 	if (Load.Point == nullptr) {
-		//((Threader*)Parent)->ProgExec(((Threader*)Parent)->NoOperandErrProg); // Запуск подпрограммы ошибки "Нет операнда"
 		return;
 	}
 	if (Load.isDigitBool() && Load.isDigitBool(Stack.back().accumType))
 	{
 		Stack.back().accum = ~Load.toInt();
-		//		if (Stack.back().accumType >> 1 == Dbool && Load.Type >> 1 == Dbool)
 		if (LoadPoint::isBool(Stack.back().accumType) && LoadPoint::isBool(Load.Type))
 			Stack.back().accumType = Cbool;
 		else
@@ -2922,20 +2770,17 @@ void		ALU::fu_inv_bit(LoadPoint Load)
 	}
 
 	else {
-		//((Threader*)Parent)->ProgExec(((Threader*)Parent)->UncompatableTypesErrProg);
 		return;
 	}
 }
 void		ALU::Compar3Way(LoadPoint Load) {// Трехстороннее сравнение
 	if (Load.Point == nullptr) {
-		//	((Threader*)Parent)->ProgExec(((Threader*)Parent)->NoOperandErrProg); // Запуск подпрограммы ошибки "Нет операнда"
 		return;
 	}
 	if (Load.isDigitBool() && Load.isDigitBool(Stack.back().accumType))
 	{
 		Stack.back().accum = ((Stack.back().accum > 0) ? 1 : ((Stack.back().accum == Load.toDouble()) ? 0 : -1));
 
-		//		if (Stack.back().accumType >> 1 == Dbool && Load.Type >> 1 == Dbool)
 		if (LoadPoint::isBool(Stack.back().accumType) && LoadPoint::isBool(Load.Type))
 			Stack.back().accumType = Cint;
 		else
@@ -2944,15 +2789,13 @@ void		ALU::Compar3Way(LoadPoint Load) {// Трехстороннее сравн�
 
 }
 void ALU::length(LoadPoint Load) {
-	//	if (accumType >> 1 == DLoadVect || accumType >> 1 == Dstring)
 	if (LoadPoint::isVect(accumType) || LoadPoint::isStr(accumType))
 		Load.Write(Stack.back().accumVect->size());
 	else
 		Load.Write(0);
 }
 void ALU::lenMk(LoadPoint Load) {
-	int l;
-	//	if (accumType >> 1 == DLoadVect || accumType >> 1 == Dstring) {
+	long int l;
 	if (LoadPoint::isVect(accumType) || LoadPoint::isStr(accumType)) {
 		l = Stack.back().accumVect->size();
 		MkExec(Load, { Cint,&l });
@@ -2969,11 +2812,9 @@ void ALU::clear(LoadPoint Load) {
 	}
 	else if (Load.isStr()) {
 
-		//Stack.back().accumType >> 1 == Dstring;
 		string s;
 		Stack.back().accumStr = s;
 	}
-	//	else if (Load.Type >> 1 == DLoadVect) {
 	else if (Load.isVect()) {
 		Stack.back().accumType >> 1 == DLoadVect;
 		vector<LoadPoint> v;
@@ -3000,7 +2841,6 @@ void ALU::emplace_back(LoadPoint Load) {
 
 		return;
 	}
-	//	else if (accumType >> 1 == DLoadVect) {
 	else if (LoadPoint::isVect(accumType)) {
 		if (Load.isDigitBool() || Load.isStr()) {
 			Stack.back().accumVect->emplace_back(Load);
@@ -3011,7 +2851,6 @@ void ALU::pop_back(LoadPoint Load) {
 	if (Stack.back().accumVect->empty() && Stack.back().accumStr.empty()) {
 		return;
 	}
-	//	else if (accumType >> 1 == DLoadVect) {
 	else if (LoadPoint::isVect(accumType)) {
 		Load.Write(Stack.back().accumVect->back());
 		Stack.back().accumVect->pop_back();
@@ -3032,7 +2871,6 @@ void ALU::emplace(LoadPoint Load) {
 	if (Load.Point == nullptr) {
 		return;
 	}
-	//	else if(accumType>>1 == DLoadVect) {
 	else if (LoadPoint::isVect(accumType)) {
 
 		Stack.back().accumVect->emplace(Stack.back().accumVect->begin() + Stack.back().Ind, Load.Clone());
@@ -3059,7 +2897,6 @@ void ALU::pop(LoadPoint Load) { //???
 		return;
 	}
 	if (Load.isInt()) {
-		//		if (accumType >> 1 == DLoadVect)
 		if (LoadPoint::isVect(accumType))
 			Stack.back().accumVect->erase(Stack.back().accumVect->begin() + Load.toDouble(), Stack.back().accumVect->end());
 		else
@@ -3073,7 +2910,6 @@ void ALU::del(LoadPoint Load) {
 		return;
 	}
 	if (Load.isInt()) {
-		//		if (accumType >> 1 == DLoadVect)
 		if (LoadPoint::isVect(accumType))
 			Stack.back().accumVect->erase(Stack.back().accumVect->begin() + Load.toDouble());
 		else
@@ -3086,7 +2922,6 @@ void ALU::Reverse(LoadPoint Load) {
 	if (Stack.back().accumVect->empty() && Stack.back().accumStr.empty()) {
 		return;
 	}
-	//	if (accumType >> 1 == DLoadVect) {
 	if (LoadPoint::isVect(accumType)) {
 		reverse(Stack.back().accumVect->begin(), Stack.back().accumVect->end());
 	}
@@ -3102,7 +2937,6 @@ void ALU::Sort(LoadPoint Load, bool revers) {
 	if (Stack.back().accumVect->empty() || Stack.back().accumStr.empty()) {
 		return;
 	}
-	//	if (accumType >> 1 == DLoadVect) {
 	if (LoadPoint::isVect(accumType)) {
 		sort(Stack.back().accumVect->begin(), Stack.back().accumVect->end(), [&revers](LoadPoint& x, LoadPoint& y)->bool {
 			if (x.isDigit() && y.isDigit()) {
@@ -3114,7 +2948,6 @@ void ALU::Sort(LoadPoint Load, bool revers) {
 			return false;
 			});
 	}
-	//	else if (accumType >> 1 == Dstring)
 	if (LoadPoint::isStr(accumType))
 	{
 		sort(Stack.back().accumStr.begin(), Stack.back().accumStr.end());
@@ -3125,7 +2958,6 @@ void ALU::Sort(LoadPoint Load, bool revers) {
 		ProgExec(TypeMismatchErrProg);
 	}
 }
-
 
 FU* ALU::Copy() // Программа копирования ФУ
 {

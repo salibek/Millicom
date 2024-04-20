@@ -1,6 +1,7 @@
 #include "MatPlot.h"
 
-void MatPlot::ProgFU(int MK, LoadPoint Load, FU* Sender) {
+void MatPlot::ProgFU(long int MK, LoadPoint Load, FU* Sender) {
+	MK %= FUMkRange;
 	switch (MK)
 		switch (MK)
 		{

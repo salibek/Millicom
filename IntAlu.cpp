@@ -1,7 +1,8 @@
 #include "IntAlu.h"
 
-void IntAlu::ProgFU(int MK, LoadPoint Load, FU* Sender)
+void IntAlu::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 {
+	MK %= FUMkRange;
 	switch (MK)
 	{
 	case 0:// Reset
@@ -65,7 +66,7 @@ void IntAlu::ProgFU(int MK, LoadPoint Load, FU* Sender)
 		break;
 	case 13: // RandOutMk Выдать МК со сгенерированным числом, если в Load=nil, то записать в аккумулятор
 	{
-		int t = RandFrom + rand() % (RandFrom - RandTo);
+		long int t = RandFrom + rand() % (RandFrom - RandTo);
 		if (Load.Point == nullptr)
 			*Stack.back().AccumulatUk = t;
 		else
