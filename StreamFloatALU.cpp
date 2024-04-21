@@ -623,8 +623,8 @@ void StreamFloatALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 	case 506: // Sub2
 	case 515: // Div1
 	case 516: // Div2
-	case 520: // DivInt1 Р¦РµР»РѕС‡РёСЃР»РµРЅРЅРѕРµ РґРµР»РµРЅРёРµ
-	case 521: // DivInt2 Р¦РµР»РѕС‡РёСЃР»РµРЅРЅРѕРµ РґРµР»РµРЅРёРµ
+	case 520: // DivInt1 Целочисленное деление
+	case 521: // DivInt2 Целочисленное деление
 	case 540: // Pow1 РЎС‚РµРїРµРЅСЊ (РѕСЃРЅРѕРІР°РЅРёРµ)
 	case 541: // Pow2 РЎС‚РµРїРµРЅСЊ С‡РёСЃР»Р°
 	case 542: // Log Р›РѕРіР°СЂРёС„Рј
@@ -695,7 +695,7 @@ void StreamFloatALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 							RezExtStack.push_back(int(Rez)% int(Operands[i]));
 						else
 							RezExtStack[0]=int(Rez) % int(Operands[i]);
-						Rez /= int(Operands[i]);
+						Rez = int(Rez)/int(Operands[i]);
 					}
 					else
 					{
@@ -803,13 +803,13 @@ void StreamFloatALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 			case 526: //Sqr РљРІР°РґСЂР°С‚
 				Rez = Rez * Rez;
 				break;
-			case 527: // Ln
+			case 528: // Ln
 				Rez = log(Rez);
 				break;
-			case 528: // Log2
+			case 529: // Log2
 				Rez = log2(Rez);
 				break;
-			case 529: // Log10 Р›РѕРіР°СЂРёС„Рј РїРѕ РѕСЃРЅРѕРІР°РЅРёСЋ 10
+			case 527: // Log10 Р›РѕРіР°СЂРёС„Рј РїРѕ РѕСЃРЅРѕРІР°РЅРёСЋ 10
 				Rez = log10(Rez);
 				break;
 			}
@@ -880,25 +880,24 @@ void StreamFloatALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 			Rez = atan(Rez); break;
 		}
 		Ready = 1;
-		RezExec(); // Р”РµР№СЃС‚РІРёСЏ РїСЂРё РїРѕР»СѓС‡РµРЅРёРё СЂРµР·СѓР»СЊС‚Р°С‚Р°
+		RezExec(); // Подпрограмма выдачи результата
 		break;
 
 	default:
 		CommonMk(MK, Load, Sender);
 		break;
 	}
-	if (PostfixProg != nullptr) ProgExec(PostfixProg); // Р—Р°РїСѓСЃРє РїСЂРµРґРІР°СЂРёС‚РµР»СЊРЅРѕР№ РїСЂРѕРіСЂР°РјРјС‹
+	if (PostfixProg != nullptr) ProgExec(PostfixProg); // Запуск постпрограммы
 }
 
-void StreamFloatALU::RezExec() // Р’С‹РїРѕР»РЅРµРЅРёРµ РїРѕРґРїСЂРѕРіСЂР°РјРј РїСЂРё РїРѕР»СѓС‡РµРЅРёРё СЂРµР·СѓР»СЊС‚Р°С‚Р°
-{
+void StreamFloatALU::RezExec(){ // Выдача результата выполнения операции
 	if (Ready == 2) return;
 	Ready = 1;
-	if (!OutRezBlock)//Р•СЃР»Рё РЅРµ Р·Р°Р±Р»РѕРєРёСЂРѕРІР°РЅР° СЂР°СЃСЃС‹Р»РєР° РњРљ СЃ СЂРµР·СѓР»СЊС‚Р°С‚Р°РјРё РІС‹С‡РёСЃР»РµРЅРёР№
-		for (int i = 0; i < ReceiverMk.size(); i++) { // Р Р°СЃСЃС‹Р»РєР° РњРљ СЃ СЂРµР·СѓР»СЊС‚Р°С‚Р°РјРё
+	if (!OutRezBlock)// Проверка флага блокировки выдачи результата
+		for (int i = 0; i < ReceiverMk.size(); i++) { //Проход по списку милликоманд для выдачи результата
 			MkExec(ReceiverMk[i], { Cdouble, &Rez }, ReceiverContexts[i]);
 		}
-	for (auto& i : OutVars) // Р—Р°РїРёСЃР°С‚СЊ СЂРµР·СѓР»СЊС‚Р°С‚ РІ РІС‹С…РѕРґРЅС‹Рµ РїРµСЂРµРјРµРЅРЅС‹Рµ
+	for (auto& i : OutVars) // Проход по списку переменных для записи результата
 		i.Write(Rez);
 	ProgExec(RezProg);
 	if (Rez == 0) ProgExec(ZProg);

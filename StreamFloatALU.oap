@@ -27,9 +27,11 @@ StreamALU.ReceiverMkAdd=StreamALU2.Sub2 //Назначение приемником реультата второг
 StreamALU.ReceiverMkAdd=Console.OutLn//Назначение приемником реультата консоли
 StreamALU.Add // Первый операнд сложения из регистра результата
 StreamALU.Add=3 // Второй операнд сложения
+Console.LnOut="Log10: "
+StreamALU.Log10=10 // Установка регистра результата
 
 StreamALU.ContextOutMk=StreamALU2.AdrBufAdd
-StreamALU2.NoSelfAdrProg={FUStreamFloatALU.AdrBuf_0_OutMk}
+StreamALU2.RoutProgSet={FUStreamFloatALU.AdrBuf_0_OutMk}
 
 StreamALU.ContextOutMk=StreamManager.DevAdd
 StreamALU2.ContextOutMk=StreamManager.DevAdd
