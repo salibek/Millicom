@@ -13,7 +13,12 @@ void StreamFloatALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		return;
 	}
 	else
-		ProgExec(FUSelfAdrProg);
+		ProgExec(SelfAdrProg);
+	if (MkAbort)
+	{
+		MkAbort = false;
+		return;
+	}
 	int MKinitial = MK;
 	MK %= FUMkRange;
 	if (Load.isEmpty()) Load = { Cdouble,&Rez }; // Если нулевая нагрузка, то операндом является аккумулятор
@@ -36,7 +41,7 @@ void StreamFloatALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		RoutProg = Load.Point;
 		break;
 	case 4: // SelfAdrProg Программа при совпадении адреса ФУ с его собственным адресом
-		FUSelfAdrProg = Load.Point;
+		SelfAdrProg = Load.Point;
 		break;
 	case 5: //Out   Выдать результат
 		Load.Write(Rez);
@@ -50,8 +55,14 @@ void StreamFloatALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 	case 11: //OpCounterOutMk Выдать МК со счетчиком накопленных операндов
 		MkExec(Load, { Cint, &OperandsCounter });
 		break;
+	case 15: //MkAbortSet Установить флаг прерывания выполнения МК (по умолчанию true)
+		MkAbort = Load.toBool(true);
+		break;
 	case 20: // AngleModeSet   Установить режим измерения угла (0 - радианы, 1 -градусы)
 		AngleMode = Load.toInt();
+		break;
+	case 25: //EarlyCalculiSet Установить раннее вычисление результата (true по умолчанию)
+		EarlyCalculi = Load.toBool(true);
 		break;
 	case 30: // OperandsReset Сброс операндов (все те операнды, что пришли, сбрасываются и накопление операндов начинается заново)
 		OperandsCounter = 0;
@@ -191,17 +202,20 @@ void StreamFloatALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 			{
 				double t = RezExtStack.back();
 				MkExec(Load, {Cdouble,&t});
+				break;
 			}
 			case 102:
 			{
 				Load.Write(RezExtStack.back());
 				RezExtStack.pop_back();
+				break;
 			}
 			case 103:
 			{
 				double t = RezExtStack.back();
 				RezExtStack.pop_back();
 				MkExec(Load, { Cdouble,&t });
+				break;
 			}
 			break;
 		}
@@ -566,7 +580,7 @@ void StreamFloatALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 	case 498: // Rand Генерация дробного числа от 0 до Load
 	case 499: // RandInt Генерация случайного числа от 0 до Load (по умолчанию от 0 до Rez)
 		if (WrongFormatCheck(Load)) break;
-		if (Load.isEmpty()) Load = { Cdouble,&Rez }; // РџСЂРё РЅСѓР»РµРІРѕР№ РЅР°РіСЂСѓР·РєРµ Р±РµСЂРµРј РѕРїРµСЂР°РЅРґ РёР· СЂРµРіРёСЃС‚СЂР° СЂРµР·СѓР»СЊР°С‚С‚Р°
+		if (Load.isEmpty()) Load = { Cdouble,&Rez }; // При нулевой нагрузке берем операнд из регистра резульатта
 		OperandsClear(MK);
 		Rez = Load.toInt();
 		Operands.push_back(Rez);
@@ -588,35 +602,51 @@ void StreamFloatALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 	case 510: // Mul
 		if (WrongFormatCheck(Load)) break;
 		if (Ready || OpCode != MK && OpCode != MK - 1)
-			OperandsClear(MK); // РЎР±СЂРѕСЃ РѕРїРµСЂР°РЅРґРѕРІ РїСЂРё РЅР°С‡Р°Р»Рµ РѕР±РѕСЂР°Р±РѕС‚РєРё РЅРѕРІРѕР№ РѕРїРµСЂР°С†РёРё
-		if (Load.isEmpty()) Load = { Cdouble,&Rez }; // РџСЂРё РЅСѓР»РµРІРѕР№ РЅР°РіСЂСѓР·РєРµ Р±РµСЂРµРј РѕРїРµСЂР°РЅРґ РёР· СЂРµРіРёСЃС‚СЂР° СЂРµР·СѓР»СЊР°С‚С‚Р°
+			OperandsClear(MK); // Сброс операндов при начале обоработки новой операции
+		if (Load.isEmpty()) Load = { Cdouble,&Rez }; // При нулевой нагрузке берем операнд из регистра результата
 
 		if(Load.isEmpty())
-			Operands.push_back(Rez); // РќР°РєРѕРїР»РµРЅРёРµ РёР· Р±СѓС„РµСЂР° СЂРµР·СѓР»СЊС‚Р°С‚Р°
+			Operands.push_back(Rez); // Накопление из буфера результата
 		else
-			Operands.push_back(Load.toDouble()); // РќР°РєРѕРїР»РµРЅРёРµ РѕРїРµСЂР°РЅРґРѕРІ
+			Operands.push_back(Load.toDouble()); // Накопление операндов
 		FOperands.push_back(true);
 		OperandsCounter++;
-		if (OperandsCounter == Noperands) 
-		{ //     ->  
+		if (EarlyCalculi)
+		{
 			switch (OpCode) {
 			case 500: //Add
-				Rez = 0;
-				for (auto i : Operands)
-					Rez += i;
-					break;
+				Rez += Load.toDouble();
+				break;
 			case 501: //AddSqr
-				Rez = 0;
-				for (auto i : Operands)
-					Rez += i*i;
-					break;
+				Rez += Load.toDouble()* Load.toDouble();
+				break;
 			case 510: //Mul
-				Rez = 1;
-				for (auto i : Operands)
-					Rez *= i;
-					break;
+				Rez *= Load.toDouble();
+				break;
 			}
-			RezExec(); // Р”РµР№СЃС‚РІРёСЏ РїСЂРё РїРѕР»СѓС‡РµРЅРёРё СЂРµР·СѓР»СЊС‚Р°С‚Р°
+		}
+		if (OperandsCounter == Noperands) 
+		{ //     ->  
+			ProgExec(PreRezProg);// Программа перед получением результата
+			if(!EarlyCalculi)
+				switch (OpCode) {
+				case 500: //Add
+					Rez = 0;
+					for (auto i : Operands)
+						Rez += i;
+						break;
+				case 501: //AddSqr
+					Rez = 0;
+					for (auto i : Operands)
+						Rez += i*i;
+						break;
+				case 510: //Mul
+					Rez = 1;
+					for (auto i : Operands)
+						Rez *= i;
+						break;
+				}
+			RezExec(); // Действия при получении результата
 		}
 		break;
 	case 505: // Sub1
@@ -625,15 +655,15 @@ void StreamFloatALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 	case 516: // Div2
 	case 520: // DivInt1 Целочисленное деление
 	case 521: // DivInt2 Целочисленное деление
-	case 540: // Pow1 РЎС‚РµРїРµРЅСЊ (РѕСЃРЅРѕРІР°РЅРёРµ)
-	case 541: // Pow2 РЎС‚РµРїРµРЅСЊ С‡РёСЃР»Р°
-	case 542: // Log Р›РѕРіР°СЂРёС„Рј
-	case 543: // LogBase Р›РѕРіР°СЂРёС„Рј (РїРµСЂРµРґР°РµС‚СЃСЏ РѕСЃРЅРѕРІР°РЅРёРµ Р»РѕРіР°СЂРёС„РјР°)
+	case 540: // Pow1 Число, возводимое в степень
+	case 541: // Pow2 Степень числа
+	case 542: // Log Логарифм
+	case 543: // LogBase Логарифм (передается основание логарифма)
 		if (WrongFormatCheck(Load)) break;
 		if (Ready || OpCode != MK && OpCode != MK - 1)
-			OperandsClear(MK); // РЎР±СЂРѕСЃ РѕРїРµСЂР°РЅРґРѕРІ РїСЂРё РЅР°С‡Р°Р»Рµ РѕР±РѕСЂР°Р±РѕС‚РєРё РЅРѕРІРѕР№ РѕРїРµСЂР°С†РёРё
-		if (Load.isEmpty()) Load = { Cdouble,&Rez }; // РџСЂРё РЅСѓР»РµРІРѕР№ РЅР°РіСЂСѓР·РєРµ Р±РµСЂРµРј РѕРїРµСЂР°РЅРґ РёР· СЂРµРіРёСЃС‚СЂР° СЂРµР·СѓР»СЊР°С‚С‚Р°
-		if (MK%5==0) // РџРµСЂРІС‹Р№ РѕРїРµСЂР°РЅРґ (РњРљ РєСЂР°С‚РЅР° 5)
+			OperandsClear(MK); // Сброс операндов при начале обоработки новой операции
+		if (Load.isEmpty()) Load = { Cdouble,&Rez }; // При нулевой нагрузке берем операнд из регистра результата
+		if (MK%5==0) // Первый операнд (МК кратна 5)
 		{
 			if (Operands.size() < 1)
 			{
@@ -648,23 +678,23 @@ void StreamFloatALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 			}
 			Operands[0] = Load.toDouble();
 		}
-		else // Р’С‚РѕСЂРѕР№ РѕРїРµСЂР°РЅРґ
+		else // Второй операнд
 		{
-			if (Operands.size() <1) // РџРµСЂРІРѕРіРѕ РѕРїРµСЂР°РЅРґР° РЅРµС‚
+			if (Operands.size() <1) // Первого операнда нет
 			{
 				Operands.resize(1);
 				FOperands.push_back(false);
 			}
-			Operands.push_back(Load.toDouble(Rez)); // РџРѕРјРµСЃС‚РёС‚СЊ РѕРїРµСЂР°РЅРґ РІ СЃС‚РµРє РѕРїРµСЂР°РЅРґРѕРІ
+			Operands.push_back(Load.toDouble(Rez)); // Поместить операнд в стек операндов
 			FOperands.push_back(true);
 			OperandsCounter++;
 		}
 		if (FOperands[0] && OperandsCounter >= Noperands)
 		{
-			ProgExec(PreRezProg);// РџСЂРѕРіСЂР°РјРјР° РїРµСЂРµРґ РїРѕР»СѓС‡РµРЅРёРµРј СЂРµР·СѓР»СЊС‚Р°С‚Р°
+			ProgExec(PreRezProg);// Программа перед получением результата
 			Ready = 1;
 			Rez = Operands[0];
-			// Р”РѕР±Р°РІРёС‚СЊ РїСЂРѕРІРµСЂРєСѓ РЅР° РѕС€РёР±РєСѓ
+			// Добавить проверку на ошибку
 			switch (OpCode) {
 			case 505:
 				for (int i = 1; i < Noperands; i++)
@@ -678,20 +708,20 @@ void StreamFloatALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 					}
 					else
 					{
-						Ready = 2; // РљРѕРґ РѕС€РёР±РєРё
-						ProgExec(DivZeroErrProg);
-						ProgExec(MatErrProg);// РћС€РёР±РєР° РјР°С‚РµРјР°С‚РёС‡РµСЃРєРѕР№ РѕРїРµСЂР°С†РёРё
-						ProgExec(ErrProg); // Р”РµР»РµРЅРёРµ РЅР° РЅРѕР»СЊ
+						Ready = 2; // Код ошибки
+						ProgExec(DivZeroErrProg); //Деление на ноль
+						ProgExec(MatErrProg);// Ошибка математической операции
+						ProgExec(ErrProg); // Обработка ошибки
 						break;
 					}
 				break;
 			case 520: // DivInt
 				Rez = int(Operands[0]);
-				RezExtStack.push_back((int)Rez % int(Operands[1])); // РћСЃС‚Р°С‚РѕРє РѕС‚ РґРµР»РµРЅРёСЏ Р·Р°РїРёСЃСЊ РІ СЃС‚РµРє СЂР°СЃС€РёСЂРµРЅРЅС‹С… СЂРµР·СѓР»СЊС‚Р°С‚РѕРІ
+				RezExtStack.push_back((int)Rez % int(Operands[1])); // Остаток от деления запись в стек расширенных результатов
 				for (int i = 1; i < Noperands; i++)
 					if (int(Operands[i]) != 0)
 					{
-						if (!RezExtStack.size()) // РЎРѕС…СЂР°РЅРµРЅРёРµ РѕСЃС‚Р°С‚РєР° РѕС‚ РґРµР»РµРЅРёСЏ РІ СЂР°СЃС€РёСЂРµРЅРЅРѕРј СЃРїРёСЃРєРµ СЂРµР·СѓР»СЊС‚Р°С‚Р°
+						if (!RezExtStack.size()) // Сохранение остатка от деления в расширенном списке результата
 							RezExtStack.push_back(int(Rez)% int(Operands[i]));
 						else
 							RezExtStack[0]=int(Rez) % int(Operands[i]);
@@ -699,30 +729,30 @@ void StreamFloatALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 					}
 					else
 					{
-						Ready = 2; // РљРѕРґ РѕС€РёР±РєРё
+						Ready = 2; // Код ошибки
 						ProgExec(DivZeroErrProg);
-						ProgExec(MatErrProg);// РћС€РёР±РєР° РјР°С‚РµРјР°С‚РёС‡РµСЃРєРѕР№ РѕРїРµСЂР°С†РёРё
-						ProgExec(ErrProg); // Р”РµР»РµРЅРёРµ РЅР° РЅРѕР»СЊ
+						ProgExec(MatErrProg);// Ошибка математической операции
+						ProgExec(ErrProg); // Обработка ошибки
 						break;
 					}
 				break;
-			case 540: // Pow1 РЎС‚РµРїРµРЅСЊ (РѕСЃРЅРѕРІР°РЅРёРµ)
+			case 540: // Pow1 Степень (основание)
 				Rez = pow(Operands[0], Operands[1]);
 				break;
-			case 542: // Log Р›РѕРіР°СЂРёС„Рј
+			case 542: // Log Логарифм
 				Rez = log(Operands[0]) / log(Operands[1]);
 				break;
 			}
 			// --------------------------
-			RezExec(); // Р”РµР№СЃС‚РІРёСЏ РїСЂРё РїРѕР»СѓС‡РµРЅРёРё СЂРµР·СѓР»СЊС‚Р°С‚Р°
+			RezExec(); // Действия при получении результата
 		}
 		break;
-	case 522:	// Rem1 Р§РёСЃР»Рѕ РёР· РєРѕС‚РѕСЂРѕРіРѕ РёР·РІР»РµРєР°РµС‚СЃСЏ РѕСЃС‚Р°С‚РѕРє РѕС‚ С†РµР»РѕС‡РёСЃР»РµРЅРЅРѕРіРѕ РґРµР»РµРЅРёСЏ
-	case 523:	// Rem2 РћСЃС‚Р°С‚РѕРє РѕС‚ С†РµР»РѕС‡РёСЃР»РµРЅРЅРѕРіРѕ РґРµР»РµРЅРёСЏ
+	case 522:	// Rem1 Число из которого извлекается остаток от целочисленного деления
+	case 523:	// Rem2 Остаток от целочисленного деления
 		if (WrongFormatCheck(Load)) break;
 		if (Ready || OpCode != MK && OpCode != MK - 1)
-			OperandsClear(MK); // РЎР±СЂРѕСЃ РѕРїРµСЂР°РЅРґРѕРІ РїСЂРё РЅР°С‡Р°Р»Рµ РѕР±РѕСЂР°Р±РѕС‚РєРё РЅРѕРІРѕР№ РѕРїРµСЂР°С†РёРё
-		if (Load.isEmpty()) Load = { Cdouble,&Rez }; // РџСЂРё РЅСѓР»РµРІРѕР№ РЅР°РіСЂСѓР·РєРµ Р±РµСЂРµРј РѕРїРµСЂР°РЅРґ РёР· СЂРµРіРёСЃС‚СЂР° СЂРµР·СѓР»СЊР°С‚С‚Р°
+			OperandsClear(MK); // Сброс операндов при начале обоработки новой операции
+		if (Load.isEmpty()) Load = { Cdouble,&Rez }; // При нулевой нагрузке берем операнд из регистра результата
 		if (MK == 522)
 		{
 			if (Operands.size() == 0)
@@ -751,24 +781,24 @@ void StreamFloatALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		}
 		if (OperandsCounter == 2)
 		{
-			ProgExec(PreRezProg);// РџСЂРѕРіСЂР°РјРјР° РїРµСЂРµРґ РїРѕР»СѓС‡РµРЅРёРµРј СЂРµР·СѓР»СЊС‚Р°С‚Р°
+			ProgExec(PreRezProg);// Программа перед получением результата
 			Rez = int(Operands[0]) % int(Operands[1]);
 			RezExec();
 		}
 		break;
-	// РћРґРЅРѕРѕРїРµСЂР°РЅРґРЅС‹Рµ РґРµР№СЃС‚РІРёСЏ
-	case 525: // Sqrt РљРІР°РґСЂР°С‚РЅС‹Р№ РєРѕСЂРµРЅСЊ
-	case 526: // Sqr РљРІР°РґСЂР°С‚
-	case 527: // Log10 Р›РѕРіР°СЂРёС„Рј РїРѕ РѕСЃРЅРѕРІР°РЅРёСЋ 10
-	case 528: // Ln РќР°С‚СѓСЂР°Р»СЊРЅС‹Р№ Р»РѕРіРёСЂРёС„Рј
-	case 529: // Log2 Р›РѕРіР°СЂРёС„Рј РїРѕ РѕСЃРЅРѕРІР°РЅРёСЋ 2
-	case 530: // Exp Р­РєСЃРїРѕРЅРµРЅС‚Р°
-	case 531: // Abs РњРѕРґСѓР»СЊ С‡РёСЃР»Р°
-	case 532: // Round РћРєСЂСѓРіР»РµРЅРёРµ
-	case 533: // Int Р¦РµР»Р°СЏ С‡Р°СЃС‚СЊ С‡РёСЃР»Р°
-	case 534: // Ceil РћРєСЂСѓРіР»РµРЅРёРµ РґРѕ Р±РѕР»СЊС€РµРіРѕ С†РµР»РѕРіРѕ С‡РёСЃР»Р°
-	case 535: // SignReverse РРЅС„РµРІРµСЂСЃРёСЏ Р·РЅР°РєР°
-	case 536: // Reverse РћР±СЂР°С‚РЅРѕРµ С‡РёСЃР»Рѕ (1/x)
+	// Однооперандные действия
+	case 525: // Sqrt Квадрат
+	case 526: // Sqr Квадратный корень
+	case 527: // Log10 Логирифм по основанию 2
+	case 528: // Ln Натуральный логарифм
+	case 529: // Log2 логарифм по основанию 2
+	case 530: // Exp Экспонента
+	case 531: // Abs Модуль
+	case 532: // Round Округление
+	case 533: // Int Целая часть
+	case 534: // Ceil Округление вверх
+	case 535: // SignReverse Изменить знак числа
+	case 536: // Reverse Обратное число (1/x)
 	case 600: // Sin
 	case 601: // Cos
 	case 602: // tan
@@ -777,30 +807,30 @@ void StreamFloatALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 	case 611: // ACos
 	case 612: // Atan
 		if (WrongFormatCheck(Load)) break;
-		ProgExec(PreRezProg);// РџСЂРѕРіСЂР°РјРјР° РїРµСЂРµРґ РїРѕР»СѓС‡РµРЅРёРµРј СЂРµР·СѓР»СЊС‚Р°С‚Р°
-		Rez = Load.toDouble(Rez); // РџРѕРјРµСЃС‚РёС‚СЊ РІ Р°РєРєСѓРјСѓР»СЏС‚РѕСЂ РЅР°РіСЂСѓР·РєСѓ, РµСЃР»Рё РЅР°РіСЂСѓР·РєР° РЅСѓР»РµРІР°СЏ, С‚Рѕ РїРѕРјРµСЃС‚РёС‚СЊ Rez
+		ProgExec(PreRezProg);// Программа перед получением результата
+		Rez = Load.toDouble(Rez); // Поместить в аккумулятор нагрузку, если нагрузка нулевая, то поместить Rez
 		Operands.clear();
 		FOperands.clear();
 		Operands.push_back(Rez);
 		FOperands.push_back(true);
 		switch (MK)
 		{
-		case 525: // Sqrt РљРІР°РґСЂР°С‚РЅС‹Р№ РєРѕСЂРµРЅСЊ
-		case 526: // Sqr РљРІР°РґСЂР°С‚
+		case 525: // Sqrt Квадрат
+		case 526: // Sqr Корень
 		case 527: // Ln
 		case 528: // Log2
-		case 529: // Log10 Р›РѕРіР°СЂРёС„Рј РїРѕ РѕСЃРЅРѕРІР°РЅРёСЋ 10
+		case 529: // Log10 Логарифм по основанию 10
 			if(MK!=526 && (!Load.isEmpty() && Load.toDouble() < 0))
 				{
 					Ready = 2; // РљРѕРґ РѕС€РёР±РєРё
-					ProgNExec({ ErrProg, MatErrProg }); // Р”РµР»РµРЅРёРµ РЅР° РЅРѕР»СЊ  // РћС€РёР±РєР° РјР°С‚РµРјР°С‚РёС‡РµСЃРєРёС… РІС‹С‡РёСЃР»РµРЅРёР№
+					ProgNExec({ ErrProg, MatErrProg }); // Обработка математической ошибки
 					break;
 				}
 			switch (MK) {
-			case 525: //Sqrt РљРІР°РґСЂР°С‚РЅС‹Р№ РєРѕСЂРµРЅСЊ
+			case 525: //Sqrt Квадрат
 				Rez = sqrt(Rez);
 				break;
-			case 526: //Sqr РљРІР°РґСЂР°С‚
+			case 526: //Sqr Корень
 				Rez = Rez * Rez;
 				break;
 			case 528: // Ln
@@ -809,7 +839,7 @@ void StreamFloatALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 			case 529: // Log2
 				Rez = log2(Rez);
 				break;
-			case 527: // Log10 Р›РѕРіР°СЂРёС„Рј РїРѕ РѕСЃРЅРѕРІР°РЅРёСЋ 10
+			case 527: // Log10 Логарифм по основанию 10
 				Rez = log10(Rez);
 				break;
 			}
@@ -817,31 +847,31 @@ void StreamFloatALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		case 530: // Exp
 			Rez = exp(Load.toDouble());
 			break;
-		case 531: // ABS РњРѕРґСѓР»СЊ С‡РёСЃР»Р°
+		case 531: // ABS Модуль
 			Rez = fabs(Load.toDouble());
 			break;
-		case 532: // Round РћРєСЂСѓРіР»РµРЅРёРµ
+		case 532: // Round Округление
 			Rez = round(Load.toDouble());
 			break;
-		case 533: // Int Р¦РµР»Р°СЏ С‡Р°СЃС‚СЊ С‡РёСЃР»Р°
+		case 533: // Int Целая часть
 			Rez = int(Load.toDouble());
 			break;
-		case 534: // РЎeil РћРєСЂСѓРіР»РµРЅРёРµ РґРѕ Р±РѕР»СЊС€РµРіРѕ С†РµР»РѕРіРѕ С‡РёСЃР»Р°
+		case 534: // Ceil Округление вверх
 			Rez = ceil(Load.toDouble());
 			break;
-		case 535: // SignReverse РРЅС„РµРІРµСЂСЃРёСЏ Р·РЅР°РєР°
+		case 535: // SignReverse Изменить знак числа
 			Rez = -Load.toDouble();
 			break;
-		case 536: //  Reverse РћР±СЂР°С‚РЅРѕРµ С‡РёСЃР»Рѕ (1/x)
+		case 536: //  Reverse Обратное число (1/x)
 			Rez = -Load.toDouble();
 
 			break;
-			// РўСЂРёРіР°РЅРѕРјРµС‚СЂРёС‡РµСЃРєРёРµ РѕРїРµСЂР°С†РёРё
+			// Триганометрические операции
 		case 600: // Sin
 		case 601: // Cos
 		case 602: // tan
 		case 603: // ctan
-			if (AngleMode == 1 and !Load.isEmpty()) // Р Р°РґРёР°РЅС‹
+			if (AngleMode == 1 and !Load.isEmpty()) // Радианы
 			{
 				Rez = Rez / 360 * 6.283185307179586;
 				*Operands.begin() = Rez;
@@ -857,15 +887,15 @@ void StreamFloatALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 			case 603: // ctan
 				Rez = 1 / tan(Rez);
 				break;
-				// РћР±СЂР°С‚РЅС‹Рµ С‚СЂРёРіР°РЅРѕРјРµС‚СЂРёС‡РµСЃРєРёРµ РѕРїРµСЂР°С†РёРё
+				// Обратные триганометрические операции
 			}
 			break;
 		case 610: // ASin
 		case 611: // ACos
 			if (Rez > 1 || Rez < 1)
 			{
-				Ready = 2; // РљРѕРґ РѕС€РёР±РєРё
-				ProgNExec({ ErrProg, MatErrProg }); // Р”РµР»РµРЅРёРµ РЅР° РЅРѕР»СЊ  // РћС€РёР±РєР° РјР°С‚РµРјР°С‚РёС‡РµСЃРєРёС… РІС‹С‡РёСЃР»РµРЅРёР№
+				Ready = 2; // Код ошибки
+				ProgNExec({ ErrProg, MatErrProg }); // Обработка математической ошибки
 				break;
 			}
 			switch (MK)
@@ -908,7 +938,7 @@ void StreamFloatALU::RezExec(){ // Выдача результата выполнения операции
 	if (Rez < 0) ProgExec(LProg);
 }
 
-void StreamFloatALU::OperandsClear(long int MK) // РЎР±СЂРѕСЃ РѕРїРµСЂР°РЅРґРѕРІ РїСЂРё РЅР°С‡Р°Р»Рµ РѕР±РѕСЂР°Р±РѕС‚РєРё РЅРѕРІРѕР№ РѕРїРµСЂР°С†РёРё
+void StreamFloatALU::OperandsClear(long int MK) // Сброс операндов при начале обоработки новой операции
 {
 //	if (Ready || OpCode != MK && OpCode != MK - 1) 
 	{
@@ -918,22 +948,33 @@ void StreamFloatALU::OperandsClear(long int MK) // РЎР±СЂРѕСЃ РѕРїРµСЂР°РЅРґРѕРІ
 		FOperands.clear();
 		RezExtStack.clear();
 		OperandsCounter = 0;
+		if (EarlyCalculi) // Флаг раннего вычисления
+			switch (MK)
+			{
+			case 500: //Add
+			case 501: //AddSqr
+				Rez = 0;
+				break;
+			case 510: //Mul
+				Rez = 1;
+				break;
+			}
 	}
 }
 
-bool StreamFloatALU::WrongFormatCheck(LoadPoint Load) // РџСЂРѕРІРµСЂРєР° С„РѕСЂРјР°С‚Р° РІС…РѕРґРЅС‹С… РґР°РЅРЅС‹С… (РІРѕР·РІСЂР°С‰Р°РµС‚ true, РµСЃР»Рё РЅРµРїСЂР°РІРёР»СЊРЅС‹Р№ С„РѕСЂРјР°С‚)
+bool StreamFloatALU::WrongFormatCheck(LoadPoint Load) // Проверка формата входных данных (возвращает true, если неправильный формат)
 {
-	if (!Load.isEmpty() && !Load.isDigit()) // РћС€РёР±РєР° С„РѕСЂРјР°С‚Р° РѕРїРµСЂР°РЅРґР°
+	if (!Load.isEmpty() && !Load.isDigit()) // Ошибка формата операнда
 	{
-		Ready = 2; // РљРѕРґ РѕС€РёР±РєРё
-		ProgExec(ErrProg); // РќРµРїСЂР°РІРёР»СЊРЅС‹Р№ С„РѕСЂРјР°С‚ РѕРїРµСЂР°РЅРґР°
+		Ready = 2; // Код ошибки
+		ProgExec(ErrProg); // Вызов программы обработки ошибки
 		ProgExec(WrongFormatErrProg);
 		return true;
 	}
 	return false;
 }
 
-StreamFloatALU::StreamFloatALU(void* Dev1) // РљРѕРїРёСЂСѓСЋС‰РёР№ РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ
+StreamFloatALU::StreamFloatALU(void* Dev1) // Копирующий конструктор
 {
 	StreamFloatALU* Dev = (StreamFloatALU*)Dev1;
 	if (Dev == nullptr || Dev->FUtype != FUtype) return;
@@ -966,24 +1007,26 @@ StreamFloatALU::StreamFloatALU(void* Dev1) // РљРѕРїРёСЂСѓСЋС‰РёР№ РєРѕРЅСЃС‚СЂС
 	WrongFormatErrProg = Dev->WrongFormatErrProg;
 	OveflowErrProg = Dev->OveflowErrProg;
 	DivZeroErrProg = Dev->DivZeroErrProg; //  
-	MatErrProg = Dev->MatErrProg; // РџСЂРѕРіСЂР°РјРјР° РѕР±СЂР°Р±РѕС‚РєРё РѕС€РёР±РєРё РјР°С‚РµРјР°С‚РёС‡РµСЃРєРѕР№ РѕРїРµСЂР°С†РёРё
-	NoOperandErrProg = NoOperandErrProg;// РћС€РёР±РєР° РЅРµС‚ РѕРїРµСЂР°РЅРґР°
-	OpIndErrProg = Dev->OpIndErrProg;// РћС€РёР±РєР° РёРЅРґРµРєСЃР° РѕРїРµСЂР°РЅРґР°
-	OperationErrProg = Dev->OperationErrProg; // РћС€РёР±РєР° РѕРїРµСЂР°С†РёРё
-	RezStackIsEmpyProg = Dev->RezStackIsEmpyProg; // РћС€РёР±РєР° РїСЂРё РїРѕРїС‹С‚РєРµ РёР·РІР»РµС‡РµРЅРёСЏ РёР· РїСѓСЃРєРѕРіРѕ СЃС‚РµРєР° СЂРµР·СѓР»СЊС‚Р°С‚РѕРІ
-	RezExtStackIsEmpyProg = Dev->RezExtStackIsEmpyProg; // РћС€РёР±РєР° РїСЂРё РїРѕРїС‹С‚РєРµ РёР·РІР»РµС‡РµРЅРёСЏ РёР· РїСѓСЃРєРѕРіРѕ СЃС‚РµРєР° СЂР°СЃС€РёСЂРµРЅРЅРѕРіРѕ СЂРµР·СѓР»СЊС‚Р°С‚РѕРІ
-	OperetionProg = Dev->OperetionProg;// РџСЂРѕРіСЂР°РјРјР° РґР»СЏ РІС‹РїРѕР»РЅРµРЅРёСЏ СЃРїРµС†РёР°Р»СЊРЅРѕР№ РѕРїРµСЂР°С†РёРё
-	RezProg = Dev->RezProg; // РџСЂРѕРіСЂР°РјРјР°, Р·Р°РїСѓСЃРєР°РµРјР°СЏ РїРµСЂРµРґ РїРѕР»СѓС‡РµРЅРёРµРј СЂРµР·СѓР»СЊС‚Р°С‚Р°
-	PreRezProg = Dev->PreRezProg; // РџСЂРѕРіСЂР°РјРјР°, Р·Р°РїСѓСЃРєР°РµРјР°СЏ РїРµСЂРµРґ РїРѕР»СѓС‡РµРЅРёРµРј СЂРµР·СѓР»СЊС‚Р°С‚Р°
+	MatErrProg = Dev->MatErrProg; // Программа обработки ошибки математической операции
+	NoOperandErrProg = NoOperandErrProg;// Ошибка нет операнда
+	OpIndErrProg = Dev->OpIndErrProg;// Ошибка индекса операнда
+	OperationErrProg = Dev->OperationErrProg; // Ошибка операции
+	RezStackIsEmpyProg = Dev->RezStackIsEmpyProg; // Ошибка при попытке извлечения из пуского стека результатов
+	RezExtStackIsEmpyProg = Dev->RezExtStackIsEmpyProg; // Ошибка при попытке извлечения из пуского стека расширенного результатов
+	OperetionProg = Dev->OperetionProg;// Программа для выполнения специальной операции
+	RezProg = Dev->RezProg; // рограмма, запускаемая при получении результата
+	PreRezProg = Dev->PreRezProg; // Программа, запускаемая перед получением результата
 	OpCode = Dev->OpCode;
+	bool MkAbort = Dev->MkAbort; // Флаг прерывания после обоработки марштуризируемой команды
+	bool EarlyCalculi = Dev->EarlyCalculi; // Флаг ранних вычислений (при многооперандных командах результат начинает вычисляться уже по приходе данных (ускоряет вычисления)
 }
 
-FU* StreamFloatALU::Copy() // РџСЂРѕРіСЂР°РјРјР° РєРѕРїРёСЂРѕРІР°РЅРёСЏ Р¤РЈ
+FU* StreamFloatALU::Copy() // Программа копирования ФУ
 {
 	return new StreamFloatALU(Bus,this);
 }
 
-FU* StreamFloatALU::TypeCopy() // РЎРѕР·РґР°С‚СЊ Р¤РЈ С‚Р°РєРѕРіРѕ Р¶Рµ С‚РёРїР° (РЅРµ РєРѕРїРёСЂСѓСЏ РєРѕРЅС‚РµРєСЃС‚
+FU* StreamFloatALU::TypeCopy() // Создать ФУ такого же типа (не копируя контекст
 {
 	return new StreamFloatALU(Bus, nullptr);
 }

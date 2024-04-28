@@ -39,7 +39,8 @@ private:
 	void* SelfAdrProg = nullptr; // Программа при совпадении адреса ФУ с его собственным адресом
 	vector<void*> AdrBuf; // Буфер адресов ФУ для пересылок
 	ip IpForMkAdrOut = { 0,{0,0} }; // Сохраненная МК при обнаружении, что МК вне адресного диапазона ФУ
-	bool RoutiMkAbort = false; // Флаг прерывания после обоработки марштуризируемой команды
+	bool MkAbort = false; // Флаг прерывания после обоработки марштуризируемой команды
+	bool EarlyCalculi = false; // Флаг ранних вычислений (при многооперандных командах результат начинает вычисляться уже по приходе данных (ускоряет вычисления)
 
 public:
 	void ProgFU(long int MK, LoadPoint Load, FU* Sender = nullptr) override;

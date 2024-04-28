@@ -4,6 +4,19 @@ void StreamIntALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 {
 	if (PrefixProg!=nullptr) ProgExec(PrefixProg); // Запуск предварительной программы
 	if (!Active && MK < 900) return; //При сброшенном флаге активности выполняются общие МК
+	if (MK >= FUMkRange && MK < FUMkGlobalAdr && MK >= FUMkGlobalAdr + FUMkRange)
+	{
+
+		ProgExec(RoutProg);
+		return;
+	}
+	else
+		ProgExec(SelfAdrProg);
+	if (MkAbort)
+	{
+		MkAbort = false;
+		return;
+	}
 	int MKinitial = MK;
 	MK %= FUMkRange;
 	if (Load.isEmpty()) Load = { Cint,&Rez }; // Если нулевая нагрузка, то операндом является аккумулятор
@@ -42,6 +55,12 @@ void StreamIntALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		MkExec(Load, { Cint, &t });
 	}
 	break;
+	case 15: //MkAbortSet Установить флаг прерывания выполнения МК (по умолчанию true)
+		MkAbort = Load.toBool(true);
+		break;
+	case 25: //EarlyCalculiSet Установить раннее вычисление результата (true по умолчанию)
+		EarlyCalculi = Load.toBool(true);
+		break;
 	case 30: // OperandsReset Сброс операндов (все те операнды, что пришли, сбрасываются и накопление операндов начинается заново)
 		OperandsCounter = 0;
 		for (size_t i = 0; i < FOperands.size(); ++i) {
@@ -561,6 +580,7 @@ void StreamIntALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		if (WrongFormatCheck(Load)) break;
 		if (Ready || OpCode != MK)
 			OperandsClear(MK); // Сброс операндов при начале обоработки новой операции
+
 		if (Load.isEmpty()) Load = { Cint,&Rez }; // При нулевой нагрузке берем операнд из регистра резульатта
 
 		if (Load.isEmpty())
@@ -569,6 +589,38 @@ void StreamIntALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 			Operands.push_back(Load.toInt()); // Накопление операндов
 		FOperands.push_back(true);
 		OperandsCounter++;
+		if (EarlyCalculi)
+		{
+			switch (OpCode) {
+			case 500: //Add
+				Rez += Load.toInt();
+				break;
+			case 501: //AddSqr
+				Rez += Load.toInt() * Load.toInt();
+				break;
+			case 510: //Mul
+				Rez *= Load.toInt();
+				break;
+			case 600: // Or
+				Rez = (bool) bool(Rez) || Load.toBool();
+				break;
+			case 601: // And
+				Rez = (bool) bool(Rez) && Load.toBool();
+				break;
+			case 602: // Xor
+				Rez = (bool) bool(Rez) ^ Load.toBool();
+				break;
+			case 610: // OrBit
+				Rez = (unsigned int)(unsigned int)(Rez) | ((unsigned int)Load.toBool());
+				break;
+			case 611: // AndBit
+				Rez = (unsigned int)(unsigned int)(Rez) | ((unsigned int)Load.toBool());
+				break;
+			case 612: // XorBit
+				Rez = (unsigned int)(unsigned int)(Rez) | ((unsigned int)Load.toBool());
+				break;
+			}
+		}
 		if (OperandsCounter == Noperands)
 		{ //     ->  
 			ProgExec(PreRezProg);// Программа перед получением результата
@@ -847,6 +899,23 @@ void StreamIntALU::OperandsClear(long int MK) // Сброс операндов при начале обор
 		FOperands.clear();
 		RezExtStack.clear();
 		OperandsCounter = 0;
+		if(EarlyCalculi)
+			switch (MK)
+			{
+			case 500: // Add
+			case 501: // AddSqr
+			case 600: // Or
+			case 610: // OrBit
+				Rez = 0;
+				break;
+			case 510: // Mul
+			case 601: // And
+			case 602: // Xor
+			case 611: // AndBit
+			case 612: // XorBit
+				Rez = 1;
+				break;
+			}
 	}
 }
 
@@ -904,6 +973,7 @@ StreamIntALU::StreamIntALU(void* Dev1) // Копирующий конструктор
 	RezProg = Dev->RezProg; // Программа, запускаемая перед получением результата
 	PreRezProg = Dev->PreRezProg; // Программа, запускаемая перед получением результата
 	OpCode = Dev->OpCode;
+	EarlyCalculi = Dev->EarlyCalculi;
 }
 
 FU* StreamIntALU::Copy() // Программа копирования ФУ
