@@ -36,7 +36,7 @@ void StreamManager::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		break;
 	case 2: // GroupCreateTempl Создавать группу на основе эталона на входе идекс группы, по умолчанию по индексу GroupInd)
 	{
-		if (Load.isEmpty() && (IndGroup >= Field.size() && IndGroup >= 0))
+		if (Load.isEmpty() && (IndGroup >= Field.size() || IndGroup < 0))
 		{
 			ProgExec(DevNotExistErrProg);
 			break;
@@ -344,6 +344,109 @@ void StreamManager::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		MkExec(Load, { CFU,&t });
 	}
 		break;
+
+	case 110: //RezVectOut Выдать вектор результатов всех ФУ поля
+	case 111: //RezVectOutMk Выдать Мк с вектором результатов всех ФУ поля
+	{
+		if(IndGroup >= Field.size() || IndGroup < 0)
+		{
+			ProgExec(DevNotExistErrProg);
+			break;
+		}
+		LoadVect_type t=new vector<LoadPoint>;
+		for (auto& i : Field)
+			for (auto& j : i)
+				switch (j->FUtype)
+				{
+				case FUStreamFloatALU:
+					t->push_back({ Cdouble, &((StreamFloatALU*)j)->Rez });
+					break;
+				case FUStreamIntALU:
+					t->push_back({ Cdouble, &((StreamIntALU*)j)->Rez });
+					break;
+				}
+		if (MK == 110)
+			Load.Write(t);
+		else
+			MkExec(Load, { CLoadArray, &t });
+		break;
+	}
+	case 112: //ReadyVectOut Выдать вектор готовности результатов всех ФУ поля
+	case 113: //ReadyVectOutMk  Выдать Мк с вектором готовности результатов всех ФУ поля
+	{
+		if (IndGroup >= Field.size() || IndGroup < 0)
+		{
+			ProgExec(DevNotExistErrProg);
+			break;
+		}
+		LoadVect_type t = new vector<LoadPoint>;
+		for (auto& i : Field)
+			for (auto& j : i)
+				switch (j->FUtype)
+				{
+				case FUStreamFloatALU:
+					t->push_back({ Cdouble, &((StreamFloatALU*)j)->Ready });
+					break;
+				case FUStreamIntALU:
+					t->push_back({ Cdouble, &((StreamIntALU*)j)->Ready }); \
+						break;
+				}
+		if (MK == 110)
+			Load.Write(t);
+		else
+			MkExec(Load, { CLoadArray, &t });
+		break;
+	}
+	break;
+
+	case 115: //RezGroupVectOut Выдать вектор результатов всех ФУ группы
+	case 116: //RezGroupVectPutMk Выдать Мк с вектором результатов всех ФУ группы
+	{
+		if (IndGroup >= Field.size() || IndGroup < 0)
+		{
+			ProgExec(DevNotExistErrProg);
+			break;
+		}
+		LoadVect_type t = new vector<LoadPoint>;
+		for (auto& j: Field[IndGroup])
+				switch (j->FUtype)
+				{
+				case FUStreamFloatALU:
+					t->push_back({ Cdouble, &((StreamFloatALU*)j)->Ready });
+					break;
+				case FUStreamIntALU:
+					t->push_back({ Cdouble, &((StreamIntALU*)j)->Ready });
+					break;
+				}
+		if (MK == 110)
+			Load.Write(t);
+		else
+			MkExec(Load, { CLoadArray, &t });
+		break;
+	}
+	case 117: //ReadyGroupVectOut Выдать вектор готовности результатов всех ФУ группы
+	case 118: //ReadyGroupVectOutMk Выдать Мк с вектором готовности результатов всех ФУ группы
+	{
+		if (IndGroup >= Field.size() || IndGroup < 0)
+		{
+			ProgExec(DevNotExistErrProg);
+			break;
+		}
+		LoadVect_type t = new vector<LoadPoint>;
+		for (auto& j : Field[IndGroup])
+				switch (j->FUtype)
+				{
+				case FUStreamFloatALU:
+					t->push_back({ Cdouble, &((StreamFloatALU*)j)->Ready });
+				case FUStreamIntALU:
+					t->push_back({ Cdouble, &((StreamIntALU*)j)->Ready });
+				}
+		if (MK == 110)
+			Load.Write(t);
+		else
+			MkExec(Load, { CLoadArray, &t });
+		break;
+	}
 
 	default:
 		CommonMk(MK, Load, Sender);

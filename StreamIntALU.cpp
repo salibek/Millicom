@@ -855,7 +855,7 @@ void StreamIntALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 			Rez = !(bool(Rez));
 			break;
 		case 533: // NotBit Побитовое логическое нет
-			Rez = (unsigned int)!Rez;
+			Rez = ~(unsigned int)Rez;
 			break;
 		case 535: // SignReverse Инфеверсия знака числа
 			Rez = -Rez;

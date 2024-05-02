@@ -8,12 +8,10 @@ class StreamIntALU : public FU
 {
 private:
 	vector<bool> FOperands; // Флаги поступления операндов  
-	long int Ready = 0; // Код готовности результата 0 - не готов, 1 - готов, 2 - ошибка
 	bool OutRezBlock = false; // Флаг блокирования выдачи результата  
 	void RezExec(); // Выполнение подпрограмм при получении результата
 	vector<long int>RezStack; //  Стек для хранения результатов и промежуточных данных
 	vector<long int>RezExtStack; // Стек расширеного резульатата (например, остаток при операции целочисленного деления)
-	long int Rez = 0; //  Результат операции
 	long int OperandsCounter = 0; // Счетчик количества полученных операндов
 	long int OpInd = 0; // Индекс операнда
 	vector<long int> Operands;// Стек операндов
@@ -43,6 +41,8 @@ private:
 	bool EarlyCalculi = false; // Флаг ранних вычислений (при многооперандных командах результат начинает вычисляться уже по приходе данных (ускоряет вычисления)
 
 public:
+	long int Rez = 0; //  Результат операции
+	long int Ready = 0; // Код готовности результата 0 - не готов, 1 - готов, 2 - ошибка
 	void ProgFU(long int MK, LoadPoint Load, FU* Sender = nullptr) override;
 	FU* Copy() override; // Программа копирования ФУ
 	FU* TypeCopy() override; // Создать ФУ такого же типа (не копируя контекст

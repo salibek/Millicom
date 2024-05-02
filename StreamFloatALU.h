@@ -15,7 +15,6 @@ class StreamFloatALU : public FU
 	FU* Copy() override; // Программа копирования ФУ
 	FU* TypeCopy() override; // Создать ФУ такого же типа (не копируя контекст
 	vector<bool> FOperands; // Флаги поступления операндов  
-	long int Ready = 0; // Код готовности результата 0 - не готов, 1 - готов, 2 - ошибка
 	bool OutRezBlock = false; // Флаг блокирования выдачи результата  
 	void RezExec(); // Выполнение подпрограмм при получении результата
 	vector<double>RezStack; //  Стек для хранения результатов и промежуточных данных
@@ -41,9 +40,10 @@ class StreamFloatALU : public FU
 	bool MkAbort = false; // Флаг прерывания после обоработки марштуризируемой команды
 	bool EarlyCalculi = false; // Флаг ранних вычислений (при многооперандных командах результат начинает вычисляться уже по приходе данных (ускоряет вычисления)
 public:
+	double Rez = 0; //  Результат операции
+	long int Ready = 0; // Код готовности результата 0 - не готов, 1 - готов, 2 - ошибка
 	vector<long int>ReceiverMk; // МК для получателя результата
 	vector<FU*>ReceiverContexts; // Контекст получателя результата
-	double Rez = 0; //  Результат операции
 
 	StreamFloatALU(FU* BusContext, FU* Templ)
 	{
