@@ -725,6 +725,7 @@ void StreamIntALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 			{
 				Operands.resize(1);
 				FOperands.push_back(false);
+				OpCode = OpCode - OpCode % 5;
 			}
 			Operands.push_back(Load.toInt(Rez)); // Поместить операнд в стек операндов
 			FOperands.push_back(true);
@@ -870,16 +871,17 @@ void StreamIntALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 	if (PostfixProg != nullptr) ProgExec(PostfixProg); // Запуск предварительной программы
 }
 
-void StreamIntALU::RezExec() // Выполнение подпрограмм при получении результата
+void StreamIntALU::RezExec(bool RezExec) // Выполнение подпрограмм при получении результата
 {
 	if (Ready == 2) return;
 	Ready = 1;
-	if (!OutRezBlock)//Если не заблокирована рассылка МК с результатами вычислений
-		for (int i = 0; i < ReceiverMk.size(); i++) { // Рассылка МК с результатами
+	if (!OutRezBlock || RezExec)//Если не заблокирована рассылка МК с результатами вычислений
+	{
+		for (int i = 0; i < ReceiverMk.size(); i++) // Рассылка МК с результатами
 			MkExec(ReceiverMk[i], { Cint, &Rez }, ReceiverContexts[i]);
-		}
-	for (auto& i : OutVars) // Записать результат в выходные переменные
-		i.Write(Rez);
+		for (auto& i : OutVars) // Записать результат в выходные переменные
+			i.Write(Rez);
+	}
 	ProgExec(RezProg);
 	if (Rez == 0) ProgExec(ZProg);
 	if (Rez != 0) ProgExec(NZProg);

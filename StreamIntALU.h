@@ -9,7 +9,7 @@ class StreamIntALU : public FU
 private:
 	vector<bool> FOperands; // Флаги поступления операндов  
 	bool OutRezBlock = false; // Флаг блокирования выдачи результата  
-	void RezExec(); // Выполнение подпрограмм при получении результата
+	void RezExec(bool RezExec = false); // Выполнение подпрограмм при получении результата
 	vector<long int>RezStack; //  Стек для хранения результатов и промежуточных данных
 	vector<long int>RezExtStack; // Стек расширеного резульатата (например, остаток при операции целочисленного деления)
 	long int OperandsCounter = 0; // Счетчик количества полученных операндов

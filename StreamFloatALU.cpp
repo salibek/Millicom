@@ -115,6 +115,12 @@ void StreamFloatALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 	case 80: // OutRezBlockSet Установить блокировку выдачи результата (при нулевой нагрузке true)
 		OutRezBlock = Load.toBool(true);
 		break;
+	case 81: // RezSend Выслать результат вычислений (+ выполняются программы по флагам)
+	{
+		if (Ready)
+			RezExec(true);
+		break;
+	}
 	case 90:// Push Положить в стек (при нулевой нагрузке в стек помещается Rez)
 		if (Load.Point == nullptr)
 			RezStack.push_back(Rez);
@@ -684,6 +690,7 @@ void StreamFloatALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 			{
 				Operands.resize(1);
 				FOperands.push_back(false);
+				OpCode = OpCode - OpCode % 5;
 			}
 			Operands.push_back(Load.toDouble(Rez)); // Поместить операнд в стек операндов
 			FOperands.push_back(true);
@@ -920,22 +927,23 @@ void StreamFloatALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 	if (PostfixProg != nullptr) ProgExec(PostfixProg); // Запуск постпрограммы
 }
 
-void StreamFloatALU::RezExec(){ // Выдача результата выполнения операции
+void StreamFloatALU::RezExec(bool RezExec){ // Выдача результата выполнения операции
 	if (Ready == 2) return;
 	Ready = 1;
-	if (!OutRezBlock)// Проверка флага блокировки выдачи результата
-		for (int i = 0; i < ReceiverMk.size(); i++) { //Проход по списку милликоманд для выдачи результата
+	if (!OutRezBlock || RezExec)// Проверка флага блокировки выдачи результата
+	{
+		for (int i = 0; i < ReceiverMk.size(); i++) //Проход по списку милликоманд для выдачи результата
 			MkExec(ReceiverMk[i], { Cdouble, &Rez }, ReceiverContexts[i]);
-		}
-	for (auto& i : OutVars) // Проход по списку переменных для записи результата
-		i.Write(Rez);
-	ProgExec(RezProg);
-	if (Rez == 0) ProgExec(ZProg);
-	if (Rez != 0) ProgExec(NZProg);
-	if (Rez >= 0) ProgExec(BZProg);
-	if (Rez <= 0) ProgExec(LZProg);
-	if (Rez > 0) ProgExec(BProg);
-	if (Rez < 0) ProgExec(LProg);
+		for (auto& i : OutVars) // Проход по списку переменных для записи результата
+			i.Write(Rez);
+	}
+		ProgExec(RezProg);
+		if (Rez == 0) ProgExec(ZProg);
+		if (Rez != 0) ProgExec(NZProg);
+		if (Rez >= 0) ProgExec(BZProg);
+		if (Rez <= 0) ProgExec(LZProg);
+		if (Rez > 0) ProgExec(BProg);
+		if (Rez < 0) ProgExec(LProg);
 }
 
 void StreamFloatALU::OperandsClear(long int MK) // Сброс операндов при начале обоработки новой операции
