@@ -222,8 +222,12 @@ void StreamIntALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		break;
 
 	case 150: // NOperandSet Установить количество операндов (по умолчанию 2)
-		OperandsCounter = Load.toInt();
+		OperandsCounter = Load.toInt(2);
 		break;
+	case 151: // NOperandAdd Увеличить количество операндов (по умолчанию на 1)
+		OperandsCounter += Load.toInt(1);
+		break;
+
 	case 160: // ReceiverReset Сброс установок получателей результата
 		ReceiverMk.clear();
 		ReceiverContexts.clear();

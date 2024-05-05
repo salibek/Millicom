@@ -1,0 +1,49 @@
+// - обозначение переведенных в комментарии старых ФУ
+\* date *\ //- последняя дата изменения или добавления строк и ФУ
+
+NewFU={Mnemo="Main_Bus" MkBegRange=1000 FUType=FUBusNew} // Описание Bus
+
+\\ Для создания индексного файла сначала надо запустить программу !!!!
+ CapsManager.IndexVectCreate=20000
+ CapsManager.IpIcIdOutMk=MainBus.IpIcIdSet
+ CapsManager.IpIcIdOutMk=VariableManager.IpIcIdSet
+ CapsManager.IpIcIdOutMk=ListSyntez.IpIcIdSet
+ MainBus.ModeSet=1
+\\ -------------------------------------- \\
+MainBus.FUTypeCorrectSet=-96 // Корректировка номера типа ФУ для переноса на новую ОА-платформу
+
+NewFU={Mnemo="Console" FUType=FUConsNew}
+NewFU={Mnemo="Manager" FUType=FUStreamManager}
+NewFU={Mnemo="IntALU" FUType=FUIntAluNew}
+NewFU={Mnemo="IntALU2" FUType=FUIntAluNew}
+NewFU={Mnemo="IntALU3" FUType=FUIntAluNew}
+
+MainBus.PartialResetSet \\ Запомнить число созданных ФУ
+MainBus.ModeSet=2
+
+N=4
+M=4
+Manager.CounterSet=N
+Manager.CounterMul=M
+Manager.FieldCreate=FUStreamIntALU // Создать поле целочисленных АЛУ
+Manager.ExecAll={FUStreamIntALU.NOperandSet=1}
+
+//Настройка сетки
+Manager.IndGroupSet=0
+Manager.IndSet=0
+Manager.Ind2Set=1
+Manager.ExecCounterSet=N
+
+FUStreamManager.Mk2Set=FUStreamIntALU.ContextOutMk
+FUStreamManager.MkSet=FUStreamIntALU.ReceiverAdd
+Manager.ProgExec={
+	FUStreamManager.ExecCounterMul=M
+	FUStreamManager.ExecCounterSub=1
+	FUStreamManager.ProgExec={
+		FUStreamManager.ExecDev={FUStreamIntALU.ReceiverMkAdd=FUStreamIntALU.OperandAdd}
+		FUStreamManager.Mk2Exec=FUStreamManager.MkExec
+	}
+	FUStreamManager.IndAdd=1
+	FUStreamManager.Ind2Add=1
+	Console.OutLn="*"	
+}

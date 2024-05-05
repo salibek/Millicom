@@ -2872,9 +2872,7 @@ void ALU::emplace(LoadPoint Load) {
 		return;
 	}
 	else if (LoadPoint::isVect(accumType)) {
-
 		Stack.back().accumVect->emplace(Stack.back().accumVect->begin() + Stack.back().Ind, Load.Clone());
-
 	}
 	else if (Load.isChar()) {
 		Stack.back().accumStr.insert(Stack.back().Ind, Load.toStr());
@@ -2964,7 +2962,7 @@ FU* ALU::Copy() // Программа копирования ФУ
 	return new ALU(Bus, this);
 }
 
-FU* ALU::TypeCopy() // Создать ФУ такого же типа (не копируя контекст
+FU* ALU::TypeCopy() // Создать ФУ такого же типа (не копируя контекст)
 {
 	return new ALU(Bus, nullptr);
 }

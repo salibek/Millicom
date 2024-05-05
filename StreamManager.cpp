@@ -18,20 +18,14 @@ void StreamManager::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		DeviseCounter = 0;
 		break;
 	case 1: // FieldCreate Создавать поле АЛУ (на входе номер типа или указатель на шаблон ФУ)
+		Field.push_back({});
 		for (int i = 1; i <= Counter; i++)
 		{
-			Field.push_back({});
 			if (Load.isEmpty()) continue;
 			if (Load.isInt())
-			{
-				Field.back().push_back(MakeFU.MakeFu(Load.toInt(), Bus));
-				break;
-			}
+				Field.back().push_back(MakeFU.MakeFu(Load.toInt() + fuTypeCorrect, Bus));
 			else if (Load.isFU()) // Если указатель на ФУ
-			{
 				Field.back().push_back(((FU*)Load.Point)->Copy());
-				break;
-			}
 		}
 		break;
 	case 2: // GroupCreateTempl Создавать группу на основе эталона на входе идекс группы, по умолчанию по индексу GroupInd)
@@ -77,6 +71,30 @@ void StreamManager::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		break;
 	case 7: // CounterSet Установить сколько раз необходимо создавать устройства
 		Counter = Load.toInt(1);
+		break;
+	case 16: // ExecCounterSet Установить счетчик итераций выполнения подпрограммы
+		if (!ExecFlag)
+			ExecCounter.back() = Load.toInt(1);
+		else
+			ExecCounter.push_back(Load.toInt(1));
+		break;
+	case 17: // ExecCounterAdd Прибавить к счетчику итераций
+		ExecCounter.back() += Load.toInt();
+		break;
+	case 18: // ExecCounterMul Умножить счетчик итераций
+		ExecCounter.back() *= Load.toInt();
+		break;
+	case 26: // ExecCounterDiv Целочисленно разделить счетчик итераций
+		ExecCounter.back() /= Load.toInt();
+		break;
+	case 27: //ExecCounterSub Вычесть из счетчика итераций
+		ExecCounter.back() -= Load.toInt();
+		break;
+	case 8: //CounterAdd Прибавить к счетчику (по умолчанию 1)
+		Counter+= Load.toInt(1);
+		break;
+	case 15: // CounterMul Умножить считчик (по умолчанию 2)
+		Counter *= Load.toInt(2);
 		break;
 	case 4: //Ind2Set Установить второй индекс АЛУ в группе
 		Ind2 = Load.toInt();
@@ -452,6 +470,23 @@ void StreamManager::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		CommonMk(MK, Load, Sender);
 		break;
 	}
+}
+
+ void StreamManager::ProgExec(void* Uk, unsigned int CycleMode, FU* Bus, vector<ip>::iterator* Start) // Исполнение программы из ИК
+{
+	 ExecFlag = true;
+	 for (int i = 0; i < ExecCounter.back(); i++)
+		 FU::ProgExec(Uk, CycleMode, Bus, Start);
+	 if(ExecCounter.size()>1) ExecCounter.pop_back();
+	 if(ExecCounter.size()<2) ExecFlag = false;
+ }
+void StreamManager::ProgExec(LoadPoint Uk, unsigned int CycleMode, FU* Bus, vector<ip>::iterator* Start) // Исполнение программы из ИК
+{
+	ExecFlag = true;
+	for (int i = 0; i < ExecCounter.back(); i++)
+		FU::ProgExec(Uk, CycleMode, Bus, Start);
+	if (ExecCounter.size() > 1) ExecCounter.pop_back();
+	ExecFlag = false;
 }
 
 StreamManager::~StreamManager() // Деструктор

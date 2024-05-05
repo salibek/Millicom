@@ -18,6 +18,11 @@ private:
 	void* DevNotExistErrProg = nullptr; // Подпрограмма ошибки 'Нет существует устройства'
 	vector<StreamFloatALU> Group; // Вектор группы ФУ для копирования
 	FuFabric MakeFU;
+	vector<int> ExecCounter = {1}; // Количество итераций при Exec
+	bool ExecFlag = false; // Флаг выполнения подпрограммы
+	void ProgExec(void* Uk, unsigned int CycleMode = 0, FU* Bus = nullptr, vector<ip>::iterator* Start = nullptr) override; // Исполнение программы из ИК
+	void ProgExec(LoadPoint Uk, unsigned int CycleMode = 0, FU* Bus = nullptr, vector<ip>::iterator* Start = nullptr) override; // Исполнение программы из ИК
+
 public:
 	void ProgFU(long int MK, LoadPoint Load, FU* Sender = nullptr) override;
 	FU* Copy() override; // Программа копирования ФУ
