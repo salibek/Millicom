@@ -36,6 +36,7 @@ private:
 	set<string> True = { "true", "True" }, False = {"false", "False"}; // Множество значений true false
 	string inStr; // Последняя введенная строка
 	void* InputFormatErrProg = nullptr; // Программа ошибки формата входных данных
+	int VectCol = 0; // Количество колонок при выводе вектора
 public:
 	void ProgFU(long int MK, LoadPoint Load, FU* Sender = nullptr) override;
 	FU* Copy() override; // Программа копирования ФУ

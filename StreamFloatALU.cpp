@@ -8,7 +8,6 @@ void StreamFloatALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 	if (!Active && MK<900) return; //При сброшенном флаге активности выполняются общие МК
 	if (MK >= FUMkRange && MK < FUMkGlobalAdr && MK >= FUMkGlobalAdr + FUMkRange)
 	{
-		
 		ProgExec(RoutProg);
 		return;
 	}
@@ -21,7 +20,7 @@ void StreamFloatALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 	}
 	int MKinitial = MK;
 	MK %= FUMkRange;
-	if (Load.isEmpty()) Load = { Cdouble,&Rez }; // Если нулевая нагрузка, то операндом является аккумулятор
+	//if (Load.isEmpty()) Load = { Cdouble,&Rez }; // Если нулевая нагрузка, то операндом является аккумулятор
 	switch (MK)
 	{
 	case 0: //Reset
@@ -48,6 +47,9 @@ void StreamFloatALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		break;
 	case 6: //OutMk  Выдать МК с результатом
 		MkExec(Load, { Cdouble, &Rez });
+		break;
+	case 7: // AccumModeSet Установить аккумуляторный режим вычислений (по умолчанию true)
+		AccumMode = Load.toBool(true);
 		break;
 	case 10: //OpCounterOut Выдать счетчик накопленных операндов
 		Load.Write(OperandsCounter);
@@ -112,22 +114,26 @@ void StreamFloatALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		if (Ready == 2)
 			ProgExec(Load);
 		break;
-	case 80: // OutRezBlockSet Установить блокировку выдачи результата (при нулевой нагрузке true)
+	case 80: // RezOutBlockSet Установить блокировку выдачи результата (при нулевой нагрузке true)
 		OutRezBlock = Load.toBool(true);
 		break;
 	case 81: // RezSend Выслать результат вычислений (+ выполняются программы по флагам)
 	{
 		if (Ready)
-			RezExec(true);
+			RezExec(&Rez, true);
 		break;
 	}
+	case 89: // Swap Обменять местами регистр результата и верхний элемент стека
+		if (RezStack.size())
+			swap(Rez, RezStack.back());
+		break;
 	case 90:// Push Положить в стек (при нулевой нагрузке в стек помещается Rez)
 		if (Load.Point == nullptr)
 			RezStack.push_back(Rez);
 		else
 			RezStack.push_back(Load.toDouble());
 		break;
-	case 91: // Pop Р’С‹РЅСѓС‚СЊ РёР· СЃС‚РµРєР° (РїСЂРё РїСЂРё РЅСѓР»РµРІРѕР№ РЅР°РіСЂСѓР·РєРµ РІРµР»РёС‡РёРЅР° РїРѕРјРµС‰Р°РµС‚СЃСЏ РІ Rez)
+	case 91: // Pop Вытолкнуть содержимое стака
 		if (RezStack.size() == 0) {
 			ProgExec(RezStackIsEmpyProg);
 			ProgExec(ErrProg);
@@ -190,6 +196,9 @@ void StreamFloatALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 	case 98: //StackNotEmptyExec Выполнить, если стек не пустой
 		if (RezStack.size()) ProgExec(Load);
 		break;
+	case 99: //StackClear Очистить стек
+		RezStack.clear();
+		break;
 	case 100: //RezExtOut Выдать значение из расширенного стека результата
 	case 101: // RezExtOutMk Выдать МК со значением из расширенного стера результата
 	case 102: // RezExtPop Выдавить расширенный результат (при нулевой нагрузке записывается в Rez)
@@ -230,6 +239,17 @@ void StreamFloatALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		RezExtStackIsEmpyProg = Load.Point;
 		break;
 
+	case 110: // BufSet Записать результат в буфер (при нулевой нагрузке записывается из Rez)
+		if (Load.isEmpty()) RezBuf = Rez;
+		else RezBuf = Load.toDouble();
+		break;
+	case 111: // ToRez Записать из буфера в регистра результата
+		Rez = RezBuf;
+		break;
+	case 112: // BufSend Разослать результат из буфера
+		RezExec(&RezBuf);
+		break;
+
 	case 150: // NOperandSet Установить количество операндов (по умолчанию 2)
 		OperandsCounter = Load.toInt(2);
 		break;
@@ -248,6 +268,16 @@ void StreamFloatALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 			ReceiverContexts.push_back(nullptr);
 		ReceiverMk.push_back(Load.toInt());
 		break;
+	case 163: //ReceiverCountOut Выдать количество получателей результата
+		Load.Write(ReceiverMk.size());
+		break;
+	case 164: //ReceiverCountOutMk Выдать МК с количеством получателей результата
+	{
+		long int t = ReceiverMk.size();
+		MkExec(Load, { Cint,&t });
+	}
+	break;
+
 	case 165: // OutVarReset Очистить список переменных для записи результата
 		OutVars.clear();
 		break;
@@ -296,6 +326,7 @@ void StreamFloatALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 			ProgExec(NoOperandErrProg);
 		}
 		else {
+			if (!FOperands[MK - 200]) break; // Не обрабатывать неполученные операнды
 			double temp = Operands[(MK - 200) / 5];
 			MkExec(Load, { Cdouble, &temp });
 		}
@@ -348,7 +379,7 @@ void StreamFloatALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		if (OperandsCounter >= Noperands) // Р’С‹РїРѕР»РЅРµРЅРёРµ РїСЂРѕРіСЂР°РјРјС‹
 		{
 			ProgExec(OperetionProg);
-			RezExec();
+			RezExec(&Rez);
 		}
 		break;
 	case 253: // OperandByIndOut Выдать операнд по индексу
@@ -610,7 +641,7 @@ void StreamFloatALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 	case 501: // AddSqr
 	case 510: // Mul
 		if (WrongFormatCheck(Load)) break;
-		if (Ready || OpCode != MK && OpCode != MK - 1)
+		if (Ready || OpCode != MK)// && OpCode != MK - 1)
 			OperandsClear(MK); // Сброс операндов при начале обоработки новой операции
 		if (Load.isEmpty()) Load = { Cdouble,&Rez }; // При нулевой нагрузке берем операнд из регистра результата
 
@@ -634,7 +665,7 @@ void StreamFloatALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 				break;
 			}
 		}
-		if (OperandsCounter == Noperands) 
+		if (OperandsCounter >= Noperands) 
 		{ //     ->  
 			ProgExec(PreRezProg);// Программа перед получением результата
 			if(!EarlyCalculi)
@@ -655,7 +686,7 @@ void StreamFloatALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 						Rez *= i;
 						break;
 				}
-			RezExec(); // Действия при получении результата
+			RezExec(&Rez); // Действия при получении результата
 		}
 		break;
 	case 505: // Sub1
@@ -754,7 +785,7 @@ void StreamFloatALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 				break;
 			}
 			// --------------------------
-			RezExec(); // Действия при получении результата
+			RezExec(&Rez); // Действия при получении результата
 		}
 		break;
 	case 522:	// Rem1 Число из которого извлекается остаток от целочисленного деления
@@ -793,7 +824,7 @@ void StreamFloatALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		{
 			ProgExec(PreRezProg);// Программа перед получением результата
 			Rez = int(Operands[0]) % int(Operands[1]);
-			RezExec();
+			RezExec(&Rez);
 		}
 		break;
 	// Однооперандные действия
@@ -872,10 +903,20 @@ void StreamFloatALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		case 535: // SignReverse Изменить знак числа
 			Rez = -Load.toDouble();
 			break;
-		case 536: //  Reverse Обратное число (1/x)
-			Rez = -Load.toDouble();
-
+		case 536: // Reverse — обратное число (1/x)
+		{
+			double value = Load.toDouble(); // Получение значения
+			if (value != 0) {
+				Rez = 1.0 / value; // Вычисление обратного числа
+			}
+			else {
+				// Обработка ошибки деления на ноль
+				Ready = 2; // Код ошибки
+				ProgExec(ErrProg); // Выполнение программы при ошибке
+				ProgExec(DivZeroErrProg); // Вызов программы обработки ошибки деления на ноль
+			}
 			break;
+		}
 			// Триганометрические операции
 		case 600: // Sin
 		case 601: // Cos
@@ -920,7 +961,7 @@ void StreamFloatALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 			Rez = atan(Rez); break;
 		}
 		Ready = 1;
-		RezExec(); // Подпрограмма выдачи результата
+		RezExec(&Rez); // Подпрограмма выдачи результата
 		break;
 
 	default:
@@ -930,16 +971,11 @@ void StreamFloatALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 	if (PostfixProg != nullptr) ProgExec(PostfixProg); // Запуск постпрограммы
 }
 
-void StreamFloatALU::RezExec(bool RezExec){ // Выдача результата выполнения операции
+void StreamFloatALU::RezExec(double* tRez, bool RezExec){ // Выдача результата выполнения операции
 	if (Ready == 2) return;
-	Ready = 1;
-	if (!OutRezBlock || RezExec)// Проверка флага блокировки выдачи результата
+	if (!RezExec)
 	{
-		for (int i = 0; i < ReceiverMk.size(); i++) //Проход по списку милликоманд для выдачи результата
-			MkExec(ReceiverMk[i], { Cdouble, &Rez }, ReceiverContexts[i]);
-		for (auto& i : OutVars) // Проход по списку переменных для записи результата
-			i.Write(Rez);
-	}
+		Ready = 1;
 		ProgExec(RezProg);
 		if (Rez == 0) ProgExec(ZProg);
 		if (Rez != 0) ProgExec(NZProg);
@@ -947,6 +983,15 @@ void StreamFloatALU::RezExec(bool RezExec){ // Выдача результата выполнения опер
 		if (Rez <= 0) ProgExec(LZProg);
 		if (Rez > 0) ProgExec(BProg);
 		if (Rez < 0) ProgExec(LProg);
+	}
+
+	if (!OutRezBlock || RezExec)// Проверка флага блокировки выдачи результата
+	{
+		for (int i = 0; i < ReceiverMk.size(); i++) //Проход по списку милликоманд для выдачи результата
+			MkExec(ReceiverMk[i], { Cdouble, tRez }, ReceiverContexts[i]);
+		for (auto& i : OutVars) // Проход по списку переменных для записи результата
+			i.Write(*tRez);
+	}
 }
 
 void StreamFloatALU::OperandsClear(long int MK) // Сброс операндов при начале обоработки новой операции

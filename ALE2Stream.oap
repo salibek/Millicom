@@ -1,0 +1,101 @@
+NewFU={Mnemo="Lex" FUType=FULexNew Hint="Устройство лексического разбора"}
+
+NewFU={Mnemo="ALEStart" FUType=FUListNew Hint="Начальное состояние"}
+NewFU={Mnemo="End" FUType=FUListNew Hint="Конечное состояние"}
+NewFU={Mnemo="VarAfter" FUType=FUListNew Hint="Ожидание символа после переменной"}
+NewFU={Mnemo="VectAfter" FUType=FUListNew Hint="Ожидание символа после вектора"}
+NewFU={Mnemo="VectAfter2" FUType=FUListNew Hint="Ожидание символа после вектора 2"}
+NewFU={Mnemo="EgAleWait" FUType=FUListNew Hint="Перечисление переменных"}
+NewFU={Mnemo="EgAleWait2" FUType=FUListNew Hint="Перечисление переменных 2"}
+NewFU={Mnemo="EgAleAfter" FUType=FUListNew Hint="Ожидание символа после перечисления переменных"}
+NewFU={Mnemo="FuncAfter" FUType=FUListNew Hint="Ожидание функции"}
+NewFU={Mnemo="OperatWait" FUType=FUListNew Hint="Ожидание оператора"}
+
+Sep*-4
+Var
+
+Lex.ReceiverMkSet=ALEStart.FindAnd
+
+\**\ALEStart.Set=
+>{Var Lex.ReceiverMkSet=VarAfter.FindAnd}
+>{Mk Lex.ReceiverMkSet=EgAleWait2.FindAnd}
+\*>{Vect Lex.ReceiverMkSet=VectAfter.FindAnd}*\
+
+\**\VarAfter.Set=
+>{Sep="," Lex.ReceiverMkSet=EgAleWait.FindAnd}
+>{Sep="=" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
+>{Sep="+=" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
+>{Sep="-=" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
+>{Sep="++" Lex.ReceiverMkSet=End.FindAnd}
+>{Sep="--" Lex.ReceiverMkSet=End.FindAnd}
+
+\**\VectAfter.Set=
+>{Sep="[" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
+>{Sep="++" Lex.ReceiverMkSet=End.FindAnd}
+>{Sep="--" Lex.ReceiverMkSet=End.FindAnd}
+
+\**\VectAfter2.Set=
+>{Sep="[" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
+>{Sep="=" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
+>{Sep="+" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
+>{Sep="-" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
+>{Sep="*" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
+>{Sep="/" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
+>{Sep="//" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
+>{Sep="%" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
+>{Sep="**" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
+>{Sep=">>" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
+>{Sep="<<" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
+>{Sep="&"  Lex.ReceiverMkSet=EgAleAfter.FindAnd}
+>{Sep="&&" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
+>{Sep="|"  Lex.ReceiverMkSet=EgAleAfter.FindAnd}
+>{Sep="||" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
+>{Sep="^"  Lex.ReceiverMkSet=EgAleAfter.FindAnd}
+>{Sep="^^" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
+
+\**\EgAleWait.Set=
+>{Mk Lex.ReceiverMkSet=EgAleWait2.FindAnd}
+>{Var Lex.ReceiverMkSet=EgAleWait2.FindAnd}
+
+\**\EgAleWait2.Set=
+>{Sep="," Lex.ReceiverMkSet=EgAleWait.FindAnd}
+>{Sep="=" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
+
+\**\EgAleAfter.Set=
+\*>{Vect Lex.ReceiverMkSet=VectAfter2.FindAnd}\*
+>{Var Lex.ReceiverMkSet=OperatWait.FindAnd} 
+>{Const Lex.ReceiverMkSet=OperatWait.FindAnd}
+>{Sep="(" Lex.ReceiverMkSet=EgAleAfter.FindAnd} 
+
+\**\FuncAfter.Set=
+>{Sep="(" Lex.ReceiverMkSet=EgAleAfter.FindAnd} 
+>{Var Lex.ReceiverMkSet=OperatWait.FindAnd} 
+>{Const Lex.ReceiverMkSet=OperatWait.FindAnd}
+\*>{Vect Lex.ReceiverMkSet=OperatWait.FindAnd}\*
+
+\**\OperatWait.Set=
+>{Sep=")" Lex.ReceiverMkSet=OperatWait.FindAnd} 
+>{Sep="]" Lex.ReceiverMkSet=OperatWait.FindAnd} 
+>{Sep=":" Lex.ReceiverMkSet=OperatWait.FindAnd} 
+>{Sep="," Lex.ReceiverMkSet=OperatWait.FindAnd} 
+>{Sep="=" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
+>{Sep="+" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
+>{Sep="-" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
+>{Sep="*" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
+>{Sep="/" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
+>{Sep="//" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
+>{Sep="%" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
+>{Sep="**" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
+>{Sep=">>" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
+>{Sep="<<" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
+>{Sep="&"  Lex.ReceiverMkSet=EgAleAfter.FindAnd}
+>{Sep="&&" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
+>{Sep="|"  Lex.ReceiverMkSet=EgAleAfter.FindAnd}
+>{Sep="||" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
+>{Sep="^"  Lex.ReceiverMkSet=EgAleAfter.FindAnd}
+>{Sep="^^" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
+\* >{Else Lex.ReceiverMkSet=End.FindAnd} *\
+
+\* End.Set= *\ 
+
+Lex.Lexing="a,b,c,d=10"

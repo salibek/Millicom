@@ -16,7 +16,7 @@ class StreamFloatALU : public FU
 	FU* TypeCopy() override; // Создать ФУ такого же типа (не копируя контекст
 	vector<bool> FOperands; // Флаги поступления операндов  
 	bool OutRezBlock = false; // Флаг блокирования выдачи результата  
-	void RezExec(bool RezExec = false); // Выполнение подпрограмм при получении результата
+	void RezExec(double* tRez, bool RezExec = false); // Выполнение подпрограмм при получении результата
 	vector<double>RezStack; //  Стек для хранения результатов и промежуточных данных
 	vector<double>RezExtStack; // Стек расширеного резульатата (например, остаток при операции целочисленного деления)
 	long int OperandsCounter = 0; // Счетчик количества полученных операндов
@@ -39,6 +39,8 @@ class StreamFloatALU : public FU
 	long int OpCode = 0; // Код операции, для которой накапливаются операнды
 	bool MkAbort = false; // Флаг прерывания после обоработки марштуризируемой команды
 	bool EarlyCalculi = false; // Флаг ранних вычислений (при многооперандных командах результат начинает вычисляться уже по приходе данных (ускоряет вычисления)
+	bool AccumMode = false;// Аккумуляторных режим работы
+	double RezBuf = 0; // Буфер результата
 public:
 	double Rez = 0; //  Результат операции
 	long int Ready = 0; // Код готовности результата 0 - не готов, 1 - готов, 2 - ошибка

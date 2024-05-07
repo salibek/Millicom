@@ -137,7 +137,7 @@ bool LoadPoint::isInt() {
 		case 1: return true;
 		case 2: if (((IC_type)Point)->at(Ind / 3).Load.Point == nullptr) return false; t = ((IC_type)Point)->at(Ind / 3).Load.Type;
 		}
-	return t >> 1 == Dint;
+	return t >> 1 == Dint || t>>1 == DMk;
 }; // Целое число?
 
 bool LoadPoint::isIntBool() {
@@ -469,7 +469,8 @@ string LoadPoint::toStr(string define) // Перевод в bool
 	case Dstring: return *((string*)LP.Point);
 	case Ddouble: return to_string(*(double*)LP.Point); break;
 	case Dfloat: return to_string(*(float*)LP.Point); break;
-	case Dint: return to_string(*(int*)LP.Point); break;
+	case DMk:
+	case Dint: return to_string(*(long int*)LP.Point); break;
 	case Dbool: return to_string(*(bool*)LP.Point); break;
 	default:
 		return define;
@@ -498,7 +499,8 @@ bool LoadPoint::toBool(bool define) // Перевод в bool (по умолча
 	{
 	case Ddouble: return *(double*)LP.Point;
 	case Dfloat: return *(float*)LP.Point;
-	case Dint: return *(int*)LP.Point;
+	case DMk:
+	case Dint: return *(long int*)LP.Point;
 	case Dbool: return *(bool*)LP.Point;
 	case Dstring: return !((*(string*)LP.Point) == "");
 	default:
@@ -524,9 +526,10 @@ long int LoadPoint::toInt(long int define) { // Перевод в integer
 		}
 	switch (LP.Type >> 1)
 	{
-	case Ddouble: return (int)*(double*)LP.Point; break;
-	case Dfloat: return (int)*(float*)LP.Point; break;
-	case Dint: return *(int*)LP.Point; break;
+	case Ddouble: return (long int)*(double*)LP.Point; break;
+	case Dfloat: return (long int)*(float*)LP.Point; break;
+	case DMk:
+	case Dint: return *(long int*)LP.Point; break;
 	case Dbool: return *(bool*)LP.Point; break;
 	case Dstring: return atoi((*(string*)LP.Point).c_str());
 	default:
@@ -554,7 +557,8 @@ double LoadPoint::toDouble(double define) {// Перевод в integer
 	{
 	case Ddouble: return *(double*)LP.Point; break;
 	case Dfloat: return *(float*)LP.Point; break;
-	case Dint: return *(int*)LP.Point; break;
+	case DMk:
+	case Dint: return *(long int*)LP.Point; break;
 	case Dbool: return *(bool*)LP.Point; break;
 	case Dstring: return atof((*(string*)LP.Point).c_str());
 	default:
@@ -583,7 +587,8 @@ float LoadPoint::toFloat(float define) {// Перевод в integer
 	{
 	case Ddouble: return *(double*)LP.Point; break;
 	case Dfloat: return *(float*)LP.Point; break;
-	case Dint: return *(int*)LP.Point; break;
+	case DMk:
+	case Dint: return *(long int*)LP.Point; break;
 	case Dbool: return *(bool*)LP.Point; break;
 	case Dstring: return atof((*(string*)LP.Point).c_str());
 	default:
@@ -1499,7 +1504,7 @@ void LoadPoint::MatrixPrint(unsigned int Type, void* P, map<long int, string > A
 }
 // AtrMnemo - словарь мнемоник атрибутов
 // AdrMap - список ссылок уже пройденных ИК при выводе ОА-графа
-void LoadPoint::print(map<long int, string > AtrMnemo, string offset, string Sep, string End, string quote, string ArrayBracketStart, string ArrayBracketFin, map<void*, int>* AdrMap)
+void LoadPoint::print(map<long int, string > AtrMnemo, string offset, string Sep, string End, string quote, string ArrayBracketStart, string ArrayBracketFin, int VectCol, map<void*, int>* AdrMap)
 {
 	LoadPoint LP =IndLoadReturn();
 	if (LP.Point == nullptr)
@@ -1589,7 +1594,7 @@ void LoadPoint::print(map<long int, string > AtrMnemo, string offset, string Sep
 					cout << offset << AtrMnemo[i->atr] << ((i->Load.Type % 2) ? " # " : " = ");
 				else
 					cout << offset << i->atr << ((i->Load.Type % 2) ? " # " : " = ");
-			i->Load.print(AtrMnemo, offset + "  ", Sep, End, quote, ArrayBracketStart, ArrayBracketFin, AdrMap);
+			i->Load.print(AtrMnemo, offset + "  ", Sep, End, quote, ArrayBracketStart, ArrayBracketFin, VectCol, AdrMap);
 			if (i != ((IC_type)LP.Point)->end() - 1)
 				cout << endl;
 		}
@@ -1607,11 +1612,14 @@ void LoadPoint::print(map<long int, string > AtrMnemo, string offset, string Sep
 		register int c = 1;
 		for (auto i : *(vector<LoadPoint>*) Point)
 		{
+			if (VectCol > 0 && c > 1 && (c - 1) % VectCol == 0)
+				cout << End;
 			i.print(AtrMnemo, offset, Sep, End, quote, ArrayBracketStart, ArrayBracketFin);
-			if (c < ((vector<LoadPoint>*) Point)->size()) cout << Sep;
+			if (c < ((vector<LoadPoint>*)
+				Point)->size()) cout << Sep;
 			c++;
 		}
-		cout << ArrayBracketFin << endl;
+		cout << ArrayBracketFin<< endl;
 		break;
 	}
 	case TLoadVectInd:
@@ -1634,7 +1642,7 @@ void LoadPoint::print(map<long int, string > AtrMnemo, string offset, string Sep
 }
 
 // Работа с ФУ
-void FU::CommonMk(int Mk, LoadPoint Load, FU* Sender)
+void FU::CommonMk(long int Mk, LoadPoint Load, FU* Sender)
 {
 	Mk %= FUMkRange;
 	if (Mk < 0) // Команды для АЛУ
@@ -1844,8 +1852,8 @@ void FU::CommonMk(int Mk, LoadPoint Load, FU* Sender)
 			MkExec(Load.toInt(), { Cstring,&FUName });
 		break;
 	case ContextOutMkMk: // 999 ContextOutMK Выдать милликоманду с указателем на контекст ФУ
-		if (Load.Type >> 1 == Dint)
-			Bus->ProgFU(*(int*)Load.Point, { TFU, this }, this);
+		if (Load.isInt())
+			Bus->ProgFU(Load.toInt(), {TFU, this}, this);
 		break;
 	case BreakMk: //Выход из циклов
 	    CycleStop = Load.toInt(1);
@@ -1969,9 +1977,9 @@ void FU::ProgExec(LoadPoint Uk, unsigned int CycleMode, FU* Bus, vector<ip>::ite
 		ProgExec(Uk.Point, CycleMode, Bus, Start);
 }
 
-void FU::MkExec(int MK, LoadPoint Load, void* Receiver, bool Ext) // Выдача МК с нагрузкой
+void FU::MkExec(long int MK, LoadPoint Load, void* Receiver, bool Ext) // Выдача МК с нагрузкой
 {
-	if (MK < FUMkRange && !Ext) // Если МК адресована самому ФУ
+	if (MK < FUMkRange && !Ext && (Receiver==nullptr || Receiver==Bus)) // Если МК адресована самому ФУ
 		ProgFU(MK, Load, this);
 	else
 		if (Receiver != nullptr)
@@ -1995,7 +2003,7 @@ void FU::MkExec(LoadPoint Mk, LoadPoint Load, void* Receiver, bool Ext) // Вы�
 	}
 }
 
-void FU::MkAwait(int MK, LoadPoint Load, FU* Sender, double Delay) // ?????????? ?? ??? ???????? ?? ??????? ??? ?????????????
+void FU::MkAwait(long int MK, LoadPoint Load, FU* Sender, double Delay) // ?????????? ?? ??? ???????? ?? ??????? ??? ?????????????
 {
 	if (this == nullptr)
 		return;
@@ -2148,7 +2156,7 @@ bool IPCmp(ip* x, ip* y) // Сравнение двух  ИП
 }
 
 // Работа с ИК
-bool AtrSearch(void* uk, int Atr) // Поиск атриубута в ИК
+bool AtrSearch(void* uk, long int Atr) // Поиск атриубута в ИК
 {
 	for (auto& i : *(IC_type)uk)
 		if (i.atr == Atr)
@@ -2156,7 +2164,7 @@ bool AtrSearch(void* uk, int Atr) // Поиск атриубута в ИК
 	return false;
 }
 
-int AtrCounter(void* uk, int Atr) // Подсчет количества ИП с заданнным атриубутом в ИК
+int AtrCounter(void* uk, long int Atr) // Подсчет количества ИП с заданнным атриубутом в ИК
 {
 	int c = 0;
 	for (auto& i : *(IC_type)uk)
@@ -2215,7 +2223,7 @@ void GraphDel(void* Uk, LocatTable* Table = nullptr) // Удаление ОА-г
 
 
 // Найти в ИК ИП с атрибутом Atr и выполнить программу либо по адр. в нагрузке, либо после найденной ИП, если атрибут не найден, возвращается true
-bool AtrProgExec(vector<ip>* Prog, int Atr, FU* Bus, bool AfterContinue)
+bool AtrProgExec(vector<ip>* Prog, long int Atr, FU* Bus, bool AfterContinue)
 {
 	auto i = Prog->begin();
 	for (; i != Prog->end() && i->atr != Atr; i++);
@@ -2230,7 +2238,7 @@ bool AtrProgExec(vector<ip>* Prog, int Atr, FU* Bus, bool AfterContinue)
 	return false;
 }
 
-ip* AtrFind(void* IC, int Atr) // Поиск в ИК ИП с заданным атрутом
+ip* AtrFind(void* IC, long int Atr) // Поиск в ИК ИП с заданным атрутом
 {
 	if (IC == nullptr) return nullptr;
 	auto uk = (*(IC_type)IC).begin();
@@ -2335,7 +2343,7 @@ IC_type LoadPoint::IC() // Возвращает указатель на ИК
 	return (IC_type)Point;
 }
 
-LoadPoint LoadNew(int t) //Создание нагрузки от перененной
+LoadPoint LoadNew(long int t) //Создание нагрузки от перененной
 {
 	return { Cint, (void*)&t };
 }

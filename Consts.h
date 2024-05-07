@@ -190,7 +190,7 @@ public:
 	void VarClear(); // Сброс нагрузки ИП в том числе и с переменной (переменная стирается)
 	void* VarClone(); // Копирование значения нагрузки
 	void VarDel();// Удаление нагрузки ИП
-	void print(map<long int, string > AtrMnemo = {}, string offset = "", string Sep = " ", string End = "\n", string quote = """",  string ArrayBracketStart = "[", string ArrayBracketFin = "]", map<void*, int> *AdrMap = nullptr); // Параметр - указатель на табл. мнемоник атрибутов
+	void print(map<long int, string > AtrMnemo = {}, string offset = "", string Sep = " ", string End = "\n", string quote = """",  string ArrayBracketStart = "[", string ArrayBracketFin = "]", int VectCol=0, map<void*, int> *AdrMap = nullptr); // Параметр - указатель на табл. мнемоник атрибутов
 	LoadPoint Clone(bool All=false); // Дублировать нагрузку (All - флаг копирования любых нагрузок, в том числе и переменных)
 	static LoadPoint Clone(LoadPoint LP); // // Дублировать нагрузку (вариант с передаваемой в качестве параметра нагрузки)
 	void ConstTypeSet(bool F = true) { if (F)Type |= 1; else VarTypeSet(); }; // Установить тип 'константа'
@@ -296,7 +296,7 @@ class FU {  // Ядро функционального устройства
 public:
 	virtual void ProgFU(long int MK, LoadPoint Load, FU* Sender) {}; // Реализация логики работы ФУ
 	void Scheduling(bool SchedulerFlag); // Запуск МК после разрешенрия планировщика
-	void MkAwait(int MK, LoadPoint Load, FU* Sender, double Delay); // Постановка МК для ожидания прихода
+	void MkAwait(long int MK, LoadPoint Load, FU* Sender, double Delay); // Постановка МК для ожидания прихода
 	int FUtype = 0; // Тип ФУ
 	string FUName; //  Имя ФУ
 	bool Active = true;
@@ -306,7 +306,7 @@ public:
 	bool ALUCreating = false; // Флаг создания АЛУ
 	FU* Parent = nullptr; // Ссылка на родительский ФУ
 	long int FUInd = -1, FUInd2=-1; // Индексы ФУ
-	int  FUMkGlobalAdr = 0; // Глобальный адрес ФУ
+	long int  FUMkGlobalAdr = 0; // Глобальный адрес ФУ
 
 	FUModeling *Modeling=nullptr; // Моделирование
 
@@ -317,31 +317,31 @@ public:
 		if (ALUCreating) delete Alu; // Уничтожаем самостоятельно созданнного АЛУ
 	};
 
-	void MkExec(int MK, LoadPoint Load, void* BusContext = nullptr, bool Ext = false); // Выполнить одну милликоманду 
+	void MkExec(long int MK, LoadPoint Load, void* BusContext = nullptr, bool Ext = false); // Выполнить одну милликоманду 
 	void MkExec(LoadPoint MK, LoadPoint Load, void* BusContext = nullptr, bool Ext=false); // Выдача МК с нагрузкой
 	virtual void ProgExec(void* Uk, unsigned int CycleMode = 0, FU* Bus = nullptr, vector<ip>::iterator* Start = nullptr); // Исполнение программы из ИК
 	virtual void ProgExec(LoadPoint Uk, unsigned int CycleMode = 0, FU* Bus = nullptr, vector<ip>::iterator* Start = nullptr); // Исполнение программы из ИК
 	void ProgNExec(vector<void*> Uk); // Исполнение нескольких программ из ИК
-	int SubAtr=ProgMk; // Атрибут входа в подпрограмму
+	long int SubAtr=ProgMk; // Атрибут входа в подпрограмму
 
 	FU *Bus; // Ссылка на контекст Шины
-	int FUMkRange = 1000; // Диапазон МК для каждого ФУ
-	int ProgStop = 0; // Флаг остановки программы, выполняемой ProgExec
-	int CycleStop = 0; // Флаг остановки цикла программы, выполняемой ProgExec
+	long int FUMkRange = 1000; // Диапазон МК для каждого ФУ
+	long int ProgStop = 0; // Флаг остановки программы, выполняемой ProgExec
+	long int CycleStop = 0; // Флаг остановки цикла программы, выполняемой ProgExec
 	bool ProgStopAll = false; // Флаг остановки всех запущенных на выполнение миллипрограммы для данного ФУ
-	int YesAtr=YesMk, NoAtr=NoMk, YesCycleAtr = YesCycleMk, NoCycleAtr = NoCycleMk, YesPostCycleAtr = YesPostCycleMk, NoPostCycleAtr = NoPostCycleMk;
-	int RepeatAtr = RepeatMk;//Мк повтория программы
-	int BreakAtr = BreakMk;//Мк повторения программы
-	int NextAtr = NextMk;//Мк повторения программы
-	int ProgMkAtr=ProgMk, ProgCycleAtr= ProgCycleMk, ProgPostCycleAtr = ProgPostCycleMk;
-	int YesContinueAtr = YesContinueMk, NoContinueAtr = NoContinueMk; // МК условного выхода из программы
-	void CommonMk(int Mk, LoadPoint Uk, FU* Sender=nullptr); // Выполнение общих МК для ФУ
+	long int YesAtr=YesMk, NoAtr=NoMk, YesCycleAtr = YesCycleMk, NoCycleAtr = NoCycleMk, YesPostCycleAtr = YesPostCycleMk, NoPostCycleAtr = NoPostCycleMk;
+	long int RepeatAtr = RepeatMk;//Мк повтория программы
+	long int BreakAtr = BreakMk;//Мк повторения программы
+	long int NextAtr = NextMk;//Мк повторения программы
+	long int ProgMkAtr=ProgMk, ProgCycleAtr= ProgCycleMk, ProgPostCycleAtr = ProgPostCycleMk;
+	long int YesContinueAtr = YesContinueMk, NoContinueAtr = NoContinueMk; // МК условного выхода из программы
+	void CommonMk(long int Mk, LoadPoint Uk, FU* Sender=nullptr); // Выполнение общих МК для ФУ
 	IC_type PrefixProg = nullptr, PostfixProg = nullptr, Prog = nullptr, ElseProg = nullptr; // Программы презапуска и послезапуска во время прихода МК, просто программа, альтернативная программа
 	int GetFuType() { return FUtype; }; // Выдать тип ФУ
-	int GetFUMkGlobalAdr() { return FUMkGlobalAdr; }; // Выдать глобальный адрес ФУ
-	void SetFUMkGlobalAdr(int t) { FUMkGlobalAdr = t; }; // Установить глобальный адрес ФУ
-	int GetFUMkRange() { return FUMkRange; }; // Выдать глобальный адрес ФУ
-	void SetFUMkRange(int t) { FUMkRange = t; }; // Установить глобальный адрес ФУ
+	long int GetFUMkGlobalAdr() { return FUMkGlobalAdr; }; // Выдать глобальный адрес ФУ
+	void SetFUMkGlobalAdr(long int t) { FUMkGlobalAdr = t; }; // Установить глобальный адрес ФУ
+	long int GetFUMkRange() { return FUMkRange; }; // Выдать ширину адресного диапазона ФУ
+	void SetFUMkRange(long int t) { FUMkRange = t; }; // Установить глобальный адрес ФУ
 	FU* GetBus() { return Bus; }; // Выдать ссылку на шину
 	void SetBus(FU* t) { Bus = t; }; // Установить глобальный адрес ФУ
 	virtual FU* Copy() { return nullptr; }; // Копирование ФУ
@@ -351,7 +351,7 @@ private:
 //	int ProgSetFaze = 0; // Фаза для установки программы ProgSet, ElseProgSet
 };
 
-LoadPoint LoadNew(int t); //Создание нагрузки от перененной
+LoadPoint LoadNew(long int t); //Создание нагрузки от перененной
 LoadPoint LoadNew(double t); //Создание нагрузки от перененной
 LoadPoint LoadNew(bool t); //Создание нагрузки от перененной
 LoadPoint LoadNew(string t); //Создание нагрузки от перененной
@@ -371,11 +371,11 @@ bool LoadCmp(LoadPoint x, LoadPoint y); // Сравнение двух нагр�
 bool IPCmp(ip* x, ip* y); // Сравнение двух  ИП
 vector<ip>::iterator IPSearch(void* ic, ip IP); // Поиск ИП в ИК (возвращается указатель на персую найденную ИП
 vector<ip>::iterator IPSearch(void* ic, LoadPoint IP); // Поиск ИП в ИК (возвращается указатель на персую найденную ИП
-bool AtrProgExec(vector<ip>* Prog, int Atr, FU* Bus=nullptr, bool AfterContinue = false); // Найти в ИК ИП с атрибутом Atr и выполнить программу либо по адр. в нагрузке, либо после найденной ИП
+bool AtrProgExec(vector<ip>* Prog, long int Atr, FU* Bus=nullptr, bool AfterContinue = false); // Найти в ИК ИП с атрибутом Atr и выполнить программу либо по адр. в нагрузке, либо после найденной ИП
 //void AddOrReplIPAtr(vector<ip>* UK, ip* IP); // 
-ip* AtrFind(void* IC, int Atr); // Поиск в ИК ИП с заданным атрибутом. На выходе указатель на ИП или NULLL
-bool AtrSearch(void* uk, int Atr); // Поиск атриубута в ИК
-int AtrCounter(void* uk, int Atr); // Подсчет количества ИП с заданнным атриубутом в ИК
+ip* AtrFind(void* IC, long int Atr); // Поиск в ИК ИП с заданным атрибутом. На выходе указатель на ИП или NULLL
+bool AtrSearch(void* uk, long int Atr); // Поиск атриубута в ИК
+int AtrCounter(void* uk, long int Atr); // Подсчет количества ИП с заданнным атриубутом в ИК
 
 void IPAdd(void* IC, ip IP); // Добавить ИП в конец ИК
 void IPAdd(LoadPoint IC, ip IP); // Добавить ИП в конец ИК

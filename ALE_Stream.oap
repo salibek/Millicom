@@ -1,0 +1,138 @@
+NewFU={Mnemo="Main_Bus" MkBegRange=1000 FUType=FUBusNew} // Описание Bus
+
+\\ Для создания индексного файла сначала надо запустить программу !!!!
+
+ CapsManager.IndexVectCreate=20000
+ CapsManager.IpIcIdOutMk=MainBus.IpIcIdSet
+ CapsManager.IpIcIdOutMk=VariableManager.IpIcIdSet
+ CapsManager.IpIcIdOutMk=ListSyntez.IpIcIdSet
+ MainBus.ModeSet=1 
+\\ -------------------------------------- \\
+MainBus.FUTypeCorrectSet=-96 // Корректировка номера типа ФУ для переноса на новую ОА-платформу
+
+NewFU={Mnemo="LogCons" FUType=FUConsNew Mnemo="Консоль для вывода соощений компилятора"}
+NewFU={Mnemo="Lex" FUType=FULexNew}
+NewFU={Mnemo="ALUG" FUType=FUALUG}
+NewFU={Mnemo="Stack" FUType=FUListNew Hint="Стек приоритетов арифметического графа"}
+NewFU={Mnemo="MnemoTable" FUType=FUListNew Hint="Таблица мнемоник"}
+NewFU={Mnemo="OpPriority" FUType=FUListNew Hint="Таблица приоритетов операций"}
+NewFU={Mnemo="OperateionTranslate" FUType=FUListNew Hint="Транслирование операций для FUALU"}
+
+NewFU={Mnemo="ALEStart" FUType=FUListNew Hint="Начальное состояние"}
+NewFU={Mnemo="EgAleWait2" FUType=FUListNew Hint="Начальное состояние"}
+NewFU={Mnemo="EgAleWait" FUType=FUListNew Hint="Начальное состояние"}
+NewFU={Mnemo="VarAfter" FUType=FUListNew Hint="Начальное состояние"}
+NewFU={Mnemo="FuncAfter" FUType=FUListNew Hint="Начальное состояние"}
+NewFU={Mnemo="EgAleAfter" FUType=FUListNew Hint="Начальное состояние"}
+NewFU={Mnemo="OperatWait" FUType=FUListNew Hint="Начальное состояние"}
+
+MainBus.PartialResetSet \\ Запомнить число созданных ФУ
+MainBus.ModeSet=2
+// ---------------------
+
+Sep*-4
+Var
+VarInt
+BracketAtr#-1
+PassAtr#-2
+
+Lex.ReceiverMkSet=LogCons.Out
+Lex.Lexing="//)"
+
+//Stack.MarkAtrDef=0 // Атрибут линии по умолчанию
+
+OpPriority.MkModeSet=0 // Отключить выполнение МК
+OpPriority.Set= // Приоритет операций
+//>{Sep="(" Sep=")" Sep="[" Sep="]"}
+//>{Sep="!" Sep="~" Sep="++" Sep="--"}
+//>{FUALUG.Set}
+>{Sep="*" Sep="/" Sep="//" Sep="%" }
+>{Sep="+" Sep="-" }
+>{Sep="<<" Sep=">>" }
+>{Sep="~" Sep="<>" Sep="<=>" Sep="<" Sep="<=" Sep=">" Sep=">=" }
+>{Sep="&"}
+>{Sep="^" }
+>{Sep="|" }
+>{Sep="&&"}
+>{Sep="||"}
+/*
+OperateionTranslate.SuccessLineProgSet={Lex.OutMk=OpPriority.FindAnd LogCons.LnOut="Priority"}
+OperateionTranslate.Set= // Операции для FUALU
+>{Sep="+"  Stack.LastCopyAttach={FUALUG.Sum}}
+>{Sep="-"  Stack.LastCopyAttach={FUALUG.Sub}}
+>{Sep="*"  Stack.LastCopyAttach={FUALUG.Mul}}
+>{Sep="/"  Stack.LastCopyAttach={FUALUG.Div}}
+>{Sep="//" Stack.LastCopyAttach={FUALUG.DivInt}}
+>{Sep="%"  Stack.LastCopyAttach={FUALUG.Remainder}}
+>{Sep="**" Stack.LastCopyAttach={FUALUG.Pow}}
+>{Sep=">>" Stack.LastCopyAttach={FUALUG.Sub}}
+>{Sep="<<" Stack.LastCopyAttach={FUALUG.Sub}}
+>{Sep="&"  Stack.LastCopyAttach={FUALUG.And}}
+>{Sep="&&" Stack.LastCopyAttach={FUALUG.AndBit}}
+>{Sep="|"  Stack.LastCopyAttach={FUALUG.Or}}
+>{Sep="||" Stack.LastCopyAttach={FUALUG.OrBit}}
+>{Sep="^"  Stack.LastCopyAttach={FUALUG.Xor}}
+>{Sep="^^" Stack.LastCopyAttach={FUALUG.XorBit}}
+// Операции присвоения с аккмулированием
+>{Sep="+="  Stack.LastLoadOut=temp Stack.LastCopyAttach={FUALUG.Set=temp(nil)! FUALUG.Sum}    Stack.LineCopyAddPrevLoadSet={FUALUG.Set}}
+>{Sep="-="  Stack.LastLoadOut=temp Stack.LastCopyAttach={FUALUG.Set=temp(nil)! FUALUG.Sub}    Stack.LineCopyAddPrevLoadSet={FUALUG.Set}}
+>{Sep="*="  Stack.LastLoadOut=temp Stack.LastCopyAttach={FUALUG.Set=temp(nil)! FUALUG.Mul}    Stack.LineCopyAddPrevLoadSet={FUALUG.Set}}
+>{Sep="/="  Stack.LastLoadOut=temp Stack.LastCopyAttach={FUALUG.Set=temp(nil)! FUALUG.Div}    Stack.LineCopyAddPrevLoadSet={FUALUG.Set}}
+>{Sep="//=" Stack.LastLoadOut=temp Stack.LastCopyAttach={FUALUG.Set=temp(nil)! FUALUG.DivInt} Stack.LineCopyAddPrevLoadSet={FUALUG.Set}}
+>{Sep="%="  Stack.LastLoadOut=temp Stack.LastCopyAttach={FUALUG.Set=temp(nil)! FUALUG.Remainder} Stack.LineCopyAddPrevLoadSet={FUALUG.Set}}
+>{Sep="**=" Stack.LastLoadOut=temp Stack.LastCopyAttach={FUALUG.Set=temp(nil)! FUALUG.Pow}    Stack.LineCopyAddPrevLoadSet={FUALUG.Set}}
+>{Sep=">>=" Stack.LastLoadOut=temp Stack.LastCopyAttach={FUALUG.Set=temp(nil)! FUALUG.Sub}    Stack.LineCopyAddPrevLoadSet={FUALUG.Set}}
+>{Sep="<<=" Stack.LastLoadOut=temp Stack.LastCopyAttach={FUALUG.Set=temp(nil)! FUALUG.Sub}    Stack.LineCopyAddPrevLoadSet={FUALUG.Set}}
+>{Sep="&="  Stack.LastLoadOut=temp Stack.LastCopyAttach={FUALUG.Set=temp(nil)! FUALUG.And}    Stack.LineCopyAddPrevLoadSet={FUALUG.Set}}
+>{Sep="&&=" Stack.LastLoadOut=temp Stack.LastCopyAttach={FUALUG.Set=temp(nil)! FUALUG.AndBit} Stack.LineCopyAddPrevLoadSet={FUALUG.Set}}
+>{Sep="|="  Stack.LastLoadOut=temp Stack.LastCopyAttach={FUALUG.Set=temp(nil)! FUALUG.Or}     Stack.LineCopyAddPrevLoadSet={FUALUG.Set}}
+>{Sep="||=" Stack.LastLoadOut=temp Stack.LastCopyAttach={FUALUG.Set=temp(nil)! FUALUG.OrBit}  Stack.LineCopyAddPrevLoadSet={FUALUG.Set}}
+>{Sep="^="  Stack.LastLoadOut=temp Stack.LastCopyAttach={FUALUG.Set=temp(nil)! FUALUG.Xor}    Stack.LineCopyAddPrevLoadSet={FUALUG.Set}}
+>{Sep="^^=" Stack.LastLoadOut=temp Stack.LastCopyAttach={FUALUG.Set=temp(nil)! FUALUG.XorBit} Stack.LineCopyAddPrevLoadSet={FUALUG.Set}}
+*/
+Lex.ReceiverMkSet=ALEStart.FindAnd
+Lex.UnicAtrSet=Mnemo
+Lex.UnicMkSet=MnemoTable.FindAnd
+Lex.FinProgSet={ // Программа завершения анализа АЛВ
+	LogCons.LnOut="FinProg"
+     Stack.LastOutMk= LogCons.LnOut
+	Stack.ElseProgSet={
+       LogCons.LnOut="------"
+       Stack.OutMk=LogCons.LnOut
+       Stack.LastMarkAtrNEQExec={LogCons.LnOut="Wrong expression" Lex.Stop Lex.ProgStopAll}
+       Stack.LastMarkAtrEQExec={Stack.LastPopMk}
+     }
+	Stack.ProgSet={
+		Stack.LastOutMk=LogCons.LnOut
+		Stack.ProgSet={LogCons.LnOut="Rezult: " Stack.LastOutMk=ALUG.Calc ALUG.OutMk=LogCons.OutLn}
+		Stack.LastMarkAtrEQExec
+		Lex.Stop Lex.ProgStopAll
+		}
+	Stack.OneLineExec
+     RepeatProg
+}
+
+MnemoTable.LineAdd={Mnemo="i" Var=10} // Добавить описание переменной в таблицу мнемоник
+
+MnemoTable.FailProgSet={LogCons.LnOut="Mnemo" Lex.OutMk}
+MnemoTable.SuccessLineProgSet={MnemoTable.LineIpOutMk=Lex.SendToReceiver}
+
+\**\ALEStart.Set=
+>{Mk Lex.ReceiverMkSet=EgAleWait2.FindAnd Main_Bus.MakeFU=FUStreamFloatALU LogCons.OutLn="ALEStart to EgAleWait2"}
+>{Var Lex.ReceiverMkSet=VarAfter.FindAnd}
+>{0 Lex.Stop LogCons.OutLn="Exprassion error"}
+
+\**\EgAleWait2.Set=
+>{Sep="," Lex.ReceiverMkSet=EgAleWait.FindAnd}
+>{Sep="=" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
+>{0 Lex.Stop LogCons.OutLn="'=' is expacted"}
+
+
+\**\
+
+Lex.Lexing="i=0 i+=(5+5)/3"
+//Lex.Lexing="i=10 i=i=(2*(10+2))+5"
+//Lex.Lexing="7+5"
+//ALUG.Set=0
+//ALUG.OutMk=LogCons.LnOut
+MnemoTable.OutMk=LogCons.LnOut

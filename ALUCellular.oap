@@ -15,35 +15,168 @@ MainBus.FUTypeCorrectSet=-96 // Корректировка номера типа ФУ для переноса на нов
 NewFU={Mnemo="Console" FUType=FUConsNew}
 NewFU={Mnemo="Manager" FUType=FUStreamManager}
 NewFU={Mnemo="IntALU" FUType=FUIntAluNew}
-NewFU={Mnemo="IntALU2" FUType=FUIntAluNew}
-NewFU={Mnemo="IntALU3" FUType=FUIntAluNew}
+NewFU={Mnemo="SrteamIntALU" FUType=FUStreamIntALU}
 
 MainBus.PartialResetSet \\ Запомнить число созданных ФУ
 MainBus.ModeSet=2
 
-N=4
-M=4
+N=6
+M=6
+K=6
+
 Manager.CounterSet=N
 Manager.CounterMul=M
 Manager.FieldCreate=FUStreamIntALU // Создать поле целочисленных АЛУ
-Manager.ExecAll={FUStreamIntALU.NOperandSet=1}
+Manager.ExecAll={FUStreamIntALU.NOperandSet=0 FUStreamIntALU.ReadySet=1 FUStreamIntALU.RezOutBlockSet=True}
+Manager.ExecAll={FUStreamIntALU.PreRezProgSet={FUStreamIntALU.Push}}
+
+Manager.ExecAll={FUStreamIntALU.RezProgSet=
+	{
+	FUStreamIntALU.Swap
+	FUStreamIntALU.AccumModeSet=True
+	FUStreamIntALU.EqExec={ // Если клетка пустая
+		FUStreamIntALU.PopMk
+		FUStreamIntALU.Equal=3
+		FUStreamIntALU.AccumModeSet=0
+		ProgStopAll
+		}
+	FUStreamIntALU.NEqExec= // Если клетка занята
+		{
+
+		FUStreamIntALU.StackOutMk
+		FUStreamIntALU.Equal=2
+		FUStreamIntALU.NEqExec={
+			FUStreamIntALU.StackClear
+			FUStreamIntALU.AccumModeSet=0
+ 			ProgStopAll}
+		FUStreamIntALU.StackOutMk=FUStreamIntALU.Set
+		FUStreamIntALU.Equal=3
+		FUStreamIntALU.StackClear
+		FUStreamIntALU.AccumModeSet=0
+		}
+	}
+}
 
 //Настройка сетки
+
+// Горизонтальные связи
 Manager.IndGroupSet=0
 Manager.IndSet=0
 Manager.Ind2Set=1
 Manager.ExecCounterSet=N
-
-FUStreamManager.Mk2Set=FUStreamIntALU.ContextOutMk
-FUStreamManager.MkSet=FUStreamIntALU.ReceiverAdd
+Manager.Mk2Set=FUStreamIntALU.ContextOutMk
+Manager.MkSet=FUStreamIntALU.ReceiverAdd
 Manager.ProgExec={
-	FUStreamManager.ExecCounterMul=M
-	FUStreamManager.ExecCounterSub=1
+	Manager.ExecCounterSet=M
+	Manager.ExecCounterSub=1
 	FUStreamManager.ProgExec={
-		FUStreamManager.ExecDev={FUStreamIntALU.ReceiverMkAdd=FUStreamIntALU.OperandAdd}
 		FUStreamManager.Mk2Exec=FUStreamManager.MkExec
+		FUStreamManager.ExecDev={FUStreamIntALU.ReceiverMkAdd=FUStreamIntALU.Add FUStreamIntALU.NOperandAdd}
+		FUStreamManager.IndSwap
+		FUStreamManager.Mk2Exec=FUStreamManager.MkExec
+		FUStreamManager.ExecDev={FUStreamIntALU.ReceiverMkAdd=FUStreamIntALU.Add FUStreamIntALU.NOperandAdd}
+		FUStreamManager.IndSwap
+		FUStreamManager.Ind2Add=1
+		FUStreamManager.IndAdd=1
 	}
 	FUStreamManager.IndAdd=1
 	FUStreamManager.Ind2Add=1
-	Console.OutLn="*"	
+}
+
+// Вертикальные связи
+Manager.IndSet=0
+Manager.Ind2Set=M
+Manager.ExecCounterSet=M
+Manager.ProgExec={
+	Manager.ExecCounterSet=N
+	Manager.ExecCounterSub=1
+	FUStreamManager.ProgExec={
+		FUStreamManager.Mk2Exec=FUStreamManager.MkExec
+		FUStreamManager.ExecDev={FUStreamIntALU.ReceiverMkAdd=FUStreamIntALU.Add FUStreamIntALU.NOperandAdd}
+		FUStreamManager.IndSwap
+		FUStreamManager.Mk2Exec=FUStreamManager.MkExec
+		FUStreamManager.ExecDev={FUStreamIntALU.ReceiverMkAdd=FUStreamIntALU.Add FUStreamIntALU.NOperandAdd}
+		FUStreamManager.IndSwap
+		FUStreamManager.Ind2Add=M
+		FUStreamManager.IndAdd=M
+	}
+	FUStreamManager.IndMod=M
+	FUStreamManager.IndAdd=1
+	FUStreamManager.IndOutMk=FUStreamManager.Ind2Set
+	FUStreamManager.Ind2Add=M
+}
+
+// Связи слева вверху направо внизу
+Manager.IndSet=0
+Manager.Ind2Set=M
+Manager.Ind2Add=1
+Manager.ExecCounterSet=M
+Manager.ExecCounterSub=1
+Manager.ProgExec={
+	Manager.ExecCounterSet=N
+	Manager.ExecCounterSub=1
+	FUStreamManager.ProgExec={
+		FUStreamManager.Mk2Exec=FUStreamManager.MkExec
+		FUStreamManager.ExecDev={FUStreamIntALU.ReceiverMkAdd=FUStreamIntALU.Add FUStreamIntALU.NOperandAdd}
+		FUStreamManager.IndSwap
+		FUStreamManager.Mk2Exec=FUStreamManager.MkExec
+		FUStreamManager.ExecDev={FUStreamIntALU.ReceiverMkAdd=FUStreamIntALU.Add FUStreamIntALU.NOperandAdd}
+		FUStreamManager.IndSwap
+		FUStreamManager.Ind2Add=1
+		FUStreamManager.IndAdd=1
+	}
+	FUStreamManager.IndAdd=1
+	FUStreamManager.Ind2Add=1
+}
+
+// Связи слева внизу направо вверху
+Manager.IndSet=1
+Manager.Ind2Set=M
+Manager.ExecCounterSet=M
+Manager.ExecCounterSub=1
+Manager.ProgExec={
+	Manager.ExecCounterSet=N
+	Manager.ExecCounterSub=1
+	FUStreamManager.ProgExec={
+		FUStreamManager.Mk2Exec=FUStreamManager.MkExec
+		FUStreamManager.ExecDev={FUStreamIntALU.ReceiverMkAdd=FUStreamIntALU.Add FUStreamIntALU.NOperandAdd}
+		FUStreamManager.IndSwap
+		FUStreamManager.Mk2Exec=FUStreamManager.MkExec
+		FUStreamManager.ExecDev={FUStreamIntALU.ReceiverMkAdd=FUStreamIntALU.Add FUStreamIntALU.NOperandAdd}
+		FUStreamManager.IndSwap
+		FUStreamManager.Ind2Add=1
+		FUStreamManager.IndAdd=1
+	}
+	FUStreamManager.IndAdd=1
+	FUStreamManager.Ind2Add=1
+}
+
+//Manager.ExecAll={FUStreamIntALU.ReceiverCountOutMk=Console.OutLn}
+Manager.IndSet=0
+Manager.ExecDev={FUStreamIntALU.BufSet=1 FUStreamIntALU.Set=1 }
+Manager.IndSet=1
+Manager.ExecDev={FUStreamIntALU.BufSet=1 FUStreamIntALU.Set=1}
+Manager.IndSet=2
+Manager.ExecDev={FUStreamIntALU.BufSet=1 FUStreamIntALU.Set=1}
+Manager.IndSet=4
+Manager.ExecDev={FUStreamIntALU.BufSet=1 FUStreamIntALU.Set=1}
+Manager.IndSet=5
+Manager.ExecDev={FUStreamIntALU.BufSet=1 FUStreamIntALU.Set=1}
+Manager.IndSet=8
+Manager.ExecDev={FUStreamIntALU.BufSet=1 FUStreamIntALU.Set=1}
+Manager.IndSet=9
+Manager.ExecDev={FUStreamIntALU.BufSet=1 FUStreamIntALU.Set=1}
+
+
+Console.ArrayBracketStartSet=""
+Console.ArrayBracketFinSet=""
+Console.VectColSet=M
+
+Manager.RezVectOutMk=Console.OutLn
+
+Manager.ExecCounterSet=K
+Manager.ProgExec={
+	FUStreamManager.ExecAll={FUStreamIntALU.BufSend}
+	FUStreamManager.ExecAll={FUStreamIntALU.BufSet}
+	FUStreamManager.RezVectOutMk=Console.OutLn
 }

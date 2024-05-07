@@ -23,7 +23,7 @@ void Console::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		cout << prefix;
 		if (MK == 3 || MK == 4) cout << endl;
 		if (Load.Point != nullptr)
-			Load.print(AtrMnemo,"",Sep,End, quote, ArrayBracketStart,ArrayBracketFin);
+			Load.print(AtrMnemo,"",Sep,End, quote, ArrayBracketStart,ArrayBracketFin, VectCol);
 		if (MK == 2 || MK == 4) cout << endl;
 		break;
 	case 5: // LoadInfoOut Вывести сведения о нагрузке
@@ -53,6 +53,9 @@ void Console::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 	case 20: // PrefixSet Установить префикс перед выводом
 		if ((Load.Type) >> 1 == Dstring)
 			prefix = *(string*)Load.Point;
+		break;
+	case 21: // VectColSet Установить количество колонок при выводе вектора
+		VectCol = Load.toInt();
 		break;
 	case 25: // FileNameSet
 		filename = Load.toStr();
@@ -176,8 +179,8 @@ void Console::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 			else  if (std::regex_match(inStr.c_str(), regular_int)) {
 
 				//cout << "its int";
-				int res = stoi(inStr);
-				Var = { Cint,new int(res) };
+				long int res = stoi(inStr);
+				Var = { Cint,new long int(res) };
 			}
 			else if (std::regex_match(inStr.c_str(), regular_true)) {
 
@@ -203,11 +206,11 @@ void Console::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 			}
 			else if (std::regex_match(inStr.c_str(), regular_vector)) {
 
-				int res;
-				int counter = -1;
-				int* intbufArray = new int[256];
+				long int res;
+				long int counter = -1;
+				long int* intbufArray = new long int[256];
 				vector<LoadPoint> Ar;
-				int i = 0;
+				long int i = 0;
 				for (sregex_iterator it = sregex_iterator(inStr.begin(), inStr.end(), regular_int);
 					it != sregex_iterator(); it++) {
 					smatch match = *it;
@@ -216,7 +219,7 @@ void Console::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 					intbufArray[i] = res;
 					i++;
 				}
-				int* intArray = new int[counter];
+				long int* intArray = new long int[counter];
 
 				for (int i = 0; i < counter; i++) {
 					intArray[i] = intbufArray[i];
@@ -224,7 +227,7 @@ void Console::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 				delete[] intbufArray;
 				//delete[] intArray;
 
-				Var = { CLoadVect, new int* (intArray) };
+				Var = { CintArray, new long int* (intArray) };
 			}
 			// Распознание вектора
 			/*

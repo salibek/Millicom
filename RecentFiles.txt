@@ -1,17 +1,17 @@
 16 1
-C:\Users\salib\YandexDisk\MillicomNew\Millicom\Router.oap 
-C:\Users\salib\YandexDisk\MillicomNew\Millicom\Bag4.oap 
+C:\Users\salib\YandexDisk\MillicomNew\millicom\ALUCellular.oap 
+C:\Users\salib\YandexDisk\MillicomNew\millicom\ALE_Stream_v2.oap 
 C:\Users\salib\YandexDisk\MillicomNew\Millicom\Bag3.oap 
+C:\Users\salib\YandexDisk\MillicomNew\millicom\ALE_Stream.oap 
+C:\Users\salib\YandexDisk\MillicomNew\millicom\ALE2.oap 
+C:\Users\salib\YandexDisk\MillicomNew\Millicom\CompileC.oap 
+C:\Users\salib\YandexDisk\MillicomNew\millicom\StreamFloatALU.oap 
+C:\Users\salib\YandexDisk\MillicomNew\millicom\IntALUTest.oap 
+C:\Users\salib\YandexDisk\MillicomNew\millicom\StreamALUTest.oap 
+C:\Users\salib\YandexDisk\MillicomNew\Millicom\Bag4.oap 
 C:\Users\salib\YandexDisk\MillicomNew\millicom (2)\Bag3.oap 
 C:\Users\salib\YandexDisk\MillicomNew\millicom\TermoNew.oap 
 C:\Users\salib\YandexDisk\MillicomNew\Millicom\Termo.oap 
 C:\Users\salib\YandexDisk\MillicomNew\millicom\Termo2.oap 
 C:\Users\salib\YandexDisk\Методическая работа\Моделирование\FSM Millicom\Пример синт анализатора.oap 
-C:\Users\salib\YandexDisk\MillicomNew\Millicom\CompileC.oap 
-C:\Users\salib\YandexDisk\MillicomNew\Millicom\CompileC 29.04.23.oap 
-C:\Users\salib\YandexDisk\MillicomNew\Millicom\CompileC 29.04.23 
-C:\Users\salib\YandexDisk\MillicomNew\Millicom\CompileC 28.04 00.50.oap 
-C:\Users\salib\YandexDisk\MillicomNew\Millicom\CompileC 27.04 21.33.oap 
-C:\Users\salib\YandexDisk\MillicomNew\Millicom\IndexingTest.oap 
-C:\Users\salib\YandexDisk\MillicomNew\Millicom\ListTest.oap 
-C:\Users\salib\YandexDisk\MillicomNew\Millicom\CompileC 25.04 05.32 
+C:\Users\salib\YandexDisk\MillicomNew\Millicom\Router.oap 

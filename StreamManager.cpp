@@ -18,21 +18,26 @@ void StreamManager::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		DeviseCounter = 0;
 		break;
 	case 1: // FieldCreate Создавать поле АЛУ (на входе номер типа или указатель на шаблон ФУ)
+	{
 		Field.push_back({});
-		for (int i = 1; i <= Counter; i++)
+		for (long int i = 0; i < Counter; i++)
 		{
 			if (Load.isEmpty()) continue;
 			if (Load.isInt())
 				Field.back().push_back(MakeFU.MakeFu(Load.toInt() + fuTypeCorrect, Bus));
 			else if (Load.isFU()) // Если указатель на ФУ
 				Field.back().push_back(((FU*)Load.Point)->Copy());
+
+			Field.back().back()->FUInd = i; // Индекс ФУ
+			Field.back().back()->FUInd2 = Field.size() - 1; // Индекс группы
 		}
 		break;
+	}
 	case 2: // GroupCreateTempl Создавать группу на основе эталона на входе идекс группы, по умолчанию по индексу GroupInd)
 	{
 		if (Load.isEmpty() && (IndGroup >= Field.size() || IndGroup < 0))
 		{
-			ProgExec(DevNotExistErrProg);
+			FU::ProgExec(DevNotExistErrProg);
 			break;
 		}
 		long int t;
@@ -69,35 +74,15 @@ void StreamManager::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 	case 6:	//IndSet Установить индекс АЛУ в группе
 		Ind = Load.toInt();
 		break;
-	case 7: // CounterSet Установить сколько раз необходимо создавать устройства
-		Counter = Load.toInt(1);
-		break;
-	case 16: // ExecCounterSet Установить счетчик итераций выполнения подпрограммы
-		if (!ExecFlag)
-			ExecCounter.back() = Load.toInt(1);
-		else
-			ExecCounter.push_back(Load.toInt(1));
-		break;
-	case 17: // ExecCounterAdd Прибавить к счетчику итераций
-		ExecCounter.back() += Load.toInt();
-		break;
-	case 18: // ExecCounterMul Умножить счетчик итераций
-		ExecCounter.back() *= Load.toInt();
-		break;
-	case 26: // ExecCounterDiv Целочисленно разделить счетчик итераций
-		ExecCounter.back() /= Load.toInt();
-		break;
-	case 27: //ExecCounterSub Вычесть из счетчика итераций
-		ExecCounter.back() -= Load.toInt();
-		break;
-	case 8: //CounterAdd Прибавить к счетчику (по умолчанию 1)
-		Counter+= Load.toInt(1);
-		break;
-	case 15: // CounterMul Умножить считчик (по умолчанию 2)
-		Counter *= Load.toInt(2);
-		break;
 	case 4: //Ind2Set Установить второй индекс АЛУ в группе
 		Ind2 = Load.toInt();
+		break;
+	case 7: // IndSwap Поменять индексы устройств местами (также меняются МК для ФУ)
+		swap(Ind, Ind2);
+		//swap(Mk1, Mk2);
+		break;
+	case 8: // GroupIndSwap Поменять индексы групп местами
+		swap(IndGroup, IndGroup2);
 		break;
 	case 9: //Ind2GroupSet Установить второй индекс группы АЛУ
 		IndGroup2 = Load.toInt();
@@ -108,7 +93,7 @@ void StreamManager::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 	case 11: // DevCreate Создать АЛУ в группе (На входе шаблон ФУ)
 		if (IndGroup >= Field.size() && IndGroup >= 0)
 		{
-			ProgExec(DevNotExistErrProg);
+			FU::ProgExec(DevNotExistErrProg);
 			break;
 		}
 		if (Load.isEmpty()) break;
@@ -161,7 +146,7 @@ void StreamManager::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		}
 		Field.back().push_back((FU*)Load.Point);
 		break;
-	case 19: // GroupRefCreate Cоздать ссылки на ФУ для группы ФУ
+	case 15: // GroupRefCreate Cоздать ссылки на ФУ для группы ФУ
 	{
 		for (auto& i : Field[IndGroup])
 			switch (i->GetFuType())
@@ -182,6 +167,18 @@ void StreamManager::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 			}
 	}
 	break;
+	case 16: // IndOut Выдать первый индекс
+		Load.Write(Ind);
+		break;
+	case 17: // IndOutMk Выдать МК с первым индексом
+		MkExec(Load, {Cint,&Ind});
+		break;
+	case 18: // Ind2Out Выдать второй индекс
+		Load.Write(Ind2);
+		break;
+	case 19: // Ind2OutMk Выдать МК со вторым индексом
+		MkExec(Load, { Cint,&Ind2 });
+		break;
 	case 20: // IndAdd Прибавить к индексу группы (в нагрузке значение, которое прибавляется к индексу
 		Ind += Load.toInt();
 		break;
@@ -194,10 +191,20 @@ void StreamManager::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 	case 23: // Ind2GroupAdd   Прибавить ко второму индексу группы (в нагрузке значение, которое прибавляется к индексу, 1 по умолчанию) 
 		IndGroup2 += Load.toInt();
 		break;
-	case 24: // MkSet Установить МК для первошго индекса
+	case 24: // IndSub Вычесть из индекса устойства
+		Ind -= Load.toInt();
+		break;
+	case 25: // IndMul Умножить индекс устройства
+		Ind *= Load.toInt();
+		break;
+	case 26: // IndMod Остаток от деления индекса устройства
+		Ind %= Load.toInt();
+		break;
+
+	case 28: // MkSet Установить МК для первошго индекса
 		Mk1 = Load.toInt();
 		break;
-	case 25: // Mk2Set Установить МК для второго индекса
+	case 29: // Mk2Set Установить МК для второго индекса
 		Mk2 = Load.toInt();
 		break;
 	case 30: // ExecAll Выполнить программу для всех ФУ поля
@@ -208,16 +215,16 @@ void StreamManager::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 	case 31: // ExecGroup Выполнить программу для всех ФУ группы
 		if (IndGroup >= Field.size())
 		{
-			ProgExec(DevNotExistErrProg);
+			FU::ProgExec(DevNotExistErrProg);
 			break;
 		}
 		for (auto& i : Field[IndGroup])
 			i->ProgExec(Load);
 		break;
 	case 32: // ExecDev Выполнить программу для конкретного ФУ
-		if (IndGroup >= Field.size() || Field[IndGroup].size() >= Ind)
+		if (IndGroup >= Field.size() || Ind >= Field[IndGroup].size())
 		{
-			ProgExec(DevNotExistErrProg);
+			FU::ProgExec(DevNotExistErrProg);
 			break;
 		}
 		Field[IndGroup][Ind]->ProgExec(Load);
@@ -225,7 +232,7 @@ void StreamManager::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 	case 33: // Exec2Group Выполнить программу для всех ФУ группы
 		if (IndGroup >= Field.size())
 		{
-			ProgExec(DevNotExistErrProg);
+			FU::ProgExec(DevNotExistErrProg);
 			break;
 		}
 		for (auto& i : Field[IndGroup2])
@@ -234,17 +241,35 @@ void StreamManager::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 	case 34: // Exec2Dev Выполнить программу для конкретного ФУ
 		if (IndGroup >= Field.size() || Field[IndGroup].size() >= Ind)
 		{
-			ProgExec(DevNotExistErrProg);
+			FU::ProgExec(DevNotExistErrProg);
 			break;
 		}
 		Field[IndGroup2][Ind]->ProgExec(Load);
 		break;
 	case 35: // MkExec Выполнить МК для ФУ поля
-		Field[IndGroup][Ind]->MkExec(Mk1, Load);
+	{
+		FU* t = nullptr;
+		if (Load.toInt() == 36) // Если происходит выполнение МК для двух ФУ поля
+		{
+			t = Field[IndGroup][Ind]->Bus; // Запомнить указатель на шину для второго ФУ
+			Field[IndGroup][Ind]->Bus = Field[IndGroup][Ind2];
+		}
+		Field[IndGroup][Ind]->MkExec(Mk1, { Cmk, &Mk2});
+		if (Load.toInt() == 36)	Field[IndGroup][Ind]->Bus = t; // Восстановить указатель на шину
+	}
 		break;
 	case 36: // Mk2Exec Выполнить МК для ФУ поля по второму индексу
-		Field[IndGroup2][Ind2]->MkExec(Mk1, Load);
+	{
+		FU* t = nullptr;
+		if (Load.toInt() == 35) // Если происходит выполнение МК для двух ФУ поля
+		{
+			t = Field[IndGroup][Ind2]->Bus; // Запомнить указатель на шину для второго ФУ
+			Field[IndGroup][Ind2]->Bus = Field[IndGroup][Ind];
+		}
+		Field[IndGroup2][Ind2]->MkExec(Mk2, { Cmk, &Mk1});
+		if (Load.toInt() == 35)	Field[IndGroup][Ind2]->Bus = t; // Восстановить указатель на шину
 		break;
+	}
 	case 37: // MkBackExec Выполнить МК для последнего ФУ последней группы поля
 		Field.back().back()->MkExec(Mk1, Load);
 		break;
@@ -274,7 +299,7 @@ void StreamManager::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 	case 52: //  DevGroupCountOut Выдать количество АЛУ в текущей группе
 		if (IndGroup >= Field.size())
 		{
-			ProgExec(DevNotExistErrProg);
+			FU::ProgExec(DevNotExistErrProg);
 			break;
 		}
 		Load.Write(Field[IndGroup].size());
@@ -283,7 +308,7 @@ void StreamManager::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 	{
 		if (IndGroup >= Field.size())
 		{
-			ProgExec(DevNotExistErrProg);
+			FU::ProgExec(DevNotExistErrProg);
 			break;
 		}
 		long int t = Field[IndGroup].size();
@@ -299,13 +324,44 @@ void StreamManager::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		MkExec(Load, { Cint,&t });
 		break;
 	}
+	case 60: // CounterSet Установить сколько раз необходимо создавать устройства
+		Counter = Load.toInt(1);
+		break;
+	case 61: //CounterAdd Прибавить к счетчику (по умолчанию 1)
+		Counter += Load.toInt(1);
+		break;
+	case 62: // CounterMul Умножить считчик (по умолчанию 2)
+		Counter *= Load.toInt(2);
+		break;
+	case 63: // CounterSub Вычесть из считчика (по умолчанию 1)
+		Counter -= Load.toInt(1);
+		break;
+	case 64: // ExecCounterSet Установить счетчик итераций выполнения подпрограммы
+		if (!ExecFlag)
+			ExecCounter.back() = Load.toInt(1);
+		else
+			ExecCounter.push_back(Load.toInt(1));
+		break;
+	case 65: // ExecCounterAdd Прибавить к счетчику итераций
+		ExecCounter.back() += Load.toInt();
+		break;
+	case 66: //ExecCounterSub Вычесть из счетчика итераций
+		ExecCounter.back() -= Load.toInt();
+		break;
+	case 67: // ExecCounterMul Умножить счетчик итераций
+		ExecCounter.back() *= Load.toInt();
+		break;
+	case 68: // ExecCounterDiv Целочисленно разделить счетчик итераций
+		ExecCounter.back() /= Load.toInt();
+		break;
+
 	case 70: //  DevOut Выдать контекст текущего АЛУ
 	case 71: //  DevOutMk Выдать контекст текущего АЛУ
 	case 72: //  Dev2Out Выдать контекст текущего АЛУ
 	case 73: //  Dev2OutMk Выдать контекст текущего АЛУ
 		if (IndGroup >= Field.size() || Field[IndGroup].size() >= Ind)
 		{
-			ProgExec(DevNotExistErrProg);
+			FU::ProgExec(DevNotExistErrProg);
 			break;
 		}
 		switch (MK%FUMkRange) {
@@ -326,7 +382,7 @@ void StreamManager::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 	case 80: //  LastDevOut Выдать контекст последнего созданного АЛУ
 		if (!Field.size())
 		{
-			ProgExec(DevNotExistErrProg);
+			FU::ProgExec(DevNotExistErrProg);
 			break;
 		}
 		Load.Write((FU*) & Field.back().back());
@@ -334,7 +390,7 @@ void StreamManager::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 	case 81: //  LastDevOutMk Выдать МК с контекстом последнего созданного АЛУ
 		if (!Field.size())
 		{
-			ProgExec(DevNotExistErrProg);
+			FU::ProgExec(DevNotExistErrProg);
 			break;
 		}
 			MkExec(Load, { CFU,(FU*)&Field.back().back()});
@@ -368,7 +424,7 @@ void StreamManager::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 	{
 		if(IndGroup >= Field.size() || IndGroup < 0)
 		{
-			ProgExec(DevNotExistErrProg);
+			FU::ProgExec(DevNotExistErrProg);
 			break;
 		}
 		LoadVect_type t=new vector<LoadPoint>;
@@ -380,13 +436,13 @@ void StreamManager::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 					t->push_back({ Cdouble, &((StreamFloatALU*)j)->Rez });
 					break;
 				case FUStreamIntALU:
-					t->push_back({ Cdouble, &((StreamIntALU*)j)->Rez });
+					t->push_back({ Cint, &((StreamIntALU*)j)->Rez });
 					break;
 				}
 		if (MK == 110)
 			Load.Write(t);
 		else
-			MkExec(Load, { CLoadArray, &t });
+			MkExec(Load, { CLoadVect, t });
 		break;
 	}
 	case 112: //ReadyVectOut Выдать вектор готовности результатов всех ФУ поля
@@ -394,7 +450,7 @@ void StreamManager::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 	{
 		if (IndGroup >= Field.size() || IndGroup < 0)
 		{
-			ProgExec(DevNotExistErrProg);
+			FU::ProgExec(DevNotExistErrProg);
 			break;
 		}
 		LoadVect_type t = new vector<LoadPoint>;
@@ -422,7 +478,7 @@ void StreamManager::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 	{
 		if (IndGroup >= Field.size() || IndGroup < 0)
 		{
-			ProgExec(DevNotExistErrProg);
+			FU::ProgExec(DevNotExistErrProg);
 			break;
 		}
 		LoadVect_type t = new vector<LoadPoint>;
@@ -447,7 +503,7 @@ void StreamManager::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 	{
 		if (IndGroup >= Field.size() || IndGroup < 0)
 		{
-			ProgExec(DevNotExistErrProg);
+			FU::ProgExec(DevNotExistErrProg);
 			break;
 		}
 		LoadVect_type t = new vector<LoadPoint>;
@@ -456,8 +512,10 @@ void StreamManager::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 				{
 				case FUStreamFloatALU:
 					t->push_back({ Cdouble, &((StreamFloatALU*)j)->Ready });
+					break;
 				case FUStreamIntALU:
 					t->push_back({ Cdouble, &((StreamIntALU*)j)->Ready });
+					break;
 				}
 		if (MK == 110)
 			Load.Write(t);
@@ -477,16 +535,16 @@ void StreamManager::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 	 ExecFlag = true;
 	 for (int i = 0; i < ExecCounter.back(); i++)
 		 FU::ProgExec(Uk, CycleMode, Bus, Start);
+	 if (ExecCounter.size() == 1) ExecFlag = false;
 	 if(ExecCounter.size()>1) ExecCounter.pop_back();
-	 if(ExecCounter.size()<2) ExecFlag = false;
  }
 void StreamManager::ProgExec(LoadPoint Uk, unsigned int CycleMode, FU* Bus, vector<ip>::iterator* Start) // Исполнение программы из ИК
 {
 	ExecFlag = true;
 	for (int i = 0; i < ExecCounter.back(); i++)
 		FU::ProgExec(Uk, CycleMode, Bus, Start);
+	if (ExecCounter.size() == 1) ExecFlag = false;
 	if (ExecCounter.size() > 1) ExecCounter.pop_back();
-	ExecFlag = false;
 }
 
 StreamManager::~StreamManager() // Деструктор
