@@ -13,7 +13,7 @@ private:
 	long int Ind = 0, IndGroup = 0; // Индексы ФУ и группы
 	long int Ind2 = 0, IndGroup2 = 0; // Вторые индексы ФУ и группы
 	long int Mk1 = -1, Mk2=-1; // Милликоманды для выполнения на ФУ по первому и второму индексам
-	bool DevBusSubstitution = false; // Флаг разрешения подмены шины для устройств при выполнении МК MkExec Mk2Exec 
+//	bool DevBusSubstitution = false; // Флаг разрешения подмены шины для устройств при выполнении МК MkExec Mk2Exec 
 	long int Counter = 1; // Счетчик действий при создании ФУ (сколько раз необходимо создавать устройства)
 	long int DeviseCounter = 0;
 	void* DevNotExistErrProg = nullptr; // Подпрограмма ошибки 'Нет существует устройства'
