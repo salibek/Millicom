@@ -80,6 +80,7 @@ int main(int argc, char* argv[])
 
 //	STR = "StreamFloatALUTest.ind";
 	STR = "ALUCellular.ind";
+//	STR = "StreamAluTest.ind";
 //	STR = "StreamIntALUTest.ind";
 	Bus.ProgFU(10, {Cstring, &STR}); //Запуск индексного файла
 

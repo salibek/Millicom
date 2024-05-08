@@ -407,7 +407,7 @@ void List::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		MkExec(Load, { CIP,(void*)&((IC_type)ListHead.back()->back().Load.Point)->back() });
 		break;
 	case 154: // LastIpCopyOutMk Выдать МК со ссылкой на последнюю ИП последней линии
-		MkExec(Load, { TIC,((IC_type)ListHead.back()->back().Load.Point)->back().Сlone() });
+		MkExec(Load, { TIC,((IC_type)ListHead.back()->back().Load.Point)->back().Clone() });
 		break;
 	case 155: //LastOutMK Выдать ссылку на последнюю линию списка
 	case 156: //LastPopMK Выдать ссылку на последнюю линию списка и удалить из списка

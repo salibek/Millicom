@@ -2192,7 +2192,7 @@ LoadPoint ICCopy(LoadPoint uk, bool Copy) // Копирование ИК (Copy -
 	IC_type CapsNew = new vector<ip>;
 	if (uk.Type >> 1 == DIP) // Если передается ИП
 	{
-		CapsNew->push_back(*(*(ip*)uk.Point).Сlone());
+		CapsNew->push_back(*(*(ip*)uk.Point).Clone());
 		return { uk.Type, CapsNew };
 	}
 	IC_type Uk = (IC_type)uk.Point;

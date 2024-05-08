@@ -245,14 +245,14 @@ public:
 		return { atr,Load.Clone() };
 	};
 
-	ip* Сlone()
+	ip* Clone()
 	{
 		ip* ip_new = new ip;
 		ip_new->copy(*this);
 		return ip_new;
 	};
 
-	vector<ip>* СloneToIC()
+	vector<ip>* CloneToIC()
 	{
 		vector<ip>* t = new vector<ip>;
 		t->push_back(*this);

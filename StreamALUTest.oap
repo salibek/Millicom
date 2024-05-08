@@ -12,20 +12,163 @@ NewFU={Mnemo="Main_Bus" MkBegRange=1000 FUType=FUBusNew} // Описание Bus
 \\ -------------------------------------- \\
 MainBus.FUTypeCorrectSet=-96 // Корректировка номера типа ФУ для переноса на новую ОА-платформу
 
-NewFU={Mnemo="SALU" FUType=FUStreamFloatALU}
-NewFU={Mnemo="SALU1" FUType=FUStreamFloatALU}
-NewFU={Mnemo="SALU2" FUType=FUStreamFloatALU}
-NewFU={Mnemo="Console" FUType=FUConsNew}
+
+NewFU={Mnemo="StreamALU" FUType=FUStreamFloatALU} // Создание АЛУ 
+NewFU={Mnemo="StreamALU2" FUType=FUStreamFloatALU} // Создание второго АЛУ
+NewFU={Mnemo="StreamManager" FUType=FUStreamManager} // Создание второго АЛУ
+NewFU={Mnemo="Console" FUType=FUConsNew} // Создание консоли вывода
 
 MainBus.PartialResetSet \\ Запомнить число созданных ФУ
 MainBus.ModeSet=2
 
-SALU.ReceiverMkSet=SALU1.Sqrt
-SALU1.ReceiverMkSet=SALU2.Add
-SALU2.ReceiverMkSet=Console.OutLn
-SALU2.BiggerProgSet={Console.OutLn="Bigger"} // Запуск программы если больше
-SALU2.RezProgSet={Console.Out="Rez=" SALU.OutMk=Console.OutLn} // Выполнить по возникновению события
-SALU2.Add=3
-SALU.Sub1=7
-SALU.Sub2=3
-SALU2.ReadyExec={Console.OutLn="Ready2"}
+StreamALU.Set=10 // Установка регистра результата
+StreamALU.OutMk=Console.OutLn // Вывод на консоль содержимого регистра результата
+
+// StreamALU.ReceiverMkAdd=StreamALU2.Sub2 //Назначение приемником реультата второго АЛУ
+StreamALU.ReceiverMkAdd=Console.OutLn//Назначение приемником реультата консоли
+
+//------------------------------------------------------------------------------------------------------
+// Сброс и начальная настройка
+Console.LnOut="Начало тестирования арифметических функций:"
+StreamALU.Reset=1
+
+// Тестирование сложения
+Console.LnOut="Сложение 10 + 5: "
+StreamALU.Add=10 // Первый операнд сложения
+StreamALU.Add=5  // Второй операнд сложения
+StreamALU.OutMk=Console.OutLn
+
+// Тестирование вычитания
+Console.LnOut="Вычитание 10 - 3: "
+StreamALU.Sub1=10 // Первый операнд вычитания
+StreamALU.Sub2=3  // Второй операнд вычитания
+StreamALU.OutMk=Console.OutLn
+
+// Тестирование умножения
+Console.LnOut="Умножение 4 * 5: "
+StreamALU.Mul=4 // Первый операнд умножения
+StreamALU.Mul=5 // Второй операнд умножения
+StreamALU.OutMk=Console.OutLn
+
+// Тестирование деления
+Console.LnOut="Деление 20 / 4: "
+StreamALU.Div1=20 // Числитель
+StreamALU.Div2=4  // Знаменатель
+StreamALU.OutMk=Console.OutLn
+
+// Проверка целочисленного деления
+Console.LnOut="Целочисленное деление 20 на 3: ";
+StreamALU.DivInt1=20; // Первый операнд (делимое)
+StreamALU.DivInt2=3; // Второй операнд (делитель)
+StreamALU.OutMk=Console.OutLn; // Вывод результата на консоль
+
+// Проверка остатка от целочисленного деления
+Console.LnOut="Остаток от деления 20 на 3: ";
+StreamALU.Rem1=20; // Первый операнд (делимое)
+StreamALU.Rem2=3; // Второй операнд (делитель)
+StreamALU.OutMk=Console.OutLn; // Вывод результата на консоль
+
+// 
+Console.LnOut="изменение знака 7 ";
+StreamALU.SignReverse=7 
+StreamALU.OutMk=Console.OutLn
+
+
+// Тестирование возведения в степень
+Console.LnOut="Возведение 2 в степень 3: ";
+StreamALU.Pow1=2; // Основание
+StreamALU.Pow2=3; // Степень
+StreamALU.OutMk=Console.OutLn;
+
+//натуральный логарифм
+Console.LnOut="Вычисление натурального логарифма числа 2.71828 (е): "
+StreamALU.Ln=2.71828 // Установка значения в микрокоманду Ln
+StreamALU.OutMk=Console.OutLn // Вывод результата на консоль
+
+// Тестирование логарифма
+Console.LnOut="Логарифм по основанию 2 от 8: "
+StreamALU.LogBase=2 // Основание логарифма
+StreamALU.Log=8 // Аргумент логарифма
+StreamALU.OutMk=Console.OutLn
+
+// Тестирование квадратного корня
+Console.LnOut="Квадратный корень из 16: "
+StreamALU.Sqrt=16;// Число для извлечения корня
+StreamALU.OutMk=Console.OutLn
+
+// Тестирование абсолютного значения
+Console.LnOut="Модуль числа -5: "
+StreamALU.Abs=-5 // Число для модуля
+StreamALU.OutMk=Console.OutLn
+
+// Тестирование округления
+Console.LnOut="Округление числа 3.6: "
+StreamALU.Round=3.6 // Число для округления
+StreamALU.OutMk=Console.OutLn
+
+// Тестирование извлечения целой части
+Console.LnOut="Целая часть числа 3.9: "
+StreamALU.Int=3.9 // Число для извлечения целой части
+StreamALU.OutMk=Console.OutLn
+
+// Тестирование округления вверх
+Console.LnOut="Округление до большего числа 3.1: "
+StreamALU.Ceil=3.1 // Число для округления вверх
+StreamALU.OutMk=Console.OutLn
+
+// квадрат числа
+Console.LnOut="квадрат числа 4: "
+StreamALU.Sqr=4 
+StreamALU.OutMk=Console.OutLn
+
+// логарифм по основанию 10
+Console.LnOut="логарифм 101 по основанию 10: "
+StreamALU.Log10=101 
+StreamALU.OutMk=Console.OutLn
+
+// обратное число
+Console.LnOut="обратное число 5 (1/5): "
+StreamALU.Reverse=5
+StreamALU.OutMk=Console.OutLn
+
+// изменение знака
+Console.LnOut="изменение знака -7 ?? +7: "
+StreamALU.SignReverse=-7
+StreamALU.OutMk=Console.OutLn
+
+// Тестирование тригонометрических функций
+Console.LnOut="Синус Pi/2: "
+StreamALU.AngleModeSet=0; // Установка режима углов в радианах
+StreamALU.Sin=1.5708 // Вычисление синуса
+StreamALU.OutMk=Console.OutLn
+
+Console.LnOut="Косинус Pi: "
+StreamALU.Set=3.14159 // Загрузка значения Pi
+StreamALU.Cos=StreamALU.Set // Вычисление косинуса
+StreamALU.OutMk=Console.OutLn
+
+// Проверка тангенса
+Console.LnOut="Тангенс Pi/4: "
+StreamALU.Tan=0.78539816339 // Pi/4 в радианах
+StreamALU.OutMk=Console.OutLn
+
+// Проверка экспоненты
+Console.LnOut="Экспонента от числа 1: ";
+StreamALU.Exp=1; // е в степени 1
+StreamALU.OutMk=Console.OutLn;
+
+// Генерация случайного числа
+Console.LnOut="Случайное число от 0 до 100: ";
+StreamALU.RandInt=100;
+StreamALU.OutMk=Console.OutLn;
+
+// Обработка ошибок
+Console.LnOut="Попытка деления на ноль (10 / 0): "
+StreamALU.Div1=10 // Числитель
+StreamALU.Div2=0  // Знаменатель
+StreamALU.OutMk=Console.OutLn
+
+
+// Завершение тестирования
+Console.LnOut="Тестирование завершено."
+//---------------------------------------------------------------------------------------------------------------
