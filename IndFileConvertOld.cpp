@@ -114,7 +114,7 @@ void ConvIndStrOld(string str, ip &IP, vector<ip*> IpUk, map<int, vector<ip>*> &
 		//			break;
 	case 'B':
 		boolVar = new bool;
-		*boolVar = str[2] ? true : false;
+		*boolVar = str[0]=='T' ? true : false;
 		IP.Load.Point = boolVar;
 		IP.Load.Type = Cbool;
 		break;

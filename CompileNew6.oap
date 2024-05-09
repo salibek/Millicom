@@ -5286,6 +5286,7 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 			Obj={Mk=247 Mnemo="Op9Set" Hint="Установить девятый операнд"}
 		}
 		Obj={Mnemo="Stack" Hint="Операции со стеком резульататов" Comment
+			Obj={Mk=89 Mnemo="Swap" Hint="Обменять местами регистр результата и верхний элемент стека"}
 			Obj={Mk=90 Mnemo="Push" Hint="Положить в стек (при нулевой нагрузке в стек помещается Rez)"}
 			Obj={Mk=91 Mnemo="Pop" Hint="Вынуть из стека (при при нулевой нагрузке величина помещается в Rez)"}
 			Obj={Mk=92 Mnemo="PopMk" Hint="Вынуть из стека и выдать МК (при при нулевой нагрузке величина помещается в Rez)"}
@@ -5986,8 +5987,6 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 		Obj={Mk=4 Mnemo="Ind2Set" Hint="Установить второй индекс АЛУ в группе"}
 		Obj={Mk=9 Mnemo="Ind2GroupSet" Hint="Установить второй индекс группы АЛУ"}
 		Obj={Mk=6 Mnemo="IndSet" Hint="Установить индекс АЛУ в группе"}
-		Obj={Mk=7 Mnemo="IndSwap" Hint="Поменять индексы устройств местами (также меняются МК для ФУ)"}
-		Obj={Mk=8 Mnemo="GroupIndSwap" Hint="Поменять индексы групп местами"}
 		Obj={Mk=20 Mnemo="IndAdd" Hint="Прибавить к индексу ФУ (в нагрузке значение, которое прибавляется к индексу"}
 		Obj={Mk=21 Mnemo="IndGroupAdd" Hint="Прибавить к индексу группы (в нагрузке значение, которое прибавляется к индексу, 1 по умолчанию)"}
 		Obj={Mk=22 Mnemo="Ind2Add" Hint="Прибавить ко второму индексу ФУ (в нагрузке значение, которое прибавляется к индексу, 1 по умолчанию)"}
@@ -5996,16 +5995,14 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 		Obj={Mk=25 Mnemo="Mk2Set" Hint="Установить МК для второго индекса"}
 
 	}
-	Obj={Mk=60 Mnemo="CounterSet" Hint="Установить сколько раз необходимо создавать устройства"}
-	Obj={Mk=61 Mnemo="CounterAdd" Hint="Прибавить к счетчику (по умолчанию 1)"}
-	Obj={Mk=62 Mnemo="CounterMul" Hint="Умножить считчик (по умолчанию 2)"}
-	Obj={Mk=63 Mnemo="CounterSub" Hint="Вычесть из считчика (по умолчанию 1)"}
-
-	Obj={Mk=64 Mnemo="ExecCounterSet" Hint="Установить счетчик итераций выполнения подпрограммы"}
-	Obj={Mk=65 Mnemo="ExecCounterAdd" Hint="Прибавить к счетчику итераций"}
-	Obj={Mk=66 Mnemo="ExecCounterSub" Hint="Вычесть из счетчика итераций"}
-	Obj={Mk=67 Mnemo="ExecCounterMul" Hint="Умножить счетчик итераций"}
-	Obj={Mk=68 Mnemo="ExecCounterDiv" Hint="Целочисленно разделить счетчик итераций"}
+	Obj={Mk=7 Mnemo="CounterSet" Hint="Установить сколько раз необходимо создавать устройства"}
+	Obj={Mk=8 Mnemo="CounterAdd" Hint="Прибавить к счетчику (по умолчанию 1)"}
+	Obj={Mk=15 Mnemo="CounterMul" Hint="Умножить считчик (по умолчанию 2)"}
+	Obj={Mk=16 Mnemo="ExecCounterSet" Hint="Установить счетчик итераций выполнения подпрограммы"}
+	Obj={Mk=17 Mnemo="ExecCounterAdd" Hint="Прибавить к счетчику итераций"}
+	Obj={Mk=27 Mnemo="ExecCounterSub" Hint="Вычесть из счетчика итераций"}
+	Obj={Mk=18 Mnemo="ExecCounterMul" Hint="Умножить счетчик итераций"}
+	Obj={Mk=26 Mnemo="ExecCounterDiv" Hint="Целочисленно разделить счетчик итераций"}
 	Obj={Mk=19 Mnemo="GroupRefCreate" Hint="Cоздать ссылки на ФУ для группы ФУ"}
 
 	Obj={Mnemo="Execution" Hint="Выполнение программ и МК для ФУ поля" Comment	
@@ -6145,6 +6142,7 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 			Obj={Mk=247 Mnemo="Op9Set" Hint="Установить девятый операнд"}
 		}
 		Obj={Mnemo="Stack" Hint="Операции со стеком резульататов" Comment
+			Obj={Mk=89 Mnemo="Swap" Hint="Обменять местами регистр результата и верхний элемент стека"}
 			Obj={Mk=90 Mnemo="Push" Hint="Положить в стек (при нулевой нагрузке в стек помещается Rez)"}
 			Obj={Mk=91 Mnemo="Pop" Hint="Вынуть из стека (при при нулевой нагрузке величина помещается в Rez)"}
 			Obj={Mk=92 Mnemo="PopMk" Hint="Вынуть из стека и выдать МК (при при нулевой нагрузке величина помещается в Rez)"}
