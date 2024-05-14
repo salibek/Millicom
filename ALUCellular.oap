@@ -27,7 +27,7 @@ K=6 // Количество итераций
 Manager.CounterSet=N
 Manager.CounterMul=M
 Manager.FieldCreate=FUStreamIntALU // Создать поле целочисленных АЛУ
-Manager.ExecAll={FUStreamIntALU.NOperandSet=0 FUStreamIntALU.ReadySet=1 FUStreamIntALU.RezOutBlockSet=True}
+Manager.ExecAll={FUStreamIntALU.NOperandSet=0 FUStreamIntALU.ReadySet=1 FUStreamIntALU.OutRezBlockSet=True}
 Manager.ExecAll={FUStreamIntALU.PreRezProgSet={FUStreamIntALU.Push}} // Программа перед получением результата
 
 Manager.ExecAll={FUStreamIntALU.RezProgSet= // Программа вычисления значения ячейки (запускается после вычисления суммы)
@@ -37,20 +37,20 @@ Manager.ExecAll={FUStreamIntALU.RezProgSet= // Программа вычисления значения яче
 	FUStreamIntALU.ZeroExec={ // Если клетка пустая (при 0 в регистре результата
 		FUStreamIntALU.PopMk // Выталкиваем из стека результата в регистр результата
 		FUStreamIntALU.Equal=3 // Если равно 3 (результат записывается в регистр результата
-		FUStreamIntALU.AccumModeSet=0 // Выключение аккумуляторного режима
+		FUStreamIntALU.AccumModeSet=False // Выключение аккумуляторного режима
 		ProgStopAll // Выход из подпрограмм
 		}
 // Если клетка занята
 	FUStreamIntALU.StackOutMk
-	FUStreamIntALU.Equal=2
+	FUStreamIntALU.Equal=2 // Проверка двух соседей
 	FUStreamIntALU.NZeroExec={ //Если 2 соседа
 		FUStreamIntALU.StackClear
-		FUStreamIntALU.AccumModeSet=0
+		FUStreamIntALU.AccumModeSet=False
  		ProgStopAll}
 	FUStreamIntALU.StackOutMk=FUStreamIntALU.Set
-	FUStreamIntALU.Equal=3
+	FUStreamIntALU.Equal=3 // Проверка трех соседей
 	FUStreamIntALU.StackClear
-	FUStreamIntALU.AccumModeSet=0
+	FUStreamIntALU.AccumModeSet=False
 	}
 }
 
@@ -104,9 +104,9 @@ Manager.ProgExec={
 }
 
 // Связи слева вверху направо внизу
-Manager.IndSet=0
 Manager.Ind2Set=M
 Manager.Ind2Add=1
+Manager.IndSet=0
 Manager.ExecCounterSet=M
 Manager.ExecCounterSub=1
 Manager.ProgExec={
@@ -151,25 +151,27 @@ Manager.ProgExec={
 //Manager.ExecAll={FUStreamIntALU.ReceiverCountOutMk=Console.OutLn}
 // Расстановка точек на поле
 Manager.IndSet=0
-Manager.ExecDev={FUStreamIntALU.BufSet=1 FUStreamIntALU.Set=1} // Запись точки в регистр результата и в буфер рассылки
+Manager.ExecDev={FUStreamIntALU.Set=1} // Запись точки в регистр результата и в буфер рассылки
 Manager.IndSet=1
-Manager.ExecDev={FUStreamIntALU.BufSet=1 FUStreamIntALU.Set=1}
+Manager.ExecDev={FUStreamIntALU.Set=1}
 Manager.IndSet=2
-Manager.ExecDev={FUStreamIntALU.BufSet=1 FUStreamIntALU.Set=1}
+Manager.ExecDev={FUStreamIntALU.Set=1}
 Manager.IndSet=4
-Manager.ExecDev={FUStreamIntALU.BufSet=1 FUStreamIntALU.Set=1}
+Manager.ExecDev={FUStreamIntALU.Set=1}
 Manager.IndSet=5
-Manager.ExecDev={FUStreamIntALU.BufSet=1 FUStreamIntALU.Set=1}
+Manager.ExecDev={FUStreamIntALU.Set=1}
 Manager.IndSet=8
-Manager.ExecDev={FUStreamIntALU.BufSet=1 FUStreamIntALU.Set=1}
+Manager.ExecDev={FUStreamIntALU.Set=1}
 Manager.IndSet=9
-Manager.ExecDev={FUStreamIntALU.BufSet=1 FUStreamIntALU.Set=1}
+Manager.ExecDev={FUStreamIntALU.Set=1}
 
+Manager.ExecAll={FUStreamIntALU.BufSet} // 
 
 Console.ArrayBracketStartSet="" // Настройка консоли
 Console.ArrayBracketFinSet=""
 Console.VectColSet=M
 
+//Manager.RezBufVectOutMk=Console.OutLn // Выдать начальное расположение точек
 Manager.RezVectOutMk=Console.OutLn // Выдать начальное расположение точек
 
 Manager.ExecCounterSet=K

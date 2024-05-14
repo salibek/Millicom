@@ -5,7 +5,9 @@ using namespace std;
 
 void StreamManager::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 {
-	switch (MK%FUMkRange)
+	int MKinitial = MK;
+	MK %= FUMkRange;
+	switch (MK % FUMkRange)
 	{
 	case 0: //Reset
 		for (auto& i : Field)
@@ -24,7 +26,7 @@ void StreamManager::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		{
 			if (Load.isEmpty()) continue;
 			if (Load.isInt())
-				Field.back().push_back(MakeFU.MakeFu(Load.toInt() + fuTypeCorrect, Bus));
+				Field.back().push_back(MakeFU.MakeFu(Load.toInt() + FUTypeCorrect, Bus));
 			else if (Load.isFU()) // Если указатель на ФУ
 				Field.back().push_back(((FU*)Load.Point)->Copy());
 
@@ -48,7 +50,7 @@ void StreamManager::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 				Field.push_back({});
 				if (Load.isInt())
 				{
-					Field.back().push_back(MakeFU.MakeFu(Load.toInt(), Bus));
+					Field.back().push_back(MakeFU.MakeFu(Load.toInt()+ FUTypeCorrect, Bus));
 					break;
 				}
 				else if (Load.isFU()) // Если указатель на ФУ
@@ -77,7 +79,7 @@ void StreamManager::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 	case 4: //Ind2Set Установить второй индекс АЛУ в группе
 		Ind2 = Load.toInt();
 		break;
-	case 7: // IndSwap Поменять индексы устройств местами (также меняются МК для ФУ)
+	case 7: // IndSwap Поменять индексы устройств местами
 		swap(Ind, Ind2);
 		//swap(Mk1, Mk2);
 		break;
@@ -87,9 +89,10 @@ void StreamManager::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 	case 9: //Ind2GroupSet Установить второй индекс группы АЛУ
 		IndGroup2 = Load.toInt();
 		break;
-	case 10: // CreateGoup Создать группу АЛУ
+	case 10: // GoupCreate Создать группу АЛУ
 		Field.push_back({});
 		break;
+	case 45: // DevCopy Скопировать ФУ в группу
 	case 11: // DevCreate Создать АЛУ в группе (На входе шаблон ФУ)
 		if (IndGroup >= Field.size() && IndGroup >= 0)
 		{
@@ -100,12 +103,13 @@ void StreamManager::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		for (int i = Counter; i < 0; i++)
 			if (Load.isInt())
 			{
-				Field[IndGroup].push_back(MakeFU.MakeFu(Load.toInt(), Bus));
+				Field[IndGroup].push_back(MakeFU.MakeFu(Load.toInt() + FUTypeCorrect, Bus));
 				break;
 			}
 			else if (Load.isFU()) // Если указатель на ФУ
 			{
-				Field[IndGroup].push_back(MakeFU.MakeFu(Load.Point));
+				if(MK==11)
+					Field[IndGroup].push_back(MakeFU.MakeFu(Load.Point));
 				break;
 			}
 		break;
@@ -119,7 +123,7 @@ void StreamManager::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		for (int i = Counter; i < 0; i++)
 			if (Load.isInt())
 			{
-				Field.back().push_back(MakeFU.MakeFu(Load.toInt(), Bus));
+				Field.back().push_back(MakeFU.MakeFu(Load.toInt() + FUTypeCorrect, Bus));
 				break;
 			}
 			else if (Load.isFU()) // Если указатель на ФУ
@@ -129,22 +133,28 @@ void StreamManager::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 			}
 		break;
 	case 13: // DevAdd Добавить устройство в текущую группу
-		if (!Load.isFU()) break;
+		//if (!Load.isFU()) break;
 		if (Field.size() == 0) // Если список пустой, то добавить одну строку
 		{
 			Field.push_back({});
 			IndGroup = 0;
 		}
-		Field[IndGroup].push_back((FU*)Load.Point);
+		if (Load.isInt())
+			Field[IndGroup].push_back(MakeFU.MakeFu(Load.toInt() + FUTypeCorrect, Bus));
+		else if (!Load.isFU())
+			Field[IndGroup].push_back((FU*)Load.Point);
 		break;
 	case 14: // DevLastAdd Добавить устойство в последнюю группу
-		if (!Load.isFU()) break;
+		//if (!Load.isFU()) break;
 		if (Field.size() == 0) // Если список пустой, то добавить одну строку
 		{
 			Field.push_back({});
 			IndGroup = 0;
 		}
-		Field.back().push_back((FU*)Load.Point);
+		if (Load.isInt())
+			Field.back().push_back(MakeFU.MakeFu(Load.toInt()+ FUTypeCorrect, Bus));
+		else if (!Load.isFU())
+			Field.back().push_back((FU*)Load.Point);
 		break;
 	case 15: // GroupRefCreate Cоздать ссылки на ФУ для группы ФУ
 	{
@@ -171,7 +181,7 @@ void StreamManager::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		Load.Write(Ind);
 		break;
 	case 17: // IndOutMk Выдать МК с первым индексом
-		MkExec(Load, {Cint,&Ind});
+		MkExec(Load, { Cint,&Ind });
 		break;
 	case 18: // Ind2Out Выдать второй индекс
 		Load.Write(Ind2);
@@ -221,7 +231,7 @@ void StreamManager::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		for (auto& i : Field[IndGroup])
 			i->ProgExec(Load);
 		break;
-	case 32: // ExecDev Выполнить программу для конкретного ФУ
+	case 32: // ExecDev Выполнить программу для конкретного ФУ с индексом Ind
 		if (IndGroup >= Field.size() || Ind >= Field[IndGroup].size())
 		{
 			FU::ProgExec(DevNotExistErrProg);
@@ -254,10 +264,10 @@ void StreamManager::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 			t = Field[IndGroup][Ind]->Bus; // Запомнить указатель на шину для второго ФУ
 			Field[IndGroup][Ind]->Bus = Field[IndGroup][Ind2];
 		}
-		Field[IndGroup][Ind]->MkExec(Mk1, { Cmk, &Mk2});
+		Field[IndGroup][Ind]->MkExec(Mk1, { Cmk, &Mk2 });
 		if (Load.toInt() == 36)	Field[IndGroup][Ind]->Bus = t; // Восстановить указатель на шину
 	}
-		break;
+	break;
 	case 36: // Mk2Exec Выполнить МК для ФУ поля по второму индексу
 	{
 		FU* t = nullptr;
@@ -266,7 +276,7 @@ void StreamManager::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 			t = Field[IndGroup][Ind2]->Bus; // Запомнить указатель на шину для второго ФУ
 			Field[IndGroup][Ind2]->Bus = Field[IndGroup][Ind];
 		}
-		Field[IndGroup2][Ind2]->MkExec(Mk2, { Cmk, &Mk1});
+		Field[IndGroup2][Ind2]->MkExec(Mk2, { Cmk, &Mk1 });
 		if (Load.toInt() == 35)	Field[IndGroup][Ind2]->Bus = t; // Восстановить указатель на шину
 		break;
 	}
@@ -312,7 +322,7 @@ void StreamManager::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 			break;
 		}
 		long int t = Field[IndGroup].size();
-		MkExec(Load, {Cint,&t});
+		MkExec(Load, { Cint,&t });
 		break;
 	}
 	case 55: //  GroupCountOut Выдать количество групп
@@ -321,6 +331,12 @@ void StreamManager::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 	case 56: //  GroupCountOutMk Выдать МК с количеством групп
 	{
 		long int t = Field.size();
+		MkExec(Load, { Cint,&t });
+		break;
+	}
+	case 57: //  GroupLastIndOutMk Выдать МК с последним индексом группы
+	{
+		long int t = Field.size()-1;
 		MkExec(Load, { Cint,&t });
 		break;
 	}
@@ -364,7 +380,7 @@ void StreamManager::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 			FU::ProgExec(DevNotExistErrProg);
 			break;
 		}
-		switch (MK%FUMkRange) {
+		switch (MK % FUMkRange) {
 		case 70:
 			Load.Write((FU*)Field[IndGroup][Ind]);
 			break;
@@ -379,72 +395,50 @@ void StreamManager::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 			break;
 		}
 		break;
-	case 80: //  LastDevOut Выдать контекст последнего созданного АЛУ
+	case 80: //  DevLastOut Выдать контекст последнего созданного АЛУ
 		if (!Field.size())
 		{
 			FU::ProgExec(DevNotExistErrProg);
 			break;
 		}
-		Load.Write((FU*) & Field.back().back());
+		Load.Write((FU*)&Field.back().back());
 		break;
-	case 81: //  LastDevOutMk Выдать МК с контекстом последнего созданного АЛУ
+	case 81: //  DevLastOutMk Выдать МК с контекстом последнего созданного АЛУ
 		if (!Field.size())
 		{
 			FU::ProgExec(DevNotExistErrProg);
 			break;
 		}
-			MkExec(Load, { CFU,(FU*)&Field.back().back()});
+		MkExec(Load, { CFU,(FU*)&Field.back().back() });
 		break;
-	case 90: //  LastGroupIndOut Выдать индекс последней созданной группы АЛУ (-1, если поле пустое)
-		Load.Write(Field.size()-1);
+	case 90: //  GroupLastIndOut Выдать индекс последней созданной группы АЛУ (-1, если поле пустое)
+		Load.Write(Field.size() - 1);
 		break;
-	case 91: //  LastGroupIndOutMk Выдать МК с индексом последней созданной группы АЛУ (-1, если поле пустое)
-		{
+	case 91: //  GroupLastIndOutMk Выдать МК с индексом последней созданной группы АЛУ (-1, если поле пустое)
+	{
 		long int t = Field.size() - 1;
-		MkExec(Load, { CFU,&t});
-		}
-		break;
-	case 100: //  LastDevIndOut Выдать индекс последнего созданного АЛУ (-1, если поле пустое)
+		MkExec(Load, { CFU,&t });
+	}
+	break;
+	case 100: //  DevLastIndOut Выдать индекс последнего созданного АЛУ (-1, если поле пустое)
 		if (!Field.size() || !Field.back().size())
 			Load.Write((long int)-1);
 		else
-			Load.Write(Field.back().size()-1);
+			Load.Write(Field.back().size() - 1);
 		break;
-	case 101: //  LastDevIndOutMk Выдать МК с индексом последнего созданного АЛУ (-1, если поле пустое)
+	case 101: //  DevLastIndOutMk Выдать МК с индексом последнего созданного АЛУ (-1, если поле пустое)
 	{
 		long int t = -1;
 		if (Field.size() && Field.back().size())
 			t = Field.back().size() - 1;
 		MkExec(Load, { CFU,&t });
 	}
-		break;
+	break;
 
+	case 108: //RezBufVectOut Выдать вектор значений буфера результата всех ФУ поля
+	case 109: //RezBufVectOutMk Выдать Мк с вектором значений буфера результата всех ФУ поля
 	case 110: //RezVectOut Выдать вектор результатов всех ФУ поля
 	case 111: //RezVectOutMk Выдать Мк с вектором результатов всех ФУ поля
-	{
-		if(IndGroup >= Field.size() || IndGroup < 0)
-		{
-			FU::ProgExec(DevNotExistErrProg);
-			break;
-		}
-		LoadVect_type t=new vector<LoadPoint>;
-		for (auto& i : Field)
-			for (auto& j : i)
-				switch (j->FUtype)
-				{
-				case FUStreamFloatALU:
-					t->push_back({ Cdouble, &((StreamFloatALU*)j)->Rez });
-					break;
-				case FUStreamIntALU:
-					t->push_back({ Cint, &((StreamIntALU*)j)->Rez });
-					break;
-				}
-		if (MK == 110)
-			Load.Write(t);
-		else
-			MkExec(Load, { CLoadVect, t });
-		break;
-	}
 	case 112: //ReadyVectOut Выдать вектор готовности результатов всех ФУ поля
 	case 113: //ReadyVectOutMk  Выдать Мк с вектором готовности результатов всех ФУ поля
 	{
@@ -459,19 +453,34 @@ void StreamManager::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 				switch (j->FUtype)
 				{
 				case FUStreamFloatALU:
-					t->push_back({ Cdouble, &((StreamFloatALU*)j)->Ready });
+					switch (MK)
+					{
+					case 108:
+					case 109: t->push_back({ Cdouble, &((StreamFloatALU*)j)->RezBuf }); break;
+					case 111:
+					case 110: t->push_back({ Cdouble, &((StreamFloatALU*)j)->Rez }); break;
+					default:
+						t->push_back({ Cint, &((StreamFloatALU*)j)->Ready });
+						break;
+					}
 					break;
 				case FUStreamIntALU:
-					t->push_back({ Cdouble, &((StreamIntALU*)j)->Ready }); \
+					switch (MK) {
+					case 108:
+					case 109: t->push_back({ Cint, &((StreamIntALU*)j)->RezBuf }); break;
+					case 111:
+					case 110: t->push_back({ Cint, &((StreamIntALU*)j)->Rez }); break;
+					default:
+						t->push_back({ Cint, &((StreamIntALU*)j)->Ready });
 						break;
+					}
 				}
-		if (MK == 110)
+		if (MK % 2 == 0)
 			Load.Write(t);
 		else
-			MkExec(Load, { CLoadArray, &t });
+			MkExec(Load, { CLoadVect, t });
 		break;
 	}
-	break;
 
 	case 115: //RezGroupVectOut Выдать вектор результатов всех ФУ группы
 	case 116: //RezGroupVectPutMk Выдать Мк с вектором результатов всех ФУ группы
@@ -482,16 +491,16 @@ void StreamManager::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 			break;
 		}
 		LoadVect_type t = new vector<LoadPoint>;
-		for (auto& j: Field[IndGroup])
-				switch (j->FUtype)
-				{
-				case FUStreamFloatALU:
-					t->push_back({ Cdouble, &((StreamFloatALU*)j)->Ready });
-					break;
-				case FUStreamIntALU:
-					t->push_back({ Cdouble, &((StreamIntALU*)j)->Ready });
-					break;
-				}
+		for (auto& j : Field[IndGroup])
+			switch (j->FUtype)
+			{
+			case FUStreamFloatALU:
+				t->push_back({ Cdouble, &((StreamFloatALU*)j)->Ready });
+				break;
+			case FUStreamIntALU:
+				t->push_back({ Cdouble, &((StreamIntALU*)j)->Ready });
+				break;
+			}
 		if (MK == 110)
 			Load.Write(t);
 		else
@@ -508,22 +517,45 @@ void StreamManager::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		}
 		LoadVect_type t = new vector<LoadPoint>;
 		for (auto& j : Field[IndGroup])
-				switch (j->FUtype)
-				{
-				case FUStreamFloatALU:
-					t->push_back({ Cdouble, &((StreamFloatALU*)j)->Ready });
-					break;
-				case FUStreamIntALU:
-					t->push_back({ Cdouble, &((StreamIntALU*)j)->Ready });
-					break;
-				}
+			switch (j->FUtype)
+			{
+			case FUStreamFloatALU:
+				t->push_back({ Cdouble, &((StreamFloatALU*)j)->Ready });
+				break;
+			case FUStreamIntALU:
+				t->push_back({ Cdouble, &((StreamIntALU*)j)->Ready });
+				break;
+			}
 		if (MK == 110)
 			Load.Write(t);
 		else
 			MkExec(Load, { CLoadArray, &t });
 		break;
 	}
-
+	// Работа с переменным, засылаемыми в поле ФУ
+	case 129: // VarClear Очитить список переменных для пересылки ФУ поля
+		VarFuMap.clear();
+		break;
+	case 130: // VarNameAdd Добавить имя переменной
+		VarFuMap.insert({ Load.toStr(), {} });
+		AddedVarName = Load.toStr();
+		break;
+	case 131: // VarMkAdd Добавить МК имя переменной
+		VarFuMap[AddedVarName].push_back({ Load.toInt(), nullptr });
+		break;
+	case 132: // VarFuAdd Добавить ФУ для переменной
+		VarFuMap[AddedVarName].back().second=(FU*)Load.Point;
+		break;
+	case 140: //VarNameSet Установить имя переменной, которая будет затем переслана на ФУ поля
+		VarName = Load.toStr();
+		break;
+	case 145: // ValByNameSend Переслать значение переменной по ее имени
+		if (!VarFuMap.count(VarName))
+			ProgExec(ValNotFaund);
+		else
+			for (auto& i : VarFuMap[VarName])
+				MkExec(i.first, Load, i.second);
+		break;
 	default:
 		CommonMk(MK, Load, Sender);
 		break;

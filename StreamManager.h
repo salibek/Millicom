@@ -9,6 +9,10 @@ using namespace std;
 class StreamManager : public FU
 {
 private:
+	map<string, vector<pair<long, FU*> > > VarFuMap; // Словарь соответствия имени переменной и FU c МК
+	string VarName; // Имя текущей переменной (для ее засылки в на ФУ)
+	string AddedVarName; // Имя последней добавленной переменной (для ее засылки в на ФУ)
+
 	vector<vector<FU*> > Field; // Поле АЛУ
 	long int Ind = 0, IndGroup = 0; // Индексы ФУ и группы
 	long int Ind2 = 0, IndGroup2 = 0; // Вторые индексы ФУ и группы
@@ -21,8 +25,10 @@ private:
 	FuFabric MakeFU;
 	vector<int> ExecCounter = {1}; // Количество итераций при Exec
 	bool ExecFlag = false; // Флаг выполнения подпрограммы
+	void* ValNotFaund = nullptr; // Программа обработки ошибки 'Не найдена переменная по имети'
 	void ProgExec(void* Uk, unsigned int CycleMode = 0, FU* Bus = nullptr, vector<ip>::iterator* Start = nullptr) override; // Исполнение программы из ИК
 	void ProgExec(LoadPoint Uk, unsigned int CycleMode = 0, FU* Bus = nullptr, vector<ip>::iterator* Start = nullptr) override; // Исполнение программы из ИК
+	int FUTypeCorrect = fuTypeCorrect; // Корректировка индекса тип
 
 public:
 	void ProgFU(long int MK, LoadPoint Load, FU* Sender = nullptr) override;

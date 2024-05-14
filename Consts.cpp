@@ -1854,6 +1854,7 @@ void FU::CommonMk(long int Mk, LoadPoint Load, FU* Sender)
 	case ContextOutMkMk: // 999 ContextOutMK Выдать милликоманду с указателем на контекст ФУ
 		if (Load.isInt())
 			Bus->ProgFU(Load.toInt(), {TFU, this}, this);
+		//MkExec(Load, { TFU, this });
 		break;
 	case BreakMk: //Выход из циклов
 	    CycleStop = Load.toInt(1);
@@ -1990,7 +1991,7 @@ void FU::MkExec(long int MK, LoadPoint Load, void* Receiver, bool Ext) // Выд
 
 void FU::MkExec(LoadPoint Mk, LoadPoint Load, void* Receiver, bool Ext) // Выдача МК с нагрузкой
 {
-	if (Mk.Point!=nullptr && Mk.Type >> 1 == Dint && Mk.Point != nullptr)
+	if (Mk.Point!=nullptr && Mk.isInt() && Mk.Point != nullptr)
 	{
 		int MK = Mk.toInt();
 		if (MK < FUMkRange && !Ext) // Если МК адресована сомому ФУ

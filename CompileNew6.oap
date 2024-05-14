@@ -5221,7 +5221,7 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 		Obj={Mk=161 Mnemo="ReceiverAdd" Hint="Установить ссылку на контекст получателя результата"}
 		Obj={Mk=162 Mnemo="ReceiverMkAdd" Hint="Установить МК для получателя результата"}
 		Obj={Mk=165 Mnemo="OutVarReset" Hint="Очистить список переменных для записи результата"}
-		Obj={Mk=166 Mnemo="OutVarSet" Hint="Добавить переменную для записи результата"}
+		Obj={Mk=166 Mnemo="OutVarAdd" Hint="Добавить переменную для записи результата"}
 
 		Obj={Mk=190 Mnemo="RezProgSet" Hint="Установить программу при получении результата"}
 		Obj={Mk=191 Mnemo="PreRezProgSet" Hint="Установить Программу, запускаемую перед получением результата"}
@@ -5286,7 +5286,6 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 			Obj={Mk=247 Mnemo="Op9Set" Hint="Установить девятый операнд"}
 		}
 		Obj={Mnemo="Stack" Hint="Операции со стеком резульататов" Comment
-			Obj={Mk=89 Mnemo="Swap" Hint="Обменять местами регистр результата и верхний элемент стека"}
 			Obj={Mk=90 Mnemo="Push" Hint="Положить в стек (при нулевой нагрузке в стек помещается Rez)"}
 			Obj={Mk=91 Mnemo="Pop" Hint="Вынуть из стека (при при нулевой нагрузке величина помещается в Rez)"}
 			Obj={Mk=92 Mnemo="PopMk" Hint="Вынуть из стека и выдать МК (при при нулевой нагрузке величина помещается в Rez)"}
@@ -5972,11 +5971,30 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 // StreamManeger Менеджер поля ФУ
      FuTypeIndexes.CellSet=118 FuTypeMkTrees.CellSet=
 	{
+	Obj={Mk=7 Mnemo="CounterSet" Hint="Установить сколько раз необходимо создавать устройства"}
+	Obj={Mk=8 Mnemo="CounterAdd" Hint="Прибавить к счетчику (по умолчанию 1)"}
+	Obj={Mk=15 Mnemo="CounterMul" Hint="Умножить считчик (по умолчанию 2)"}
+	Obj={Mk=16 Mnemo="ExecCounterSet" Hint="Установить счетчик итераций выполнения подпрограммы"}
+	Obj={Mk=17 Mnemo="ExecCounterAdd" Hint="Прибавить к счетчику итераций"}
+	Obj={Mk=27 Mnemo="ExecCounterSub" Hint="Вычесть из счетчика итераций"}
+	Obj={Mk=18 Mnemo="ExecCounterMul" Hint="Умножить счетчик итераций"}
+	Obj={Mk=26 Mnemo="ExecCounterDiv" Hint="Целочисленно разделить счетчик итераций"}
+	Obj={Mk=19 Mnemo="GroupRefCreate" Hint="Cоздать ссылки на ФУ для группы ФУ"}
+
+	Obj={Mnemo="Var Sending" Hint="Пересылка переменных в поле ФУ" Comment
+		Obj={Mk=129 Mnemo="VarClear" Hint="Очитить список переменных для пересылки ФУ поля"}
+		Obj={Mk=130 Mnemo="VarNameAdd" Hint="Добавить имя переменной"}
+		Obj={Mk=131 Mnemo="VarMkAdd" Hint="Добавить МК имя переменной"}
+		Obj={Mk=132 Mnemo="VarFuAdd" Hint="Добавить ФУ для переменной"}
+		Obj={Mk=140 Mnemo="VarNameSet" Hint="Установить имя переменной, которая будет затем переслана на ФУ поля"}
+		Obj={Mk=145 Mnemo="ValByNameSend" Hint="Переслать значение переменной по ее имени"}
+	
+	}
 	Obj={Mnemo="Creating" Hint="Создание ФУ и работа с полем" Comment
 		Obj={Mk=1 Mnemo="FieldCreate" Hint="Создавать поле АЛУ (на входе размерность, по умолчанию 1)"}
 		Obj={Mk=2 Mnemo="FieldCreateTempl" Hint="Создавать поле АЛУ на основе эталона (на входе размерность, эталон находится в векторе поля АЛУ под индексом 0, в нулевой группе)"}
 		Obj={Mk=3 Mnemo="FieldClear" Hint="Очистить поле АЛУ"}
-		Obj={Mk=10 Mnemo="CreateGoup" Hint="Создать группу АЛУ"}
+		Obj={Mk=10 Mnemo="GoupCreate" Hint="Создать группу АЛУ"}
 		Obj={Mk=11 Mnemo="DevCreate" Hint="Создать АЛУ в группе"}
 		Obj={Mk=12 Mnemo="DevCreateLast" Hint="Создать АЛУ в последней группе"}
 		Obj={Mk=13 Mnemo="DevAdd" Hint="Добавить устройство в текущую группу"}
@@ -5991,23 +6009,10 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 		Obj={Mk=21 Mnemo="IndGroupAdd" Hint="Прибавить к индексу группы (в нагрузке значение, которое прибавляется к индексу, 1 по умолчанию)"}
 		Obj={Mk=22 Mnemo="Ind2Add" Hint="Прибавить ко второму индексу ФУ (в нагрузке значение, которое прибавляется к индексу, 1 по умолчанию)"}
 		Obj={Mk=23 Mnemo="Ind2GroupAdd" Hint="Прибавить ко второму индексу группы (в нагрузке значение, которое прибавляется к индексу, 1 по умолчанию)"}
-		Obj={Mk=24 Mnemo="MkSet" Hint="Установить МК для первошго индекса"}
-		Obj={Mk=25 Mnemo="Mk2Set" Hint="Установить МК для второго индекса"}
-
 	}
-	Obj={Mk=7 Mnemo="CounterSet" Hint="Установить сколько раз необходимо создавать устройства"}
-	Obj={Mk=8 Mnemo="CounterAdd" Hint="Прибавить к счетчику (по умолчанию 1)"}
-	Obj={Mk=15 Mnemo="CounterMul" Hint="Умножить считчик (по умолчанию 2)"}
-	Obj={Mk=16 Mnemo="ExecCounterSet" Hint="Установить счетчик итераций выполнения подпрограммы"}
-	Obj={Mk=17 Mnemo="ExecCounterAdd" Hint="Прибавить к счетчику итераций"}
-	Obj={Mk=27 Mnemo="ExecCounterSub" Hint="Вычесть из счетчика итераций"}
-	Obj={Mk=18 Mnemo="ExecCounterMul" Hint="Умножить счетчик итераций"}
-	Obj={Mk=26 Mnemo="ExecCounterDiv" Hint="Целочисленно разделить счетчик итераций"}
-	Obj={Mk=19 Mnemo="GroupRefCreate" Hint="Cоздать ссылки на ФУ для группы ФУ"}
-
 	Obj={Mnemo="Execution" Hint="Выполнение программ и МК для ФУ поля" Comment	
-		Obj={Mk=24 Mnemo="MkSet" Hint="Установить МК для первошго индекса"}
-		Obj={Mk=25 Mnemo="Mk2Set" Hint="Установить МК для второго индекса"}
+		Obj={Mk=28 Mnemo="MkSet" Hint="Установить МК для первошго индекса"}
+		Obj={Mk=29 Mnemo="Mk2Set" Hint="Установить МК для второго индекса"}
 		Obj={Mk=30 Mnemo="ExecAll" Hint="Выполнить программу для всех ФУ поля"}
 		Obj={Mk=31 Mnemo="ExecGroup" Hint="Выполнить программу для всех ФУ группы"}
 		Obj={Mk=32 Mnemo="ExecDev" Hint="Выполнить программу для конкретного ФУ"}
@@ -6022,6 +6027,8 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 		Obj={Mk=41 Mnemo="MkAllLastGroupExec" Hint="Выполнить МК для всех ФУ последней группы"}
 	}
 	Obj={Mnemo="Result vector" Hint="Вектор результатов" Comment	
+		Obj={Mk=108 Mnemo="RezBufVectOut" Hint="Выдать вектор значений буфера результата всех ФУ поля"}
+		Obj={Mk=109 Mnemo="RezBufVectOutMk" Hint="Выдать Мк с вектором значений буфера результата всех ФУ поля"}
 		Obj={Mk=110 Mnemo="RezVectOut" Hint="Выдать вектор результатов всех ФУ поля"}
 		Obj={Mk=111 Mnemo="RezVectOutMk" Hint="Выдать Мк с вектором результатов всех ФУ поля"}
 		Obj={Mk=112 Mnemo="ReadyVectOut" Hint="Выдать вектор готовности результатов всех ФУ поля"}
@@ -6037,18 +6044,19 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 	Obj={Mk=53 Mnemo="DevGroupCountOutMk" Hint="Выдать количество АЛУ в текущей группе"}
 	Obj={Mk=55 Mnemo="GroupCountOut" Hint="Выдать количество групп"}
 	Obj={Mk=56 Mnemo="GroupCountOutMk" Hint="Выдать МК с количеством групп"}
+	Obj={Mk=57 Mnemo="GroupLastIndOutMk" Hint="Выдать МК с последним индексом группы"}
 
 	Obj={Mk=70 Mnemo="DevOut" Hint="Выдать контекст текущего АЛУ"}
 	Obj={Mk=71 Mnemo="DevOutMk" Hint="Выдать контекст текущего АЛУ"}
 	Obj={Mk=70 Mnemo="Dev2Out" Hint="Выдать контекст текущего АЛУ по второму индексу"}
 	Obj={Mk=71 Mnemo="Dev2OutMk" Hint="Выдать контекст текущего АЛУ по второму индексу"}
-	Obj={Mk=80 Mnemo="LastDevOut" Hint="Выдать контекст последнего созданного АЛУ"}
-	Obj={Mk=81 Mnemo="LastDevOutMk" Hint="Выдать МК с контекстом последнего созданного АЛУ"}
+	Obj={Mk=80 Mnemo="DevLastOut" Hint="Выдать контекст последнего созданного АЛУ"}
+	Obj={Mk=81 Mnemo="DevLastOutMk" Hint="Выдать МК с контекстом последнего созданного АЛУ"}
 
-	Obj={Mk=90 Mnemo="LastGroupIndOut" Hint="Выдать индекс последней созданной группы АЛУ (-1, если поле пустое)"}
-	Obj={Mk=91 Mnemo="LastGroupIndOutMk" Hint="Выдать МК с индексом последней созданной группы АЛУ (-1, если поле пустое)"}
-	Obj={Mk=100 Mnemo="LastDevIndOut" Hint="Выдать индекс последнего созданного АЛУ (-1, если поле пустое)"}
-	Obj={Mk=101 Mnemo="LastDevIndOutMk" Hint="Выдать МК с индексом последнего созданного АЛУ (-1, если поле пустое)"}
+	Obj={Mk=90 Mnemo="GroupLastIndOut" Hint="Выдать индекс последней созданной группы АЛУ (-1, если поле пустое)"}
+	Obj={Mk=91 Mnemo="GroupLastIndOutMk" Hint="Выдать МК с индексом последней созданной группы АЛУ (-1, если поле пустое)"}
+	Obj={Mk=100 Mnemo="DevLastIndOut" Hint="Выдать индекс последнего созданного АЛУ (-1, если поле пустое)"}
+	Obj={Mk=101 Mnemo="DevLastIndOutMk" Hint="Выдать МК с индексом последнего созданного АЛУ (-1, если поле пустое)"}
 
 	
 	Obj=CommonMkList

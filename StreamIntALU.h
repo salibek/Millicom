@@ -40,8 +40,8 @@ private:
 	bool MkAbort = false; // Флаг прерывания после обоработки марштуризируемой команды
 	bool EarlyCalculi = false; // Флаг ранних вычислений (при многооперандных командах результат начинает вычисляться уже по приходе данных (ускоряет вычисления)
 	bool AccumMode = false;// Аккумуляторных режим работы
-	long RezBuf = 0; // Буфер результата
 public:
+	long RezBuf = 0; // Буфер результата
 	long int Rez = 0; //  Результат операции
 	long int Ready = 0; // Код готовности результата 0 - не готов, 1 - готов, 2 - ошибка
 	void ProgFU(long int MK, LoadPoint Load, FU* Sender = nullptr) override;

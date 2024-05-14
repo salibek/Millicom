@@ -7,6 +7,7 @@ void StreamFloatALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 	if (PrefixProg != nullptr) ProgExec(PrefixProg); // Запуск предварительной программы
 	if (!Active && MK<900) return; //При сброшенном флаге активности выполняются общие МК
 	if (MK >= FUMkRange && MK < FUMkGlobalAdr && MK >= FUMkGlobalAdr + FUMkRange)
+		if(MK>=900 && MK<1000)
 	{
 		ProgExec(RoutProg);
 		return;
@@ -243,7 +244,7 @@ void StreamFloatALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		if (Load.isEmpty()) RezBuf = Rez;
 		else RezBuf = Load.toDouble();
 		break;
-	case 111: // ToRez Записать из буфера в регистра результата
+	case 111: // ToRez Записать из буфера в регистр результата
 		Rez = RezBuf;
 		break;
 	case 112: // BufSend Разослать результат из буфера
@@ -256,11 +257,17 @@ void StreamFloatALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 	case 151: // NOperandAdd Увеличить количество операндов (по умолчанию на 1)
 		OperandsCounter += Load.toInt(1);
 		break;
+	case 152: // NOperandOut Выдать количество операндов
+		Load.Write(Noperands);
+		break;
+	case 153: // NOperandOutMk Выдать МК с количеством операндов
+		MkExec(Load, { Cint,&Noperands });
+		break;
 	case 160: // ReceiverReset Сброс установок получателей результата
 		ReceiverMk.clear();
 		ReceiverContexts.clear();
 		break;
-	case 161: // ReceiverSet Установить ссылку на приемника результата (Устанавливается перед установкой МК)
+	case 161: // ReceiverAdd Добавить ссылку на приемника результата (Устанавливается перед установкой МК)
 		ReceiverContexts.push_back((FU*)Load.Point);
 		break;
 	case 162: // ReceiverMkSet Установить МК для приемника результата 

@@ -36,7 +36,7 @@ void BusFU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 			FUs.push_back(this); // Первой ФУ - это сам Bus
 			break;
 		case 1: // MakeFU Создать ФУ
-			FUs.push_back(FUTypes.MakeFu(Load.toInt() - FUTypeCorrect,this, FUTempl));
+			FUs.push_back(FUTypes.MakeFu(Load.toInt(),this, FUTempl));
 			FUs.back()->FUMkGlobalAdr = FUMkRange * (FUs.size() - 1); // Установить начало глобального диапазона МК
 			break;
 		case 5: // ProgExec Выполнить программу из ИК

@@ -33,10 +33,10 @@ void StreamIntALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 	case 1: // Set Установить результат вычислений
 		Rez = Load.toInt();
 		break;
-	case 3: // RoutProg Программа при несовпадении адреса ФУ с его собственным адресом
+	case 3: // RoutProgSet Программа при несовпадении адреса ФУ с его собственным адресом
 		RoutProg = Load.Point;
 		break;
-	case 4: // SelfAdrProg Программа при совпадении адреса ФУ с его собственным адресом
+	case 4: // SelfAdrProgSet Программа при совпадении адреса ФУ с его собственным адресом
 		RoutProg = Load.Point;
 		break;
 	case 5: //Out  Выдать результат
@@ -255,7 +255,12 @@ void StreamIntALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 	case 151: // NOperandAdd Увеличить количество операндов (по умолчанию на 1)
 		Noperands += Load.toInt(1);
 		break;
-
+	case 152: // NOperandOut Выдать количество операндов
+		Load.Write(Noperands);
+		break;
+	case 153: // NOperandOutMk Выдать количество операндов
+		MkExec(Load, {Cint,&Noperands});
+		break;
 	case 160: // ReceiverReset Сброс установок получателей результата
 		ReceiverMk.clear();
 		ReceiverContexts.clear();
@@ -612,8 +617,8 @@ void StreamIntALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 	case 501: // AddSqr
 	case 510: // Mul
 		// Операции сравнения
-	case 550: // Equal
-	case 551: // NotEqual
+	case 550: // Equal Равно
+	case 551: // NotEqual Не равно
 		// Логические операции
 	case 600: // Or
 	case 601: // And
@@ -643,11 +648,11 @@ void StreamIntALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 			case 501: //AddSqr
 				Rez += Load.toInt() * Load.toInt();
 				break;
-			case 550: // Equal
+			case 550: // Equal Равно
 				Rez = Rez == Load.toInt();
 
 				break;
-			case 551: // NotEqual
+			case 551: // NotEqual Не равно
 				Rez = Rez != Load.toInt();
 				break;
 			case 510: //Mul

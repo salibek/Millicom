@@ -511,7 +511,8 @@ void List::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		MkExec(Load, { TLoad, &((IC_type)(ListHead.back()->back().Load.Point))->back().Load });
 		break;
 	case 145: //LineIpOutMk Выдать ссылку на последнюю ИП текущей линии
-		if (ListHead.back() == nullptr || !ListHead.back()->size() || LineUk == nullptr) break;
+//		if (ListHead.back() == nullptr || !ListHead.back()->size() || LineUk == nullptr) break;
+		if (LineUk == nullptr || !((IC_type)LineUk->Load.Point)->size()) break;
 		MkExec(Load, { CIP,&((IC_type)LineUk->Load.Point)->back() });
 		break;
 	case 146: // LineIcCopyOutMk Выдать МК со ссылкой на последнюю ИП текущей линии
@@ -574,8 +575,11 @@ void List::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		//		if (ListHead.back()->size() > 1)
 		//			((IC_type)ListHead.back()->at(ListHead.back()->size() - 2).Load.Point)->back().Load = ListHead.back()->back().Load;
 		//		break;
-	case 164: // LineLoadOutMk Выдать МК с нагрузкой последней ИП текущей линии
+	case 181: // LineBackLoadOutMk Выдать МК с нагрузкой последней ИП текущей линии
 		MkExec(Load, ((IC_type)(LineUk->Load.Point))->back().Load);
+		break;
+	case 164: // LineLoadOutMk Выдать МК с нагрузкой первой ИП текущей линии
+		MkExec(Load, ((IC_type)(LineUk->Load.Point))->begin()->Load);
 		break;
 	case 165: // LinePopMk Исключить линию списка
 		if (ListHead.back() == nullptr || ListHead.back()->size() == 0) break;
@@ -959,7 +963,6 @@ void List::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 				Searcher.FindXor(Load);
 				break;
 			case 231: // FindAndSource
-
 				Searcher.FindAndSource(Load);
 				break;
 			}

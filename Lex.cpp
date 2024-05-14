@@ -253,7 +253,7 @@
 			LexBuf[(ib - 1 + SizeBuf) % SizeBuf].Load.Type--;
 			break;
 
-		case 70: // CendToReceiver Переслать лексему из нагрузки получателю (если в нагрузке nil, то посылается текущая лексема)
+		case 70: // SendToReceiver Переслать лексему из нагрузки получателю (если в нагрузке nil, то посылается текущая лексема)
 			if (Load.Point == nullptr)
 				LexOut();
 			else
