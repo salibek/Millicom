@@ -48,7 +48,7 @@ public:
 	FU* Copy() override; // Программа копирования ФУ
 	FU* TypeCopy() override; // Создать ФУ такого же типа (не копируя контекст
 
-	StreamIntALU(FU* BusContext, FU* Templ)
+	StreamIntALU(FU* BusContext, FU* Templ=nullptr)
 	{
 		Bus = BusContext;
 		FUtype = 25;

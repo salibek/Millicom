@@ -152,7 +152,7 @@ void StreamManager::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 			IndGroup = 0;
 		}
 		if (Load.isInt())
-			Field.back().push_back(MakeFU.MakeFu(Load.toInt()+ FUTypeCorrect, Bus));
+			Field.back().push_back(MakeFU.MakeFu(Load.toInt() + FUTypeCorrect, Bus));
 		else if (!Load.isFU())
 			Field.back().push_back((FU*)Load.Point);
 		break;
@@ -263,9 +263,11 @@ void StreamManager::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		{
 			t = Field[IndGroup][Ind]->Bus; // Запомнить указатель на шину для второго ФУ
 			Field[IndGroup][Ind]->Bus = Field[IndGroup][Ind2];
+			Field[IndGroup][Ind]->MkExec(Mk1, { Cmk, &Mk2 });
+			Field[IndGroup][Ind]->Bus = t; // Восстановить указатель на шину
+			break;
 		}
-		Field[IndGroup][Ind]->MkExec(Mk1, { Cmk, &Mk2 });
-		if (Load.toInt() == 36)	Field[IndGroup][Ind]->Bus = t; // Восстановить указатель на шину
+		Field[IndGroup][Ind]->MkExec(Mk1, Load);
 	}
 	break;
 	case 36: // Mk2Exec Выполнить МК для ФУ поля по второму индексу
@@ -275,9 +277,11 @@ void StreamManager::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		{
 			t = Field[IndGroup][Ind2]->Bus; // Запомнить указатель на шину для второго ФУ
 			Field[IndGroup][Ind2]->Bus = Field[IndGroup][Ind];
+			Field[IndGroup2][Ind2]->MkExec(Mk2, { Cmk, &Mk1 });
+			Field[IndGroup][Ind2]->Bus = t; // Восстановить указатель на шину
+			break;
 		}
-		Field[IndGroup2][Ind2]->MkExec(Mk2, { Cmk, &Mk1 });
-		if (Load.toInt() == 35)	Field[IndGroup][Ind2]->Bus = t; // Восстановить указатель на шину
+		Field[IndGroup2][Ind2]->MkExec(Mk2, Load);
 		break;
 	}
 	case 37: // MkBackExec Выполнить МК для последнего ФУ последней группы поля

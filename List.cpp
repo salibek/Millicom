@@ -575,11 +575,11 @@ void List::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		//		if (ListHead.back()->size() > 1)
 		//			((IC_type)ListHead.back()->at(ListHead.back()->size() - 2).Load.Point)->back().Load = ListHead.back()->back().Load;
 		//		break;
-	case 181: // LineBackLoadOutMk Выдать МК с нагрузкой последней ИП текущей линии
-		MkExec(Load, ((IC_type)(LineUk->Load.Point))->back().Load);
+	case 181: // LineFirstLoadOutMk Выдать МК с нагрузкой последней ИП текущей линии
+		MkExec(Load, ((IC_type)(LineUk->Load.Point))->begin()->Load);
 		break;
 	case 164: // LineLoadOutMk Выдать МК с нагрузкой первой ИП текущей линии
-		MkExec(Load, ((IC_type)(LineUk->Load.Point))->begin()->Load);
+		MkExec(Load, ((IC_type)(LineUk->Load.Point))->back().Load);
 		break;
 	case 165: // LinePopMk Исключить линию списка
 		if (ListHead.back() == nullptr || ListHead.back()->size() == 0) break;

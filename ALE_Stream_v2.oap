@@ -19,13 +19,14 @@ NewFU={Mnemo="OpPriority" FUType=FUListNew Hint="Таблица приоритетов операций"}
 NewFU={Mnemo="OperateionTranslate" FUType=FUListNew Hint="Транслирование операций для FUALU"}
 NewFU={Mnemo="ALEManager" FUType=FUStreamManager Hint="Транслирование операций для FUALU"}
 
+NewFU={Mnemo="OperationAnaliz" FUType=FUListNew Hint="Анализ оператора из стека"}
 NewFU={Mnemo="ALEStart" FUType=FUListNew Hint="Начальное состояние"}
 NewFU={Mnemo="EgAleWait2" FUType=FUListNew Hint="Начальное состояние"}
 NewFU={Mnemo="EgAleWait" FUType=FUListNew Hint="Начальное состояние"}
-NewFU={Mnemo="VarAfter" FUType=FUListNew Hint="Начальное состояние"}
-NewFU={Mnemo="FuncAfter" FUType=FUListNew Hint="Начальное состояние"}
-NewFU={Mnemo="EgAleAfter" FUType=FUListNew Hint="Начальное состояние"}
-NewFU={Mnemo="OperatWait" FUType=FUListNew Hint="Начальное состояние"}
+NewFU={Mnemo="VarAfter" FUType=FUListNew Hint="Состояние после приема переменной"}
+NewFU={Mnemo="FuncAfter" FUType=FUListNew Hint="Состояние после приема фунцкии"}
+NewFU={Mnemo="EgAleAfter" FUType=FUListNew Hint="Состояние после '='"}
+NewFU={Mnemo="OperatWait" FUType=FUListNew Hint="Состояние ожидания операции"}
 NewFU={Mnemo="End" FUType=FUListNew Hint="Конечное состояние"}
 
 NewFU={Mnemo="StreamManager" FUType=FUStreamManager Hint="Потоковый менеджер для потоковых АЛУ"}
@@ -39,6 +40,8 @@ Var
 VarInt
 BracketAtr#-1
 PassAtr#-2
+Operand1
+Operand2
 
 //Lex.ReceiverMkSet=LogCons.Out
 //Lex.Lexing="//)"
@@ -103,14 +106,17 @@ MnemoTable.LineAdd={Mnemo="i" Var=10} // Добавить описание переменной в таблицу 
 MnemoTable.LineAdd={Mnemo="x" Var=8} // Добавить описание переменной в таблицу мнемоник
 MnemoTable.LineAdd={Mnemo="y" Var=3} // Добавить описание переменной в таблицу мнемоник
 MnemoTable.LineAdd={Mnemo="z" Var=20} // Добавить описание переменной в таблицу мнемоник
+MnemoTable.LineAdd={Mnemo="z" Var=20} // Добавить описание переменной в таблицу мнемоник
+MnemoTable.LineAdd={Mnemo="Cons" Mk=LogCons.OutLn} // Добавить описание переменной в таблицу мнемоник
 
-MnemoTable.FailProgSet={LogCons.LnOut="Mnemo" Lex.OutMk Lex.Stop}
-MnemoTable.SuccessProgSet={MnemoTable.LineIpOutMk=Lex.SendToReceiver}
+MnemoTable.FailProgSet={LogCons.LnOut="Mnemo faul" Lex.OutMk Lex.Stop}
+MnemoTable.SuccessProgSet={LogCons.Out="Mnemo1 " MnemoTable.LineIpOutMk=LogCons.OutLn MnemoTable.LineIpOutMk=Lex.SendToReceiver}
+
+Stack.LineCopyAdd={Sep=""} // Символ дна стека
 
 \**\ALEStart.Set=
 >{Mk Lex.ReceiverMkSet=EgAleWait2.FindAnd
 //	ALEManager.FieldClear
-LogCons.OutLn="ALEStart Mk"
 	ALEManager.GoupCreate
 	ALEManager.GroupLastIndOutMk=ALEManager.IndGroupSet 
 	ALEManager.DevAdd=FUStreamFloatALU 
@@ -131,13 +137,15 @@ LogCons.OutLn="ALEStart Var"
 
 \**\EgAleWait2.Set=
 >{Sep="," Lex.ReceiverMkSet=EgAleWait.FindAnd}
->{Sep="=" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
+>{Sep="=" 
+LogCons.OutLn="EgAleWait2 ="
+
+Lex.ReceiverMkSet=EgAleAfter.FindAnd}
 >{0 Lex.Stop LogCons.OutLn="'=' is expected"}
 
 \**\VarAfter.Set=
 >{Sep="," Lex.ReceiverMkSet=EgAleWaitFindAnd}
 >{Sep="++" Lex.ReceiverMkSet=ALEStart.FindAnd
-  LogCons.OutLn="++"
   ALEManager.DevLastIndOutMk=ALEManager.IndSet
   ALEManager.ExecDev={FUStreamFloatALU.Add=1} // Добавить +1
   MnemoTable.LineLoadOutMk=ALEManager.VarNameAdd // Добавить в менеджера мнемонику переменной
@@ -160,11 +168,25 @@ LogCons.OutLn="ALEStart Var"
 
 \**\EgAleWait.Set=
 >{Mk Lex.ReceiverMkSet=EgAleWait2.FindAnd}
+>{Var Lex.ReceiverMkSet=EgAleWait2.FindAnd}
 
 \**\EgAleAfter.Set=
->{Sep="(" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
->{Var Lex.ReceiverMkSet=OperatWait.FindAnd}
->{Const Lex.ReceiverMkSet=OperatWait.FindAnd}
+>{Sep="(" Lex.ReceiverMkSet=EgAleAfter.FindAnd
+	Stack.LineCopyAdd={Sep="("}
+}
+>{Var LogCons.OutLn="EgAleAfter Var"  Lex.ReceiverMkSet=OperatWait.FindAnd
+	Stack.FindOrLast={Sep=""}
+	Stack.SuccessExec={
+		Stack.LineCopyAdd={Var}
+		MnemoTable.LineLoadOutMk=Stack.LastLoadSet
+		ProgStopAll
+	}
+	Stack.FailExec={Stack.LastOutMk=OperationAnaliz.FindAnd}
+}
+>{Const LogCons.OutLn="EgAleAfter Const" Lex.ReceiverMkSet=OperatWait.FindAnd
+	Stack.LineCopyAdd={Const}
+	MnemoTable.LineLoadOutMk=Stack.LastLoadSet
+}
 >{Func Lex.ReceiverMkSet=FuncAfter.FindAnd}
 
 \**\FuncAfter.Set=
@@ -181,7 +203,7 @@ LogCons.OutLn="ALEStart Var"
 >{0 Lex.ReceiverMkSet=End.FindAnd}
 
 Lex.ReceiverMkSet=ALEStart.FindAnd
-Lex.Lexing="i ++"
+Lex.Lexing="Cons=i+1"
 //Lex.Lexing="i=0 i+=(5+5)/3"
 //Lex.Lexing="i=10 i=i=(2*(10+2))+5"
 //Lex.Lexing="7+5"
@@ -190,5 +212,5 @@ Lex.Lexing="i ++"
 //MnemoTable.OutMk=LogCons.LnOut
 
 ALEManager.IndSet=0
-ALEManager.VarNameSet="x"
+ALEManager.VarNameSet="i"
 ALEManager.ValByNameSend=10
