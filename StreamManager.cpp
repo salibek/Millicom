@@ -155,6 +155,8 @@ void StreamManager::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 			Field.back().push_back(MakeFU.MakeFu(Load.toInt() + FUTypeCorrect, Bus));
 		else if (!Load.isFU())
 			Field.back().push_back((FU*)Load.Point);
+		Field.back().back()->FUInd = Field.back().size() - 1;
+		Field.back().back()->FUInd2 = Field.size() - 1;
 		break;
 	case 15: // GroupRefCreate Cоздать ссылки на ФУ для группы ФУ
 	{
@@ -189,6 +191,27 @@ void StreamManager::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 	case 19: // Ind2OutMk Выдать МК со вторым индексом
 		MkExec(Load, { Cint,&Ind2 });
 		break;
+	case 151: // IndLastOut Выдать индекс последнего ФУ (при нулевой нагрзуке записывается в текущий индекс)
+		if (!Field.size()) break;
+		if (Load.isEmpty())
+		{
+			Ind = Field[IndGroup].size() - 1;
+			break;
+		}
+		Load.Write(Field[IndGroup].size() - 1);
+		break;
+	case 152: // IndLastOutMk Выдать МК с индексом последнего ФУ (при нулевой нагрзуке записывается в текущий индекс)
+	{
+		if (!Field.size()) break;
+		if (Load.isEmpty())
+		{
+			Ind = Field[IndGroup].size() - 1;
+			break;
+		}
+		long t = Field[IndGroup].size() - 1;
+		MkExec(Load, {Cint,&t});
+		}
+		break;
 	case 20: // IndAdd Прибавить к индексу группы (в нагрузке значение, которое прибавляется к индексу
 		Ind += Load.toInt();
 		break;
@@ -211,11 +234,14 @@ void StreamManager::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		Ind %= Load.toInt();
 		break;
 
-	case 28: // MkSet Установить МК для первошго индекса
+	case 28: // MkSet Установить МК для первого индекса
 		Mk1 = Load.toInt();
 		break;
 	case 29: // Mk2Set Установить МК для второго индекса
 		Mk2 = Load.toInt();
+		break;
+	case 27: // MkLastSet Установить МК для последнего ФУ
+		MkLast = Load.toInt();
 		break;
 	case 30: // ExecAll Выполнить программу для всех ФУ поля
 		for (auto& i : Field)
@@ -238,6 +264,10 @@ void StreamManager::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 			break;
 		}
 		Field[IndGroup][Ind]->ProgExec(Load);
+		break;
+	case 43: // ExecLastDev Выполнить программу для последнего ФУ
+		if (!Field.size() || !Field.back().size()) break;
+		Field.back().back()->ProgExec(Load);
 		break;
 	case 33: // Exec2Group Выполнить программу для всех ФУ группы
 		if (IndGroup >= Field.size())
@@ -270,6 +300,10 @@ void StreamManager::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		Field[IndGroup][Ind]->MkExec(Mk1, Load);
 	}
 	break;
+	case 42: // MkLastExec // Выполнить МК для последнего ФУ
+		if (!Field.size() || !Field.back().size()) break;
+		Field.back().back()->MkExec(MkLast, Load);
+		break;
 	case 36: // Mk2Exec Выполнить МК для ФУ поля по второму индексу
 	{
 		FU* t = nullptr;
@@ -414,6 +448,28 @@ void StreamManager::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 			break;
 		}
 		MkExec(Load, { CFU,(FU*)&Field.back().back() });
+		break;
+	case 85: // DevCurrentSet Установить указатель на текущее ФУ
+		DevCurrent = (FU*)Load.Point;
+		break;
+	case 86: // DevCurrentExec Выполнить программу для текущего ФУ
+		DevCurrent->ProgExec(Load);
+		break;
+	case 87: // DevCurrentMkSet Установить МК для текущего ФУ
+		DevCurrentMk = Load.toInt();
+		break;
+	case 88: // DevCurrentMkExec Выполнить МК для текущего ФУ
+		DevCurrent->MkExec(DevCurrentMk,Load);
+		break;
+	case 89: // DevCurrentOutMk Выдать МК с текущим ФУ
+		MkExec(Load, { CFU,DevCurrent });
+		break;
+	case 84: // DevCurrentOut Выдать текущее ФУ
+		Load.Write(DevCurrent);
+		break;
+	case 150: // DevLastExec Выполнить программу для последнего ФУ
+		if (!Field.size() || !Field.back().size()) break;
+		Field.back().back()->ProgExec(Load);
 		break;
 	case 90: //  GroupLastIndOut Выдать индекс последней созданной группы АЛУ (-1, если поле пустое)
 		Load.Write(Field.size() - 1);

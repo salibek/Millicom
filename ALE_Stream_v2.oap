@@ -14,18 +14,21 @@ NewFU={Mnemo="LogCons" FUType=FUConsNew Mnemo="Консоль для вывода соощений компи
 NewFU={Mnemo="Lex" FUType=FULexNew}
 NewFU={Mnemo="ALUG" FUType=FUALUG}
 NewFU={Mnemo="Stack" FUType=FUListNew Hint="Стек приоритетов арифметического графа"}
+NewFU={Mnemo="DevStack" FUType=FUListNew Hint="Стек ссылок на устройства"}
 NewFU={Mnemo="MnemoTable" FUType=FUListNew Hint="Таблица мнемоник"}
 NewFU={Mnemo="OpPriority" FUType=FUListNew Hint="Таблица приоритетов операций"}
 NewFU={Mnemo="OperateionTranslate" FUType=FUListNew Hint="Транслирование операций для FUALU"}
 NewFU={Mnemo="ALEManager" FUType=FUStreamManager Hint="Транслирование операций для FUALU"}
 
-NewFU={Mnemo="OperationAnaliz" FUType=FUListNew Hint="Анализ оператора из стека"}
+NewFU={Mnemo="OperationAnalizVar" FUType=FUListNew Hint="Анализ оператора из стека для переменной"}
+NewFU={Mnemo="OperationAnalizConst" FUType=FUListNew Hint="Анализ оператора из стека для константы"}
+NewFU={Mnemo="OperationAnaliz" FUType=FUListNew Hint="Анализ оператора из стека для константы"}
 NewFU={Mnemo="ALEStart" FUType=FUListNew Hint="Начальное состояние"}
-NewFU={Mnemo="EgAleWait2" FUType=FUListNew Hint="Начальное состояние"}
-NewFU={Mnemo="EgAleWait" FUType=FUListNew Hint="Начальное состояние"}
+NewFU={Mnemo="EqAleWait2" FUType=FUListNew Hint="Начальное состояние"}
+NewFU={Mnemo="EqAleWait" FUType=FUListNew Hint="Начальное состояние"}
 NewFU={Mnemo="VarAfter" FUType=FUListNew Hint="Состояние после приема переменной"}
 NewFU={Mnemo="FuncAfter" FUType=FUListNew Hint="Состояние после приема фунцкии"}
-NewFU={Mnemo="EgAleAfter" FUType=FUListNew Hint="Состояние после '='"}
+NewFU={Mnemo="EqAleAfter" FUType=FUListNew Hint="Состояние после '='"}
 NewFU={Mnemo="OperatWait" FUType=FUListNew Hint="Состояние ожидания операции"}
 NewFU={Mnemo="End" FUType=FUListNew Hint="Конечное состояние"}
 
@@ -42,6 +45,7 @@ BracketAtr#-1
 PassAtr#-2
 Operand1
 Operand2
+FUAtr // Атрибут ФУ
 
 //Lex.ReceiverMkSet=LogCons.Out
 //Lex.Lexing="//)"
@@ -98,6 +102,28 @@ OperateionTranslate.Set= // Операции для FUALU
 >{Sep="^^=" Stack.LastLoadOut=temp Stack.LastCopyAttach={FUALUG.Set=temp(nil)! FUALUG.XorBit} Stack.LineCopyAddPrevLoadSet={FUALUG.Set}}
 */
 
+Operations{Sep="=" Sep="+" Sep="-" Sep="/" Sep="*"}
+
+\**\OperationAnalizVar.Set=
+>{Sep="" Sep="(" EqAleAfter.ReceivedOutMk=Stack.LineCopyAdd}
+>{Sep="+" 
+LogCons.OutLn="OperationAnalizVar +"
+  MnemoTable.LineFirstLoadOutMk=ALEManager.VarNameAdd // Добавить в менеджера мнемонику переменной
+  ALEManager.VarMkAdd=FUStreamFloatALU.Add
+  ALEManager.MkSet=FUStreamFloatALU.ContextOutMk
+  ALEManager.MkExec=ALEManager.VarFuAdd
+}
+
+\**\OperationAnalizConst.Set=
+>{Sep="" Sep="(" EqAleAfter.ReceivedOutMk=Stack.LineCopyAdd}
+>{Sep="+" 
+LogCons.OutLn="OperationAnalizConst +"
+	ALEManager.MkLastSet=FUStreamFloatALU.Add
+	EqAleAfter.ReceivedLoadOutMk=ALEManager.MkLastExec
+}
+
+
+
 Lex.ReceiverMkSet=ALEStart.FindAnd
 Lex.UnicAtrSet=Mnemo
 Lex.UnicMkSet=MnemoTable.FindAnd
@@ -110,16 +136,16 @@ MnemoTable.LineAdd={Mnemo="z" Var=20} // Добавить описание переменной в таблицу 
 MnemoTable.LineAdd={Mnemo="Cons" Mk=LogCons.OutLn} // Добавить описание переменной в таблицу мнемоник
 
 MnemoTable.FailProgSet={LogCons.LnOut="Mnemo faul" Lex.OutMk Lex.Stop}
-MnemoTable.SuccessProgSet={LogCons.Out="Mnemo1 " MnemoTable.LineIpOutMk=LogCons.OutLn MnemoTable.LineIpOutMk=Lex.SendToReceiver}
+MnemoTable.SuccessProgSet={\*LogCons.Out="Mnemo1 " MnemoTable.LineIpOutMk=LogCons.OutLn*\ MnemoTable.LineIpOutMk=Lex.SendToReceiver}
 
 Stack.LineCopyAdd={Sep=""} // Символ дна стека
 
 \**\ALEStart.Set=
->{Mk Lex.ReceiverMkSet=EgAleWait2.FindAnd
+>{Mk Lex.ReceiverMkSet=EqAleWait2.FindAnd
 //	ALEManager.FieldClear
 	ALEManager.GoupCreate
 	ALEManager.GroupLastIndOutMk=ALEManager.IndGroupSet 
-	ALEManager.DevAdd=FUStreamFloatALU 
+	ALEManager.DevLastAdd=FUStreamFloatALU 
 	ALEManager.IndSet=0 
 	ALEManager.MkSet=FUStreamFloatALU.ReceiverMkAdd // Установить МК для записи результата
 	ALEStart.ReceivedLoadOutMk=ALEManager.MkExec}
@@ -135,20 +161,23 @@ LogCons.OutLn="ALEStart Var"
 }
 >{0 Lex.Stop LogCons.OutLn="Expression error" ALEStart.ReceivedOutMk=LogCons.OutLn}
 
-\**\EgAleWait2.Set=
->{Sep="," Lex.ReceiverMkSet=EgAleWait.FindAnd}
+\**\EqAleWait2.Set=
+>{Sep="," Lex.ReceiverMkSet=EqAleWait.FindAnd}
 >{Sep="=" 
-LogCons.OutLn="EgAleWait2 ="
-
-Lex.ReceiverMkSet=EgAleAfter.FindAnd}
+	LogCons.OutLn="EqAleWait2 ="
+	Stack.LineCopyAdd={Sep="="}
+	DevStack.LineCopyAdd={FUAtr}
+	ALEManager.IndLastOutMk=DevStack.LastLoadSet // Поместить ссылка на конечное ФУ в стек ФУ
+DevStack.OutMk=LogCons.OutLn
+	Lex.ReceiverMkSet=EqAleAfter.FindAnd}
 >{0 Lex.Stop LogCons.OutLn="'=' is expected"}
 
 \**\VarAfter.Set=
->{Sep="," Lex.ReceiverMkSet=EgAleWaitFindAnd}
+>{Sep="," Lex.ReceiverMkSet=EqAleWaitFindAnd}
 >{Sep="++" Lex.ReceiverMkSet=ALEStart.FindAnd
   ALEManager.DevLastIndOutMk=ALEManager.IndSet
   ALEManager.ExecDev={FUStreamFloatALU.Add=1} // Добавить +1
-  MnemoTable.LineLoadOutMk=ALEManager.VarNameAdd // Добавить в менеджера мнемонику переменной
+  MnemoTable.LineFirstLoadOutMk=ALEManager.VarNameAdd // Добавить в менеджера мнемонику переменной
   ALEManager.VarMkAdd=FUStreamFloatALU.Add
   ALEManager.MkSet=FUStreamFloatALU.ContextOutMk
   ALEManager.MkExec=ALEManager.VarFuAdd
@@ -161,49 +190,160 @@ Lex.ReceiverMkSet=EgAleAfter.FindAnd}
   ALEManager.MkSet=FUStreamFloatALU.ContextOutMk
   ALEManager.MkExec=ALEManager.VarFuAdd
   }
->{Sep="+=" Lex.ReceiverMkSet=EgAleAfter.FindAnd ALEManager.IndSet=0 ALEManager.MkSet=FUStreamFloatALU.Add ALEStart.ReceivedLoadOutMk=ALEManager.MkExec}
->{Sep="-=" Lex.ReceiverMkSet=EgAleAfter.FindAnd ALEManager.IndSet=0 ALEManager.MkSet=FUStreamFloatALU.Sub1 ALEStart.ReceivedLoadOutMk=ALEManager.MkExec}
->{Sep="=" Lex.ReceiverMkSet=EgAleAfter.FindAnd }
+>{Sep="+=" Lex.ReceiverMkSet=EqAleAfter.FindAnd ALEManager.IndSet=0 ALEManager.MkSet=FUStreamFloatALU.Add ALEStart.ReceivedLoadOutMk=ALEManager.MkExec}
+>{Sep="-=" Lex.ReceiverMkSet=EqAleAfter.FindAnd ALEManager.IndSet=0 ALEManager.MkSet=FUStreamFloatALU.Sub1 ALEStart.ReceivedLoadOutMk=ALEManager.MkExec}
+>{Sep="=" Lex.ReceiverMkSet=EqAleAfter.FindAnd }
 >{0 Lex.Stop LogCons.OutLn="'=' is expected"}
 
-\**\EgAleWait.Set=
->{Mk Lex.ReceiverMkSet=EgAleWait2.FindAnd}
->{Var Lex.ReceiverMkSet=EgAleWait2.FindAnd}
+\**\EqAleWait.Set=
+>{Mk Lex.ReceiverMkSet=EqAleWait2.FindAnd}
+>{Var Lex.ReceiverMkSet=EqAleWait2.FindAnd}
 
-\**\EgAleAfter.Set=
->{Sep="(" Lex.ReceiverMkSet=EgAleAfter.FindAnd
+
+
+\**\EqAleAfter.Set=
+>{Sep="(" Lex.ReceiverMkSet=EqAleAfter.FindAnd
 	Stack.LineCopyAdd={Sep="("}
 }
->{Var LogCons.OutLn="EgAleAfter Var"  Lex.ReceiverMkSet=OperatWait.FindAnd
-	Stack.FindOrLast={Sep=""}
+>{Var LogCons.OutLn="EqAleAfter Var"  Lex.ReceiverMkSet=OperatWait.FindAnd
+	Stack.FindOrLast={Sep="" Sep="=" Sep="("}
 	Stack.SuccessExec={
 		Stack.LineCopyAdd={Var}
 		MnemoTable.LineLoadOutMk=Stack.LastLoadSet
 		ProgStopAll
 	}
-	Stack.FailExec={Stack.LastOutMk=OperationAnaliz.FindAnd}
+	Stack.LastOutMk=OperationAnalizVar.FindAnd
 }
->{Const LogCons.OutLn="EgAleAfter Const" Lex.ReceiverMkSet=OperatWait.FindAnd
+>{Const LogCons.OutLn="EqAleAfter Const" Lex.ReceiverMkSet=OperatWait.FindAnd
+	Stack.FindOrLast={Sep="" Sep="=" Sep="("}
+	Stack.SuccessExec={
+		Stack.LineCopyAdd={Const}
+		MnemoTable.LineLoadOutMk=Stack.LastLoadSet
+		EqAleAfter.ProgStopAll
+	}
+	Stack.LastOutMk=LogCons.OutLn
+	Stack.LastOutMk=OperationAnalizConst.FindAnd
 	Stack.LineCopyAdd={Const}
 	MnemoTable.LineLoadOutMk=Stack.LastLoadSet
 }
 >{Func Lex.ReceiverMkSet=FuncAfter.FindAnd}
 
-\**\FuncAfter.Set=
->{Sep="(" Lex.ReceiverMkSet=EgAleAfter.FindAnd}
->{Var Lex.ReceiverMkSet=OperatWait.FindAnd}
->{Const Lex.ReceiverMkSet=OperatWait.FindAnd}
+\**\OperationAnaliz.Set= // Анализ операции из стека
+>{Sep="="
+//	ALEManager.MkLastSet=FUStreamFloatALU.ReceiverAdd
+//DevStack.LastDelMk
+//	DevStack.OutMk=LogCons.OutLn
+	DevStack.LastLoadOutMk=ALEManager.IndSet
+	ALEManager.IndLastOutMk=ALEManager.Ind2Set
+	ALEManager.MkSet=FUStreamFloatALU.ContextOutMk
+	ALEManager.Mk2Set=FUStreamFloatALU.ReceiverAdd
+	ALEManager.MkExec=ALEManager.Mk2Exec
+	ALEManager.DevLastExec={FUStreamFloatALU.ReceiverMkAdd=FUStreamFloatALU.SetSend}
+	DevStack.LastDelMk
+	Stack.LastDel
+LogCons.OutLn="OperationAnaliz ="
+}
+>{Sep="+" 
+	ALEManager.DevLastExec={FUStreamFloatALU.ReceiverMkAdd=FUStreamFloatALU.Add}
+	ALEManager.MkLastSet=FUStreamFloatALU.ReceiverAdd
+	DevStack.LastLoadOutMk=ALEManager.MkLastExec
+	DevStack.LastDelMk
+	Stack.LastDel
+LogCons.OutLn="OperationAnaliz +"
+}
+>{Sep="-" 
+	ALEManager.DevLastExec={FUStreamFloatALU.ReceiverMkAdd=FUStreamFloatALU.Sub2}
+	ALEManager.MkLastSet=FUStreamFloatALU.ReceiverAdd
+	DevStack.LastLoadOutMk=ALEManager.MkLastExec
+	DevStack.LastDelMk
+	Stack.LastDel
+}
+>{Sep="*"
+	ALEManager.DevLastExec={FUStreamFloatALU.ReceiverMkAdd=FUStreamFloatALU.Mul}
+	ALEManager.MkLastSet=FUStreamFloatALU.ReceiverAdd
+	DevStack.LastLoadOutMk=ALEManager.MkLastExec
+	DevStack.LastDelMk
+	Stack.LastDel
+}
+>{Sep="/"
+	ALEManager.DevLastExec={FUStreamFloatALU.ReceiverMkAdd=FUStreamFloatALU.Div2}
+	ALEManager.MkLastSet=FUStreamFloatALU.ReceiverAdd
+	DevStack.LastLoadOutMk=ALEManager.MkLastExec
+	DevStack.LastDelMk
+	Stack.LastDel
+}
 
 \**\OperatWait.Set=
->{Sep=")" Lex.ReceiverMkSet=OperatWait.FindAnd}
+>{Sep=")" Lex.ReceiverMkSet=OperatWait.FindAnd
+	Stack.ProgExec=BracketProg{
+		Stack.FindOrLast={Sep="("}
+		Stack.SuccessExec={ProgStopAll
+			Stack.PopMk DevStack.PopMk
+			ProgStopAll
+			}
+		Stack.PopMk DevStack.PopMk
+		}
+}
 >{Sep="]" Lex.ReceiverMkSet=OperatWait.FindAnd}
 >{Sep=":" Lex.ReceiverMkSet=OperatWait.FindAnd}
 >{Sep="," Lex.ReceiverMkSet=OperatWait.FindAnd}
-//>{Operator Lex.ReceiverMkSet=EgAleAfter.FindEnd}
+>{Sep="+" Lex.ReceiverMkSet=EqAleAfter.FindAnd LogCons.OutLn="OperatWait +"
+	Stack.FindAndLast={Const}
+	Stack.SuccessExec={
+LogCons.OutLn="Stack const"
+		ALEManager.DevLastAdd=FUStreamFloatALU // Создаем новое АЛУ
+		DevStack.LineCopyAdd={FUAtr}
+		ALEManager.IndLastOutMk=Stack.LastLoadSet // Помещаем ссылку на новое АЛУ в стек укаазетелей на ФУ
+		ALEManager.MkLastSet=FUStreamFloatALU.Add
+		Stack.LastLoadOutMk=ALEManager.MkLastExec
+		Stack.LastDelMk
+		Stack.LastOutMk=OperationAnaliz.FindAnd
+		Stack.LineCopyAdd={Sep="+"}
+		OperatWait.ProgStopAll
+	}
+	Stack.FindAndLast={Var}
+	Stack.SuccessExec={
+LogCons.OutLn="Stack Var"
+		ALEManager.DevLastAdd=FUStreamFloatALU // Создаем новое АЛУ
+		ALEManager.IndLastOutMk=Stack.LastLoadSet // Помещаем ссылку на новое АЛУ в стек укаазетелей на ФУ
+		MnemoTable.LineFirstLoadOutMk=ALEManager.VarNameAdd // Добавить в менеджера мнемонику переменной
+		ALEManager.VarMkAdd=FUStreamFloatALU.Add
+		ALEManager.MkLastSet=FUStreamFloatALU.ContextOutMk
+		ALEManager.MkLastExec=ALEManager.VarFuAdd
+		Stack.LastDelMk
+LogCons.OutLn="OperationAnaliz Call"
+Stack.LastOutMk=LogCons.OutLn
+		Stack.LastOutMk=OperationAnaliz.FindAnd
+		Stack.LineCopyAdd={Sep="+"}
+		OperatWait.ProgStopAll
+	}	
+	Stack.FindOrLast=Operations // Поиск предыдущей операции
+	Stack.SuccessExec={
+LogCons.OutLn="Stack Operations"
+		ALEManager.DevLastAdd=FUStreamFloatALU // Создаем новое АЛУ
+		ALEManager.DevLastExec={Stack.LastLoadOutMk=FUStreamFloatALU.Add}
+		
+		ALEManager.MkLastSet=FUStreamFloatALU.ReceiverAdd
+		DevStack.LastLoadOutMk=ALEManager.MkLastExec
+	}
+}
+>{Sep="-" Lex.ReceiverMkSet=EqAleAfter.FindAnd
+}
+>{Sep="*" Lex.ReceiverMkSet=EqAleAfter.FindAnd
+}
+>{Sep="/" Lex.ReceiverMkSet=EqAleAfter.FindAnd
+}
+
 >{0 Lex.ReceiverMkSet=End.FindAnd}
+
+\**\FuncAfter.Set=
+>{Sep="(" Lex.ReceiverMkSet=EqAleAfter.FindAnd}
+>{Var Lex.ReceiverMkSet=OperatWait.FindAnd}
+>{Const Lex.ReceiverMkSet=OperatWait.FindAnd}
 
 Lex.ReceiverMkSet=ALEStart.FindAnd
 Lex.Lexing="Cons=i+1"
+//Lex.Lexing="i++"
 //Lex.Lexing="i=0 i+=(5+5)/3"
 //Lex.Lexing="i=10 i=i=(2*(10+2))+5"
 //Lex.Lexing="7+5"

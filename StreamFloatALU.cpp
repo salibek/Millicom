@@ -268,9 +268,10 @@ void StreamFloatALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		ReceiverContexts.clear();
 		break;
 	case 161: // ReceiverAdd Добавить ссылку на приемника результата (Устанавливается перед установкой МК)
+		cout <<"FU :" << (this)->FUInd << endl;
 		ReceiverContexts.push_back((FU*)Load.Point);
 		break;
-	case 162: // ReceiverMkSet Установить МК для приемника результата 
+	case 162: // ReceiverMkAdd Установить МК для приемника результата 
 		if (ReceiverMk.size() == ReceiverContexts.size())
 			ReceiverContexts.push_back(nullptr);
 		ReceiverMk.push_back(Load.toInt());
@@ -693,6 +694,7 @@ void StreamFloatALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 						Rez *= i;
 						break;
 				}
+
 			RezExec(&Rez); // Действия при получении результата
 		}
 		break;
@@ -835,6 +837,7 @@ void StreamFloatALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		}
 		break;
 	// Однооперандные действия
+	case 524: // SetSend Установить результат и разослать его потребителям
 	case 525: // Sqrt Квадрат
 	case 526: // Sqr Квадратный корень
 	case 527: // Log10 Логирифм по основанию 2
@@ -863,6 +866,7 @@ void StreamFloatALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		FOperands.push_back(true);
 		switch (MK)
 		{
+		case 524: // SetSend Установить результат и разослать его потребителям
 		case 525: // Sqrt Квадрат
 		case 526: // Sqr Корень
 		case 527: // Ln
@@ -875,6 +879,8 @@ void StreamFloatALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 					break;
 				}
 			switch (MK) {
+			case 524: // SetSend Установить результат и разослать его потребителям
+				break;
 			case 525: //Sqrt Квадрат
 				Rez = sqrt(Rez);
 				break;

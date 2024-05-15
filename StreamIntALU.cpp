@@ -961,6 +961,7 @@ void StreamIntALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		}
 		break;
 	// Однооперандные операции
+	case 524: // SetSend Установить результат и разослать его потребителям
 	case 526: // Sqr
 	case 531: // Abs Модуль числа
 	case 532: // Not Логические НЕТ
@@ -978,6 +979,8 @@ void StreamIntALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		}
 		switch (MK)
 		{
+		case 524: // SetSend Установить результат и разослать его потребителям
+			break;
 		case 526: // Sqr Квадрат числа
 			Rez *= Rez;
 			break;

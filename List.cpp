@@ -754,6 +754,7 @@ void List::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 	{
 	case 185:
 	case 195:
+	//	t->back().Load = Load; break;
 		t->back().Load = Load.Clone();	break;
 	case 186:
 	case 196:
