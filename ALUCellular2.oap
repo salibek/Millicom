@@ -14,7 +14,7 @@ MainBus.FUTypeCorrectSet=-96 // Корректировка номера типа ФУ для переноса на нов
 
 NewFU={Mnemo="Console" FUType=FUConsNew}
 NewFU={Mnemo="Manager" FUType=FUStreamManager Hint="Менеджер поля АЛУ"}
-//NewFU={Mnemo="IntALU" FUType=FUIntAluNew}
+NewFU={Mnemo="IntALU" FUType=FUStreamFloatALU}
 NewFU={Mnemo="SrteamIntALU" FUType=FUStreamIntALU}
 
 MainBus.PartialResetSet \\ Запомнить число созданных ФУ

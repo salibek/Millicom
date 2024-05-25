@@ -1,0 +1,72 @@
+// - обозначение переведенных в комментарии старых ФУ
+\* date *\ //- последняя дата изменения или добавления строк и ФУ
+
+NewFU={Mnemo="Main_Bus" MkBegRange=1000 FUType=FUBusNew} // Описание Bus
+
+\\ Для создания индексного файла сначала надо запустить программу !!!!
+ CapsManager.IndexVectCreate=20000
+ CapsManager.IpIcIdOutMk=MainBus.IpIcIdSet
+ CapsManager.IpIcIdOutMk=VariableManager.IpIcIdSet
+ CapsManager.IpIcIdOutMk=ListSyntez.IpIcIdSet
+ MainBus.ModeSet=1
+\\ -------------------------------------- \\
+MainBus.FUTypeCorrectSet=-96 // Корректировка номера типа ФУ для переноса на новую ОА-платформу
+
+NewFU={Mnemo="Console" FUType=FUConsNew}
+NewFU={Mnemo="StreamFloatALU" FUType=FUStreamFloatALU}
+NewFU={Mnemo="Manajer" FUType=FUStreamManager}
+NewFU={Mnemo="ALUStart" FUType=FUALUNew}
+
+MainBus.PartialResetSet \\ Запомнить число созданных ФУ
+MainBus.ModeSet=2
+
+N=20
+M=10
+R=30
+
+ALUStart.VectNew=10
+
+
+Manajer.CounterSet=N
+Manajer.CounterMul=R
+Manajer.FieldCreate=FUStreamFloatALU
+
+Manajer.ExecAll={
+/*
+  FUStreamFloatALU.RoutProgSet={
+    FUStreamFloatALU.RoutedAtrOutMk=SetAlu
+    DivIntAlu=FUStreamFloatALU.FUMkRangeSet
+    FUStreamFloatALU.FUIndOutMk=SubAlu
+    BiggerExecAlu={FUStreamFloatALU.RoutedMkOutMk=FUStreamFloatALU.AdrBuf_3_OutMk ProgStopAll}
+    SmallerExecAlu={FUStreamFloatALU.RoutedMkOutMk=FUStreamFloatALU.AdrBuf_1_OutMk ProgStopAll}
+    FUStreamFloatALU.RoutedAtrOutMk=SetAlu
+    DivIntAlu=FUStreamFloatALU.FUMkRangeSet
+    ModAlu=M //Определение номера столбца
+    OutAlu=t
+    FUStreamFloatALU.FUIndOutMk=SetAlu
+    ModAlu=M //Определение номера столбца
+    SubAlu=t!
+    BiggerExecAlu={FUStreamFloatALU.RoutedMkOutMk=FUStreamFloatALU.AdrBuf_0_OutMk ProgStopAll}
+    FUStreamFloatALU.RoutedMkOutMk=FUStreamFloatALU.AdrBuf_0_OutMk
+  }
+*/
+  FUStreamFloatALU.NOperandSet=M
+  FUStreamFloatALU.NOperandAdd=M
+  FUStreamFloatALU.FUMkRangeSet=10000
+  FUStreamFloatALU.OpIndSet=0
+  FUStreamFloatALU.OperationMkIndexStartSet=1000
+  FUStreamFloatALU.RezProgSet={
+    FUStreamFloatALU.AccumModeSet
+    FUStreamFloatALU.Set=0
+    FUStreamFloatALU.ExecCounterSet=M
+    FUStreamFloatALU.ProgExec={
+      FUStreamFloatALU.Push
+      FUStreamFloatALU.OperandByIndOutMk=FUStreamFloatALU.Set
+      FUStreamFloatALU.OpIndAdd=1
+      FUStreamFloatALU.OperandByIndOutMk=FUStreamFloatALU.Mul
+      FUStreamFloatALU.OpIndAdd=1
+      FUStreamFloatALU.PopMk=FUStreamFloatALU.Add
+    }
+  FUStreamFloatALU.AccumModeSet=False
+  }
+}

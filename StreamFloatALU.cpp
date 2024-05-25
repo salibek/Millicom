@@ -94,6 +94,13 @@ void StreamFloatALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 	case 46: //MatErrProgSet Установить программу обработки ошибки математической операции
 		MatErrProg = Load.Point;
 		break;
+	case 64: // ExecCounterSet Установить счетчик итераций выполнения подпрограммы
+		if (!ExecFlag)
+			ExecCounter.back() = Load.toInt(1);
+		else
+			ExecCounter.push_back(Load.toInt(1));
+		break;
+
 	case 70: // ReadySet Установить флаг готовности результата (по умолчанию true)
 		Ready = Load.toInt(1);
 		break;
@@ -419,6 +426,12 @@ void StreamFloatALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 	case 260: // OperationProgSet Установить специальную операцию    
 		OperetionProg = Load.Point;
 		break;
+	case 261: // OperationRezProgSet Установить ссылку на программу для получения результата специальной операции (при наборе всех операндов)
+		OperationMkIndexStart = Load.toInt();
+		break;
+	case 262: // OperationMkIndexStartSet Установить начало диапазона МК для специальной операции
+		OperationMkIndexStart = Load.toInt();
+		break;
 
 	case 270: // PiOut Выдать число ПИ (при нулевой нагрузке записать в аккумулятор)
 		if (Load.isEmpty()) {
@@ -562,17 +575,29 @@ void StreamFloatALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		break;
 	}
 
-	case 340: // RoutMkOut Выдать маршрутизированную МК
+	case 335: // RoutedMkOut Выдать маршрутизированную МК
 		Load.Write(IpForMkAdrOut.atr);
 		break;
-	case 341: // RoutMkOutMk
+	case 336: // RoutedMkOutMk Выдать МК с маршрутизированной МК
 		MkExec(Load, { Cint, &IpForMkAdrOut.atr });
 		break;
-	case 342: // RoutLoadOut
+	case 337: // RoutedLoadOut  Выдать маршрутизированную нагрзуку МК
 		Load.Write(IpForMkAdrOut.atr);
 		break;
-	case 343: // RoutLoadOutMk
+	case 338: // RoutedLoadOutMk Выдать МК с маршрутизированной нагрузкой МК
 		MkExec(Load, IpForMkAdrOut.Load);
+		break;
+	case 339: // RoutedIpOut  Выдать маршрутизированную ИП
+		//Load.Write(IpForMkAdrOut);
+		break;
+	case 340: // RoutedIpOutMk Выдать МК с маршрутизированной ИП
+		MkExec(Load, { CIP, &IpForMkAdrOut });
+		break;
+	case 341: // RoutedAtrOut  Выдать атриубт маршрутизируемой ИП
+		Load.Write(IpForMkAdrOut.atr);
+		break;
+	case 342: // RoutedAtrOutMk Выдать МК с атрибутом маршрутизируемой ИП
+		MkExec(Load, { Cmk, &IpForMkAdrOut.atr });
 		break;
 
 	case 350: // AdrBuf_0_OutMk Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 0
@@ -1088,6 +1113,23 @@ StreamFloatALU::StreamFloatALU(void* Dev1) // Копирующий конструктор
 	OpCode = Dev->OpCode;
 	bool MkAbort = Dev->MkAbort; // Флаг прерывания после обоработки марштуризируемой команды
 	bool EarlyCalculi = Dev->EarlyCalculi; // Флаг ранних вычислений (при многооперандных командах результат начинает вычисляться уже по приходе данных (ускоряет вычисления)
+}
+
+void StreamFloatALU::ProgExec(void* Uk, unsigned int CycleMode, FU* Bus, vector<ip>::iterator* Start) // Исполнение программы из ИК
+{
+	ExecFlag = true;
+	for (int i = 0; i < ExecCounter.back(); i++)
+		FU::ProgExec(Uk, CycleMode, Bus, Start);
+	if (ExecCounter.size() == 1) ExecFlag = false;
+	if (ExecCounter.size() > 1) ExecCounter.pop_back();
+}
+void StreamFloatALU::ProgExec(LoadPoint Uk, unsigned int CycleMode, FU* Bus, vector<ip>::iterator* Start) // Исполнение программы из ИК
+{
+	ExecFlag = true;
+	for (int i = 0; i < ExecCounter.back(); i++)
+		FU::ProgExec(Uk, CycleMode, Bus, Start);
+	if (ExecCounter.size() == 1) ExecFlag = false;
+	if (ExecCounter.size() > 1) ExecCounter.pop_back();
 }
 
 FU* StreamFloatALU::Copy() // Программа копирования ФУ

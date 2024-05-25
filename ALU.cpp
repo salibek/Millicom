@@ -954,6 +954,30 @@ void ALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 			// Реализация поэлементных векторных операций
 			// Двуоперандные векторные операции
 
+		case 400: // ZeroExec Выполнить программу, если в аккумуляторе 0
+			if (Stack.back().accum == 0)
+				ProgExec(Load);
+			break;
+		case 401: // NotZeroExec Выполнить программу, если в аккумуляторе не 0
+			if (Stack.back().accum != 0)
+				ProgExec(Load);
+			break;
+		case 402: // BiggerExec Выполнить программу, если аккумулятор > 0
+			if (Stack.back().accum > 0)
+				ProgExec(Load);
+			break;
+		case 403: // BiggerZeroExec Выполнить программу, если аккумулятор >= 0
+			if (Stack.back().accum >= 0)
+				ProgExec(Load);
+			break;
+		case 404: // SmallerExec Выполнить программу, если аккумулятор < 0
+			if (Stack.back().accum < 0)
+				ProgExec(Load);
+			break;
+		case 405: // SmallerZeroExec Выполнить программу, если аккумулятор <= 0
+			if (Stack.back().accum <= 0)
+				ProgExec(Load);
+			break;
 		default:
 			CommonMk(MK, Load);
 			break;

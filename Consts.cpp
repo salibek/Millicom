@@ -1719,6 +1719,8 @@ void FU::CommonMk(long int Mk, LoadPoint Load, FU* Sender)
 			ProgStop += PB; // Выйти из главной программы
 		}
 		break;
+	case 941: //
+	break;
 	case 946: // FUMkRangeSet Устаровить интервал индексов МК
 		FUMkRange = Load.toInt();
 		break;

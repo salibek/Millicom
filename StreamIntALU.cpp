@@ -90,6 +90,12 @@ void StreamIntALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 	case 46: //MatErrProgSet Установить программу обработки ошибки математической операции
 		MatErrProg = Load.Point;
 		break;
+	case 64: // ExecCounterSet Установить счетчик итераций выполнения подпрограммы
+		if (!ExecFlag)
+			ExecCounter.back() = Load.toInt(1);
+		else
+			ExecCounter.push_back(Load.toInt(1));
+		break;
 	case 70: // ReadySet Установить флаг готовности результата (по умолчанию true)
 		Ready = Load.toInt(1);
 		break;
@@ -269,8 +275,8 @@ void StreamIntALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		ReceiverContexts.push_back((FU*)Load.Point);
 		break;
 	case 162: // ReceiverMkAdd Установить МК для приемника результата 
-//		if (ReceiverMk.size() == ReceiverContexts.size())
-//			ReceiverContexts.push_back(nullptr);
+		if (ReceiverMk.size() == ReceiverContexts.size())
+			ReceiverContexts.push_back(nullptr);
 		ReceiverMk.push_back(Load.toInt());
 		break;
 	case 163: //ReceiverCountOut Выдать количество получателей результата
@@ -414,6 +420,12 @@ void StreamIntALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 	case 260: // OperationProgSet Установить специальную операцию    
 		OperetionProg = Load.Point;
 		break;
+	case 261: // OperationRezProgSet Установить ссылку на программу для получения результата специальной операции (при наборе всех операндов)
+		OperationMkIndexStart = Load.toInt();
+		break;
+	case 262: // OperationMkIndexStartSet Установить начало диапазона МК для специальной операции
+		OperationMkIndexStart = Load.toInt();
+		break;
 	case 280: // ZeroProgSet Установить программу при == 
 		ZProg = Load.Point;
 		break;
@@ -528,6 +540,12 @@ void StreamIntALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		break;
 	case 340: // RoutedIpOutMk Выдать МК с маршрутизированной ИП
 		MkExec(Load, { CIP, &IpForMkAdrOut });
+		break;
+	case 341: // RoutedAtrOut  Выдать атриубт маршрутизируемой ИП
+		Load.Write(IpForMkAdrOut.atr);
+		break;
+	case 342: // RoutedAtrOutMk Выдать МК с атрибутом маршрутизируемой ИП
+		MkExec(Load, { Cmk, &IpForMkAdrOut.atr });
 		break;
 
 	case 345: // AdrBufAdd Добавить адрес в буфер адресов
@@ -1119,6 +1137,23 @@ StreamIntALU::StreamIntALU(void* Dev1) // Копирующий конструктор
 	PreRezProg = Dev->PreRezProg; // Программа, запускаемая перед получением результата
 	OpCode = Dev->OpCode;
 	EarlyCalculi = Dev->EarlyCalculi;
+}
+
+void StreamIntALU::ProgExec(void* Uk, unsigned int CycleMode, FU* Bus, vector<ip>::iterator* Start) // Исполнение программы из ИК
+{
+	ExecFlag = true;
+	for (int i = 0; i < ExecCounter.back(); i++)
+		FU::ProgExec(Uk, CycleMode, Bus, Start);
+	if (ExecCounter.size() == 1) ExecFlag = false;
+	if (ExecCounter.size() > 1) ExecCounter.pop_back();
+}
+void StreamIntALU::ProgExec(LoadPoint Uk, unsigned int CycleMode, FU* Bus, vector<ip>::iterator* Start) // Исполнение программы из ИК
+{
+	ExecFlag = true;
+	for (int i = 0; i < ExecCounter.back(); i++)
+		FU::ProgExec(Uk, CycleMode, Bus, Start);
+	if (ExecCounter.size() == 1) ExecFlag = false;
+	if (ExecCounter.size() > 1) ExecCounter.pop_back();
 }
 
 FU* StreamIntALU::Copy() // Программа копирования ФУ

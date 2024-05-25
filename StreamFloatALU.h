@@ -20,7 +20,7 @@ class StreamFloatALU : public FU
 	vector<double>RezStack; //  Стек для хранения результатов и промежуточных данных
 	vector<double>RezExtStack; // Стек расширеного резульатата (например, остаток при операции целочисленного деления)
 	long int OperandsCounter = 0; // Счетчик количества полученных операндов
-	long int OpInd = 0; // Индекс операнда
+	long int OpInd = 0, OpInd2=0; // Индексы операнда
 	vector<LoadPoint>OutVars; // Ссылки на переменные для результата вычислений
 	long int AngleMode = 0; // Режим измерения угла (0 - радианы, 1 -градусы)
 	long int Noperands = 2; // Количество операндов для операции
@@ -40,6 +40,12 @@ class StreamFloatALU : public FU
 	bool MkAbort = false; // Флаг прерывания после обоработки марштуризируемой команды
 	bool EarlyCalculi = false; // Флаг ранних вычислений (при многооперандных командах результат начинает вычисляться уже по приходе данных (ускоряет вычисления)
 	bool AccumMode = false;// Аккумуляторных режим работы
+	long OperationMkIndexStart = 500; // Начало диапазона для МК специальной операции
+	vector<int> ExecCounter = { 1 }; // Количество итераций при Exec
+	bool ExecFlag = false; // Флаг выполнения подпрограммы
+	void ProgExec(void* Uk, unsigned int CycleMode = 0, FU* Bus = nullptr, vector<ip>::iterator* Start = nullptr) override; // Исполнение программы из ИК
+	void ProgExec(LoadPoint Uk, unsigned int CycleMode = 0, FU* Bus = nullptr, vector<ip>::iterator* Start = nullptr) override; // Исполнение программы из ИК
+	int FUTypeCorrect = fuTypeCorrect; // Корректировка индекса тип
 public:
 	double RezBuf = 0; // Буфер результата
 	double Rez = 0; //  Результат операции

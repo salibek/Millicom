@@ -12,12 +12,15 @@ NewFU={Mnemo="Main_Bus" MkBegRange=1000 FUType=FUBusNew} // Описание Bus
 \\ -------------------------------------- \\
 MainBus.FUTypeCorrectSet=-96 // Корректировка номера типа ФУ для переноса на новую ОА-платформу
 
-NewFU={Mnemo="Console" FUType=FUConsNew Hint="Консоль для вывода логов"}
-NewFU={Mnemo="ALUG" FUType=FUALUNew Hint="ФУ для создания нового ФУ"}
+NewFU={Mnemo="Console" FUType=FUConsNew}
+NewFU={Mnemo="Manager" FUType=FUStreamManager Hint="Менеджер поля АЛУ"}
+//NewFU={Mnemo="IntALU" FUType=FUIntAluNew}
+NewFU={Mnemo="SrteamIntALU" FUType=FUStreamIntALU}
 
 MainBus.PartialResetSet \\ Запомнить число созданных ФУ
 MainBus.ModeSet=2
 
-ALUG.Set=4
-ALUG.Sqrt
-ALUG.OutMk=Console.OutLn
+SrteamIntALU.ReceiverMkAdd=Console.OutLn
+SrteamIntALU.Add=2
+SrteamIntALU.Add=2
+

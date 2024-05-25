@@ -40,6 +40,12 @@ private:
 	bool MkAbort = false; // Флаг прерывания после обоработки марштуризируемой команды
 	bool EarlyCalculi = false; // Флаг ранних вычислений (при многооперандных командах результат начинает вычисляться уже по приходе данных (ускоряет вычисления)
 	bool AccumMode = false;// Аккумуляторных режим работы
+	long OperationMkIndexStart = 500; // Начало диапазона для МК специальной операции
+	vector<int> ExecCounter = { 1 }; // Количество итераций при Exec
+	bool ExecFlag = false; // Флаг выполнения подпрограммы
+	void ProgExec(void* Uk, unsigned int CycleMode = 0, FU* Bus = nullptr, vector<ip>::iterator* Start = nullptr) override; // Исполнение программы из ИК
+	void ProgExec(LoadPoint Uk, unsigned int CycleMode = 0, FU* Bus = nullptr, vector<ip>::iterator* Start = nullptr) override; // Исполнение программы из ИК
+	int FUTypeCorrect = fuTypeCorrect; // Корректировка индекса тип
 public:
 	long RezBuf = 0; // Буфер результата
 	long int Rez = 0; //  Результат операции
