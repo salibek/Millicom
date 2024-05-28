@@ -44,7 +44,7 @@ private:
 		ListIni, GraphTrasfIni, IntAluIni, InOutIni, AutomatManagerIni, NeuroIni,
 		NetManagerIni,SchedulerIni,EventserIni, MeanShiftIni, StreamFloatALUIni, GaussIni, ALUIni,
 		CellularAutomatIni, CellularAutomatManagerIni, RouterIni, GatewayIni, StreamFloatALUManagerIni,
-		StreamIntALUIni, StreamIntALUManagerIni, MatPlotIni };
+		StreamIntALUIni, MatPlotIni };
 	 bool FErr = false; // Флаг ошибки создани ФУ
 public:
 	int GetFuTypeCount() // Выдать количество типов ФУ

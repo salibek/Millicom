@@ -18,7 +18,6 @@ void StreamIntALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 	}
 	int MKinitial = MK;
 	MK %= FUMkRange;
-//	if (Load.isEmpty()) Load = { Cint,&Rez }; // Если нулевая нагрузка, то операндом является аккумулятор
 	switch (MK)
 	{
 	case 0: //Reset

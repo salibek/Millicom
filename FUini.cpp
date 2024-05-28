@@ -180,11 +180,6 @@ FU* StreamIntALUIni(FU* BusContext, FU* TEmpl)
 	return (FU*) new StreamIntALU(BusContext, TEmpl);
 }
 
-FU* StreamIntALUManagerIni(FU* BusContext, FU* TEmpl)
-{
-	return (FU*) new StreamManager(BusContext, TEmpl);
-}
-
 FU* MatPlotIni(FU* BusContext, FU* TEmpl)
 {
 	return (FU*) new MatPlot(BusContext, TEmpl);
