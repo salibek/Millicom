@@ -66,7 +66,7 @@ void MatPlot::ProgFU(long int MK, LoadPoint Load, FU* Sender) {
 			if (!Load.isVect()) break;
 			//...
 			break;
-		case 13: // ZMatrSet // Установить значения для 3-мерного графика
+		case 13: // ZSet // Установить значения для 3-мерного графика
 			if (!Load.isVect()) break;
 			//...
 			break;
