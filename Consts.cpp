@@ -2335,7 +2335,7 @@ void* MakeLoadFromDouble(double x, unsigned int Type) // Создать нагр
 	}
 };
 
-LoadVect_type LoadPoint::Vect() // Возвращает укаазатель на вектор
+LoadVect_type LoadPoint::toVect() // Возвращает укаазатель на вектор
 {
 //	if (!isVect()) return nullptr;
 	return (LoadVect_type)Point;

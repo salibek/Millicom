@@ -202,7 +202,7 @@ public:
 		if (Type >> 1 == DIP) return *this;
 		if (isIC()) return {TIC, IC()->begin()._Ptr };
 	};
-	LoadVect_type Vect(); // Возвращает укаазатель на вектор
+	LoadVect_type toVect(); // Возвращает укаазатель на вектор
 	IC_type IC();
 };
 

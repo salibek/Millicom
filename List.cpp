@@ -475,7 +475,7 @@ void List::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		if (LineUk->Load.IC()->back().Load.Point == nullptr)
 			LineUk->Load.IC()->back().Load.Point = new vector<LoadPoint>;
 		if (!LineUk->Load.IC()->back().Load.isVect()) break;
-		LineUk->Load.IC()->back().Load.Vect()->push_back(Load);
+		LineUk->Load.IC()->back().Load.toVect()->push_back(Load);
 		break;
 	case 281: // LastLoadAppend Добавить элкскет в вектор в нагрузке последней ИП последней строки
 		if (!ListHead.size() || !ListHead.back()->size() || ListHead.back()->back().Load.Point == nullptr ||
@@ -483,14 +483,14 @@ void List::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		if (ListHead.back()->back().Load.IC()->back().Load.Point == nullptr)
 			ListHead.back()->back().Load.IC()->back().Load.Point = new vector<LoadPoint>;
 		if (!ListHead.back()->back().Load.IC()->back().Load.isVect()) break;
-		ListHead.back()->back().Load.IC()->back().Load.Vect()->push_back(Load);
+		ListHead.back()->back().Load.IC()->back().Load.toVect()->push_back(Load);
 		break;
 	case 282: // LineToLoadVectWrite Записать нагрузку во все элементы вектора из нагрузки последней ИП текущей линии
 		if (LineUk == nullptr || LineUk->Load.IC()->back().Load.Point == nullptr || LineUk->Load.IC()->back().Load.IC()->size()) break;
 		if (LineUk->Load.IC()->back().Load.Point == nullptr)
 			LineUk->Load.IC()->back().Load.Point = new vector<LoadPoint>;
 		if (!LineUk->Load.IC()->back().Load.isVect()) break;
-		for (auto& i : *LineUk->Load.IC()->back().Load.Vect())
+		for (auto& i : *LineUk->Load.IC()->back().Load.toVect())
 			i.WriteFromLoad(Load);
 		break;
 	case 283: // LastToLoadVectWrite Записать нагрузку во все элементы вектора из нагрузки последней ИП последней линии
@@ -499,7 +499,7 @@ void List::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		if (ListHead.back()->back().Load.IC()->back().Load.Point == nullptr)
 			ListHead.back()->back().Load.IC()->back().Load.Point = new vector<LoadPoint>;
 		if (!ListHead.back()->back().Load.IC()->back().Load.isVect()) break;
-		for (auto& i : *ListHead.back()->back().Load.IC()->back().Load.Vect())
+		for (auto& i : *ListHead.back()->back().Load.IC()->back().Load.toVect())
 			i.WriteFromLoad(Load);
 		break;
 

@@ -252,10 +252,10 @@ void ALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 
 		case 513: // VectStoreExtend Добавить вектор из нагрузки в конец вектора из хранилища
 		{	
-			int t = Load.Vect()->size();
+			int t = Load.toVect()->size();
 			if (!Load.isVect() && VectStore.size()) break;
-			VectStore.back()->resize(t + Load.Vect()->size());
-			copy(Load.Vect()->begin(), Load.Vect()->end(), VectStore.back()->begin() + t);
+			VectStore.back()->resize(t + Load.toVect()->size());
+			copy(Load.toVect()->begin(), Load.toVect()->end(), VectStore.back()->begin() + t);
 			for (auto i = VectStore.back()->begin() + t; i != VectStore.back()->end(); i++)
 				i->Clone(); // Клонирование нагрузок
 			break;
