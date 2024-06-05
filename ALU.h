@@ -34,6 +34,11 @@ public:
 class ALU : FU
 {
 //	bool comp(LoadPoint x, LoadPoint y); // Подпрограмма для сравнения элементов вектора
+	void ProgExec(void* Uk, unsigned int CycleMode = 0, FU* Bus = nullptr, vector<ip>::iterator* Start = nullptr) override; // Исполнение программы из ИК
+	void ProgExec(LoadPoint Uk, unsigned int CycleMode = 0, FU* Bus = nullptr, vector<ip>::iterator* Start = nullptr) override; // Исполнение программы из ИК
+
+	vector<int> ExecCounter = { 1 }; // Количество итераций при Exec
+
 public:
 	unsigned int accumType = 0; // Тип данных
 	double		accum = 0;		// Скалярный выходной аккумулятор (из него другие ФУ могут считать значение аккумулятора по ссылке)

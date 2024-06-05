@@ -420,10 +420,10 @@ void StreamIntALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		OperetionProg = Load.Point;
 		break;
 	case 261: // OperationRezProgSet Установить ссылку на программу для получения результата специальной операции (при наборе всех операндов)
-		OperationMkIndexStart = Load.toInt();
+		OperetionRezProg = Load.Point;
 		break;
 	case 262: // OperationMkIndexStartSet Установить начало диапазона МК для специальной операции
-		OperationMkIndexStart = Load.toInt();
+		OperationMkStart = Load.toInt();
 		break;
 	case 280: // ZeroProgSet Установить программу при == 
 		ZProg = Load.Point;

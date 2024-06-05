@@ -304,6 +304,22 @@ void ALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 			break;
 		case 2: // Out Выдать значение аккумулятора
 		case 3: // OutMk Выдать МК со значением аккумулятора
+		case 530: // ExecCounterSet Установить счетчик итераций выполнения подпрограммы
+			ExecCounter.push_back(Load.toInt(1));
+			break;
+		case 531: // ExecCounterAdd Прибавить к счетчику итераций
+			ExecCounter.back() += Load.toInt();
+			break;
+		case 532: //ExecCounterSub Вычесть из счетчика итераций
+			ExecCounter.back() -= Load.toInt();
+			break;
+		case 533: // ExecCounterMul Умножить счетчик итераций
+			ExecCounter.back() *= Load.toInt();
+			break;
+		case 534: // ExecCounterDiv Целочисленно разделить счетчик итераций
+			ExecCounter.back() /= Load.toInt();
+			break;
+
 		case 506: // AnsOut Выдать Ans
 		case 507: // AnsOutMk Выдать МК с Ans
 			{
@@ -2989,4 +3005,27 @@ FU* ALU::Copy() // Программа копирования ФУ
 FU* ALU::TypeCopy() // Создать ФУ такого же типа (не копируя контекст)
 {
 	return new ALU(Bus, nullptr);
+}
+
+void ALU::ProgExec(void* Uk, unsigned int CycleMode, FU* Bus, vector<ip>::iterator* Start) // Исполнение программы из ИК
+{
+	if(!ExecCounter.size())
+		FU::ProgExec(Uk, CycleMode, Bus, Start);
+	else
+	{
+		for (int i = 0; i < ExecCounter.back(); i++)
+			FU::ProgExec(Uk, CycleMode, Bus, Start);
+		ExecCounter.pop_back();
+	}
+}
+void ALU::ProgExec(LoadPoint Uk, unsigned int CycleMode, FU* Bus, vector<ip>::iterator* Start) // Исполнение программы из ИК
+{
+	if (!ExecCounter.size())
+		FU::ProgExec(Uk, CycleMode, Bus, Start);
+	else
+	{
+		for (int i = 0; i < ExecCounter.back(); i++)
+			FU::ProgExec(Uk, CycleMode, Bus, Start);
+		ExecCounter.pop_back();
+	}
 }

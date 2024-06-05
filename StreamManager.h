@@ -31,6 +31,7 @@ private:
 	void ProgExec(void* Uk, unsigned int CycleMode = 0, FU* Bus = nullptr, vector<ip>::iterator* Start = nullptr) override; // Исполнение программы из ИК
 	void ProgExec(LoadPoint Uk, unsigned int CycleMode = 0, FU* Bus = nullptr, vector<ip>::iterator* Start = nullptr) override; // Исполнение программы из ИК
 	int FUTypeCorrect = fuTypeCorrect; // Корректировка индекса тип
+	long DevMkRange = 1000; // Диапазон МК для ФУ поля
 
 public:
 	void ProgFU(long int MK, LoadPoint Load, FU* Sender = nullptr) override;

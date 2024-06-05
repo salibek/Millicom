@@ -32,6 +32,8 @@ void StreamManager::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 
 			Field.back().back()->FUInd = i; // Индекс ФУ
 			Field.back().back()->FUInd2 = Field.size() - 1; // Индекс группы
+			Field.back().back()->FUMkRange = DevMkRange; // Индекс группы
+			Field.back().back()->FUMkGlobalAdr= i * DevMkRange; // Индекс группы
 		}
 		break;
 	}
@@ -336,6 +338,9 @@ void StreamManager::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 	case 41: // MkAllLastGroupExec Выполнить МК для всех ФУ последней группы
 		for (auto& j : Field.back())
 			j->MkExec(Mk1, Load);
+		break;
+	case 44: // DevMkRangeSet Установить диапазон МК для устройств поля
+		DevMkRange = Load.toInt();
 		break;
 
 	case 50: //  DevCountOut Выдать количество АЛУ в поле

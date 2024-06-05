@@ -28,6 +28,7 @@ private:
 	void* RezStackIsEmpyProg = nullptr; // Ошибка при попытке извлечения из пуского стека результатов    
 	void* RezExtStackIsEmpyProg = nullptr; // Ошибка при попытке извлечения из пуского стека расширенного результатов
 	void* OperetionProg = nullptr;// Программа для выполнения специальной операции
+	void* OperetionRezProg = nullptr;// Программа, вычисления результата специальной операции
 	void* RezProg = nullptr; // Программа, запускаемая перед получением результата
 	void* PreRezProg = nullptr; // Программа, запускаемая перед получением результата    
 	long int OpCode = 0; // Код операции, для которой накапливаются операнды
@@ -40,7 +41,7 @@ private:
 	bool MkAbort = false; // Флаг прерывания после обоработки марштуризируемой команды
 	bool EarlyCalculi = false; // Флаг ранних вычислений (при многооперандных командах результат начинает вычисляться уже по приходе данных (ускоряет вычисления)
 	bool AccumMode = false;// Аккумуляторных режим работы
-	long OperationMkIndexStart = 500; // Начало диапазона для МК специальной операции
+	long OperationMkStart = 500; // Начало диапазона для МК специальной операции
 	vector<int> ExecCounter = { 1 }; // Количество итераций при Exec
 	bool ExecFlag = false; // Флаг выполнения подпрограммы
 	void ProgExec(void* Uk, unsigned int CycleMode = 0, FU* Bus = nullptr, vector<ip>::iterator* Start = nullptr) override; // Исполнение программы из ИК

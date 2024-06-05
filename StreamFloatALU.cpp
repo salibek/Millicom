@@ -427,10 +427,10 @@ void StreamFloatALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		OperetionProg = Load.Point;
 		break;
 	case 261: // OperationRezProgSet Установить ссылку на программу для получения результата специальной операции (при наборе всех операндов)
-		OperationMkIndexStart = Load.toInt();
+		OperetionRezProg = Load.Point;
 		break;
-	case 262: // OperationMkIndexStartSet Установить начало диапазона МК для специальной операции
-		OperationMkIndexStart = Load.toInt();
+	case 262: // OperationMkStartSet Установить начало диапазона МК для специальной операции
+		OperationMkStart = Load.toInt();
 		break;
 
 	case 270: // PiOut Выдать число ПИ (при нулевой нагрузке записать в аккумулятор)
