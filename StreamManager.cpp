@@ -396,10 +396,7 @@ void StreamManager::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		Counter -= Load.toInt(1);
 		break;
 	case 64: // ExecCounterSet Установить счетчик итераций выполнения подпрограммы
-		if (!ExecFlag)
-			ExecCounter.back() = Load.toInt(1);
-		else
-			ExecCounter.push_back(Load.toInt(1));
+		ExecCounter.push_back(Load.toInt(1));
 		break;
 	case 65: // ExecCounterAdd Прибавить к счетчику итераций
 		ExecCounter.back() += Load.toInt();
@@ -627,21 +624,27 @@ void StreamManager::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 	}
 }
 
- void StreamManager::ProgExec(void* Uk, unsigned int CycleMode, FU* Bus, vector<ip>::iterator* Start) // Исполнение программы из ИК
+void StreamManager::ProgExec(void* Uk, unsigned int CycleMode, FU* Bus, vector<ip>::iterator* Start) // Исполнение программы из ИК
 {
-	 ExecFlag = true;
-	 for (int i = 0; i < ExecCounter.back(); i++)
-		 FU::ProgExec(Uk, CycleMode, Bus, Start);
-	 if (ExecCounter.size() == 1) ExecFlag = false;
-	 if(ExecCounter.size()>1) ExecCounter.pop_back();
- }
+	if (!ExecCounter.size())
+		FU::ProgExec(Uk, CycleMode, Bus, Start);
+	else
+	{
+		for (int i = 0; i < ExecCounter.back(); i++)
+			FU::ProgExec(Uk, CycleMode, Bus, Start);
+		ExecCounter.pop_back();
+	}
+}
 void StreamManager::ProgExec(LoadPoint Uk, unsigned int CycleMode, FU* Bus, vector<ip>::iterator* Start) // Исполнение программы из ИК
 {
-	ExecFlag = true;
-	for (int i = 0; i < ExecCounter.back(); i++)
+	if (!ExecCounter.size())
 		FU::ProgExec(Uk, CycleMode, Bus, Start);
-	if (ExecCounter.size() == 1) ExecFlag = false;
-	if (ExecCounter.size() > 1) ExecCounter.pop_back();
+	else
+	{
+		for (int i = 0; i < ExecCounter.back(); i++)
+			FU::ProgExec(Uk, CycleMode, Bus, Start);
+		ExecCounter.pop_back();
+	}
 }
 
 StreamManager::~StreamManager() // Деструктор

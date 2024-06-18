@@ -79,12 +79,12 @@ int main(int argc, char* argv[])
 	//	string STR = "ControlAoutomat.ind";
 
 //	STR = "StreamFloatALUTest.ind";
-	STR = "ALUCellular.ind";
+//	STR = "ALUCellular.ind";
 //	STR = "StreamAluTest.ind";
 //	STR = "StreamIntALUTest.ind";
 //	STR = "ALE_Stream_v2.ind";
 //	STR = "ALU_test.ind";
-//	STR = "MatPlot.ind";
+	STR = "MatPlot.ind";
 //	STR = "MatrixMul.ind";
 	Bus.ProgFU(10, {Cstring, &STR}); //Запуск индексного файла
 

@@ -25,8 +25,7 @@ private:
 	void* DevNotExistErrProg = nullptr; // Подпрограмма ошибки 'Нет существует устройства'
 	vector<StreamFloatALU> Group; // Вектор группы ФУ для копирования
 	FuFabric MakeFU;
-	vector<int> ExecCounter = {1}; // Количество итераций при Exec
-	bool ExecFlag = false; // Флаг выполнения подпрограммы
+	vector<int> ExecCounter; // Количество итераций при Exec
 	void* ValNotFaund = nullptr; // Программа обработки ошибки 'Не найдена переменная по имети'
 	void ProgExec(void* Uk, unsigned int CycleMode = 0, FU* Bus = nullptr, vector<ip>::iterator* Start = nullptr) override; // Исполнение программы из ИК
 	void ProgExec(LoadPoint Uk, unsigned int CycleMode = 0, FU* Bus = nullptr, vector<ip>::iterator* Start = nullptr) override; // Исполнение программы из ИК

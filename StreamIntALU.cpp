@@ -90,10 +90,7 @@ void StreamIntALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		MatErrProg = Load.Point;
 		break;
 	case 64: // ExecCounterSet Установить счетчик итераций выполнения подпрограммы
-		if (!ExecFlag)
-			ExecCounter.back() = Load.toInt(1);
-		else
-			ExecCounter.push_back(Load.toInt(1));
+		ExecCounter.push_back(Load.toInt(1));
 		break;
 	case 70: // ReadySet Установить флаг готовности результата (по умолчанию true)
 		Ready = Load.toInt(1);
@@ -547,67 +544,67 @@ void StreamIntALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		MkExec(Load, { Cmk, &IpForMkAdrOut.atr });
 		break;
 
-	case 345: // AdrBufAdd Добавить адрес в буфер адресов
-		AdrBuf.push_back(Load.Point);
+	case 345: // RoadsAdd Добавить адрес в буфер адресов
+		Roads.push_back(Load.Point);
 		break;
-	case 346: // AdrBufClear Очистить буфер адресов
-		AdrBuf.clear();
+	case 346: // RoadsClear Очистить буфер адресов
+		Roads.clear();
 		break;
-	case 347: // AdrBufAllOutMk Выдать МК на все адреса из AdrBuf (на входе МК)
-		for (auto& i : AdrBuf)
+	case 347: // RoadsAllOutMk Выдать МК на все адреса из Roads (на входе МК)
+		for (auto& i : Roads)
 			if (Load.isEmpty())
 				MkExec(MK, Load, i);//??? Проверить правильность работы
 			else
 				MkExec(Load, Load, i);
 		break;
 
-	case 350: // AdrBuf_0_OutMk Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 0
-		if (Load.isEmpty()) MkExec(MK, Load, (FU*)AdrBuf[0]); else MkExec(Load, Load, (FU*)AdrBuf[0]);
+	case 350: // Roads_0_OutMk Выдать пришедшую МК на ФУ с адресом из Roads с индексом 0
+		if (Load.isEmpty()) MkExec(MK, Load, (FU*)Roads[0]); else MkExec(Load, Load, (FU*)Roads[0]);
 		break;
-	case 351: // AdrBuf_1_OutMk Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 1
-		if (Load.isEmpty()) MkExec(MK, Load, (FU*)AdrBuf[1]); else MkExec(Load, Load, (FU*)AdrBuf[1]);
+	case 351: // Roads_1_OutMk Выдать пришедшую МК на ФУ с адресом из Roads с индексом 1
+		if (Load.isEmpty()) MkExec(MK, Load, (FU*)Roads[1]); else MkExec(Load, Load, (FU*)Roads[1]);
 		break;
-	case 352: // AdrBuf_2_OutMk Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 2
-		if (Load.isEmpty()) MkExec(MK, Load, (FU*)AdrBuf[2]); else MkExec(Load, Load, (FU*)AdrBuf[2]);
+	case 352: // Roads_2_OutMk Выдать пришедшую МК на ФУ с адресом из Roads с индексом 2
+		if (Load.isEmpty()) MkExec(MK, Load, (FU*)Roads[2]); else MkExec(Load, Load, (FU*)Roads[2]);
 		break;
-	case 353: // AdrBuf_3_OutMk Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 3
-		if (Load.isEmpty()) MkExec(MK, Load, (FU*)AdrBuf[3]); else MkExec(Load, Load, (FU*)AdrBuf[3]);
+	case 353: // Roads_3_OutMk Выдать пришедшую МК на ФУ с адресом из Roads с индексом 3
+		if (Load.isEmpty()) MkExec(MK, Load, (FU*)Roads[3]); else MkExec(Load, Load, (FU*)Roads[3]);
 		break;
-	case 354: // AdrBuf_4_OutMk Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 4
-		if (Load.isEmpty()) MkExec(MK, Load, (FU*)AdrBuf[4]); else MkExec(Load, Load, (FU*)AdrBuf[4]);
+	case 354: // Roads_4_OutMk Выдать пришедшую МК на ФУ с адресом из Roads с индексом 4
+		if (Load.isEmpty()) MkExec(MK, Load, (FU*)Roads[4]); else MkExec(Load, Load, (FU*)Roads[4]);
 		break;
-	case 355: // AdrBuf_5_OutMk Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 5
-		if (Load.isEmpty()) MkExec(MK, Load, (FU*)AdrBuf[5]); else MkExec(Load, Load, (FU*)AdrBuf[5]);
+	case 355: // Roads_5_OutMk Выдать пришедшую МК на ФУ с адресом из Roads с индексом 5
+		if (Load.isEmpty()) MkExec(MK, Load, (FU*)Roads[5]); else MkExec(Load, Load, (FU*)Roads[5]);
 		break;
-	case 356: // AdrBuf_6_OutMk Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 6
-		if (Load.isEmpty()) MkExec(MK, Load, (FU*)AdrBuf[6]); else MkExec(Load, Load, (FU*)AdrBuf[6]);
+	case 356: // Roads_6_OutMk Выдать пришедшую МК на ФУ с адресом из Roads с индексом 6
+		if (Load.isEmpty()) MkExec(MK, Load, (FU*)Roads[6]); else MkExec(Load, Load, (FU*)Roads[6]);
 		break;
-	case 357: // AdrBuf_7_OutMk Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 7
-		if (Load.isEmpty()) MkExec(MK, Load, (FU*)AdrBuf[7]); else MkExec(Load, Load, (FU*)AdrBuf[7]);
+	case 357: // Roads_7_OutMk Выдать пришедшую МК на ФУ с адресом из Roads с индексом 7
+		if (Load.isEmpty()) MkExec(MK, Load, (FU*)Roads[7]); else MkExec(Load, Load, (FU*)Roads[7]);
 		break;
-	case 358: // AdrBuf_8_OutMk Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 8
-		if (Load.isEmpty()) MkExec(MK, Load, (FU*)AdrBuf[8]); else MkExec(Load, Load, (FU*)AdrBuf[8]);
+	case 358: // Roads_8_OutMk Выдать пришедшую МК на ФУ с адресом из Roads с индексом 8
+		if (Load.isEmpty()) MkExec(MK, Load, (FU*)Roads[8]); else MkExec(Load, Load, (FU*)Roads[8]);
 		break;
-	case 359: // AdrBuf_9_OutMk Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 9
-		if (Load.isEmpty()) MkExec(MK, Load, (FU*)AdrBuf[9]); else MkExec(Load, Load, (FU*)AdrBuf[9]);
+	case 359: // Roads_9_OutMk Выдать пришедшую МК на ФУ с адресом из Roads с индексом 9
+		if (Load.isEmpty()) MkExec(MK, Load, (FU*)Roads[9]); else MkExec(Load, Load, (FU*)Roads[9]);
 		break;
-	case 360: // AdrBuf_10_OutMk Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 10
-		if (Load.isEmpty()) MkExec(MK, Load, (FU*)AdrBuf[10]); else MkExec(Load, Load, (FU*)AdrBuf[10]);
+	case 360: // Roads_10_OutMk Выдать пришедшую МК на ФУ с адресом из Roads с индексом 10
+		if (Load.isEmpty()) MkExec(MK, Load, (FU*)Roads[10]); else MkExec(Load, Load, (FU*)Roads[10]);
 		break;
-	case 361: // AdrBuf_11_OutMk Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 11
-		if (Load.isEmpty()) MkExec(MK, Load, (FU*)AdrBuf[11]); else MkExec(Load, Load, (FU*)AdrBuf[11]);
+	case 361: // Roads_11_OutMk Выдать пришедшую МК на ФУ с адресом из Roads с индексом 11
+		if (Load.isEmpty()) MkExec(MK, Load, (FU*)Roads[11]); else MkExec(Load, Load, (FU*)Roads[11]);
 		break;
-	case 362: // AdrBuf_12_OutMk Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 12
-		if (Load.isEmpty()) MkExec(MK, Load, (FU*)AdrBuf[12]); else MkExec(Load, Load, (FU*)AdrBuf[12]);
+	case 362: // Roads_12_OutMk Выдать пришедшую МК на ФУ с адресом из Roads с индексом 12
+		if (Load.isEmpty()) MkExec(MK, Load, (FU*)Roads[12]); else MkExec(Load, Load, (FU*)Roads[12]);
 		break;
-	case 363: // AdrBuf_13_OutMk Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 13
-		if (Load.isEmpty()) MkExec(MK, Load, (FU*)AdrBuf[13]); else MkExec(Load, Load, (FU*)AdrBuf[13]);
+	case 363: // Roads_13_OutMk Выдать пришедшую МК на ФУ с адресом из Roads с индексом 13
+		if (Load.isEmpty()) MkExec(MK, Load, (FU*)Roads[13]); else MkExec(Load, Load, (FU*)Roads[13]);
 		break;
-	case 364: // AdrBuf_14_OutMk Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 14
-		if (Load.isEmpty()) MkExec(MK, Load, (FU*)AdrBuf[14]); else MkExec(Load, Load, (FU*)AdrBuf[14]);
+	case 364: // Roads_14_OutMk Выдать пришедшую МК на ФУ с адресом из Roads с индексом 14
+		if (Load.isEmpty()) MkExec(MK, Load, (FU*)Roads[14]); else MkExec(Load, Load, (FU*)Roads[14]);
 		break;
-	case 365: // AdrBuf_15_OutMk Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 15
-		if (Load.isEmpty()) MkExec(MK, Load, (FU*)AdrBuf[15]); else MkExec(Load, Load, (FU*)AdrBuf[15]);
+	case 365: // Roads_15_OutMk Выдать пришедшую МК на ФУ с адресом из Roads с индексом 15
+		if (Load.isEmpty()) MkExec(MK, Load, (FU*)Roads[15]); else MkExec(Load, Load, (FU*)Roads[15]);
 		break;
 
 //	case 498: // Rand Генерация дробного числа от 0 до Load
@@ -1140,19 +1137,25 @@ StreamIntALU::StreamIntALU(void* Dev1) // Копирующий конструктор
 
 void StreamIntALU::ProgExec(void* Uk, unsigned int CycleMode, FU* Bus, vector<ip>::iterator* Start) // Исполнение программы из ИК
 {
-	ExecFlag = true;
-	for (int i = 0; i < ExecCounter.back(); i++)
+	if (!ExecCounter.size())
 		FU::ProgExec(Uk, CycleMode, Bus, Start);
-	if (ExecCounter.size() == 1) ExecFlag = false;
-	if (ExecCounter.size() > 1) ExecCounter.pop_back();
+	else
+	{
+		for (int i = 0; i < ExecCounter.back(); i++)
+			FU::ProgExec(Uk, CycleMode, Bus, Start);
+		ExecCounter.pop_back();
+	}
 }
 void StreamIntALU::ProgExec(LoadPoint Uk, unsigned int CycleMode, FU* Bus, vector<ip>::iterator* Start) // Исполнение программы из ИК
 {
-	ExecFlag = true;
-	for (int i = 0; i < ExecCounter.back(); i++)
+	if (!ExecCounter.size())
 		FU::ProgExec(Uk, CycleMode, Bus, Start);
-	if (ExecCounter.size() == 1) ExecFlag = false;
-	if (ExecCounter.size() > 1) ExecCounter.pop_back();
+	else
+	{
+		for (int i = 0; i < ExecCounter.back(); i++)
+			FU::ProgExec(Uk, CycleMode, Bus, Start);
+		ExecCounter.pop_back();
+	}
 }
 
 FU* StreamIntALU::Copy() // Программа копирования ФУ

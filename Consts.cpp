@@ -1995,7 +1995,7 @@ void FU::MkExec(LoadPoint Mk, LoadPoint Load, void* Receiver, bool Ext) // Вы�
 {
 	if (Mk.Point!=nullptr && Mk.isInt() && Mk.Point != nullptr)
 	{
-		int MK = Mk.toInt();
+		register long MK = Mk.toInt();
 		if (MK < FUMkRange && !Ext) // Если МК адресована сомому ФУ
 			ProgFU(MK, Load, this);
 		else
@@ -2005,6 +2005,162 @@ void FU::MkExec(LoadPoint Mk, LoadPoint Load, void* Receiver, bool Ext) // Вы�
 				Bus->ProgFU(MK, Load, this);
 	}
 }
+
+void FU::MkExec(LoadPoint Mk, long Var, void* Receiver, bool Ext) // Выдача МК с нагрузкой
+{
+	if (Mk.Point != nullptr && Mk.isInt() && Mk.Point != nullptr)
+	{
+		register long MK = Mk.toInt();
+		long var = Var;
+		if (MK < FUMkRange && !Ext) // Если МК адресована сомому ФУ
+			ProgFU(MK, { Cint, &var }, this);
+		else
+			if (Receiver != nullptr)
+				((FU*)Receiver)->ProgFU(MK, { Cint, &var }, this);
+			else
+				Bus->ProgFU(MK, { Cint, &var }, this);
+	}
+}
+
+void FU::MkExec(LoadPoint Mk, long* Var, void* Receiver, bool Ext) // Выдача МК с нагрузкой
+{
+	if (Mk.Point != nullptr && Mk.isInt() && Mk.Point != nullptr)
+	{
+		register long MK = Mk.toInt();
+		if (MK < FUMkRange && !Ext) // Если МК адресована сомому ФУ
+			ProgFU(MK, { Cint, Var }, this);
+		else
+			if (Receiver != nullptr)
+				((FU*)Receiver)->ProgFU(MK, { Cint, Var }, this);
+			else
+				Bus->ProgFU(MK, { Cint, Var }, this);
+	}
+}
+
+void FU::MkExec(LoadPoint Mk, double Var, void* Receiver, bool Ext) // Выдача МК с нагрузкой
+{
+	if (Mk.Point != nullptr && Mk.isInt() && Mk.Point != nullptr)
+	{
+		register long MK = Mk.toInt();
+		double var = Var;
+		if (MK < FUMkRange && !Ext) // Если МК адресована сомому ФУ
+			ProgFU(MK, { Cdouble, &var }, this);
+		else
+			if (Receiver != nullptr)
+				((FU*)Receiver)->ProgFU(MK, { Cdouble, &var }, this);
+			else
+				Bus->ProgFU(MK, { Cdouble, &var }, this);
+	}
+}
+
+void FU::MkExec(LoadPoint Mk, double* Var, void* Receiver, bool Ext) // Выдача МК с нагрузкой
+{
+	if (Mk.Point != nullptr && Mk.isInt() && Mk.Point != nullptr)
+	{
+		register long MK = Mk.toInt();
+		if (MK < FUMkRange && !Ext) // Если МК адресована сомому ФУ
+			ProgFU(MK, { Cdouble, Var }, this);
+		else
+			if (Receiver != nullptr)
+				((FU*)Receiver)->ProgFU(MK, { Cdouble, Var }, this);
+			else
+				Bus->ProgFU(MK, { Cdouble, Var }, this);
+	}
+}
+
+void FU::MkExec(LoadPoint Mk, bool Var, void* Receiver, bool Ext) // Выдача МК с нагрузкой
+{
+	if (Mk.Point != nullptr && Mk.isInt() && Mk.Point != nullptr)
+	{
+		register long MK = Mk.toInt();
+		bool var = Var;
+		if (MK < FUMkRange && !Ext) // Если МК адресована сомому ФУ
+			ProgFU(MK, { Cbool, &var }, this);
+		else
+			if (Receiver != nullptr)
+				((FU*)Receiver)->ProgFU(MK, { Cbool, &var }, this);
+			else
+				Bus->ProgFU(MK, { Cbool, &var }, this);
+	}
+}
+
+void FU::MkExec(LoadPoint Mk, bool* Var, void* Receiver, bool Ext) // Выдача МК с нагрузкой
+{
+	if (Mk.Point != nullptr && Mk.isInt() && Mk.Point != nullptr)
+	{
+		register long MK = Mk.toInt();
+		if (MK < FUMkRange && !Ext) // Если МК адресована сомому ФУ
+			ProgFU(MK, { Cbool, Var }, this);
+		else
+			if (Receiver != nullptr)
+				((FU*)Receiver)->ProgFU(MK, { Cbool, Var }, this);
+			else
+				Bus->ProgFU(MK, { Cbool, Var }, this);
+	}
+}
+
+void FU::MkExec(LoadPoint Mk, string Var, void* Receiver, bool Ext) // Выдача МК с нагрузкой
+{
+	if (Mk.Point != nullptr && Mk.isInt() && Mk.Point != nullptr)
+	{
+		register long MK = Mk.toInt();
+		string var = Var;
+		if (MK < FUMkRange && !Ext) // Если МК адресована сомому ФУ
+			ProgFU(MK, { Cstring, &var }, this);
+		else
+			if (Receiver != nullptr)
+				((FU*)Receiver)->ProgFU(MK, { Cstring, &var }, this);
+			else
+				Bus->ProgFU(MK, { Cstring, &var }, this);
+	}
+}
+
+void FU::MkExec(LoadPoint Mk, string* Var, void* Receiver, bool Ext) // Выдача МК с нагрузкой
+{
+	if (Mk.Point != nullptr && Mk.isInt() && Mk.Point != nullptr)
+	{
+		register long MK = Mk.toInt();
+		if (MK < FUMkRange && !Ext) // Если МК адресована сомому ФУ
+			ProgFU(MK, { Cstring, Var }, this);
+		else
+			if (Receiver != nullptr)
+				((FU*)Receiver)->ProgFU(MK, { Cstring, Var }, this);
+			else
+				Bus->ProgFU(MK, { Cstring, Var }, this);
+	}
+}
+
+void FU::MkExec(LoadPoint Mk, char Var, void* Receiver, bool Ext) // Выдача МК с нагрузкой
+{
+	if (Mk.Point != nullptr && Mk.isInt() && Mk.Point != nullptr)
+	{
+		register long MK = Mk.toInt();
+		char var = Var;
+		if (MK < FUMkRange && !Ext) // Если МК адресована сомому ФУ
+			ProgFU(MK, { Cchar, &var }, this);
+		else
+			if (Receiver != nullptr)
+				((FU*)Receiver)->ProgFU(MK, { Cchar, &var }, this);
+			else
+				Bus->ProgFU(MK, { Cchar, &var }, this);
+	}
+}
+
+void FU::MkExec(LoadPoint Mk, char* Var, void* Receiver, bool Ext) // Выдача МК с нагрузкой
+{
+	if (Mk.Point != nullptr && Mk.isInt() && Mk.Point != nullptr)
+	{
+		register long MK = Mk.toInt();
+		if (MK < FUMkRange && !Ext) // Если МК адресована сомому ФУ
+			ProgFU(MK, { Cchar, Var }, this);
+		else
+			if (Receiver != nullptr)
+				((FU*)Receiver)->ProgFU(MK, { Cchar, Var }, this);
+			else
+				Bus->ProgFU(MK, { Cchar, Var }, this);
+	}
+}
+
 
 void FU::MkAwait(long int MK, LoadPoint Load, FU* Sender, double Delay) // ?????????? ?? ??? ???????? ?? ??????? ??? ?????????????
 {

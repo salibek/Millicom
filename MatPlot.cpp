@@ -1,4 +1,5 @@
 #include "MatPlot.h"
+namespace plt = matplotlibcpp;
 
 void MatPlot::ProgFU(long int MK, LoadPoint Load, FU* Sender) {
 	MK %= FUMkRange;
@@ -11,7 +12,8 @@ void MatPlot::ProgFU(long int MK, LoadPoint Load, FU* Sender) {
 			Z.clear();
 			break;
 		case 1: // Plot Нарисовать график (На входе тип графика)
-			// .....Load.toInt()
+			plt::plot(X, Y);
+			plt::show();
 			break;
 		case 5: // XAdd Добавить координату по X
 			X.push_back(Load.toDouble());
@@ -42,7 +44,6 @@ void MatPlot::ProgFU(long int MK, LoadPoint Load, FU* Sender) {
 				X.push_back(x);
 			}
 			break;
-			
 		case 10: // XVectSet // Установить вектор по координате X
 			if (!Load.isVect()) break;
 			X.resize(Load.toVect()->size());

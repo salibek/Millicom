@@ -36,14 +36,13 @@ private:
 	void OperandsClear(long int MK); // Сброс операндов при начале обоработки новой операции
 	void* RoutProg = nullptr; // Программа при несовпадении адреса ФУ с его собственным адресом
 	void* SelfAdrProg = nullptr; // Программа при совпадении адреса ФУ с его собственным адресом
-	vector<void*> AdrBuf; // Буфер адресов ФУ для пересылок
+	vector<void*> Roads; // Буфер адресов ФУ для пересылок
 	ip IpForMkAdrOut = { 0,{0,0} }; // Сохраненная МК при обнаружении, что МК вне адресного диапазона ФУ
 	bool MkAbort = false; // Флаг прерывания после обоработки марштуризируемой команды
 	bool EarlyCalculi = false; // Флаг ранних вычислений (при многооперандных командах результат начинает вычисляться уже по приходе данных (ускоряет вычисления)
 	bool AccumMode = false;// Аккумуляторных режим работы
 	long OperationMkStart = 500; // Начало диапазона для МК специальной операции
-	vector<int> ExecCounter = { 1 }; // Количество итераций при Exec
-	bool ExecFlag = false; // Флаг выполнения подпрограммы
+	vector<int> ExecCounter; // Количество итераций при Exec
 	void ProgExec(void* Uk, unsigned int CycleMode = 0, FU* Bus = nullptr, vector<ip>::iterator* Start = nullptr) override; // Исполнение программы из ИК
 	void ProgExec(LoadPoint Uk, unsigned int CycleMode = 0, FU* Bus = nullptr, vector<ip>::iterator* Start = nullptr) override; // Исполнение программы из ИК
 	int FUTypeCorrect = fuTypeCorrect; // Корректировка индекса тип

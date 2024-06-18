@@ -1,0 +1,102 @@
+// - обозначение переведенных в комментарии старых ФУ
+\* date *\ //- последняя дата изменения или добавления строк и ФУ
+
+NewFU={Mnemo="Main_Bus" MkBegRange=1000 FUType=FUBusNew} // Описание Bus
+
+\\ Для создания индексного файла сначала надо запустить программу !!!!
+ CapsManager.IndexVectCreate=20000
+ CapsManager.IpIcIdOutMk=MainBus.IpIcIdSet
+ CapsManager.IpIcIdOutMk=VariableManager.IpIcIdSet
+ CapsManager.IpIcIdOutMk=ListSyntez.IpIcIdSet
+ MainBus.ModeSet=1
+\\ -------------------------------------- \\
+MainBus.FUTypeCorrectSet=-96 // Корректировка номера типа ФУ для переноса на новую ОА-платформу
+
+NewFU={Mnemo="Console" FUType=FUConsNew}
+NewFU={Mnemo="StreamFloatALU" FUType=FUStreamFloatALU}
+NewFU={Mnemo="Manager" FUType=FUStreamManager}
+NewFU={Mnemo="ALUStart" FUType=FUALUNew}
+NewFU={Mnemo="ALUStart2" FUType=FUALUNew}
+
+MainBus.PartialResetSet \\ Запомнить число созданных ФУ
+MainBus.ModeSet=2
+
+N=4
+M=4
+R=4
+
+ALUStart.VectNew=16
+ALUStart2.VectNew=16
+ALUStart.Random=21
+ALUStart2.Random=21
+
+Console.VectColSet=4
+Console.ArrayBracketStartSet=""
+Console.ArrayBracketFinSet=""
+
+ALUStart.OutMk=Console.OutLn
+Console.OutLn
+ALUStart2.OutMk=Console.OutLn
+
+Manager.DevMkRangeSet=1000
+
+Manager.CounterSet=N
+Manager.CounterMul=R
+Manager.FieldCreate=FUStreamFloatALU
+
+Manager.ExecAll={ // Настройка ФУ вычислительной сетки
+  FUStreamFloatALU.RoutProgSet={
+    FUStreamFloatALU.RoutedAtrOutMk=SetAlu
+    DivIntAlu=FUStreamFloatALU.FUMkRangeSet
+    FUStreamFloatALU.FUIndOutMk=SubAlu
+    BiggerExecAlu={FUStreamFloatALU.RoutedMkOutMk=FUStreamFloatALU.AdrBuf_3_OutMk ProgStopAll}
+    SmallerExecAlu={FUStreamFloatALU.RoutedMkOutMk=FUStreamFloatALU.AdrBuf_1_OutMk ProgStopAll}
+    FUStreamFloatALU.RoutedAtrOutMk=SetAlu
+    DivIntAlu=FUStreamFloatALU.FUMkRangeSet
+    ModAlu=M //Определение номера столбца
+    OutAlu=t(0)
+    FUStreamFloatALU.FUIndOutMk=SetAlu
+    ModAlu=M //Определение номера столбца
+    SubAlu=t!
+    BiggerExecAlu={FUStreamFloatALU.RoutedMkOutMk=FUStreamFloatALU.AdrBuf_0_OutMk ProgStopAll}
+    FUStreamFloatALU.RoutedMkOutMk=FUStreamFloatALU.AdrBuf_0_OutMk
+  }
+
+  FUStreamFloatALU.NOperandSet=M
+  FUStreamFloatALU.NOperandAdd=M
+  FUStreamFloatALU.OpIndSet=0
+  FUStreamFloatALU.OperationMkIndexStartSet=1000
+  FUStreamFloatALU.RezProgSet={
+    FUStreamFloatALU.AccumModeSet
+    FUStreamFloatALU.Set=0
+    FUStreamFloatALU.ExecCounterSet=M
+    FUStreamFloatALU.ProgExec={
+      FUStreamFloatALU.Push
+      FUStreamFloatALU.OperandByIndOutMk=FUStreamFloatALU.Set
+      FUStreamFloatALU.OpIndAdd=1
+      FUStreamFloatALU.OperandByIndOutMk=FUStreamFloatALU.Mul
+      FUStreamFloatALU.OpIndAdd=1
+      FUStreamFloatALU.PopMk=FUStreamFloatALU.Add
+    }
+  FUStreamFloatALU.AccumModeSet=False
+  }
+}
+
+// Генерация вычислительной сетки
+Manager.IndSet=0
+Manager.Ind2Set=1
+Manager.MkSet=FUStreamFloatALU.ContextOutMk
+Manager.Mk2Set=FUStreamFloatALU.AdrBufAdd
+Manager.ExecCounterSet=N
+Manager.ProgExec={
+	Manager.ExecCounterSet=M
+	Manager.ExecCounterSub=1
+	Manager.ProgExec={
+		Manager.MkExec=Manager.Mk2Exec
+		}
+	
+}
+
+Manager.IndSet=0
+Manager.MkSet=FUStreamFloatALU.ContextOutMk
+Manager.MkExec=ALUStart.ReceiverSet

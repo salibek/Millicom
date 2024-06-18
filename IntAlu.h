@@ -11,6 +11,12 @@ public:
 
 class IntAlu : public FU {
 private:
+	void ProgExec(void* Uk, unsigned int CycleMode = 0, FU* Bus = nullptr, vector<ip>::iterator* Start = nullptr) override; // Исполнение программы из ИК
+	void ProgExec(LoadPoint Uk, unsigned int CycleMode = 0, FU* Bus = nullptr, vector<ip>::iterator* Start = nullptr) override; // Исполнение программы из ИК
+
+	vector<int> ExecCounter = { 1 }; // Количество итераций при Exec
+
+	FU* Receiver = nullptr; // Приемщик данных
 	long int * AccumulatUk= &Accumulat; // Указатель на аккумулятор
 	vector <IntContext> Stack; // Стек аккумуляторов
 	long int Compare = 0; // Сравинаваемое значение

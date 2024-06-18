@@ -55,6 +55,7 @@ public:
 	ALUCreating = false;
 	};
 	void ProgFU(long int MK, LoadPoint Load, FU* Sender = nullptr) override;
+	FU* Receiver = nullptr; // Приемщик данных
 	FU* Copy() override; // Программа копирования ФУ
 	FU* TypeCopy() override; // Создать ФУ такого же типа (не копируя контекст
 	void VectOperation(long int MK, LoadPoint Load); // Реализацая векторных операций
@@ -123,7 +124,7 @@ public:
 	void	getSin(LoadPoint Load);
 	// Векторные операции
 	void	append(LoadPoint Load);
-	void		emptyvect(); // Создать пустой вектор
+	void		emptyvect(long size); // Создать пустой вектор
 	void		concat(LoadPoint Load); // Конкатенация векторов
 	void        vecmult(LoadPoint Load);// умножение векторов
 	void length(LoadPoint Load);

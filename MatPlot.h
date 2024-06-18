@@ -1,5 +1,6 @@
 #pragma once
 #include "Consts.h"
+#include "matplotlibcpp.h"
 
 class MatPlot : public FU
 {

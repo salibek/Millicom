@@ -27,7 +27,7 @@ void IntAlu::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		}
 		break;
 	case 3: // AccumulatREfOutMk Выдать МК со ссылкой на аккумулятор
-		MkExec(Load,{Cint, AccumulatUk});
+		MkExec(Load,{Cint, AccumulatUk}, Receiver);
 		break;
 	case 5: // Push Положить значенпие аккумулятора. Если нагрузка nil, то в аккумуляторе остается прежнее значение
 		Stack.push_back({ AccumulatUk,Accumulat, AutoInc, Fin });
@@ -49,7 +49,7 @@ void IntAlu::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		AutoInc = Stack.back().AutoInc;
 		Fin = Stack.back().Fin;
 		Stack.pop_back();
-		MkExec(Load, { Tint, t });
+		MkExec(Load, { Tint, t }, Receiver);
 		break;
 	}
 	case 10: // RandFromSet Установить начальный диапазон генерации случайных чисел
@@ -70,7 +70,7 @@ void IntAlu::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		if (Load.Point == nullptr)
 			*Stack.back().AccumulatUk = t;
 		else
-			MkExec(Load, { Cint, &t });
+			MkExec(Load, { Cint, &t }, Receiver);
 	}
 		break;
 	case 14: // Rand Сгенерировать случайное число в диапазоне от 0 до числа из нагрузки
@@ -82,7 +82,7 @@ void IntAlu::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		*AccumulatUk += AutoInc;
 		break;
 	case 21: //OutMk
-		MkExec(Load, { Cint, AccumulatUk });
+		MkExec(Load, { Cint, AccumulatUk }, Receiver);
 		*AccumulatUk += AutoInc;
 		break;
 	case 25: // AutoIncSet Установить значение автоматического инкремента при операции считывания значения
@@ -132,7 +132,7 @@ void IntAlu::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		Load.Write(Fin);
 		break;
 	case 31: // ForOutMk Выдать МК с конечным значением цикла for
-		MkExec(Load, {Cint,&Fin});
+		MkExec(Load, {Cint,&Fin}, Receiver);
 		break;
 	case 40: // CounterExec Выполнить программу столько раз, сколько записано в аккумуляторе
 	{
@@ -240,6 +240,26 @@ void IntAlu::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		if (!Load.isIntBool()) ProgExec(NoBoolIntTypeErrProg);
 		*AccumulatUk %= Load.toInt();
 		break;
+
+	case 530: // ExecCounterSet Установить счетчик итераций выполнения подпрограммы
+		ExecCounter.push_back(Load.toInt(1));
+		break;
+	case 531: // ExecCounterAdd Прибавить к счетчику итераций
+		ExecCounter.back() += Load.toInt();
+		break;
+	case 532: //ExecCounterSub Вычесть из счетчика итераций
+		ExecCounter.back() -= Load.toInt();
+		break;
+	case 533: // ExecCounterMul Умножить счетчик итераций
+		ExecCounter.back() *= Load.toInt();
+		break;
+	case 534: // ExecCounterDiv Целочисленно разделить счетчик итераций
+		ExecCounter.back() /= Load.toInt();
+		break;
+	case 535: // ReceiverSet Установить примника результата
+		Receiver = (FU*)Load.Point;
+		break;
+
 	default:
 		CommonMk(MK, Load, Sender);
 		break;
@@ -264,4 +284,27 @@ FU* IntAlu::Copy() // Программа копирования ФУ
 FU* IntAlu::TypeCopy() // Создать ФУ такого же типа (не копируя контекст
 {
 	return new IntAlu(Bus, nullptr);
+}
+
+void IntAlu::ProgExec(void* Uk, unsigned int CycleMode, FU* Bus, vector<ip>::iterator* Start) // Исполнение программы из ИК
+{
+	if (!ExecCounter.size())
+		FU::ProgExec(Uk, CycleMode, Bus, Start);
+	else
+	{
+		for (int i = 0; i < ExecCounter.back(); i++)
+			FU::ProgExec(Uk, CycleMode, Bus, Start);
+		ExecCounter.pop_back();
+	}
+}
+void IntAlu::ProgExec(LoadPoint Uk, unsigned int CycleMode, FU* Bus, vector<ip>::iterator* Start) // Исполнение программы из ИК
+{
+	if (!ExecCounter.size())
+		FU::ProgExec(Uk, CycleMode, Bus, Start);
+	else
+	{
+		for (int i = 0; i < ExecCounter.back(); i++)
+			FU::ProgExec(Uk, CycleMode, Bus, Start);
+		ExecCounter.pop_back();
+	}
 }

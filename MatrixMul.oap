@@ -14,45 +14,57 @@ MainBus.FUTypeCorrectSet=-96 // Корректировка номера типа ФУ для переноса на нов
 
 NewFU={Mnemo="Console" FUType=FUConsNew}
 NewFU={Mnemo="StreamFloatALU" FUType=FUStreamFloatALU}
-NewFU={Mnemo="Manajer" FUType=FUStreamManager}
+NewFU={Mnemo="Manager" FUType=FUStreamManager}
 NewFU={Mnemo="ALUStart" FUType=FUALUNew}
+NewFU={Mnemo="ALUStart2" FUType=FUALUNew}
+NewFU={Mnemo="AtrCounter" FUType=FUIntAluNew}
 
 MainBus.PartialResetSet \\ Запомнить число созданных ФУ
 MainBus.ModeSet=2
 
-N=20
-M=10
-R=30
+N=4
+M=4
+R=4
 
-ALUStart.VectNew=10
+ALUStart.VectNew=16
+ALUStart2.VectNew=16
+ALUStart.Random=21
+ALUStart2.Random=21
 
+Console.VectColSet=4
+Console.ArrayBracketStartSet=""
+Console.ArrayBracketFinSet=""
 
-Manajer.CounterSet=N
-Manajer.CounterMul=R
-Manajer.FieldCreate=FUStreamFloatALU
+ALUStart.OutMk=Console.OutLn
+Console.OutLn
+ALUStart2.OutMk=Console.OutLn
 
-Manajer.ExecAll={
-/*
+Manager.DevMkRangeSet=1000
+
+Manager.CounterSet=N
+Manager.CounterMul=R
+Manager.FieldCreate=FUStreamFloatALU
+
+Manager.ExecAll={ // Настройка ФУ вычислительной сетки
   FUStreamFloatALU.RoutProgSet={
     FUStreamFloatALU.RoutedAtrOutMk=SetAlu
     DivIntAlu=FUStreamFloatALU.FUMkRangeSet
     FUStreamFloatALU.FUIndOutMk=SubAlu
-    BiggerExecAlu={FUStreamFloatALU.RoutedMkOutMk=FUStreamFloatALU.AdrBuf_3_OutMk ProgStopAll}
-    SmallerExecAlu={FUStreamFloatALU.RoutedMkOutMk=FUStreamFloatALU.AdrBuf_1_OutMk ProgStopAll}
+    BiggerExecAlu={FUStreamFloatALU.RoutedMkOutMk=FUStreamFloatALU.Route_3_OutMk ProgStopAll}
+    SmallerExecAlu={FUStreamFloatALU.RoutedMkOutMk=FUStreamFloatALU.Route_1_OutMk ProgStopAll}
     FUStreamFloatALU.RoutedAtrOutMk=SetAlu
     DivIntAlu=FUStreamFloatALU.FUMkRangeSet
     ModAlu=M //Определение номера столбца
-    OutAlu=t
+    OutAlu=t(0)
     FUStreamFloatALU.FUIndOutMk=SetAlu
     ModAlu=M //Определение номера столбца
     SubAlu=t!
-    BiggerExecAlu={FUStreamFloatALU.RoutedMkOutMk=FUStreamFloatALU.AdrBuf_0_OutMk ProgStopAll}
-    FUStreamFloatALU.RoutedMkOutMk=FUStreamFloatALU.AdrBuf_0_OutMk
+    BiggerExecAlu={FUStreamFloatALU.RoutedMkOutMk=FUStreamFloatALU.Route_0_OutMk ProgStopAll}
+    FUStreamFloatALU.RoutedMkOutMk=FUStreamFloatALU.Route_0_OutMk
   }
-*/
+
   FUStreamFloatALU.NOperandSet=M
   FUStreamFloatALU.NOperandAdd=M
-  FUStreamFloatALU.FUMkRangeSet=10000
   FUStreamFloatALU.OpIndSet=0
   FUStreamFloatALU.OperationMkIndexStartSet=1000
   FUStreamFloatALU.RezProgSet={
@@ -70,3 +82,73 @@ Manajer.ExecAll={
   FUStreamFloatALU.AccumModeSet=False
   }
 }
+
+// Генерация вычислительной сетки
+//Генерация сетки
+
+// Горизонтальные связи
+Manager.IndGroupSet=0
+Manager.IndSet=0 // Установить индекс первого устройства
+Manager.Ind2Set=1 // Установить индекс второго устройства
+Manager.ExecCounterSet=N // Количество запусков по количеству строк
+Manager.Mk2Set=FUStreamIntALU.ContextOutMk // Вторая МК для Выдачи контекста
+Manager.MkSet=FUStreamIntALU.ReceiverAdd // Первая МК для Добавления ссылки на получателя результата
+Manager.ProgExec={
+	Manager.ExecCounterSet=R
+	Manager.ExecCounterSub=1 // R -1 циклов по строке
+	FUStreamManager.ProgExec={
+		FUStreamManager.Mk2Exec=FUStreamManager.MkExec // Заслать ссылку из 2-го ФУ для первого (тот его запишет в качестве приемника результата)
+		FUStreamManager.ExecDev={FUStreamIntALU.ReceiverMkAdd=FUStreamIntALU.Add FUStreamIntALU.NOperandAdd} // Добавить МК для приёмника результат и увеличить количество операндов у приёмника
+		FUStreamManager.IndSwap // Поменять индексы ФУ
+		FUStreamManager.Mk2Exec=FUStreamManager.MkExec
+		FUStreamManager.ExecDev={FUStreamIntALU.ReceiverMkAdd=FUStreamIntALU.Add FUStreamIntALU.NOperandAdd}
+		FUStreamManager.IndSwap
+		FUStreamManager.Ind2Add=1 //Увеличить индексы ФУ (перейти к следующей паре
+		FUStreamManager.IndAdd=1
+	}
+	FUStreamManager.IndAdd=1 // Пропустить край поля
+	FUStreamManager.Ind2Add=1
+}
+
+// Вертикальные связи
+Manager.IndSet=0
+Manager.Ind2Set=R
+Manager.ExecCounterSet=R
+Manager.ProgExec={
+	Manager.ExecCounterSet=N
+	Manager.ExecCounterSub=1
+	FUStreamManager.ProgExec={
+		FUStreamManager.Mk2Exec=FUStreamManager.MkExec
+		FUStreamManager.ExecDev={FUStreamIntALU.ReceiverMkAdd=FUStreamIntALU.Add FUStreamIntALU.NOperandAdd}
+		FUStreamManager.IndSwap
+		FUStreamManager.Mk2Exec=FUStreamManager.MkExec
+		FUStreamManager.ExecDev={FUStreamIntALU.ReceiverMkAdd=FUStreamIntALU.Add FUStreamIntALU.NOperandAdd}
+		FUStreamManager.IndSwap
+		FUStreamManager.Ind2Add=M
+		FUStreamManager.IndAdd=M
+	}
+	FUStreamManager.IndMod=M
+	FUStreamManager.IndAdd=1
+	FUStreamManager.IndOutMk=FUStreamManager.Ind2Set
+	FUStreamManager.Ind2Add=M
+}
+
+//Выдача исходных данных
+Manager.IndSet=0
+AtrCounter.Set=0
+ALUStart.IndSet=0
+ALUStart.IndAutoIncSet=1
+ALUStart.VectSizeOutMk=ALUStart.ExecCounterSet
+ALUStart.ProgExec={
+	AtrCounter.Out=t
+	ALUStart.Out=t2
+	Manager.ExecDev={t(0)=t2(0)!}
+	AtrCounter.Out=tt
+	AtrCounter.Add=1
+	ALUStart.Out=t2
+	Manager.ExecDev={tt(0)=t2(0)!}
+	AtrCounter.Add=999
+}
+
+
+Manager.RezVectOutMk=Console.OutLn // Выдача результата расчета

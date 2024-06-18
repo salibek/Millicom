@@ -95,10 +95,7 @@ void StreamFloatALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		MatErrProg = Load.Point;
 		break;
 	case 64: // ExecCounterSet Установить счетчик итераций выполнения подпрограммы
-		if (!ExecFlag)
-			ExecCounter.back() = Load.toInt(1);
-		else
-			ExecCounter.push_back(Load.toInt(1));
+		ExecCounter.push_back(Load.toInt(1));
 		break;
 
 	case 70: // ReadySet Установить флаг готовности результата (по умолчанию true)
@@ -1117,19 +1114,25 @@ StreamFloatALU::StreamFloatALU(void* Dev1) // Копирующий конструктор
 
 void StreamFloatALU::ProgExec(void* Uk, unsigned int CycleMode, FU* Bus, vector<ip>::iterator* Start) // Исполнение программы из ИК
 {
-	ExecFlag = true;
-	for (int i = 0; i < ExecCounter.back(); i++)
+	if (!ExecCounter.size())
 		FU::ProgExec(Uk, CycleMode, Bus, Start);
-	if (ExecCounter.size() == 1) ExecFlag = false;
-	if (ExecCounter.size() > 1) ExecCounter.pop_back();
+	else
+	{
+		for (int i = 0; i < ExecCounter.back(); i++)
+			FU::ProgExec(Uk, CycleMode, Bus, Start);
+		ExecCounter.pop_back();
+	}
 }
 void StreamFloatALU::ProgExec(LoadPoint Uk, unsigned int CycleMode, FU* Bus, vector<ip>::iterator* Start) // Исполнение программы из ИК
 {
-	ExecFlag = true;
-	for (int i = 0; i < ExecCounter.back(); i++)
+	if (!ExecCounter.size())
 		FU::ProgExec(Uk, CycleMode, Bus, Start);
-	if (ExecCounter.size() == 1) ExecFlag = false;
-	if (ExecCounter.size() > 1) ExecCounter.pop_back();
+	else
+	{
+		for (int i = 0; i < ExecCounter.back(); i++)
+			FU::ProgExec(Uk, CycleMode, Bus, Start);
+		ExecCounter.pop_back();
+	}
 }
 
 FU* StreamFloatALU::Copy() // Программа копирования ФУ

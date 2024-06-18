@@ -117,34 +117,34 @@ void ALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 				char tt_char = 0;
 				string tt_str = "";
 				if (LoadPoint::isVectInd(Stack.back().accumType)) {
-					MkExec(i.Mk, { CLoadVectInd, Stack.back().accumVect, Stack.back().Ind }); // Сделать преобразование типов попозже
+					MkExec(i.Mk, { CLoadVectInd, Stack.back().accumVect, Stack.back().Ind }, Receiver); // Сделать преобразование типов попозже
 				}
 		        else if (LoadPoint::isVect(Stack.back().accumType)) {
-					MkExec(i.Mk, { CLoadVect,Stack.back().accumVect }); // Сделать преобразование типов попозже
+					MkExec(i.Mk, { CLoadVect,Stack.back().accumVect }, Receiver); // Сделать преобразование типов попозже
 				}
 				else if (LoadPoint::isStr(Stack.back().accumType)) {
 					string tt_str = Stack.back().accumStr;
-					MkExec(i.Mk, { Stack.back().accumType | 1, &tt_str }); // Сделать преобразование типов попозже
+					MkExec(i.Mk, { Stack.back().accumType | 1, &tt_str }, Receiver); // Сделать преобразование типов попозже
 				}
 				if (LoadPoint::isDouble(Stack.back().accumType)) {
 					double tt_double = Stack.back().accum;
-					MkExec(i.Mk, { Stack.back().accumType | 1, &tt_double }); // Сделать преобразование типов попозже
+					MkExec(i.Mk, { Stack.back().accumType | 1, &tt_double }, Receiver); // Сделать преобразование типов попозже
 				}
 				else if (LoadPoint::isFloat(Stack.back().accumType)) {
 					float tt_float = Stack.back().accum;
-					MkExec(i.Mk, { Stack.back().accumType | 1, &tt_float }); // Сделать преобразование типов попозже
+					MkExec(i.Mk, { Stack.back().accumType | 1, &tt_float }, Receiver); // Сделать преобразование типов попозже
 				}
 				else if (LoadPoint::isInt(Stack.back().accumType)) {
 					long int tt_int = Stack.back().accum;
-					MkExec(i.Mk, { Stack.back().accumType | 1, &tt_int }); // Сделать преобразование типов попозже
+					MkExec(i.Mk, { Stack.back().accumType | 1, &tt_int }, Receiver); // Сделать преобразование типов попозже
 				}
 				else if (LoadPoint::isBool(Stack.back().accumType)) {
 					bool tt_bool = Stack.back().accum;
-					MkExec(i.Mk, { Stack.back().accumType | 1, &tt_bool }); // Сделать преобразование типов попозже
+					MkExec(i.Mk, { Stack.back().accumType | 1, &tt_bool }, Receiver); // Сделать преобразование типов попозже
 				}
 				else if (LoadPoint::isChar(Stack.back().accumType)) {
 					char tt_float = Stack.back().accum;
-					MkExec(i.Mk, { Stack.back().accumType | 1, &tt_char }); // Сделать преобразование типов попозже
+					MkExec(i.Mk, { Stack.back().accumType | 1, &tt_char }, Receiver); // Сделать преобразование типов попозже
 				}
 
 			}
@@ -224,10 +224,10 @@ void ALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 			MKExt = Load.toInt();
 			break;
 		case 501: // MKExtExec Выполнить внешнюю МК
-			MkExec(MKExt, Load);
+			MkExec(MKExt, Load, Receiver);
 			break;
 		case 502: // MkOutExtExec Выполнить внешнюю Мк для выдачи данных (на вход внешней команды автоматически дается Мк установки значения аккумулятора
-			MkExec(Load, LoadNew(FUMkGlobalAdr + E_MK::SET));
+			MkExec(Load, LoadNew(FUMkGlobalAdr + E_MK::SET), Receiver);
 			break;
 		case 505: // AnsFix Зафиксировать текущий уровень аккумулятора как ans
 			if (Stack.size() - 1 == Anses.back()) break; // ans уже добавлен
@@ -266,7 +266,7 @@ void ALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 			break;
 		case 516: // VectStoreOutMk Выдать МК с вектором из хранилища
 			if (!VectStore.size()) break;
-			MkExec(Load, { CLoadVect, VectStore.back()});
+			MkExec(Load, { CLoadVect, VectStore.back()}, Receiver);
 			break;
 		case 517: // VectStorePop Вытолкнуть вектор из хранилища
 			if (!VectStore.size()) break;
@@ -276,7 +276,7 @@ void ALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 			break;
 		case 518: // VectStorePopMk Выдать МК с вектором и вытолкнуть его из хранилища
 			if (!VectStore.size()) break;
-			MkExec(Load, { CLoadVect, VectStore.back() });
+			MkExec(Load, { CLoadVect, VectStore.back() }, Receiver);
 //			delete VectStore.back();
 			VectStore.pop_back();
 			break;
@@ -292,6 +292,7 @@ void ALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 			if(t) ProgStop += 2;
 			break; }
 		case 0: // Reset
+			srand(time(NULL)); // Сброс генератора случайных чисел
 			Stack.clear();
 			Stack.push_back({});
 			Stack.back().accumType = Cdouble;
@@ -302,8 +303,7 @@ void ALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 			Alu = this;
 			ALUCreating = false;
 			break;
-		case 2: // Out Выдать значение аккумулятора
-		case 3: // OutMk Выдать МК со значением аккумулятора
+
 		case 530: // ExecCounterSet Установить счетчик итераций выполнения подпрограммы
 			ExecCounter.push_back(Load.toInt(1));
 			break;
@@ -319,6 +319,12 @@ void ALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		case 534: // ExecCounterDiv Целочисленно разделить счетчик итераций
 			ExecCounter.back() /= Load.toInt();
 			break;
+		case 535: // ReceiverSet Установить примника результата
+			Receiver = (FU*) Load.Point;
+			break;
+
+		case 2: // Out Выдать значение аккумулятора
+		case 3: // OutMk Выдать МК со значением аккумулятора
 
 		case 506: // AnsOut Выдать Ans
 		case 507: // AnsOutMk Выдать МК с Ans
@@ -338,7 +344,7 @@ void ALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 					case 506:
 					case 2: Load.WriteFromLoad(ta->accumVect->at(ta->Ind)); break;
 					case 507:
-					case 3: MkExec(Load, ta->accumVect->at(Ind), Bus); break;
+					case 3: MkExec(Load, ta->accumVect->at(Ind), Receiver); break;
 					}
 					Stack.back().Ind += Stack.back().IndAutoInc;
 					break;
@@ -352,7 +358,7 @@ void ALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 					case 506:
 					case 2: Load.Write(ta->accum); break;
 					case 507:
-					case 3: MkExec(Load, { ta->accumType, ta->accumVect }, Bus); break;
+					case 3: MkExec(Load, { ta->accumType, ta->accumVect }, Receiver); break;
 					}
 					break;
 				case Ddouble:
@@ -360,7 +366,7 @@ void ALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 					case 506:
 					case 2:  Load.Write(ta->accum); break;
 					case 507:
-					case 3: MkExec(Load, { ta->accumType, &ta->accum }, Bus); break;
+					case 3: MkExec(Load, { ta->accumType, &ta->accum }, Receiver); break;
 					}
 					break;
 				case Dfloat:
@@ -370,7 +376,7 @@ void ALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 					case 506:
 					case 2:  Load.Write(ta->accum); break;
 					case 507:
-					case 3: MkExec(Load, { ta->accumType, &t }, Bus); break;
+					case 3: MkExec(Load, { ta->accumType, &t }, Receiver); break;
 					}
 					break;
 				}
@@ -381,7 +387,7 @@ void ALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 					case 506:
 					case 2:  Load.Write(t); break;
 					case 507:
-					case 3: MkExec(Load, { ta->accumType, &t }, Bus); break;
+					case 3: MkExec(Load, { ta->accumType, &t }, Receiver); break;
 					}
 					break;
 				}
@@ -392,7 +398,7 @@ void ALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 					case 506:
 					case 2:  Load.Write(t); break;
 					case 507:
-					case 3: MkExec(Load, { ta->accumType, &t }, Bus); break;
+					case 3: MkExec(Load, { ta->accumType, &t }, Receiver); break;
 					}
 					break;
 				}
@@ -403,7 +409,7 @@ void ALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 					case 506:
 					case 2:  Load.Write(t); break;
 					case 507:
-					case 3: MkExec(Load, { Stack.back().accumType, &t }, Bus); break;
+					case 3: MkExec(Load, { Stack.back().accumType, &t }, Receiver); break;
 					}
 					break;
 				}
@@ -412,7 +418,7 @@ void ALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 					case 506:
 					case 2:  Load.Write(ta->accumStr); break;
 					case 507:
-					case 3: MkExec(Load, { ta->accumType, &ta->accumStr }, Bus, true); break;
+					case 3: MkExec(Load, { ta->accumType, &ta->accumStr }, Receiver, true); break;
 					}
 					break;
 				}
@@ -470,7 +476,7 @@ void ALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 			Load.Write((void*)&Accum);
 			break;
 		case 6: //AccumAdrOutMk Выдать МК с адресом выходного аккумулятора
-			MkExec(MK, { Cdouble,(void*)&Accum });
+			MkExec(MK, { Cdouble,(void*)&Accum }, Receiver);
 			break;
 		case 10: // OutMkAdrClear Очистить буфер МК и адресов для выдачи результата
 			Stack.back().OutMkAdr.clear();
@@ -499,9 +505,9 @@ void ALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 			else
 			{
 				if (Load.isDigit() && Load.isDigitBool(Stack.back().accumType))
-					MkExec(Load, LoadPoint::TypeMinimizeOut(Stack.back().accum, Stack.back().accumType | 1));
+					MkExec(Load, LoadPoint::TypeMinimizeOut(Stack.back().accum, Stack.back().accumType | 1), Receiver);
 				else if (Load.isStrChar() && Load.isDigitBool(Stack.back().accumType))
-					MkExec(Load, { Stack.back().accumType,&Stack.back().accumStr });
+					MkExec(Load, { Stack.back().accumType,&Stack.back().accumStr }, Receiver);
 			}
 			if (Stack.size() > 1)
 				Stack.pop_back();
@@ -529,7 +535,7 @@ void ALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 			if (MK == 13 || MK == 18)
 				Load.WriteFromLoad(t);
 			else
-				MkExec(Load,t);
+				MkExec(Load,t, Receiver);
 		}
 			break;
 		case 20: // VectToIndSet Установить ссылку на вектор, при этом прежнее значение аккумулятора становится индексом вектора
@@ -841,7 +847,7 @@ void ALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 			Stack.back().IndAutoInc = Load.toInt();
 			break;
 		case 270: //IndSet Установить индекс вектора (nil в нагрузке вызывает сброс индекса, т.е. по команде Out выдается вектор, а не элемент)
-			if (Load.Point == nullptr)
+			if (Load.Point == nullptr)	
 			{
 				Stack.back().IndF = false;
 				Stack.back().Ind = 0;
@@ -928,7 +934,14 @@ void ALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 				ProgFU(E_MK::PUSH, (Stack.end() - 2)->accumVect->at(Load.toInt())); // Добавить значение из элемента вектора
 			break;
 		case 280: // VectNew Создать новый вектор (в нагрузке может быть первый элемент
-			emptyvect();
+			emptyvect(Load.toInt());
+			break;
+		case 295: // VectSizeOut Выдать длину массива
+			Load.Write((long)Stack.back().accumVect->size());
+			break;
+		case 296: // VectSizeOutMk Выдать МК с длиной массива
+			MkExec(Load, (long)Stack.back().accumVect->size());
+			break;
 		case 290: // Append Добавить элемент в вектор
 			if (Load.Point != nullptr)
 				append(Load);
@@ -950,7 +963,7 @@ void ALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		case 283: // VectPopMk Отделить вектор от аккумулятора и выдать МК с адресом вектора
 			if (!LoadPoint::isVect(accumType)) break;
 			{LoadPoint t = { TLoadVect, Stack.back().accumVect,-1 };
-			MkExec(Load, t); }
+			MkExec(Load, t, Receiver); }
 			Stack.back().accumVect = nullptr;
 			Stack.back().IndF = false;
 			break;
@@ -1109,12 +1122,17 @@ void ALU::inc(LoadPoint Load)
 
 void ALU::dec(LoadPoint Load) // Декреминт если нагрузки нет, то декремируется аккумулятор
 {
-	Stack.back().accum -= Load.toDouble(-1);
+	Stack.back().accum -= Load.toDouble(1);
 }
-void ALU::emptyvect() {
+void ALU::emptyvect(long size) { // Size - количество элементов
 	Stack.back().accumType = TLoadVect;
-	Stack.back().accumVect = new vector<LoadPoint>;
-	Stack.back().accumVect->clear();
+	Stack.back().accumVect = new vector<LoadPoint>(size);
+	for (auto ui = Stack.back().accumVect->begin(); ui != Stack.back().accumVect->end(); ui++)
+	{
+		ui->Point = new double(0);
+		ui->Type = Tdouble;
+	}
+
 	Stack.back().IndF = false;
 }
 void ALU::append(LoadPoint Load) //добавление
@@ -2563,8 +2581,6 @@ void	ALU::fu_exp(LoadPoint Load)
 void	ALU::fu_random(LoadPoint Load)
 {
 	//Enver//
-	srand(time(NULL));
-
 	if (Load.Point == nullptr)
 	{
 		if (Load.isDigitBool(Stack.back().accumType))
@@ -2838,11 +2854,11 @@ void ALU::lenMk(LoadPoint Load) {
 	long int l;
 	if (LoadPoint::isVect(accumType) || LoadPoint::isStr(accumType)) {
 		l = Stack.back().accumVect->size();
-		MkExec(Load, { Cint,&l });
+		MkExec(Load, { Cint,&l }, Receiver);
 	}
 	else {
 		l = 0;
-		MkExec(Load, { Cint,&l });
+		MkExec(Load, { Cint,&l }, Receiver);
 	}
 }
 void ALU::clear(LoadPoint Load) {
@@ -2924,7 +2940,7 @@ void ALU::pop_backMk(LoadPoint Load) {
 	if (!Stack.back().accumVect->empty()) {
 		return;
 	}
-	MkExec(Load, { Cdouble, &Stack.back().accumVect });
+	MkExec(Load, { Cdouble, &Stack.back().accumVect }, Receiver);
 	Stack.back().accumVect->pop_back();
 
 }

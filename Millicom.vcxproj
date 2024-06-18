@@ -78,9 +78,14 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>C:\Users\salib\AppData\Local\Programs\Python\Python310\include;C:\Users\salib\AppData\Local\Programs\Python\Python310\Lib\site-packages\numpy\core\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\salib\AppData\Local\Programs\Python\Python310\libs;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>C:\Users\salib\AppData\Local\Programs\Python\Python310;C:\Users\salib\AppData\Local\Programs\Python\Python310\include;C:\Users\salib\AppData\Local\Programs\Python\Python310\Lib\site-packages\numpy\core\include;C:\Users\salib\AppData\Local\Programs\Python\Python310\Lib\site-packages\numpy;C:\Users\salib\AppData\Local\Programs\Python\Python310\Lib\site-packages\numpy\_core\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\salib\AppData\Local\Programs\Python\Python310\libs;C:\Users\salib\AppData\Local\Programs\Python\Python310\Lib\site-packages\numpy\_core\include;$(LibraryPath)</LibraryPath>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

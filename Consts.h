@@ -139,8 +139,8 @@ public:
 	static LoadPoint IndLoadReturn(LoadPoint LP); // Возвратить указатель на нагрузку индексированного элемента
 	bool isEmpty() { return Point == nullptr; }; // Проветка указателя на null
 	bool isVect(); // Вектор ли нагрузка
-	bool isConst() { return Type % 2; }; // Определить является ли ссылка константой
 	static bool isVect(unsigned int type) { return (type >> 1) == DLoadVect; }; // Вектор ли нагрузка
+	bool isConst() { return Type % 2; }; // Определить является ли ссылка константой
 	bool isFU() { return Type == TFU || Type == CFU; };// Определить указатель на ФУ
 	int Write(long int x); // return 0 - корректная запись, 1 - несоотвествие типов
 	int Write(int x); // return 0 - корректная запись, 1 - несоотвествие типов
@@ -318,7 +318,17 @@ public:
 	};
 
 	void MkExec(long int MK, LoadPoint Load, void* BusContext = nullptr, bool Ext = false); // Выполнить одну милликоманду 
-	void MkExec(LoadPoint MK, LoadPoint Load, void* BusContext = nullptr, bool Ext=false); // Выдача МК с нагрузкой
+	void MkExec(LoadPoint MK, LoadPoint Load, void* BusContext = nullptr, bool Ext = false); // Выдача МК с нагрузкой
+	void MkExec(LoadPoint Mk, long Var, void* Receiver = nullptr, bool Ext = false); // Выдача МК с нагрузкой
+	void MkExec(LoadPoint Mk, long* Var, void* Receiver = nullptr, bool Ext = false); // Выдача МК с нагрузкой
+	void MkExec(LoadPoint Mk, double Var, void* Receiver = nullptr, bool Ext = false); // Выдача МК с нагрузкой
+	void MkExec(LoadPoint Mk, double* Var, void* Receiver = nullptr, bool Ext = false); // Выдача МК с нагрузкой
+	void MkExec(LoadPoint Mk, bool Var, void* Receiver = nullptr, bool Ext = false); // Выдача МК с нагрузкой
+	void MkExec(LoadPoint Mk, bool* Var, void* Receiver = nullptr, bool Ext = false); // Выдача МК с нагрузкой
+	void MkExec(LoadPoint Mk, string Var, void* Receiver = nullptr, bool Ext = false); // Выдача МК с нагрузкой
+	void MkExec(LoadPoint Mk, string* Var, void* Receiver = nullptr, bool Ext = false); // Выдача МК с нагрузкой
+	void MkExec(LoadPoint Mk, char Var, void* Receiver = nullptr, bool Ext = false); // Выдача МК с нагрузкой
+	void MkExec(LoadPoint Mk, char* Var, void* Receiver = nullptr, bool Ext = false); // Выдача МК с нагрузкой
 	virtual void ProgExec(void* Uk, unsigned int CycleMode = 0, FU* Bus = nullptr, vector<ip>::iterator* Start = nullptr); // Исполнение программы из ИК
 	virtual void ProgExec(LoadPoint Uk, unsigned int CycleMode = 0, FU* Bus = nullptr, vector<ip>::iterator* Start = nullptr); // Исполнение программы из ИК
 	void ProgNExec(vector<void*> Uk); // Исполнение нескольких программ из ИК
