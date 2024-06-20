@@ -1,5 +1,7 @@
 #include "MatPlot.h"
+#if MatPlotInclude
 namespace plt = matplotlibcpp;
+#endif // MatPlotInclude
 
 void MatPlot::ProgFU(long int MK, LoadPoint Load, FU* Sender) {
 	MK %= FUMkRange;
@@ -11,6 +13,9 @@ void MatPlot::ProgFU(long int MK, LoadPoint Load, FU* Sender) {
 			MeshY.clear();
 			Z.clear();
 			break;
+#if MatPlotInclude
+
+
 		case 1: // Plot Нарисовать график (На входе тип графика)
 			plt::plot(X, Y);
 			plt::show();
@@ -190,7 +195,8 @@ void MatPlot::ProgFU(long int MK, LoadPoint Load, FU* Sender) {
 						swap(Y[i], Y[i + 1]);
 					}
 			break;
-		
+#endif // MatPlotInclude
+
 		default:
 			CommonMk(MK, Load, Sender);
 			break;

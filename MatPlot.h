@@ -1,6 +1,9 @@
 #pragma once
 #include "Consts.h"
+
+#if MatPlotInclude
 #include "matplotlibcpp.h"
+#endif // MatPlotInclude
 
 class MatPlot : public FU
 {

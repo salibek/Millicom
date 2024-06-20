@@ -1,4 +1,6 @@
 ﻿// Описание основных констант и информационных конструкций
+#define MatPlotInclude true // Флаг включения компиляции модуля Matplot
+
 #pragma once
 #include <iostream>
 #include <string>
