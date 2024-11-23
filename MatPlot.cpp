@@ -1,4 +1,4 @@
-#include "MatPlot.h"
+п»ї#include "MatPlot.h"
 #if MatPlotInclude
 namespace plt = matplotlibcpp;
 #endif // MatPlotInclude
@@ -6,209 +6,511 @@ namespace plt = matplotlibcpp;
 void MatPlot::ProgFU(long int MK, LoadPoint Load, FU* Sender) {
 	MK %= FUMkRange;
 	switch (MK)
-		{
-		case 0: //Reset
-			X.clear(); Y.clear();
-			MeshX.clear();
-			MeshY.clear();
-			Z.clear();
-			break;
+	{
+	case 0: //Reset
+		X.clear(); Y.clear(); Z.clear();
+		MeshX.clear();
+		MeshY.clear();
+		Z0.clear();
+		break;
 #if MatPlotInclude
 
-
-		case 1: // Plot Нарисовать график (На входе тип графика)
-			plt::plot(X, Y);
-			plt::show();
-			break;
-		case 5: // XAdd Добавить координату по X
-			X.push_back(Load.toDouble());
-			break;
-		case 6: // StartSet Установить начальное заначение отрезка по X
-			Start = Load.toDouble();
-			break;
-		case 7:	// EndSet Установить конечное заначение отрезка по X
-			End = Load.toDouble();
-			break;
-		case 8:	// hSet Установить шаг точек отрезка по X
-			X.clear();
-			h = Load.toDouble();
-			N = 0;
-			for (double x = Start; x <= End; x += h) // Генерация точек по оси X
-			{
-				N++;
-				X.push_back(x);
-			}
-			break;
-		case 9:	// NSet Установть количестов точек отрезка по X
-			X.clear();
-			N = Load.toDouble();
-			h = (End - Start) / (N - 1);
-			for (double x = Start; x <= End; x += h) // Генерация точек по оси X
-			{
-				N++;
-				X.push_back(x);
-			}
-			break;
-		case 10: // XVectSet // Установить вектор по координате X
-			if (!Load.isVect()) break;
-			X.resize(Load.toVect()->size());
-			{
-				auto L = Load.toVect()->begin();
-				for (auto x = X.begin(); x != X.end(); x++, L++)
-					*x = L->toDouble();
-			}
-			break;
-		case 11: // YVectSet // Установить вектор по координате Y
-			if (!Load.isVect()) break;
-		
-			Y.resize(Load.toVect()->size());
-			{
-				auto L = Load.toVect()->begin();
-				for (auto y = Y.begin(); y != Y.end(); y++, L++)
-					*y = L->toDouble();
-			}
-			break;
-		case 12: // MeshSet // Установить сетку координат для 3-мерного графика
-			if (!Load.isVect()) break;
-			//...
-			break;
-		case 13: // ZSet // Установить значения для 3-мерного графика
-			if (!Load.isVect()) break;
-			//...
-			break;
-		case 20: // XVectOut Выдать вектор значений по оси X
-			Load.Write(X);
-			break;
-		case 21: // XVectOutMk Выдать МК с вектором значений по оси X
+	case 1: // Plot пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ)
+	{
+		plt::rcparams({
+	{"figure.facecolor", Format1[0]},  // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	{"axes.facecolor", Format1[1]},   // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	{"axes.edgecolor", Format1[2]},        // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	{"axes.grid", Format1[3]},              // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+	{"grid.color", Format1[4]},             // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+	{"grid.alpha", Format1[5]}               // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+			});
+		numCols = Y.size() - 1;
+		switch (Load.toInt()) {
+		case 0: // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 		{
-			MkExec(Load, { CintArray, &X });
-			break;
-		}
-		case 22: // XLoadVectOut Выдать вектор значений по оси X
-		case 23: // XLoadVectOutMk Выдать МК с вектором значений по оси X
-		{
-			vector<LoadPoint> t;
-			t.resize(X.size());
-			auto tuk = t.begin();
-			for (auto xuk = X.begin(); xuk != X.end(); xuk++)
-			{
-				*tuk = { Cint,new double };
-				*(double*)(tuk->Point) = *xuk;
-			}
-			if (MK == 23)MkExec(Load, { CintArray, &X });
-			else Load.Write(t);
-			for (auto tuk = t.begin(); tuk != t.end(); tuk++)
-				delete (double*)tuk->Point;
-		}
-			break;
-		case 25: // YVectOut Выдать вектор значений по оси X
-			Load.Write(Y);
-			break;
-		case 26: // YVectOutMk Выдать вектор значений по оси X
-		{
-			MkExec(Load, { CintArray, &Y });
-			break;
-		}
-		case 27: // XLoadVectOut Выдать вектор значений по оси X
-		case 28: // XLoadVectOutMk Выдать МК с вектором значений по оси X
-		{
-			vector<LoadPoint> t;
-			t.resize(Y.size());
-			auto tuk = t.begin();
-			for (auto xuk = Y.begin(); xuk != Y.end(); xuk++)
-			{
-				*tuk = { Cint,new double };
-				*(double*)(tuk->Point) = *xuk;
-			}
-			if (MK == 23)MkExec(Load, { CintArray, &X });
-			else Load.Write(t);
-			for (auto tuk = t.begin(); tuk != t.end(); tuk++)
-				delete (double*)tuk->Point;
+			plt::plot(X, Y, { {"color", Format0[0]},              // Set line color 
+			{"marker", Format0[1]},               // Set marker type (circle in this case) 
+			{"markersize",Format0[2]},
+			{"linewidth",Format0[3]},
+			{"markerfacecolor",Format0[4]},
+			{"markeredgecolor",Format0[5]}
+				});
 		}
 		break;
+		case 1:
+		{
 
-		case 35: // DxSet
-			Dx = Load.toDouble();
+			plt::bar(X, Y, Format0[0], "-", barWidth,
+				{
+					{"color", Format0[4]}
+				});
+
+		}
+		break;
+		case 2:
+			plt::barh(X, Y, Format0[0], "-", barWidth,
+				{
+					{"color", Format0[4]}
+				});
 			break;
-		case 36: // DySet
-			Dy = Load.toDouble();
+		case 3:
+			plt::hist(Y, numCols, Format0[0], histAlpha, histSort);
 			break;
-		case 37: // XStartSet
-			XStart = Load.toDouble();
+		case 4:
+			plt::pie(X);
 			break;
-		case 38: // XEndSet
-			XEnd = Load.toDouble();
+		case 5:
+		{
+			Z0.push_back(X);
+			Z0.push_back(Y);
+			plt::boxplot(Z);
+		}
+		break;
+		case 6:
+			plt::scatter(X, Y, scatterSize, { {"marker",Format0[1]},{"edgecolors",Format0[0]},{"cmap","magma"} });
 			break;
-		case 39: // YStartSet
-			YStart = Load.toDouble();
-			break;
-		case 40: // YEndSet
-			YEnd = Load.toDouble();
-			break;
-		case 45: // NxSet
-			Nx = Load.toDouble();
-			N = Load.toInt();
-			break;
-		case 46: // NySet
-			Ny = Load.toInt();
-			break;
-		case 50: //MeshN Сгенерировать сетку для отображения 3-мерного графика по количеству точек
-			MeshX.clear();
-			MeshY.clear();
-			Dy = (YEnd - YStart) / (Ny - 1);
-			Dx = (XEnd - XStart) / (Nx - 1);
-			MeshY.resize(Ny);
-			for (int i = 0; i < Ny; i++)
-				MeshY[i].resize(Nx);
-			for (int i = 0; i < Ny; i++)
-				for (int j = 0; j < Nx; j++)
-					MeshY[i][j] = YStart + i * Dy;
-			for (int i = 0; i < Ny; i++)
-				for (int j = 0; j < Nx; j++)
-					MeshX[i][j] = XStart + j * Dy;
-					
-			break;
-		case 51: //MeshD Сгенерировать сетку для отображения 3-мерного графика по длине шага
-			Nx = Ny = 0;
-			for (double y = YStart; y <= YEnd; y += Dy)
+		case 7:
+		{
+			PyObject* ax = plt::chart();
+			plt::scatter(ax, X, Y, X, "Red");
+		}
+		break;
+		case 8: //PlotLine3D
+		{
+			PyObject* ax = plt::chart();
+			plt::plot3(ax, X, X, X, Format0[0], lineWidth3);
+		}
+		break;
+		case 9:
+		{
+			PyObject* ax = plt::chart_polar(111);
+			plt::plot(X, Y,
+				{ {"color", Format0[0]},              // Set line color 
+			{"marker", Format0[1]},               // Set marker type (circle in this case) 
+			{"markersize",Format0[2]},
+			{"linewidth",Format0[3]},
+			{"markerfacecolor",Format0[4]},
+			{"markeredgecolor",Format0[5]}
+				});
+		}
+		break;
+		case 10:
+		{
+			PyObject* ax = plt::chart();
+			plt::Clear3DChart(ax);
+			std::vector<double> vvv = { 1.0, 2.0, 3.0,4.0, 5.0, 6.0, 7.0, 8.0, 9.0 };
+			std::vector<std::vector<double>> x,y,z;
+			for (int a = 0; a < ZRow; ++a)
 			{
-				MeshY.push_back({});
-				Ny++;
-				for (double x = XStart; x <= XEnd; x += Dx);
-
+				std::vector<double> vvX, vvY, vvZ;
+				for (int b = 0; b < ZCol; ++b)
+				{
+					vvX.push_back(X[a + b * 3]);
+					vvY.push_back(Y[a + b * 3]);
+					vvZ.push_back(Z[a + b * 3]);
+				}
+				if ((ZCol * ZRow == z.size()) && (z.size() == x.size()) && (x.size() == y.size()))
+				{
+					z.push_back(vvZ);
+					x.push_back(vvX);
+					y.push_back(vvY);
+				}
 			}
-			break;
+			
+			
 
-		case 55: // YAdd Добавить значение функции
-			Y.push_back(Load.toDouble());
-			break;
-		case 56: // Y3DAdd Добавить значение функции для 3-мерного графика
-			Y.push_back(Load.toDouble());
-			break;
+				plt::surface3D(ax, x,y,z, Format0[0], 1.11);
+		}
+		break;
+		}
+		//plt::yticks(values, categories);
+		plt::show();
+	}
+	break;
+	case 5: // XAdd пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ X
+		X.push_back(Load.toDouble());
+		break;
+	case 6: // StartSet пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ X
+		Start = Load.toDouble();
+		break;
+	case 7:	// EndSet пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ X
+		End = Load.toDouble();
+		break;
+	case 8:	// hSet пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ X
+		X.clear();
+		h = Load.toDouble();
+		N = 0;
+		for (double x = Start; x <= End; x += h) // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅ X
+		{
+			N++;
+			X.push_back(x);
+		}
+		break;
+	case 9:	// NSet пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ X
+		X.clear();
+		N = Load.toDouble();
+		h = (End - Start) / (N - 1);
+		for (double x = Start; x <= End; x += h) // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅ X
+		{
+			N++;
+			X.push_back(x);
+		}
 
-		case 60: // XSort Упорядочить данные по оси X по возрастанию
-			for(int k=0;k<X.size()-1;k++)
-				for(int i=0; i<X.size()-1-k;i++)
-					if (X[i] > X[i + 1])
-					{
-						swap(X[i], X[i + 1]);
-						swap(Y[i], Y[i + 1]);
-					}
-			break;
+		break;
+	case 10: // XVectSet // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ X
+		if (!Load.isVect()) break;
+		X.resize(Load.toVect()->size());
+		{
+			auto L = Load.toVect()->begin();
+			for (auto x = X.begin(); x != X.end(); x++, L++)
+				*x = L->toDouble();
+		}
+		break;
+	case 11: // YVectSet // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ Y
+		if (!Load.isVect()) break;
+
+		Y.resize(Load.toVect()->size());
+		{
+			auto L = Load.toVect()->begin();
+			for (auto y = Y.begin(); y != Y.end(); y++, L++)
+				*y = L->toDouble();
+		}
+		break;
+	case 12: // MeshSet // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ 3-пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+		if (!Load.isVect()) break;
+		//...
+		break;
+	case 13: // ZSet // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ 3-пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+		if (!Load.isVect()) break;
+		Z.resize(Load.toVect()->size());
+		{
+			auto L = Load.toVect()->begin();
+			for (auto z = Z.begin(); z != Z.end(); z++, L++)
+				*z = L->toDouble();
+		}
+		break;
+	case 14: //Show_plot//пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+		plt::show(false);
+		break;
+	
+	case 15:	// hSet пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ Y
+	{
+		Y.clear();
+		h = Load.toDouble();
+		N = 0;
+		for (double y = YStart; y <= YEnd; y += h) // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅ X
+		{
+			N++;
+			Y.push_back(y);
+		}
+	}
+		break;
+	case 16:	// NSet пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ Y
+	{
+		Y.clear();
+		N = Load.toDouble();
+		h = (End - Start) / (N - 1);
+		for (double y = Start; y <= End; y += h) // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅ Y
+		{
+			N++;
+			Y.push_back(y);
+		}
+	}
+		break;
+	case 17:	// hSet пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ Z
+	{
+		Z.clear();
+		h = Load.toDouble();
+		N = 0;
+		for (double z = Start; z <= End; z += h) // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅ Z
+		{
+			N++;
+			Z.push_back(z);
+		}
+	}
+		break;
+	case 18:	// NSet пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ Z
+	{
+		Z.clear();
+		N = Load.toDouble();
+		h = (End - Start) / (N - 1);
+		for (double z = Start; z <= End; z += h) // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅ Z
+		{
+			N++;
+			Z.push_back(z);
+		}
+	}
+		break;
+
+	case 20: // XVectOut пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅ X
+		Load.Write(X);
+		break;
+	case 21: // XVectOutMk пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅ X
+	{
+		MkExec(Load, { CintArray, &X });
+		break;
+	}
+	case 22: // XLoadVectOut пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅ X
+	case 23: // XLoadVectOutMk пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅ X
+	{
+		vector<LoadPoint> t;
+		t.resize(X.size());
+		auto tuk = t.begin();
+		for (auto xuk = X.begin(); xuk != X.end(); xuk++)
+		{
+			*tuk = { Cint,new double };
+			*(double*)(tuk->Point) = *xuk;
+		}
+		if (MK == 23)MkExec(Load, { CintArray, &X });
+		else Load.Write(t);
+		for (auto tuk = t.begin(); tuk != t.end(); tuk++)
+			delete (double*)tuk->Point;
+	}
+	break;
+	case 25: // YVectOut пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅ X
+		Load.Write(Y);
+		break;
+	case 26: // YVectOutMk пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅ X
+	{
+		MkExec(Load, { CintArray, &Y });
+		break;
+	}
+	case 27: // XLoadVectOut пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅ X
+	case 28: // XLoadVectOutMk пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅ X
+	{
+		vector<LoadPoint> t;
+		t.resize(Y.size());
+		auto tuk = t.begin();
+		for (auto xuk = Y.begin(); xuk != Y.end(); xuk++)
+		{
+			*tuk = { Cint,new double };
+			*(double*)(tuk->Point) = *xuk;
+		}
+		if (MK == 23)MkExec(Load, { CintArray, &X });
+		else Load.Write(t);
+		for (auto tuk = t.begin(); tuk != t.end(); tuk++)
+			delete (double*)tuk->Point;
+	}
+	break;
+
+	case 35: // DxSet
+		Dx = Load.toDouble();
+		break;
+	case 36: // DySet
+		Dy = Load.toDouble();
+		break;
+	case 39: // YStartSet
+		YStart = Load.toDouble();
+		break;
+	case 40: // YEndSet
+		YEnd = Load.toDouble();
+		break;
+	case 45: // NxSet
+		Nx = Load.toDouble();
+		N = Load.toInt();
+		break;
+	case 46: // NySet
+		Ny = Load.toInt();
+		break;
+	case 50: //MeshN пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 3-пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+	{
+		MeshX.clear();
+		MeshY.clear();
+		Dy = (YEnd - YStart) / (Ny - 1);
+		Dx = (XEnd - XStart) / (Nx - 1);
+		MeshY.resize(Ny);
+		for (int i = 0; i < Ny; i++)
+			MeshY[i].resize(Nx);
+		for (int i = 0; i < Ny; i++)
+			for (int j = 0; j < Nx; j++)
+				MeshY[i][j] = YStart + i * Dy;
+		for (int i = 0; i < Ny; i++)
+			for (int j = 0; j < Nx; j++)
+				MeshX[i][j] = XStart + j * Dy;
+	}
+
+		break;
+	case 51: //MeshD пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 3-пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
+	{
+		Nx = Ny = 0;
+		for (double y = YStart; y <= YEnd; y += Dy)
+		{
+			MeshY.push_back({});
+			Ny++;
+			for (double x = XStart; x <= XEnd; x += Dx);
+
+		}
+	}
+		break;
+
+	case 55: // YAdd пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+		Y.push_back(Load.toDouble());
+		break;
+	case 56: // Y3DAdd пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ 3-пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+		Z.push_back(Load.toDouble());
+		break;
+
+	case 60: // XSort пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅ X пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+		for (int k = 0; k < X.size() - 1; k++)
+			for (int i = 0; i < X.size() - 1 - k; i++)
+				if (X[i] > X[i + 1])
+				{
+					swap(X[i], X[i + 1]);
+					swap(Y[i], Y[i + 1]);
+				}
+		break;
+
+	case 61: // PlotTitleSet пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	{
+		plotTitle = Load.toStr();
+		plt::title(plotTitle);
+	}
+	break;
+	case 62: // xTitleSet пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ X
+	{
+		xTitle = Load.toStr();
+		plt::xlabel(xTitle);
+	}
+	break;
+	case 63: // yTitleSet пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ Y
+	{
+		yTitle = Load.toStr();
+		plt::ylabel(yTitle);
+	}
+	break;
+	case 65: //LegendSet пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	{
+		legendText = Load.toStr();
+		plt::named_plot(legendText, X, Y);
+		plt::legend();
+	}
+		break;
+	case 66:
+	{
+		plotText = Load.toStr();
+		plt::text(xAxe, yAxe, plotText);
+	}
+		break;
+	case 67: //xTextSet пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ X пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+		xAxe = Load.toDouble();
+		break;
+	case 68: //yTextSet пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ X пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+		yAxe = Load.toDouble();
+		break;
+	case 71:
+		Format0[4] = Load.toStr();
+		break;
+	case 72:
+		Format0[5] = Load.toStr();
+		break;
+	case 73: //RowsSet пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+		rows = Load.toInt();
+		break;
+	case 74: //ColsSet пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+		cols = Load.toInt();
+		break;
+	case 75: //RowIdSet пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+		rowId = Load.toInt();
+		break;
+	case 76: //ColIdSet пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+		colId = Load.toInt();
+		break;
+	case 77: // BarmWidthSet пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+		barmWidth = Load.toDouble();
+		break;
+	case 78: // BarWidthSet пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+		barWidth = Load.toDouble();
+		break;
+	case 79: // HistAlphaSet пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+		histAlpha = Load.toDouble();
+		break;
+	case 80: // NumColsSet пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+		numCols = Load.toInt();
+		break;
+	case 81: // HistSortSet пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+		histSort = Load.toBool();
+		break;
+	case 82: // ScatterSizeSet пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+		scatterSize = Load.toDouble();
+		break;
+	case 83: //LineChart2D  Р’С‹РІРµСЃС‚Рё СЃРµС‚РєСѓ 2-РјРµСЂРЅРѕРіРѕ РіСЂР°С„РёРєР° c Р»РёРЅРµР№РЅС‹РјРё РєРѕРѕСЂРґРёРЅР°С‚Р°РјРё
+		ax = plt::chart2D(111);
+		break;
+	case 84: //LineChartPolar  Р’С‹РІРµСЃС‚Рё СЃРµС‚РєСѓ 2-РјРµСЂРЅРѕРіРѕ РіСЂР°С„РёРєР° СЃ РїРѕР»СЏСЂРЅС‹РјРё РєРѕРѕСЂРґРёРЅР°С‚Р°РјРё
+		ax = plt::chart_polar(111);
+		break;
+	case 85: //LineChart3D Р’С‹РІРµСЃС‚Рё СЃРµС‚РєСѓ 3-РјРµСЂРЅРѕРіРѕ РіСЂР°С„РёРєР° 
+	{
+		ax = plt::chart();
+		plt::Clear3DChart(ax);
+	}
+		break;
+	case 86: // zTitleSet пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ Y
+	{
+		zTitle = Load.toStr();
+		plt::set_zlabel(zTitle);
+	}
+	break;
+
+	case 87: // XAdd пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ X
+		ZRow = Load.toInt();
+		break;
+	
+	case 88: // FigureColorSet пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+		ZCol = Load.toInt();
+		break;
+	case 89:
+		lineWidth3 = Load.toInt();
+		break;
+
+	case 94: // FigureColorSet пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+		Format1[0] = Load.toStr();
+		break;
+	case 95: // AxesColorSet пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+		Format1[1] = Load.toStr();
+		break;
+	case 96: // EdgeColorSet пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+		Format1[2] = Load.toStr();
+		break;
+	case 97: // GridAlphaSet пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+		Format1[3] = Load.toStr();
+		break;
+	case 98: // GridColorSet пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+		Format1[4] = Load.toStr();
+		break;
+	case 99: // PlotFormatSet пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+		Format1[5] = Load.toStr();
+		break;
+	case 100: // PlotFormatSet пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+		PlotFormat = Load.toStr();
+		break;
+	case 101: // MarkSet пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+		Format0[1] = Load.toStr();
+		break;
+	case 102: // MarkWidthSet пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+		Format0[2] = Load.toStr();
+		break;
+	case 103: // LineColorSet пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
+		Format0[0] = Load.toStr();
+		break;
+	case 104: // LineWidthSet пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
+		Format0[3] = Load.toStr();
+		break;
 #endif // MatPlotInclude
 
-		default:
-			CommonMk(MK, Load, Sender);
-			break;
-		}
+	default:
+		CommonMk(MK, Load, Sender);
+		break;
+	}
 }
 
-FU* MatPlot::Copy() // Программа копирования ФУ
+FU* MatPlot::Copy() // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ
 {
 	return new MatPlot(Bus, this);
 }
 
-FU* MatPlot::TypeCopy() // Создать ФУ такого же типа (не копируя контекст
+FU* MatPlot::TypeCopy() // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ (пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 {
 	return new MatPlot(Bus, nullptr);
 }

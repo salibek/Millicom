@@ -1,27 +1,70 @@
-#pragma once
+п»ї#pragma once
 #include "Consts.h"
-
-#if MatPlotInclude
+#  if defined(_DEBUG)
+#    define PYBIND11_DEBUG_MARKER
+#    undef _DEBUG
+#  endif
 #include "matplotlibcpp.h"
-#endif // MatPlotInclude
 
 class MatPlot : public FU
 {
 private:
-	vector<double> X,Y; // Исходные данные для 2-мерного графика
-	vector< vector<double> > MeshY, MeshX; //  Сетка для рисования
-	vector< vector<double> > Z; //  2-мерный график
-	double Start = 0, End = 0; // Начило и конец интервала по оси X
-	double XStart = 0, XEnd = 0, YStart = 0, YEnd = 0; // Начило и конец интервала по оси X и Y
-	double h = 1; // Шаг генерации точек по X
-	long N = 1; // Количество точек по оси Z
-	long Nx=0, Ny = 0; // Количество строк и количество элементов в строке матрицы сетки
-	double Dx = 1, Dy = 1; // Шаг сетки для 3-мерного графика по x и y
+	vector<double> X, Y,Z; // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ 2-пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	vector< vector<double> > MeshY, MeshX; //  пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	vector< vector<double> > X0,Y0,Z0; //  2-пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+
+	vector<double> kk = { 0,1,2,3,6 };
+	double Start = 0, End = 10; // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅ X
+	double XStart = 0, XEnd = 0, YStart = 0, YEnd = 0, ZStart = 7, ZEnd = 12; // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅ X пїЅ Y
+
+	double h = 0.5; // пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ X
+	double hZ = 0.25;
+	long N = 1; // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅ Z
+	long Nx = 0, Ny = 0; // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+	double Dx = 1, Dy = 1; // пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ 3-пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ x пїЅ y
 	
+	int ZRow = 2, ZCol = 5;
+
+	int PlotWidth = 1; // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	double xAxe = 0;
+	double yAxe = 0;
+	string PlotFormat = "";
+	float PlotWigth = 1;
+	bool grid_draw = false;
+
+	string plotAxis = "equal";
+	string plotTitle = "";
+	string xTitle = "";
+	string yTitle = "";
+	string zTitle = "";
+	string legendText = "";
+	string plotText = "";
+	string xCat = "";
+	vector<string> xCategories = {};
+	vector<string> categories = { "Category A", "Category B", "Category C", "Category D" };
+	vector<double> values = { 20.1, 15.7, 30.3, 25.2 };
+	int types = 10;
+	int rows = 1;
+	int cols = 1;
+	int rowId = 0;
+	int colId = 0;
+	double lineWidth3 = 1.0;
+	double barmWidth = 1.0;
+	double barWidth = 1.0;
+	double scatterSize = 1;
+	PyObject* ax;
+	int numCols = 3;
+	double histAlpha = 1;
+	bool histSort = false;
+
+
+	vector<string > Format0 = { "Blue","*","1","1","Red","Black" }; // Color, Marker, MarkerSize, LineWidth
+	vector<string > Format1 = { "White","White","Black","false","Black","1" }; // Color, Marker, MarkerSize, LineWidth
+
 public:
 	void ProgFU(long int MK, LoadPoint Load, FU* Sender = nullptr) override;
-	FU* Copy() override; // Программа копирования ФУ
-	FU* TypeCopy() override; // Создать ФУ такого же типа (не копируя контекст
+	FU* Copy() override; // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ
+	FU* TypeCopy() override; // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ (пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	MatPlot(FU* BusContext, FU* Templ)
 	{
 		Bus = BusContext;
