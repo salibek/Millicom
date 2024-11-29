@@ -9,9 +9,10 @@
 class MatPlot : public FU
 {
 private:
-	vector<double> X, Y,Z; // �������� ������ ��� 2-������� �������
+	vector<double> X, Y, Z; // �������� ������ ��� 2-������� �������
 	vector< vector<double> > MeshY, MeshX; //  ����� ��� ���������
 	vector< vector<double> > X0,Y0,Z0; //  2-������ ������
+	bool FileDataOrietation = false; // Оприентация данных в файла false - по строкам, true - по столбцам
 
 	vector<double> kk = { 0,1,2,3,6 };
 	double Start = 0, End = 10; // ������ � ����� ��������� �� ��� X

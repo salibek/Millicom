@@ -64,7 +64,7 @@ void MatPlot::ProgFU(long int MK, LoadPoint Load, FU* Sender) {
 		{
 			Z0.push_back(X);
 			Z0.push_back(Y);
-			plt::boxplot(Z);
+			plt::boxplot(Z0);
 		}
 		break;
 		case 6:
@@ -497,6 +497,23 @@ void MatPlot::ProgFU(long int MK, LoadPoint Load, FU* Sender) {
 	case 104: // LineWidthSet ���������� ����
 		Format0[3] = Load.toStr();
 		break;
+
+	case 300: // FileDataOrientation Установить ориентацию данных в файле
+		FileDataOrietation = Load.toBool();
+		break;
+	case 305: // TextRead Прочитать данные из файла
+		// ...
+		break;
+
+	case 306: // TextRead Прочитать данные из cav-файла
+		// ...
+		break;
+
+	case 307: // TextRead Прочитать данные из Excell
+		// ...
+		break;
+
+
 #endif // MatPlotInclude
 
 	default:

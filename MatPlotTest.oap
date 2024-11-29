@@ -22,6 +22,8 @@ MatPlot.StartSet=0
 MatPlot.EndSet=10
 MatPlot.hSet=1
 
+MatPlot.RowNumSet=4
+MatPlot.ColNumSet=4
 MatPlot.YAdd=0
 MatPlot.YAdd=-3
 MatPlot.YAdd=2
@@ -33,6 +35,11 @@ MatPlot.YAdd=3
 MatPlot.YAdd=8
 MatPlot.YAdd=3
 MatPlot.YAdd=4
+MatPlot.YAdd=-1
+MatPlot.YAdd=4
+MatPlot.YAdd=3
+MatPlot.YAdd=0
+MatPlot.YAdd=6
 
 //MatPlot.PlotFormatSet="-g"
 MatPlot.LineColorSet="Blue"
@@ -41,4 +48,4 @@ MatPlot.LineWidthSet="4"
 
 MatPlot.yTextSet="Axis y"
 MatPlot.yTextSet="Axis x"
-MatPlot.Plot=0 // Вывод графика
+MatPlot.Plot=7 // Вывод графика
