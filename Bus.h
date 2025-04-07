@@ -26,6 +26,9 @@ public:
 	long int FUTypeCorrect= fuTypeCorrect; // Коррекция номера типы ФУ (для согласования со старой ОА-средой)
 	bool InterpretatorMode = false; // Режим интерпретатора (если установлено, то выполняется МК InterpretatorExec
 	long int Ind = 0, Ind2 = 0; // Индексы ФУ, управляемых Шиной
+	int argc = 0; // Количество аргументов командной строки
+	int argInd = -1; // Индекс аргумента
+	vector<string> argv; // Аргументы командной строки
 private:
 	void FUTypesIni();
 };

@@ -197,15 +197,19 @@ MnemoTable.FailProgSet={FUListNew.ReceivedOutMk=Lex.SendToReceiver}
 >{Mnemo="NewFU" Stack.LineCopyAdd={MkExec} Lex.SendToReceiver={Mk=CreateNewFU.FindOr}
 	Console.Out="NewFU " Console.OutLn=CreateNewFU.FindOr
   }
->{Mnemo="sin" Lex.SendToReceiver={FuncALE1Arg=FUALUNew.Sin} }
->{Mnemo="max" Lex.SendToReceiver={FuncALE=FUALUNew.MaxVect} }
->{Mnemo="ConsOut" Lex.SendToReceiver={Mk=Console.OutLn}}
->{Mnemo="Atr"    Lex.SendToReceiver={Atr=Atr}}
->{Mnemo="Mnemo"  Lex.SendToReceiver={Atr=Mnemo}}
->{Mnemo="Name"  Lex.SendToReceiver={Atr=NameAtr}}
->{Mnemo="FUType" Lex.SendToReceiver={Atr=FUType}}
->{Mnemo="Hint"   Lex.SendToReceiver={Atr=Hint}}
->{Mnemo="FUCons" Lex.SendToReceiver={Const=1} Console.OutLn="FUCons !"}
+>{Mnemo="Console"   Lex.SendToReceiver={FUType=2} }
+>{Mnemo="FUConsole" Lex.SendToReceiver={FUTypeList=ConsMkTable} }
+>{Mnemo="FUBus"     Lex.SendToReceiver={FUTypeList=BusMkTable} }
+>{Mnemo="sin" 		 Lex.SendToReceiver={FuncALE1Arg=FUALUNew.Sin} }
+>{Mnemo="max" 		 Lex.SendToReceiver={FuncALE=FUALUNew.MaxVect} }
+>{Mnemo="ConsOut"   Lex.SendToReceiver={Mk=Console.OutLn}}
+>{Mnemo="Obj" 		 Lex.SendToReceiver={Atr=-6} }
+>{Mnemo="Atr"    	 Lex.SendToReceiver={Atr=Atr}}
+>{Mnemo="Mnemo"  	 Lex.SendToReceiver={Atr=Mnemo}}
+>{Mnemo="Name"  	 Lex.SendToReceiver={Atr=NameAtr}}
+>{Mnemo="FUType" 	 Lex.SendToReceiver={Atr=FUType}}
+>{Mnemo="Hint"   	 Lex.SendToReceiver={Atr=Hint}}
+>{Mnemo="FUCons" 	 Lex.SendToReceiver={Const=1} Console.OutLn="FUCons !"}
 >{Mnemo="Bus" Hint="Главная шина" MkTable.Set=BusMkTable! Lex.SendToReceiver={FU=1000}}
 >{Mnemo="Cons" Hint="Консоль вывода" MkTable.Set=ConsMkTable! Lex.SendToReceiver={FU=2000}}
 

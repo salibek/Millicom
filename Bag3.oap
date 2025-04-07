@@ -104,16 +104,16 @@ IntAlu.Set=0
 // Горизонтальные связи в сетке
 IntAlu1.Set=V
 IntAlu1.Dec // Количество итераций по одной строке V-1
-Manager.ProgSet={
-  FUCellularAutomatManager.Neitborder1To2Append
-  FUCellularAutomatManager.NeitborderМк1Append=FUCellularAutomat.In_0_Set
+Manager.ProgSet={ // Тело цикла, выполняемого менеджером
+  FUCellularAutomatManager.Neitborder1To2Append // Утановить МК для данных установить ссылку между соседями
+  FUCellularAutomatManager.NeitborderМк1Append=FUCellularAutomat.In_0_Set // Утановить МК для данных
 }
-IntAlu.For={
-  IntAlu.OutMk=Manager.Ind1Set=Manager.Ind2Set
-  Manager.Ind2Add=1
-  IntAlu1.OutMk=Manager.ForExec
+IntAlu.For={ // Цикл по строкам
+  IntAlu.OutMk=Manager.Ind1Set=Manager.Ind2Set // Задать индексы соседних ФУ
+  Manager.Ind2Add=1 // Задать индексы соседних ФУ
+  IntAlu1.OutMk=Manager.ForExec // Выполнить цикл по стобцам строки
   Manager.Neitborder1Append // Добавить нулевую ссылку для последнего ФУ
-  Manager.NeitborderМк1Append=0
+  Manager.NeitborderМк1Append=0 // Добавить нулевую ссылку для последнего ФУ
 }
 
 // Вертикальные ссылки

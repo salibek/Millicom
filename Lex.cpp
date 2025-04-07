@@ -291,6 +291,14 @@
 			if(RegVect.size())
 				RegVect.back().Prog=Load.Point;
 			break;
+		case 90: // IfStopExec Выполнить, если лексер остановлен
+			if (!Work)
+				ProgExec(Load);
+			break;
+		case 91: // IfRunExec Выполнить, если лексер в рабочем состоянии
+			if (Work)
+				ProgExec(Load);
+			break;
 
 		case 94: // LexStrOut Выдать строку с последней распознанной лексемой
 			Load.Write(LexAccum);

@@ -1,14 +1,206 @@
 ﻿#include "MatPlot.h"
-#include <cmath>
+#include "xlsxwriter.h" // Подключение библиотеки для работы с Excel
+#include <fstream>      // Для проверки существования файла
+#include <sstream>      // Для обработки строк
+#include <stdexcept>    // Для исключений
+#include <iostream>
 #if MatPlotInclude
 namespace plt = matplotlibcpp;
 #endif // MatPlotInclude
 
-void MatPlot::ProgFU(long int MK, LoadPoint Load, FU* Sender) {
+void MatPlot::WriteToCSV(const std::string& fileName) {
+	// Открываем файл для записи
+	std::ofstream outFile(fileName);
+	if (!outFile.is_open()) {
+		throw std::runtime_error("Не удалось открыть файл для записи: " + fileName);
+	}
 
+	// Записываем заголовки
+	for (size_t i = 0; i < excelHeaders.size(); ++i) {
+		outFile << excelHeaders[i];
+		if (i < excelHeaders.size() - 1) {
+			outFile << ","; // Разделитель
+		}
+	}
+	outFile << "\n"; // Завершаем строку
+
+	// Записываем данные
+	for (const auto& row : excelData) {
+		for (size_t i = 0; i < row.size(); ++i) {
+			outFile << row[i];
+			if (i < row.size() - 1) {
+				outFile << ","; // Разделитель
+			}
+		}
+		outFile << "\n"; // Завершаем строку
+	}
+
+	// Закрываем файл
+	outFile.close();
+
+	// Для отладки: сообщение об успешной записи
+	std::cout << "Данные успешно записаны в CSV-файл: " << fileName << std::endl;
+}
+
+void MatPlot::WriteToExcel(const std::string& fileName) {
+	// Создаем новый Excel-файл
+	lxw_workbook* workbook = workbook_new(fileName.c_str());
+	if (!workbook) {
+		throw std::runtime_error("Не удалось создать файл Excel: " + fileName);
+	}
+
+	// Добавляем новый лист в книгу
+	lxw_worksheet* worksheet = workbook_add_worksheet(workbook, nullptr);
+	if (!worksheet) {
+		workbook_close(workbook);
+		throw std::runtime_error("Не удалось создать лист Excel.");
+	}
+
+	// Записываем заголовки в первую строку
+	for (size_t col = 0; col < excelHeaders.size(); ++col) {
+		worksheet_write_string(worksheet, 0, col, excelHeaders[col].c_str(), nullptr);
+	}
+
+	// Записываем данные в следующие строки
+	for (size_t row = 0; row < excelData.size(); ++row) {
+		for (size_t col = 0; col < excelData[row].size(); ++col) {
+			worksheet_write_number(worksheet, row + 1, col, excelData[row][col], nullptr);
+		}
+	}
+
+	// Закрываем файл и освобождаем ресурсы
+	if (workbook_close(workbook) != LXW_NO_ERROR) {
+		throw std::runtime_error("Ошибка при закрытии файла Excel: " + fileName);
+	}
+
+	// Для отладки: выводим сообщение о завершении
+	std::cout << "Данные успешно записаны в файл Excel: " << fileName << std::endl;
+}
+
+void MatPlot::ReadFromExcel(const std::string& fileName) {
+	// Открываем Excel-файл
+	std::ifstream file(fileName);
+	if (!file.is_open()) {
+		throw std::runtime_error("Не удалось открыть файл: " + fileName);
+	}
+
+	excelData.clear();
+	excelHeaders.clear();
+
+	std::string line;
+	bool isHeader = true; // Флаг для чтения первой строки как заголовков
+
+	while (std::getline(file, line)) {
+		std::istringstream stream(line);
+		std::string cell;
+		std::vector<double> row;
+
+		if (isHeader) {
+			// Первая строка обрабатывается как заголовки
+			while (std::getline(stream, cell, ',')) {
+				excelHeaders.push_back(cell);
+			}
+			isHeader = false;
+		}
+		else {
+			// Остальные строки обрабатываются как числовые данные
+			while (std::getline(stream, cell, ',')) {
+				try {
+					row.push_back(std::stod(cell)); // Преобразование строки в число
+				}
+				catch (...) {
+					row.push_back(0.0); // Если ошибка, добавляем 0.0
+				}
+			}
+			excelData.push_back(row);
+		}
+	}
+
+	file.close();
+
+	// Если ориентация данных - по столбцам, выполняем транспонирование
+	if (FileDataOrientation) {
+		std::vector<std::vector<double>> transposed(excelHeaders.size(), std::vector<double>(excelData.size(), 0));
+		for (size_t i = 0; i < excelData.size(); ++i) {
+			for (size_t j = 0; j < excelData[i].size(); ++j) {
+				transposed[j][i] = excelData[i][j];
+			}
+		}
+		excelData = transposed;
+	}
+}
+
+void MatPlot::ReadFromCSV(const std::string& fileName) {
+	// Проверяем доступность файла
+	std::ifstream file(fileName);
+	if (!file.is_open()) {
+		throw std::runtime_error("Не удалось открыть файл: " + fileName);
+	}
+
+	// Очищаем старые данные перед чтением
+	excelData.clear();
+	excelHeaders.clear();
+
+	std::string line;
+	bool isHeader = true; // Первая строка — заголовки
+
+	while (std::getline(file, line)) {
+		std::istringstream stream(line);
+		std::string cell;
+		std::vector<double> row;
+
+		if (isHeader) {
+			// Считываем заголовки из первой строки
+			while (std::getline(stream, cell, ',')) {
+				excelHeaders.push_back(cell);
+			}
+			isHeader = false;
+		}
+		else {
+			// Считываем данные из остальных строк
+			while (std::getline(stream, cell, ',')) {
+				try {
+					row.push_back(std::stod(cell)); // Преобразование строки в число
+				}
+				catch (...) {
+					row.push_back(0.0); // Если ошибка, подставляем 0
+				}
+			}
+			excelData.push_back(row);
+		}
+	}
+
+	file.close();
+
+	// Если установлена ориентация данных по столбцам, транспонируем
+	if (FileDataOrientation) {
+		std::vector<std::vector<double>> transposed(excelHeaders.size(), std::vector<double>(excelData.size(), 0));
+		for (size_t i = 0; i < excelData.size(); ++i) {
+			for (size_t j = 0; j < excelData[i].size(); ++j) {
+				transposed[j][i] = excelData[i][j];
+			}
+		}
+		excelData = transposed;
+	}
+
+	// Для отладки: вывод данных в консоль
+	std::cout << "Заголовки: ";
+	for (const auto& header : excelHeaders) {
+		std::cout << header << " ";
+	}
+	std::cout << std::endl;
+
+	std::cout << "Данные:" << std::endl;
+	for (const auto& row : excelData) {
+		for (const auto& value : row) {
+			std::cout << value << " ";
+		}
+		std::cout << std::endl;
+	}
+}
+
+void MatPlot::ProgFU(long int MK, LoadPoint Load, FU* Sender) {
 	MK %= FUMkRange;
-	int qual = 2;
-#if MatPlotInclude
 	switch (MK)
 	{
 	case 0: //Reset
@@ -17,7 +209,7 @@ void MatPlot::ProgFU(long int MK, LoadPoint Load, FU* Sender) {
 		MeshY.clear();
 		Z0.clear();
 		break;
-
+#if MatPlotInclude
 
 	case 1: // Plot ���������� ������ (�� ����� ��� �������)
 	{
@@ -40,7 +232,6 @@ void MatPlot::ProgFU(long int MK, LoadPoint Load, FU* Sender) {
 			{"markerfacecolor",Format0[4]},
 			{"markeredgecolor",Format0[5]}
 				});
-			qual++;
 		}
 		break;
 		case 1:
@@ -102,30 +293,34 @@ void MatPlot::ProgFU(long int MK, LoadPoint Load, FU* Sender) {
 		break;
 		case 10:
 		{
-			PyObject* ax = plt::chart(); // Создать оси для 3-мерного графика
-			plt::Clear3DChart(ax); // Очистить оси
-			std::vector<double> vvv = { 1.0, 2.0, 3.0,4.0, 5.0, 6.0, 7.0, 8.0, 9.0 }; // Для отладки
-			std::vector<std::vector<double>> x,y,z; // Матрицы разметки x y и матрица значений графика
-			for (double a = Start; a < End ; a+=hZ)
+			PyObject* ax = plt::chart();
+			plt::Clear3DChart(ax);
+			std::vector<double> vvv = { 1.0, 2.0, 3.0,4.0, 5.0, 6.0, 7.0, 8.0, 9.0 };
+			std::vector<std::vector<double>> x,y,z;
+			for (int a = 0; a < ZRow; ++a)
 			{
 				std::vector<double> vvX, vvY, vvZ;
-				for (double b = YStart; b < YEnd; b+=hZ)
+				for (int b = 0; b < ZCol; ++b)
 				{
-					vvX.push_back(a);
-					vvY.push_back(b);
-					vvZ.push_back(::std::sin(::std::hypot(a,b)));
+					vvX.push_back(X[a + b * 3]);
+					vvY.push_back(Y[a + b * 3]);
+					vvZ.push_back(Z[a + b * 3]);
 				}
+				if ((ZCol * ZRow == z.size()) && (z.size() == x.size()) && (x.size() == y.size()))
+				{
 					z.push_back(vvZ);
 					x.push_back(vvX);
 					y.push_back(vvY);
-				
-			}			
-				plt::surface3D(ax, x,y,z, Format0[0], 5);
+				}
+			}
+			
+			
+
+				plt::surface3D(ax, x,y,z, Format0[0], 1.11);
 		}
 		break;
 		}
 		//plt::yticks(values, categories);
-	
 		plt::show();
 	}
 	break;
@@ -198,7 +393,7 @@ void MatPlot::ProgFU(long int MK, LoadPoint Load, FU* Sender) {
 	case 15:	// hSet ���������� ��� ����� ������� �� Y
 	{
 		Y.clear();
-		hZ = Load.toDouble();
+		h = Load.toDouble();
 		N = 0;
 		for (double y = YStart; y <= YEnd; y += h) // ��������� ����� �� ��� X
 		{
@@ -499,11 +694,55 @@ void MatPlot::ProgFU(long int MK, LoadPoint Load, FU* Sender) {
 		Format0[3] = Load.toStr();
 		break;
 
+	case 300: // FileDataOrientation Установить ориентацию данных в файле
+		FileDataOrietation = Load.toBool();
+		break;
+	case 305: // TextRead Прочитать данные из файла
+		// ...
+		break;
+
+	case 306: // TextRead Прочитать данные из csv-файла
+		try {
+			ReadFromCSV("example.csv"); // Укажите имя вашего CSV-файла
+		}
+		catch (const std::exception& e) {
+			std::cerr << "Ошибка чтения CSV: " << e.what() << std::endl;
+		}
+		break;
+
+	case 307: // TextRead Прочитать данные из Excell
+		try {
+			ReadFromExcel("example.xlsx"); // Замените на имя вашего файла
+		}
+		catch (const std::exception& e) {
+			std::cerr << "Ошибка чтения Excel: " << e.what() << std::endl;
+		}
+		break;
+
+	case 308: // Записать данные в Excel
+		try {
+			WriteToExcel("output.xlsx"); // Укажите имя Excel-файла
+		}
+		catch (const std::exception& e) {
+			std::cerr << "Ошибка записи в Excel: " << e.what() << std::endl;
+		}
+		break;
+
+	case 309: // Записать данные в CSV
+		try {
+			WriteToCSV("output.csv"); // Укажите имя CSV-файла
+		}
+		catch (const std::exception& e) {
+			std::cerr << "Ошибка записи в CSV: " << e.what() << std::endl;
+		}
+		break;
+
+#endif // MatPlotInclude
+
 	default:
 		CommonMk(MK, Load, Sender);
 		break;
 	}
-#endif // MatPlotInclude
 }
 
 FU* MatPlot::Copy() // ��������� ����������� ��

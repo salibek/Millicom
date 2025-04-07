@@ -1,0 +1,54 @@
+// - обозначение переведенных в комментарии старых ФУ
+\* date *\ //- последняя дата изменения или добавления строк и ФУ
+
+NewFU={Mnemo="Main_Bus" MkBegRange=1000 FUType=FUBusNew} // Описание Bus
+
+\\ Для создания индексного файла сначала надо запустить программу !!!!
+ CapsManager.IndexVectCreate=20000
+ CapsManager.IpIcIdOutMk=MainBus.IpIcIdSet
+ CapsManager.IpIcIdOutMk=VariableManager.IpIcIdSet
+ CapsManager.IpIcIdOutMk=ListSyntez.IpIcIdSet
+ MainBus.ModeSet=1
+\\ -------------------------------------- \\
+MainBus.FUTypeCorrectSet=-96 // Корректировка номера типа ФУ для переноса на новую ОА-платформу
+
+NewFU={Mnemo="Console" FUType=FUConsNew Hint="Консоль для вывода логов"}
+NewFU={Mnemo="Lex" FUType=FULexNew Hint="Устройство лексического разбора"}
+NewFU={Mnemo="MnemoTable" FUType=FUListNew Hint="Таблица мнемоник"}
+
+MainBus.PartialResetSet \\ Запомнить число созданных ФУ
+MainBus.ModeSet=2
+
+Lex.SepClear
+Lex.SepAdd="+"="-"="*"="/"="++"="--"=";"
+
+VarInt
+VarFloat
+VarBool
+VarStr
+
+//ConstInt
+//ConstFloat
+ConstBool
+ConstStr
+
+Lex.UnicAtrSet=Mnemo
+Lex.UnicMkSet=MnemoTable.FindAnd
+
+MnemoTable.Set=
+>{Mnemo="Var" Lex.SendToReceiver={VarInt=10} }
+>{Mnemo="Var2" Lex.SendToReceiver={VarInt=10}}
+>{Mnemo="Var3" Lex.SendToReceiver={VarInt=10}}
+>{Mnemo="Var4" Lex.SendToReceiver={VarInt=10}}
+
+MnemoTable.LineCopyAdd={Mnemo="VarBool" Lex.SendToReceiver={VarBool=10}}
+
+
+MnemoTable.OutMk=Console.OutLn
+
+MnemoTable.FailProgSet={MnemoTable.ReceivedOutMk=Lex.SendToReceiver}
+
+Lex.ReceiverMkSet=Console.OutLn
+
+Lex.Lexing="asd Var1+Var2 sdasd"
+Console.OutLn="End of program"

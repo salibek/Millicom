@@ -25,6 +25,9 @@ int main(int argc, char* argv[])
 	string STR;
 	StreamFloatALU ALU;
 
+	Bus.ProgFU(200, { Cint, &argc }); // Установить количество параметров командной строки
+	Bus.ProgFU(203, { Cchar, argv }); // Установить параметры командной строки
+
 	//ALU.ProgFU(0, { 0, nullptr });
 	/*
 	* 
@@ -84,8 +87,13 @@ int main(int argc, char* argv[])
 //	STR = "StreamIntALUTest.ind";
 //	STR = "ALE_Stream_v2.ind";
 //	STR = "ALU_test.ind";
-	STR = "MatPlot.ind";
+//	STR = "MatPlot.ind";
 //	STR = "MatrixMul.ind";
+//	STR = "Compil.ind";
+	STR = "SumVect.ind";
+//	STR = "Lexer.ind";
+//	STR = "Syntaxis.ind";
+	STR = "JSON-List.ind";
 	Bus.ProgFU(10, {Cstring, &STR}); //Запуск индексного файла
 
 	system("pause");

@@ -1,0 +1,58 @@
+// - обозначение переведенных в комментарии старых ФУ
+\* date *\ //- последняя дата изменения или добавления строк и ФУ
+
+NewFU={Mnemo="Main_Bus" MkBegRange=1000 FUType=FUBusNew} // Описание Bus
+
+\\ Для создания индексного файла сначала надо запустить программу !!!!
+ CapsManager.IndexVectCreate=20000
+ CapsManager.IpIcIdOutMk=MainBus.IpIcIdSet
+ CapsManager.IpIcIdOutMk=VariableManager.IpIcIdSet
+ CapsManager.IpIcIdOutMk=ListSyntez.IpIcIdSet
+ MainBus.ModeSet=1
+\\ -------------------------------------- \\
+MainBus.FUTypeCorrectSet=-96 // Корректировка номера типа ФУ для переноса на новую ОА-платформу
+
+NewFU={Mnemo="Console" FUType=FUConsNew Hint="Консоль для вывода логов"}
+NewFU={Mnemo="Lex" FUType=FULexNew Hint="Устройство лексического разбора"}
+NewFU={Mnemo="StringGen" FUType=FUStrGenNew Hint="Устройство генерации строк"}
+NewFU={Mnemo="Start" FUType=FUListNew Hint="Начальное состояние автомата"}
+NewFU={Mnemo="Constwait" FUType=FUListNew Hint="Начальное состояние автомата"}
+NewFU={Mnemo="AfterConst" FUType=FUListNew Hint="Начальное состояние автомата"}
+NewFU={Mnemo="End" FUType=FUListNew Hint="Начальное состояние автомата"}
+
+MainBus.PartialResetSet \\ Запомнить число созданных ФУ
+MainBus.ModeSet=2
+
+Separator*-4
+
+Lex.StopProgSet={StringGen.Stop} // Установить программу, которая останавливает генератор строк при остановке лексера
+
+Lex.ReceiverMkSet=Start.FindAnd
+//Lex.ReceiverMkSet=Console.OutLn
+
+\**\Start.Set=
+>{Separator="[" Lex.ReceiverMkSet=Constwait.FindAnd  Console.OutLn="Start"}
+>{0 Lex.Stop Console.OutLn="[ is waited"}
+
+\**\Constwait.Set=
+>{Const Lex.ReceiverMkSet=AfterConst.FindAnd Console.OutLn="Constwait"}
+>{0 Lex.Stop Console.Out="Const is waited but " Constwait.ReceivedLoadOutMk=Console.Out Console.OutLn=" is faund"}
+
+\**\AfterConst.Set=
+>{Separator="," Lex.ReceiverMkSet=Constwait.FindAnd Console.OutLn="Constwait ,"}
+>{Separator="]" Lex.ReceiverMkSet=End.FindAnd Console.OutLn="Constwait ]"}
+>{0 Lex.Stop Console.OutLn=", or ] is waited"}
+
+//Lex.Lexing="[1,2,3,4]"
+//Console.OutLn="Compiling"
+Main_Bus.ProgSet={Console.OutLn="Compile for Millicom language version 3.01"}
+Main_Bus.ArgcLessExec=2
+Main_Bus.ProgSet={
+  StringGen.FileNotExistErrProgSet={Console.OutLn="File of program is not exist" MainBus.ProgStopAll}
+  StringGen.ReceiverMkSet=Lex.Lexing
+  Main_Bus.ArgIndSet=1
+  Main_Bus.ArgByIndOutMk=StringGen.Start
+}
+Main_Bus.ArgcBiggerEq=2
+
+//Main_Bus.ProgSet

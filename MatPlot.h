@@ -4,21 +4,22 @@
 #    define PYBIND11_DEBUG_MARKER
 #    undef _DEBUG
 #  endif
-#include "matplotlibcpp.h"
 
+#if MatPlotInclude
+#include "matplotlibcpp.h"
+#endif
 class MatPlot : public FU
 {
 private:
-	vector<double> X, Y, Z; // �������� ������ ��� 2-������� �������
+	vector<double> X, Y,Z; // �������� ������ ��� 2-������� �������
 	vector< vector<double> > MeshY, MeshX; //  ����� ��� ���������
 	vector< vector<double> > X0,Y0,Z0; //  2-������ ������
-	bool FileDataOrietation = false; // Оприентация данных в файла false - по строкам, true - по столбцам
 
 	vector<double> kk = { 0,1,2,3,6 };
 	double Start = 0, End = 10; // ������ � ����� ��������� �� ��� X
-	double XStart = 0, XEnd = 0, YStart = 0, YEnd = 0, ZStart = 7, ZEnd = 12; // ������ � ����� ��������� �� ��� X � Y
+	double XStart = 0, XEnd = 10, YStart = 0, YEnd = 10, ZStart = 7, ZEnd = 12; // ������ � ����� ��������� �� ��� X � Y
 
-	double h = 0.5; // ��� ��������� ����� �� X
+	double h = 0.001; // ��� ��������� ����� �� X
 	double hZ = 0.25;
 	long N = 1; // ���������� ����� �� ��� Z
 	long Nx = 0, Ny = 0; // ���������� ����� � ���������� ��������� � ������ ������� �����
@@ -44,7 +45,7 @@ private:
 	vector<string> xCategories = {};
 	vector<string> categories = { "Category A", "Category B", "Category C", "Category D" };
 	vector<double> values = { 20.1, 15.7, 30.3, 25.2 };
-	int types = 10;
+	int types = 1;
 	int rows = 1;
 	int cols = 1;
 	int rowId = 0;
@@ -53,7 +54,7 @@ private:
 	double barmWidth = 1.0;
 	double barWidth = 1.0;
 	double scatterSize = 1;
-	PyObject* ax;
+	//PyObject* ax=nullptr;
 	int numCols = 3;
 	double histAlpha = 1;
 	bool histSort = false;

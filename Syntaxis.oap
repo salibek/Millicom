@@ -1,0 +1,91 @@
+// - обозначение переведенных в комментарии старых ФУ
+\* date *\ //- последняя дата изменения или добавления строк и ФУ
+
+NewFU={Mnemo="Main_Bus" MkBegRange=1000 FUType=FUBusNew} // Описание Bus
+
+\\ Для создания индексного файла сначала надо запустить программу !!!!
+ CapsManager.IndexVectCreate=20000
+ CapsManager.IpIcIdOutMk=MainBus.IpIcIdSet
+ CapsManager.IpIcIdOutMk=VariableManager.IpIcIdSet
+ CapsManager.IpIcIdOutMk=ListSyntez.IpIcIdSet
+ MainBus.ModeSet=1
+\\ -------------------------------------- \\
+MainBus.FUTypeCorrectSet=-96 // Корректировка номера типа ФУ для переноса на новую ОА-платформу
+
+NewFU={Mnemo="Console" FUType=FUConsNew Hint="Консоль для вывода логов"}
+NewFU={Mnemo="Lex" FUType=FULexNew Hint="Устройство лексического разбора"}
+NewFU={Mnemo="MnemoTable" FUType=FUListNew Hint="Таблица мнемоник"}
+NewFU={Mnemo="Start" FUType=FUListNew}
+NewFU={Mnemo="VarAfter" FUType=FUListNew}
+NewFU={Mnemo="OperandWait" FUType=FUListNew}
+NewFU={Mnemo="OperationWait" FUType=FUListNew}
+NewFU={Mnemo="Stack" FUType=FUListNew Hint="Стек МП автомата"}
+
+
+MainBus.PartialResetSet \\ Запомнить число созданных ФУ
+MainBus.ModeSet=2
+
+Sep*-4 // Код для атрибута разделителя
+
+Lex.SepClear
+Lex.SepAdd="+"="-"="*"="/"="++"="--"=";"="="="("=")"
+
+VarInt
+VarFloat
+VarBool
+VarStr
+
+//ConstInt
+//ConstFloat
+ConstBool
+ConstStr
+
+
+
+Lex.UnicAtrSet=Mnemo
+Lex.UnicMkSet=MnemoTable.FindAnd
+
+MnemoTable.Set=
+>{Mnemo="Var" Lex.SendToReceiver={VarInt=10} }
+>{Mnemo="Var2" Lex.SendToReceiver={VarInt=10}}
+>{Mnemo="Var3" Lex.SendToReceiver={VarInt=10}}
+>{Mnemo="Var4" Lex.SendToReceiver={VarInt=10}}
+
+//MnemoTable.LineCopyAdd={Mnemo="VarBool" Lex.SendToReceiver={VarBool=10}}
+//MnemoTable.OutMk=Console.OutLn
+
+MnemoTable.FailProgSet={MnemoTable.ReceivedOutMk=Lex.SendToReceiver}
+
+//Lex.ReceiverMkSet=Console.OutLn
+
+Start.Set=
+>{VarInt Lex.ReceiverMkSet=VarAfter.FindAnd Console.OutLn="Start Const"}
+>{0 Lex.Stop Console.OutLn="Error: var is expected"}
+
+VarAfter.Set=
+>{Sep="=" Lex.ReceiverMkSet=OperandWait.FindAnd Console.OutLn="VarAfter ="}
+>{0 Lex.Stop Console.OutLn="Error: '=' is expected"}
+
+OperandWait.Set=
+>{ Const ConstInt ConstFloat ConstBool VarInt VarFloat VarBool Lex.ReceiverMkSet=OperationWait.FindAnd Console.OutLn="OperandWait Const"}
+>{Sep="(" Stack.LineCopyAdd={Sep="("}  Console.OutLn="OperandWait (" Stack.OutMk=Console.OutLn}
+>{0 Lex.Stop Console.OutLn="Error"}
+
+OperationWait.Set=
+>{Sep="+" Sep="-" Sep="*" Sep="/"  Lex.ReceiverMkSet=OperandWait.FindAnd Console.OutLn="OperationWait Operation"}
+>{Sep=")"  Stack.EmptyExec={Lex.Stop Console.OutLn="Error: stack is enpty" OperationWait.ProgStopAll} Stack.LastDel Console.OutLn="OperationWait )"}
+>{0 Lex.Stop Console.OutLn="Error"}
+
+Lex.ReceiverMkSet=Start.FindAnd
+//Lex.ReceiverMkSet=Console.OutLn
+Lex.Lexing="Var = (Var2 + 10))"
+
+Lex.IfRunExec={ // Если лексер не остановлен, то выполнить (остановка при обнаружении ошибки, т.е. если нет ошибки)
+	Stack.EmptyExec={Console.OutLn="Ok!"}
+	Stack.FullExec={Console.OutLn="Bracket error"}
+}
+
+Console.OutLn="--- MnemoTable ----"
+MnemoTable.OutMk=Console.OutLn
+Console.OutLn="--- Stack----"
+Stack.OutMk=Console.OutLn

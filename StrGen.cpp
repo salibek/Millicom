@@ -16,13 +16,15 @@ void StrGen::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		Receiver = nullptr;
 		ReceiverMK = 0;
 		str_buf_size = 1;
+		str_buf.resize(str_buf_size);
 		LineCount = 0;
-		Source.close();
+		//Source.close();
 		Receiver = Bus;
 		str_bufCount = 0;
 		break;
 	case 20: //ReceiverSet Установить ссылку на приемник строк
 		Receiver = Load.Point;
+		break;
 	case 21: //ReceiverMkSet Установить МК для приемника строк
 		if (Load.Type >> 1 == Dint) ReceiverMK = *(int*)Load.Point; break;
 	case 1: // SourceSet
@@ -30,14 +32,21 @@ void StrGen::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 	case 2: // SourceSetStart
 		break;
 	case 3: // Start Начать генерацию
+	{
+		ifstream Source;
 		work = true;
 		ProgExec(StartProg);// Выполнить стартовую программу
 		TimeStart = clock();
 		TimeLong = 0;
 		if (Load.Point != nullptr)
 		{
-			Filename = *((std::string*)(Load.Point));
+			Filename = Load.toStr();
 			Source.open(Filename);
+			if (Source.fail())
+			{
+				ProgExec(FileNotExistErrProg);
+				break;
+			}
 			LineCount = 0;
 		}
 		while (Source && work)
@@ -45,8 +54,15 @@ void StrGen::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 			string str;
 			getline(Source, str, '\n');
 			LineCount++;
+			if (str.find(IncludeStr) == 0) // Включение нового модуля
+			{
+				str = str.substr(IncludeStr.length(), 10000000);
+				while (str[0] == ' ')
+					str = str.substr(1, 10000000);
+				ProgFU(3, { Cstring, &str }, this);
+			}
 			if (str == "") continue;
-			str_bufCount = (str_bufCount+1)%str_buf_size;
+			str_bufCount = (str_bufCount + 1) % str_buf_size;
 			str_buf[str_bufCount] = str;
 
 			LoadPoint Point;
@@ -67,6 +83,7 @@ void StrGen::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		TimeLong = clock() - TimeStart;
 		ProgExec(FinProg);// Выполнить завершающую программу
 		break;
+	}
 	case 4: // Stop	
 		work = false;
 		ProgExec(StopProg);// Выполнить программу по прерыванию генерации строк
@@ -78,6 +95,9 @@ void StrGen::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 	{work = true;
 	ProgFU(3, { 0, nullptr }); }
 	break;
+	case 7: // FileNotExistErrProgSet Установить программу обработки ошибки 'Файл не существует'
+		FileNotExistErrProg = Load.Point;
+		break;
 	case 9: // ModeSet
 		break;
 	case 10: // SourceReset
@@ -114,7 +134,9 @@ void StrGen::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 			str_bufCount = (str_bufCount + 1) % str_buf_size;
 		}
 		break;
-
+	case 55: //IncludeStrSet Установить строку для включения модуля в текст программы
+		IncludeStr = Load.toStr();
+		break;
 	case 60: // StartProgSet // Установить указатель на программу, выполняемую при запуске нерации строк из файла
 		StartProg = Load.Point;
 		break;

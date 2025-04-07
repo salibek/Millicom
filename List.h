@@ -2,6 +2,7 @@
 #pragma once
 #include "Consts.h"
 #include "Search.h"
+#include "JSON-OAConeverter.h"
 
 class List : public FU
 {
@@ -53,4 +54,5 @@ public:
 	LoadPoint CopyAdrCorrectOriginal = {}, CopyAdrCorrectCopy = {}, AdrToCorrect = {}; // ИК и ее копия для коррекции адресов
 private:
 	long int DeepStartSearch = 0; // Стартовый уровень для пописка
+	JSON_OAConeverter JsonConv; // Конфертер в JSON
 };

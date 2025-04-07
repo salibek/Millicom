@@ -1292,6 +1292,23 @@ void List::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		if (ListHead.back() != nullptr && ListHead.back()->size() != 0 && ((IC_type)ListHead.back()->back().Load.Point)->size() != 0)
 			ProgExec(Load);
 		break;
+
+	case 600: // JsonSave Записать ОА-граф в формате JSON
+		JsonConv.ToJson({TIC,ListHead.back()},Load.toStr());
+		//JsonConv.FOutNameSet(Load.toStr());
+		break;
+	case 601: // JsonLoad Считать файл в формате JSON
+		ListHead.back()=(IC_type)JsonConv.FromJSON(Load.toStr()).Point;
+		//JsonConv.FInNameSet(Load.toStr());
+		break;
+	case 605: //MnemoCapsSet Установить ссылку на капсулу с мнемониками
+		JsonConv.MnemoCapsSet(Load);
+		break;
+	case 606: // MnemoTableSet Установить ссылку на таблицу мнемоник
+		JsonConv.MnemoTableSet(Load);
+		break;
+	case 607: //MillirangeSet Установить диапазон милликоманд для ФУ
+		break;
 	default:
 		CommonMk(MK, Load, Sender);
 		break;

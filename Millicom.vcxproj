@@ -78,7 +78,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Users\salib\AppData\Local\Programs\Python\Python310\include;C:\Users\salib\AppData\Local\Programs\Python\Python310\Lib\site-packages\numpy\core\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Users\salib\AppData\Local\Programs\Python\Python310\include;C:\Users\salib\AppData\Local\Programs\Python\Python310\Lib\site-packages\numpy\_core\include\numpy;C:\Users\salib\AppData\Local\Programs\Python\Python310\Lib\site-packages\numpy;C:\Users\salib\AppData\Local\Programs\Python\Python310\Lib\site-packages\numpy\_core\include\;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Users\salib\AppData\Local\Programs\Python\Python310\libs;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -161,6 +161,7 @@
     <ClCompile Include="GraphTransf.cpp" />
     <ClCompile Include="IndFileConvertOld.cpp" />
     <ClCompile Include="InOut.cpp" />
+    <ClCompile Include="JSON-OAConeverter.cpp" />
     <ClCompile Include="Lex.cpp" />
     <ClCompile Include="List.cpp" />
     <ClCompile Include="LocationTable.cpp" />
@@ -195,6 +196,7 @@
     <ClInclude Include="GraphTransf.h" />
     <ClInclude Include="IndFileConvertOld.h" />
     <ClInclude Include="InOut.h" />
+    <ClInclude Include="JSON-OAConeverter.h" />
     <ClInclude Include="Lex.h" />
     <ClInclude Include="List.h" />
     <ClInclude Include="LocationTable.h" />

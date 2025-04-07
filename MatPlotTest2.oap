@@ -18,15 +18,28 @@ NewFU={Mnemo="MatPlot" FUType=FUMatPlot Hint="Устройство для вывода графиков"}
 MainBus.PartialResetSet \\ Запомнить число созданных ФУ
 MainBus.ModeSet=2
 
-MatPlot.StartSet=-5
-MatPlot.EndSet=5
-MatPlot.hSet=0.25
+
+MatPlot.StartSet=0
+MatPlot.EndSet=2
+MatPlot.hSet=1
+MatPlot.YStartSet=0
+MatPlot.YEndSet=2
+MatPlot.hZSet=1
+MatPlot.hYSet=1
+MatPlot.ZAdd=3
+MatPlot.ZAdd=3
+MatPlot.ZAdd=3
+MatPlot.ZAdd=3
+MatPlot.ZAdd=3
+MatPlot.ZAdd=3
+MatPlot.ZAdd=3
+MatPlot.ZAdd=3
+MatPlot.ZAdd=3
+
+MatPlot.LineColorSet="Green"
+MatPlot.Plot=0 // Вывод графика
 
 
-MatPlot.YStartSet=-5
-MatPlot.YEndSet=5
-MatPlot.hYSet=0.25
-MatPlot.PlotFormatSet="-g"
-MatPlot.LineColorSet="Blue"
 
-MatPlot.Plot=10 // Вывод графика
+
+MatPlot.NumColsSet=0

@@ -131,6 +131,53 @@ void BusFU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		case 155:// FUTypeCorrectSet Установить коррекцию номера типа ФУ (для переноса ОА-программы на другую ОА-платформу)
 			FUTypeCorrect = Load.toInt();
 			break;
+
+		case 200: // ArgcSet Установить количество аргументов командной строки
+			argc = Load.toInt();
+			break;
+		case 201: // ArgcOut Выдать количество аргументов командной строки
+			Load.Write(argc);
+			break;
+		case 202: // ArgcOutMk Выдать МК с количеством аргументов командной строки
+			MkExec(Load, {Cint,&argc});
+			break;
+		case 203: // ArgvSet Установить аргументы командной строки
+			if (argc <= 0) break;
+			if (Load.isChar()) {
+				argInd = 0;
+				for (int i = 0; i < argc; i++)
+				{
+					argv.push_back(((char**)Load.Point)[i]);
+				}
+			}
+			break;
+		case 204: // ArgvOut Выдать количество аргументов командной строки
+			if (argc >= 0 && argc < argv.size())
+				Load.Write(argv[argInd]);
+			break;
+		case 207: // ArgvOutMk Выдать МК с количеством аргументов командной строки
+			if (argc >= 0 && argc < argv.size())
+				MkExec(Load, { Cstring, &argv[argInd] });
+			break;
+		case 206: // ArgByIndOut Выдать аргумент командной строки по индексу
+			if (argc >= 0 && argc < argv.size())
+				Load.Write(argv[argInd]);
+			break;
+		case 208: // ArgByIndOutMk  Выдать МК с аргументом командной строки по индексу
+			if (argInd >= 0 && argInd < argv.size())
+				MkExec(Load, { Cstring, &argv[argInd] });
+			break;
+		case 210: // ArgIndSet Установить индекс аргумента
+			argInd = Load.toInt();
+			break;
+		case 215: // ArgcLessExec Выполнить, если количество аргументов меньше величины в нагрузке
+			if (Load.toInt() &&	Load.toInt() > argc)
+					ProgExec(Prog);
+			break;
+		case 216: // ArgcBiggerEq Выполнить, если количество аргументов больше или равно величине в нагрузке
+			if (Load.toInt() && Load.toInt() <= argc)
+				ProgExec(Prog);
+			break;
 		default:
 			CommonMk(MK, Load);
 			break;

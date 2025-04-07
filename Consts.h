@@ -1,5 +1,5 @@
 ﻿// Описание основных констант и информационных конструкций
-#define MatPlotInclude true // Флаг включения компиляции модуля Matplot
+#define MatPlotInclude false // Флаг включения компиляции модуля Matplot
 
 #pragma once
 #include <iostream>
@@ -95,7 +95,7 @@ public:
 	long int Ind = -1; // Индекс поля в ИК или векторе  Для ИК по модулю 3. 0 - адрес ИП, 1- адрес Атрибута, 2 - адрес нагрузки
 	unsigned int getType(); // Выдать тип нагрузки
 	long int DataSize(); // Выдать размер данных в нагрузке
-	bool isDigit(); // Число?}
+	bool isDigit(); // Число?
 	static bool isDigit(unsigned int type) { unsigned int t = type; return t >> 1 == Dint || t >> 1 == Dchar || t >> 1 == Dfloat || t >> 1 == Ddouble; }; // 
 	bool isDigitBool(); // Число или булеан?
 	static bool isDigitBool(int type) { unsigned int t = type; return t >> 1 == Dint || t >> 1 == Dchar || t >> 1 == Dfloat || t >> 1 == Ddouble || t >> 1 == Dbool; }; // Число или булеан?
@@ -144,6 +144,7 @@ public:
 	static bool isVect(unsigned int type) { return (type >> 1) == DLoadVect; }; // Вектор ли нагрузка
 	bool isConst() { return Type % 2; }; // Определить является ли ссылка константой
 	bool isFU() { return Type == TFU || Type == CFU; };// Определить указатель на ФУ
+	bool isScalar() { return  Type >> 1 == Dint || Type >> 1 == Dbool || Type>>1 == Ddouble || Type >> 1 == Dfloat || Type >> 1 == Dstring ; }; // Является ли переменная по указателю скаляром?
 	int Write(long int x); // return 0 - корректная запись, 1 - несоотвествие типов
 	int Write(int x); // return 0 - корректная запись, 1 - несоотвествие типов
 	int Write(size_t x);

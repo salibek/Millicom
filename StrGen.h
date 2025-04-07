@@ -10,15 +10,16 @@ private:
 	void *Receiver = nullptr;
 	long int ReceiverMK = 0;
 	bool work = true;
-	ifstream Source;
 	string Filename;
 	long int TimeStart = 0, TimeLong = 0;// Время начала компиляции, время конца компиляции
 	long int str_count = 0; // счетчик считанных строк
 	vector<string> str_buf; // Буфер строк
-	long int str_buf_size;// Размер буфера строк
+	long int str_buf_size=3;// Размер буфера строк
 	long int str_bufCount = 0; // Индекс текущей строки в буфере
 	void *StartProg = nullptr, *FinProg = nullptr, *StopProg = nullptr; // Ссылки на программы, аапускаемые при начале, оокончании и прерывании генерации строк
 	string finStr = ""; // Строка, выдаваемая при окончании геренации строк
+	void* FileNotExistErrProg = nullptr;
+	string IncludeStr = "#include"; // Строка с ключевым словом для включения модуля в программу
 public:
 	void ProgFU(long int MK, LoadPoint Load, FU* Sender = nullptr) override;
 	FU* Copy() override; // Программа копирования ФУ

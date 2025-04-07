@@ -13,20 +13,16 @@ NewFU={Mnemo="Main_Bus" MkBegRange=1000 FUType=FUBusNew} // Описание Bus
 MainBus.FUTypeCorrectSet=-96 // Корректировка номера типа ФУ для переноса на новую ОА-платформу
 
 NewFU={Mnemo="Console" FUType=FUConsNew Hint="Консоль для вывода логов"}
-NewFU={Mnemo="MatPlot" FUType=FUMatPlot Hint="Устройство для вывода графиков"}
+NewFU={Mnemo="List" FUType=FUListNew Hint="Список"}
 
 MainBus.PartialResetSet \\ Запомнить число созданных ФУ
 MainBus.ModeSet=2
 
-MatPlot.StartSet=-5
-MatPlot.EndSet=5
-MatPlot.hSet=0.25
+List.Set=
+>{Atr=1}
+>{Atr={Atr=3 Atr=5}}
+>{Atr=0}
 
+List.MnemoCapsSet={Atr="Atr"}
 
-MatPlot.YStartSet=-5
-MatPlot.YEndSet=5
-MatPlot.hYSet=0.25
-MatPlot.PlotFormatSet="-g"
-MatPlot.LineColorSet="Blue"
-
-MatPlot.Plot=10 // Вывод графика
+List.JsonSave="JsonList.json"
