@@ -292,6 +292,7 @@ void Console::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		break;
 // ......
 
+
 	case 200: // NoVarToOutProgSet Установить подрограмму реакции на ошибку "Нет переменной для ввода"
 		NoVarToOutProg = Load.Point;
 		break;
