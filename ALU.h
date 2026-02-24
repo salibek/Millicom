@@ -24,7 +24,7 @@ public:
 	void* ConfineStart = nullptr, * ConfineExpression = nullptr, * ConfineBorder = nullptr, * ConfineInc = nullptr; // Конфайн
 	// TLoadArray - тип нагрузка, обозначающий вектор нагрузок
 		vector<LoadPoint>* accumPoint = nullptr;	// Указатель на аккумулятор (вектор, матрица и т.п.)
-//	vector<int> MkOut; // вектор МК для резульатов
+//	vector<int> MkOut; // вектор МК для  резульатов
 //	vector<LoadPoint> OutAdr; // вектор адресов для записи результатов
 	vector <MkAdr> OutMkAdr; // Буфер для указания порядка следования выдачи векторных результатов вычисления
 
@@ -34,10 +34,11 @@ public:
 class ALU : FU
 {
 //	bool comp(LoadPoint x, LoadPoint y); // Подпрограмма для сравнения элементов вектора
-	void ProgExec(void* Uk, unsigned int CycleMode = 0, FU* Bus = nullptr, vector<ip>::iterator* Start = nullptr) override; // Исполнение программы из ИК
-	void ProgExec(LoadPoint Uk, unsigned int CycleMode = 0, FU* Bus = nullptr, vector<ip>::iterator* Start = nullptr) override; // Исполнение программы из ИК
+//	void ProgExec(void* Uk, unsigned int CycleMode = 0, FU* Bus = nullptr, vector<ip>::iterator* Start = nullptr) override; // Исполнение программы из ИК
+//	void ProgExec(LoadPoint Uk, unsigned int CycleMode = 0, FU* Bus = nullptr, vector<ip>::iterator* Start = nullptr) override; // Исполнение программы из ИК
 
-	vector<int> ExecCounter = { 1 }; // Количество итераций при Exec
+//	vector<int> ExecCounter; // ���� ��������� ���������� ������������ � ��
+//	long int ExecRepeat = 1; // ������� ���������� ���������� ������������
 
 public:
 	unsigned int accumType = 0; // Тип данных

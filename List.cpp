@@ -1292,7 +1292,6 @@ void List::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		if (ListHead.back() != nullptr && ListHead.back()->size() != 0 && ((IC_type)ListHead.back()->back().Load.Point)->size() != 0)
 			ProgExec(Load);
 		break;
-
 	case 600: // JsonSave Записать ОА-граф в формате JSON
 		JsonConv.ToJson({TIC,ListHead.back()},Load.toStr());
 		//JsonConv.FOutNameSet(Load.toStr());

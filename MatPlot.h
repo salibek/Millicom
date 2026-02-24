@@ -58,6 +58,7 @@ private:
 	int numCols = 3;
 	double histAlpha = 1;
 	bool histSort = false;
+	string filename; // Имя файла
 
 
 	vector<string > Format0 = { "Blue","*","1","1","Red","Black" }; // Color, Marker, MarkerSize, LineWidth

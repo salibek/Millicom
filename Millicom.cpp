@@ -90,10 +90,12 @@ int main(int argc, char* argv[])
 //	STR = "MatPlot.ind";
 //	STR = "MatrixMul.ind";
 //	STR = "Compil.ind";
-	STR = "SumVect.ind";
+//	STR = "SumVect.ind";
 //	STR = "Lexer.ind";
-//	STR = "Syntaxis.ind";
-	STR = "JSON-List.ind";
+	STR = "Syntaxis.ind";
+//	STR = "JSON-List.ind";
+//	STR = "SumParallel.ind";
+
 	Bus.ProgFU(10, {Cstring, &STR}); //Запуск индексного файла
 
 	system("pause");

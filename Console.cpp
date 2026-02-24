@@ -125,6 +125,9 @@ void Console::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 	case 62: //VarAdd Добавить адрес переменной для записи результата ввода
 		VarOutBuf.push_back({-1, Load});
 		break;
+	case 70: //TemplSet Установить шаблон для вывода
+		Template = Load.toStr();
+		break;
 	case 80: //VarOut – выдать адрес переменной
 		Load.Write(Var);
 		break;
@@ -294,6 +297,42 @@ void Console::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		break;
 	case 201: // WrongFormatProgSet Установить подрограмму реакции на ошибку "Неправильный формат входных данных"
 		WrongFormatProg = Load.Point;
+		break;
+
+	case 290: //TemplSet Установить шаблон для вывода
+		Template = Load.toStr();
+		// Подсчет количества операндов (чтобы понять, сколько операндов ожидать
+		// Operands.resize();
+		// Установка счетчика операндов
+		// Изменение размера вектора ссылок на операнды
+		break;
+	case 295: // OpAdd Добавить очередной операнд
+		Operands[OpCount++] = Load;
+		if (OpCount == Operands.size())
+		{
+			// Вывод строки
+		}
+		break;
+	case 300: // Op00Set Установить операдн с индексом 0
+	case 301: // Op01Set Установить операдн с индексом 1
+	case 302: // Op02Set Установить операдн с индексом 2
+	case 303: // Op03Set Установить операдн с индексом 3
+	case 304: // Op04Set Установить операдн с индексом 4
+	case 305: // Op05Set Установить операдн с индексом 5
+	case 306: // Op06Set Установить операдн с индексом 6
+	case 307: // Op07Set Установить операдн с индексом 7
+	case 308: // Op08Set Установить операдн с индексом 8
+	case 309: // Op09Set Установить операдн с индексом 9
+	case 310: // Op10Set Установить операдн с индексом 10
+	case 311: // Op11Set Установить операдн с индексом 11
+	case 312: // Op12Set Установить операдн с индексом 12
+	case 313: // Oз13Set Установить операдн с индексом 13
+	case 314: // Op14Set Установить операдн с индексом 14
+	case 315: // Op15Set Установить операдн с индексом 15
+		Operands[MK - 300] = Load;
+		// Проверка, что все операдны пришли...
+		// Если все пришли, то вывод строки
+		Operands.print();
 		break;
 	default:
 		CommonMk(MK, Load);

@@ -1064,7 +1064,6 @@ void CellularAutomatManager::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		NetEventser = (Eventser*)Load.Point;
 		break;
 
-
 	case 200: //NetGenerate Генерация сетки (На вход может подаваться количество ФУ в сетке)
 	{
 		if (Load.Point != nullptr)

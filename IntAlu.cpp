@@ -205,22 +205,39 @@ void IntAlu::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		LessEQProg = Load.Point;
 		break;
 	case 130: // Inc
-		++ *AccumulatUk;
-		break;
+	case 132: // IncMk
 	case 131: // Dec
-		-- *AccumulatUk;
+	case 133: // DecMk
+		if(MK==130 || MK==132)
+			++*AccumulatUk;
+		else
+			--*AccumulatUk;
+		if (MK == 130)
+			Load.Write(Load);
+		else
+			MkExec(Load, { Cint,AccumulatUk });
 		break;
 	case 140: // Add
+		if (Load.isEmpty())
+		{
+			++ (*AccumulatUk);
+			break;
+		}
 		if (!Load.isDigit()) ProgExec(NoCorrectTypeErrProg);
 		if (!Load.isInt()) ProgExec(NoIntTypeErrProg);
 		if (!Load.isIntBool()) ProgExec(NoBoolIntTypeErrProg);
-		*AccumulatUk += Load.toInt();
+		*AccumulatUk += Load.toInt(1);
 		break;
 	case 141: // Sub
+		if (Load.isEmpty())
+		{
+			-- (*AccumulatUk);
+			break;
+		}
 		if (!Load.isDigit()) ProgExec(NoCorrectTypeErrProg);
 		if (!Load.isInt()) ProgExec(NoIntTypeErrProg);
 		if (!Load.isIntBool()) ProgExec(NoBoolIntTypeErrProg);
-		*AccumulatUk -= Load.toInt();
+		*AccumulatUk -= Load.toInt(1);
 		break;
 	case 142: // Mul
 		if (!Load.isDigit()) ProgExec(NoCorrectTypeErrProg);
@@ -240,10 +257,10 @@ void IntAlu::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		if (!Load.isIntBool()) ProgExec(NoBoolIntTypeErrProg);
 		*AccumulatUk %= Load.toInt();
 		break;
-
-	case 530: // ExecCounterSet Установить счетчик итераций выполнения подпрограммы
-		ExecCounter.push_back(Load.toInt(1));
+	case 145: // Pow Возвести в степень
+		*AccumulatUk = (int)pow(*AccumulatUk, Load.toInt());
 		break;
+
 	case 531: // ExecCounterAdd Прибавить к счетчику итераций
 		ExecCounter.back() += Load.toInt();
 		break;
@@ -285,7 +302,7 @@ FU* IntAlu::TypeCopy() // Создать ФУ такого же типа (не копируя контекст
 {
 	return new IntAlu(Bus, nullptr);
 }
-
+/*
 void IntAlu::ProgExec(void* Uk, unsigned int CycleMode, FU* Bus, vector<ip>::iterator* Start) // Исполнение программы из ИК
 {
 	if (!ExecCounter.size())
@@ -308,3 +325,4 @@ void IntAlu::ProgExec(LoadPoint Uk, unsigned int CycleMode, FU* Bus, vector<ip>:
 		ExecCounter.pop_back();
 	}
 }
+*/

@@ -1,4 +1,4 @@
- CapsManager.IndexVectCreate=60000
+ CapsManager.IndexVectCreate=100000
  CapsManager.IpIcIdOutMk=MainBus.IpIcIdSet
  CapsManager.IpIcIdOutMk=VariableManager.IpIcIdSet
  CapsManager.IpIcIdOutMk=ListSyntez.IpIcIdSet
@@ -462,6 +462,7 @@ CommonMkList{
 	Obj={Mnemo="HalfReset" Mk=971 Hint="Установить значение в ячейку памяти"}
 	Obj={Mnemo="ActiveSet" Mk=902 Hint="Установить режим активности/пассивности ФУ"}
 	Obj={Mnemo="FUIndSet" Mk=933 Hint="Установить индекс ФУ"}
+  	Obj={Mnemo="ExecCounterSet" Mk=936 Hint="Установить счетчик итераций выполнения подпрограммыExecCounterAdd"}
  
 	Obj={Mnemo="ValPointerSet" Mk=955 Hint="Сброс ФУ"}
 	Obj={Mnemo="ValSet" Mk=956 Hint="Полусброс ФУ (не сбрасываются основные настройки)"}
@@ -4335,6 +4336,19 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
   	Obj={Mnemo="IndAdd" Mk=54 Hint="Увеличить индекс ФУ"}
   	Obj={Mnemo="Ind2Add" Mk=55 Hint="Увеличить второй индекс ФУ"}
   }
+  Obj={Mnemo="Program args" Hint="Работа с индексами управляемых ФУ" Comment
+  	Obj={Mnemo="ArgcSet" Mk=200 Hint="Установить количество аргументов командной строки"}
+  	Obj={Mnemo="ArgcOut" Mk=201 Hint="Выдать количество аргументов командной строки"}
+  	Obj={Mnemo="ArgcOutMk" Mk=202 Hint="Выдать МК с количеством аргументов командной строки"}
+  	Obj={Mnemo="ArgvSet" Mk=203 Hint="Установить количество аргументов командной строки"}
+  	Obj={Mnemo="ArgvOut" Mk=204 Hint="Выдать количество аргументов командной строки"}
+  	Obj={Mnemo="ArgvOutMk" Mk=205 Hint="Выдать МК с количеством аргументов командной строки"}
+  	Obj={Mnemo="ArgByIndOut" Mk=204 Hint="Выдать количество аргументов командной строки по индексу"}
+  	Obj={Mnemo="ArgByIndOutMk" Mk=208 Hint="Выдать МК с количеством аргументов командной строки по индексу"}
+  	Obj={Mnemo="ArgIndSet" Mk=210 Hint="Установить индекс аргумента"}
+  	Obj={Mnemo="ArgcLessExec" Mk=215 Hint="Выполнить, если количество аргументов меньше величины в нагрузке"}
+  	Obj={Mnemo="ArgcBiggerEq" Mk=216 Hint="Выполнить, если количество аргументов больше или равно величине в нагрузке"}
+  }
   Obj=CommonMkList
 }
 // ConsNew
@@ -4375,6 +4389,7 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
   Obj={Mnemo="Stop" Mk=4 Hint="Прервать процесс геренации строк"}
   Obj={Mnemo="Pause" Mk=5 Hint="Приостановить процесс геренации строк"}
   Obj={Mnemo="Continue" Mk=6 Hint="Продолжить процесс геренации строк"}
+  Obj={Mnemo="FileNotExistErrProgSet" Mk=7 Hint="Установить программу обработки ошибки 'Файл не существует'"}
   Obj={Mnemo="ModeSet" Mk=9 Hint="Выбор режима работы (0 - обычный, 1 - преобрзование букв к нижнему регистру)"}
   Obj={Mnemo="TimeOut" Mk=15 Hint="Выдать время компиляции в секундах"}
   Obj={Mnemo="TimeMkOut" Mk=30 Hint="Выдать МК со времем компиляции в секундах"}
@@ -4382,6 +4397,7 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
   Obj={Mnemo="LineCountOutMk" Mk=50 Hint=""}
   Obj={Mnemo="LastLineBufOutMk" Mk=51 Hint="Выдать МК с последней строкой из буфера"}
   Obj={Mnemo="LineBufOutMk" Mk=52 Hint="Выдать МК со строками из буфера"}
+  Obj={Mnemo="IncludeStrSet" Mk=55 Hint="Установить строку для включения модуля в текст программы"}
 
   Obj={Mnemo="StartProgSet" Mk=60 Hint="Установить указатель на программу, выполняемую при запуске нерации строк из файла"}
   Obj={Mnemo="FinProgSet" Mk=61 Hint="Установить указатель на программу, выполняемую по завершению генерации строк из файла"}
@@ -4471,6 +4487,10 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
   Obj={Mnemo="Lexing" Mk=100 Hint="Лексический разбор строки"}
   Obj={Mnemo="AddComment" Mk=101 Hint="Добавление нового обозначения комментария"}
   Obj={Mnemo="DelComment" Mk=102 Hint="Удаление существующего обозначения комментария"}
+
+  Obj={Mnemo="IfStopExec" Mk=90 Hint="Выполнить, если лексер остановлен"}
+  Obj={Mnemo="IfRunExec" Mk=91 Hint="Выполнить, если лексер в рабочем состоянии"}
+
   Obj=CommonMkList
 }
 
@@ -4745,6 +4765,12 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
   Obj={Mk=205 Mnemo="LinePush" Hint="Положить текущую линию в стек"}
   Obj={Mk=206 Mnemo="LineLastPush" Hint="Положить последнюю линию в стек"}
   Obj={Mk=207 Mnemo="LinePop" Hint="Взять текущую линию из стека"}
+  Obj={Mk=600 Mnemo="JsonSave" Hint="Записать ОА-граф в формате JSON"}
+  Obj={Mk=601 Mnemo="JsonLoad" Hint="Считать файл в формате JSON"}
+  Obj={Mk=605 Mnemo="MnemoCapsSet" Hint="Установить ссылку на капсулу с мнемониками"}
+  Obj={Mk=605 Mnemo="MnemoTableSet" Hint="Установить ссылку на таблицу мнемоник"}
+  Obj={Mk=606 Mnemo="MillirangeSet" Hint="Установить диапазон милликоманд для ФУ"}
+
 
   Obj=CommonMkList
 }
@@ -4812,8 +4838,9 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 	 Obj={Mk=14 Mnemo="Rand" Hint="Сгенерировать случайное число в диапазоне от 0 до числа из нагрузки"}
 	 Obj={Mk=500 Mnemo="MkExtSet" Hint="Установить внешнюю МК"}
 	 Obj={Mk=501 Mnemo="MkExtExec" Hint="Выполнить внешнюю МК"}
+	 Obj={Mk=535 Mnemo="ReceiverSet" Hint="Установить примника результата"}
 	 Obj={Mnemo="ExecCounter" Hint="Счетчик количества итераций программы" Comment
-  	 	Obj={Mk=530 Mnemo="ExecCounterSet" Hint="Установить счетчик итераций выполнения подпрограммыExecCounterAdd"}
+  	 //	Obj={Mk=530 Mnemo="ExecCounterSet" Hint="Установить счетчик итераций выполнения подпрограммыExecCounterAdd"}
   	 	Obj={Mk=531 Mnemo="ExecCounterAdd" Hint="Прибавить к счетчику итераций"}
   	 	Obj={Mk=532 Mnemo="ExecCounterSub" Hint="Вычесть из счетчика итераций"}
   	 	Obj={Mk=533 Mnemo="ExecCounterMul" Hint="Умножить счетчик итераций"}
@@ -5322,7 +5349,7 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 			Obj={Mk=46 Mnemo="MatErrProgSet" Hint="Установить программу обработки ошибки математической операции"}
 			Obj={Mk=44 Mnemo="OpIndErrProgSet" Hint="Установить программу при ошибке индекса операнда"}
 			Obj={Mk=45 Mnemo="RezStackIsEmpyProgSet" Hint="Установить программу при чтении из пустого стека результатов"}
-			Obj={Mk=64 Mnemo="ExecCounterSet" Hint="Установить счетчик итераций выполнения подпрограммы"}
+		//	Obj={Mk=64 Mnemo="ExecCounterSet" Hint="Установить счетчик итераций выполнения подпрограммы"}
 			Obj={Mk=280 Mnemo="ZeroProgSet" Hint="Установить программу при =="}
 			Obj={Mk=281 Mnemo="NZeroProgSet" Hint="Установить программу при !="}
 			Obj={Mk=282 Mnemo="LessProgSet" Hint="Установить программу при <"}
@@ -5355,7 +5382,7 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 			Obj={Mk=295 Mnemo="NFOut" Hint="Выдать флаг !="}
 			Obj={Mk=295 Mnemo="NZFOutMk" Hint="Выдать МК с флагом !="}
 		}
-		Obj={Mnemo="Adr stack" Hint="Операции с адресным стеком" Comment
+		Obj={Mnemo="Routing" Hint="Операции с адресным стеком" Comment
 			Obj={Mk=335 Mnemo="RoutedMkOut" Hint="Выдать маршрутизированную МК"}
 			Obj={Mk=336 Mnemo="RoutedMkOutMk" Hint="Выдать МК с маршрутизированной МК"}
 			Obj={Mk=337 Mnemo="RoutedLoadOut" Hint="Выдать маршрутизированную нагрзуку МК"}
@@ -5365,25 +5392,25 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 			Obj={Mk=341 Mnemo="RoutedAtrOut" Hint="Выдать атриубт маршрутизируемой ИП"}
 			Obj={Mk=342 Mnemo="RoutedAtrOutMk" Hint="Выдать МК с атрибутом маршрутизируемой ИП"}
 
-			Obj={Mk=345 Mnemo="AdrBufAdd" Hint="Добавить адрес в буфер адресов"}
-			Obj={Mk=346 Mnemo="AdrBufClear" Hint="Очистить буфер адресов"}
-			Obj={Mk=347 Mnemo="AdrBufAllOutMk" Hint="Выдать МК на все адреса из AdrBuf (на входе МК)"}
-			Obj={Mk=350 Mnemo="AdrBuf_0_OutMk" Hint="Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 0"}
-			Obj={Mk=351 Mnemo="AdrBuf_1_OutMk" Hint="Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 1"}
-			Obj={Mk=352 Mnemo="AdrBuf_2_OutMk" Hint="Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 2"}
-			Obj={Mk=353 Mnemo="AdrBuf_3_OutMk" Hint="Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 3"}
-			Obj={Mk=354 Mnemo="AdrBuf_4_OutMk" Hint="Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 4"}
-			Obj={Mk=355 Mnemo="AdrBuf_5_OutMk" Hint="Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 5"}
-			Obj={Mk=356 Mnemo="AdrBuf_6_OutMk" Hint="Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 6"}
-			Obj={Mk=357 Mnemo="AdrBuf_7_OutMk" Hint="Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 7"}
-			Obj={Mk=358 Mnemo="AdrBuf_8_OutMk" Hint="Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 8"}
-			Obj={Mk=359 Mnemo="AdrBuf_9_OutMk" Hint="Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 9"}
-			Obj={Mk=360 Mnemo="AdrBuf_10_OutMk" Hint="Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 10"}
-			Obj={Mk=361 Mnemo="AdrBuf_11_OutMk" Hint="Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 11"}
-			Obj={Mk=362 Mnemo="AdrBuf_12_OutMk" Hint="Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 12"}
-			Obj={Mk=363 Mnemo="AdrBuf_13_OutMk" Hint="Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 13"}
-			Obj={Mk=364 Mnemo="AdrBuf_14_OutMk" Hint="Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 14"}
-			Obj={Mk=365 Mnemo="AdrBuf_15_OutMk" Hint="Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 15"}		
+			Obj={Mk=345 Mnemo="RouteAdd" Hint="Добавить адрес в буфер адресов"}
+			Obj={Mk=346 Mnemo="RouteClear" Hint="Очистить буфер адресов"}
+			Obj={Mk=347 Mnemo="RoutefAllOutMk" Hint="Выдать МК на все адреса из AdrBuf (на входе МК)"}
+			Obj={Mk=350 Mnemo="Route_0_OutMk" Hint="Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 0"}
+			Obj={Mk=351 Mnemo="Route_1_OutMk" Hint="Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 1"}
+			Obj={Mk=352 Mnemo="Route_2_OutMk" Hint="Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 2"}
+			Obj={Mk=353 Mnemo="Route_3_OutMk" Hint="Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 3"}
+			Obj={Mk=354 Mnemo="Route_4_OutMk" Hint="Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 4"}
+			Obj={Mk=355 Mnemo="Route_5_OutMk" Hint="Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 5"}
+			Obj={Mk=356 Mnemo="Route_6_OutMk" Hint="Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 6"}
+			Obj={Mk=357 Mnemo="Route_7_OutMk" Hint="Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 7"}
+			Obj={Mk=358 Mnemo="Route_8_OutMk" Hint="Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 8"}
+			Obj={Mk=359 Mnemo="Route_9_OutMk" Hint="Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 9"}
+			Obj={Mk=360 Mnemo="Route_10_OutMk" Hint="Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 10"}
+			Obj={Mk=361 Mnemo="Route_11_OutMk" Hint="Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 11"}
+			Obj={Mk=362 Mnemo="Route_12_OutMk" Hint="Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 12"}
+			Obj={Mk=363 Mnemo="Route_13_OutMk" Hint="Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 13"}
+			Obj={Mk=364 Mnemo="Route_14_OutMk" Hint="Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 14"}
+			Obj={Mk=365 Mnemo="Route_15_OutMk" Hint="Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 15"}		
 		}
 		Obj={Mnemo="Arithmetic" Hint="Арифметические операции" Comment
 			Obj={Mk=524 Mnemo="SetSend" Hint="Установить результат и разослать его потребителям"}
@@ -5468,6 +5495,7 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
   	Obj={Mk=505 Mnemo="AnsFix" Hint="Зафиксировать текущий уровень аккумулятора как ans"}
   	Obj={Mk=506 Mnemo="AnsOut" Hint="Выдать Ans"}
   	Obj={Mk=507 Mnemo="AnsOutMk" Hint="Mk Выдать МК с Ans"}
+	Obj={Mk=535 Mnemo="ReceiverSet" Hint="Установить примника результата"}
 
   Obj={Mnemo="ExecCounter" Hint="Счетчик количества итераций программы" Comment
   	Obj={Mk=530 Mnemo="ExecCounterSet" Hint="Установить счетчик итераций выполнения подпрограммыExecCounterAdd"}
@@ -5555,6 +5583,8 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 	Obj={Mk=280 Mnemo="VectNew" Hint="Создать новый вектор"}
   	Obj={Mk=285 Mnemo="VectClear" Hint="Очистить вектор"}
   	Obj={Mk=290 Mnemo="Append" Hint="Добавить элемент в вектор"}
+  	Obj={Mk=295 Mnemo="VectSizeOut" Hint="Выдать длину массива"}
+  	Obj={Mk=296 Mnemo="VectSizeOutMk" Hint="Выдать МК с длиной массива"}
 
   	Obj={Mk=269 Mnemo="IndAutoIncSet" Hint="Установить величину автоинкрементации индекса вектора"}
   	Obj={Mk=270 Mnemo="IndSet" Hint="Установить индекс вектора (nil в нагрузке вызывает сброс индекса, т.е. по команде Out выдается вектор, а не элемент)"}
@@ -6013,7 +6043,7 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 	Obj={Mk=61 Mnemo="CounterAdd" Hint="Прибавить к счетчику (по умолчанию 1)"}
 	Obj={Mk=62 Mnemo="CounterMul" Hint="Умножить считчик (по умолчанию 2)"}
 	Obj={Mk=63 Mnemo="CounterSub" Hint="Умножить считчик (по умолчанию 2)"}
-	Obj={Mk=64 Mnemo="ExecCounterSet" Hint="Установить счетчик итераций выполнения подпрограммы"}
+//	Obj={Mk=64 Mnemo="ExecCounterSet" Hint="Установить счетчик итераций выполнения подпрограммы"}
 	Obj={Mk=65 Mnemo="ExecCounterAdd" Hint="Прибавить к счетчику итераций"}
 	Obj={Mk=66 Mnemo="ExecCounterSub" Hint="Вычесть из счетчика итераций"}
 	Obj={Mk=67 Mnemo="ExecCounterMul" Hint="Умножить счетчик итераций"}
@@ -6236,7 +6266,7 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 			Obj={Mk=46 Mnemo="MatErrProgSet" Hint="Установить программу обработки ошибки математической операции"}
 			Obj={Mk=44 Mnemo="OpIndErrProgSet" Hint="Установить программу при ошибке индекса операнда"}
 			Obj={Mk=45 Mnemo="RezStackIsEmpyProgSet" Hint="Установить программу при чтении из пустого стека результатов"}
-			Obj={Mk=64 Mnemo="ExecCounterSet" Hint="Установить счетчик итераций выполнения подпрограммы"}
+//			Obj={Mk=64 Mnemo="ExecCounterSet" Hint="Установить счетчик итераций выполнения подпрограммы"}
 			Obj={Mk=280 Mnemo="ZeroProgSet" Hint="Установить программу при =="}
 			Obj={Mk=281 Mnemo="NZeroProgSet" Hint="Установить программу при !="}
 			Obj={Mk=282 Mnemo="LessProgSet" Hint="Установить программу при <"}
@@ -6269,7 +6299,7 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 			Obj={Mk=295 Mnemo="NFOut" Hint="Выдать флаг !="}
 			Obj={Mk=295 Mnemo="NZFOutMk" Hint="Выдать МК с флагом !="}
 		}
-		Obj={Mnemo="Adr stack" Hint="Операции с адресным стеком" Comment
+		Obj={Mnemo="Routing" Hint="Операции с адресным стеком" Comment
 			Obj={Mk=335 Mnemo="RoutedMkOut" Hint="Выдать маршрутизированную МК"}
 			Obj={Mk=336 Mnemo="RoutedMkOutMk" Hint="Выдать МК с маршрутизированной МК"}
 			Obj={Mk=337 Mnemo="RoutedLoadOut" Hint="Выдать маршрутизированную нагрзуку МК"}
@@ -6279,25 +6309,25 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 			Obj={Mk=341 Mnemo="RoutedAtrOut" Hint="Выдать атриубт маршрутизируемой ИП"}
 			Obj={Mk=342 Mnemo="RoutedAtrOutMk" Hint="Выдать МК с атрибутом маршрутизируемой ИП"}
 
-			Obj={Mk=345 Mnemo="AdrBufAdd" Hint="Добавить адрес в буфер адресов"}
-			Obj={Mk=346 Mnemo="AdrBufClear" Hint="Очистить буфер адресов"}
-			Obj={Mk=347 Mnemo="AdrBufAllOutMk" Hint="Выдать МК на все адреса из AdrBuf (на входе МК)"}
-			Obj={Mk=350 Mnemo="AdrBuf_0_OutMk" Hint="Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 0"}
-			Obj={Mk=351 Mnemo="AdrBuf_1_OutMk" Hint="Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 1"}
-			Obj={Mk=352 Mnemo="AdrBuf_2_OutMk" Hint="Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 2"}
-			Obj={Mk=353 Mnemo="AdrBuf_3_OutMk" Hint="Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 3"}
-			Obj={Mk=354 Mnemo="AdrBuf_4_OutMk" Hint="Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 4"}
-			Obj={Mk=355 Mnemo="AdrBuf_5_OutMk" Hint="Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 5"}
-			Obj={Mk=356 Mnemo="AdrBuf_6_OutMk" Hint="Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 6"}
-			Obj={Mk=357 Mnemo="AdrBuf_7_OutMk" Hint="Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 7"}
-			Obj={Mk=358 Mnemo="AdrBuf_8_OutMk" Hint="Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 8"}
-			Obj={Mk=359 Mnemo="AdrBuf_9_OutMk" Hint="Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 9"}
-			Obj={Mk=360 Mnemo="AdrBuf_10_OutMk" Hint="Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 10"}
-			Obj={Mk=361 Mnemo="AdrBuf_11_OutMk" Hint="Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 11"}
-			Obj={Mk=362 Mnemo="AdrBuf_12_OutMk" Hint="Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 12"}
-			Obj={Mk=363 Mnemo="AdrBuf_13_OutMk" Hint="Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 13"}
-			Obj={Mk=364 Mnemo="AdrBuf_14_OutMk" Hint="Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 14"}
-			Obj={Mk=365 Mnemo="AdrBuf_15_OutMk" Hint="Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 15"}		
+			Obj={Mk=345 Mnemo="RouteAdd" Hint="Добавить адрес в буфер адресов"}
+			Obj={Mk=346 Mnemo="RouteClear" Hint="Очистить буфер адресов"}
+			Obj={Mk=347 Mnemo="RouteAllOutMk" Hint="Выдать МК на все адреса из AdrBuf (на входе МК)"}
+			Obj={Mk=350 Mnemo="Route_0_OutMk" Hint="Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 0"}
+			Obj={Mk=351 Mnemo="Route_1_OutMk" Hint="Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 1"}
+			Obj={Mk=352 Mnemo="Route_2_OutMk" Hint="Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 2"}
+			Obj={Mk=353 Mnemo="Route_3_OutMk" Hint="Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 3"}
+			Obj={Mk=354 Mnemo="Route_4_OutMk" Hint="Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 4"}
+			Obj={Mk=355 Mnemo="Route_5_OutMk" Hint="Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 5"}
+			Obj={Mk=356 Mnemo="Route_6_OutMk" Hint="Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 6"}
+			Obj={Mk=357 Mnemo="Route_7_OutMk" Hint="Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 7"}
+			Obj={Mk=358 Mnemo="Route_8_OutMk" Hint="Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 8"}
+			Obj={Mk=359 Mnemo="Route_9_OutMk" Hint="Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 9"}
+			Obj={Mk=360 Mnemo="Route_10_OutMk" Hint="Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 10"}
+			Obj={Mk=361 Mnemo="Route_11_OutMk" Hint="Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 11"}
+			Obj={Mk=362 Mnemo="Route_12_OutMk" Hint="Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 12"}
+			Obj={Mk=363 Mnemo="Route_13_OutMk" Hint="Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 13"}
+			Obj={Mk=364 Mnemo="Route_14_OutMk" Hint="Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 14"}
+			Obj={Mk=365 Mnemo="Route_15_OutMk" Hint="Выдать пришедшую МК на ФУ с адресом из AdrBuf с индексом 15"}		
 		}
 		Obj={Mnemo="Arithmetic" Hint="Арифметические операции" Comment
 			Obj={Mk=524 Mnemo="SetSend" Hint="Установить результат и разослать его потребителям"}
@@ -6336,38 +6366,81 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 	{
 	Obj={Mk=1 Mnemo="Plot" Hint="Нарисовать график (На входе тип графика)"}
 	Obj={Mk=5 Mnemo="XAdd" Hint="Добавить координату по X"}
-	Obj={Mk=6 Mnemo="StartSet" Hint="Установить начальное заначение отрезка по X"}
-	Obj={Mk=7 Mnemo="EndSet" Hint="Установить конечное заначение отрезка по X"}
+	Obj={Mk=6 Mnemo="StartSet" Hint="Установить начальное значение отрезка по X"}
+	Obj={Mk=7 Mnemo="EndSet" Hint="Установить конечное значение отрезка по X"}
 	Obj={Mk=8 Mnemo="hSet" Hint="Установить шаг точек отрезка по X"}
-	Obj={Mk=9 Mnemo="NSet" Hint="Установть количестов точек отрезка по X"}
+	Obj={Mk=9 Mnemo="NSet" Hint="Установить количество точек отрезка по X"}
 	Obj={Mk=10 Mnemo="XVectSet" Hint="Установить вектор по координате X"}
 	Obj={Mk=11 Mnemo="YVectSet" Hint="Установить вектор по координате Y"}
 	Obj={Mk=12 Mnemo="MeshSet" Hint="Установить сетку координат для 3-мерного графика"}
 	Obj={Mk=13 Mnemo="ZSet" Hint="Установить значения для 3-мерного графика"}
+	Obj={Mk=15 Mnemo="hYSet" Hint="Установить шаг точек отрезка по Y"}
+	Obj={Mk=16 Mnemo="NYSet" Hint="Установить количество точек отрезка по Y"}
+	Obj={Mk=17 Mnemo="hZSet" Hint="Установить шаг точек отрезка по Z"}
+	Obj={Mk=18 Mnemo="NZSet" Hint="Установить количество точек отрезка по Z"}
 	Obj={Mk=20 Mnemo="XVectOut" Hint="Выдать вектор значений по оси X"}
 	Obj={Mk=21 Mnemo="XVectOutMk" Hint="Выдать МК с вектором значений по оси X"}
 	Obj={Mk=22 Mnemo="XLoadVectOut" Hint="Выдать вектор значений по оси X"}
 	Obj={Mk=23 Mnemo="XLoadVectOutMk" Hint="Выдать МК с вектором значений по оси X"}
 	Obj={Mk=25 Mnemo="YVectOut" Hint=""}
-	Obj={Mk=26 Mnemo="YVectOutMk" Hint=""}
-	Obj={Mk=27 Mnemo="XLoadVectOut" Hint=""}
-	Obj={Mk=28 Mnemo="XLoadVectOutMk" Hint=""}
-	Obj={Mk=35 Mnemo="DxSet" Hint=""}
-	Obj={Mk=36 Mnemo="DySet" Hint=""}
-	Obj={Mk=37 Mnemo="XStartSet" Hint=""}
-	Obj={Mk=38 Mnemo="XEndSet" Hint=""}
-	Obj={Mk=39 Mnemo="YStartSet" Hint=""}
-	Obj={Mk=40 Mnemo="XEndSet" Hint=""}
-	Obj={Mk=45 Mnemo="YStartSet" Hint=""}
-	Obj={Mk=46 Mnemo="YEndSet" Hint=""}
-	Obj={Mk=50 Mnemo="NySet" Hint=""}
-	Obj={Mk=51 Mnemo="MeshD" Hint="Сгенерировать сетку для отображения 3-мерного графика по количеству точек"}
-	Obj={Mk=55 Mnemo="YAdd" Hint="Добавить значение функции"}
-	Obj={Mk=56 Mnemo="Y3DAdd" Hint="Добавить значение функции для 3-мерного графика"}
+	Obj={Mk=26 Mnemo="YVectOutMk" Hint="Выдать вектор значений по оси X"}
+	Obj={Mk=27 Mnemo="XLoadVectOut" Hint="Выдать вектор значений по оси X"}
+	Obj={Mk=28 Mnemo="XLoadVectOutMk" Hint="Выдать МК с вектором значений по оси X"}
+	Obj={Mk=35 Mnemo="DxSet" Hint="Указать шаг по оси X"}
+	Obj={Mk=36 Mnemo="DySet" Hint="Увказать шаг по оси Y"}
+	Obj={Mk=37 Mnemo="XStartSet" Hint="Указать минимальное значение по оси X"}
+	Obj={Mk=38 Mnemo="XEndSet" Hint="Указать максимальное значение по оси X"}
+	Obj={Mk=39 Mnemo="YStartSet" Hint="Указать минимальное значение по оси Y"}
+	Obj={Mk=40 Mnemo="YEndSet" Hint="Указать максимальное значение по оси Y"}
+	Obj={Mk=45 Mnemo="NxSet" Hint="Указать количество точек по оси X"}
+	Obj={Mk=46 Mnemo="NySet" Hint="Указать количество точек по оси Y"}
+	Obj={Mk=50 Mnemo="MeshN" Hint="Сгенерировать сетку для отображения 3-мерного графика по количеству точек"}
+	Obj={Mk=51 Mnemo="MeshD" Hint="Сгенерировать сетку для отображения 3-мерного графика по длине шага"}
+	Obj={Mk=55 Mnemo="YAdd" Hint="Добавить координату по Y"}
+	Obj={Mk=56 Mnemo="ZAdd" Hint="Добавить координату по Z"}
+\\	Obj={Mk=30 Mnemo="Mesh" Hint="Сгенерировать сетку для отображения 3-мерного графика"}
 	Obj={Mk=60 Mnemo="XSort" Hint="Упорядочить данные по оси X по возрастанию"}
-	Obj={Mk=30 Mnemo="Mesh" Hint="Сгенерировать сетку для отображения 3-мерного графика"}
-	Obj={Mk=35 Mnemo="YAdd" Hint="Добавить координату по X"}
-	Obj={Mk=40 Mnemo="XSort" Hint="Упорядочить данные по оси X по возрастанию"}
+	Obj={Mk=61 Mnemo="PlotTitleSet" Hint="Добавить название графика"}
+	Obj={Mk=62 Mnemo="xTitleSet" Hint="Добавить название оси X"}
+	Obj={Mk=63 Mnemo="yTitleSet" Hint="Добавить название оси Y"}
+	Obj={Mk=65 Mnemo="LegendSet" Hint="Добавить легенду"}
+	Obj={Mk=66 Mnemo="LegendParamSet" Hint="Добавить текст"}
+	Obj={Mk=67 Mnemo="xTextSet" Hint="Добавить координату X текстового поля"}
+	Obj={Mk=68 Mnemo="yTextSet" Hint="Добавить координату Y текстового поля"}
+	Obj={Mk=71 Mnemo="MarkFaceSet" Hint="Установить цвет  маркера"}
+	Obj={Mk=72 Mnemo="MarkEdgeSet" Hint="Установить цвет границ маркера"}
+	Obj={Mk=73 Mnemo="RowsSet" Hint="Указать количество строк фигуры"}
+	Obj={Mk=74 Mnemo="ColsSet" Hint="Указать количество столбцов фигуры"}
+	Obj={Mk=75 Mnemo="RowIdSet" Hint="Указать номер строки графики"}
+	Obj={Mk=76 Mnemo="ColIdSet" Hint="Указать номер столбца графика"}
+	Obj={Mk=77 Mnemo="BarmWidthSet" Hint="Указать толщину границ столбцов"}
+	Obj={Mk=78 Mnemo="BarWidthSet" Hint="Установить ширину столбцов столбчатой диаграммы"}
+	Obj={Mk=79 Mnemo="HistAlphaSet" Hint="Установить прозрачность гистограммы"}
+	Obj={Mk=80 Mnemo="Show" Hint="Вывод графика"}
+	Obj={Mk=81 Mnemo="HistSortSet" Hint="Включить сортировку значений гистограммы"}
+	Obj={Mk=82 Mnemo="ScatterSizeSet" Hint="Установить размер маркера"}
+	Obj={Mk=86 Mnemo="zTitleSet" Hint="Добавить название оси Z"}
+	
+	\\Obj={Mk=87 Mnemo="RowNumSet" Hint="Указать количество строк матрицы для 3-мерного графика"}
+	\\Obj={Mk=88 Mnemo="ColNumSet" Hint="Указать количество столбцов матрицы для 3-мерного графика"}
+	Obj={Mk=89 Mnemo="Line3Width" Hint="Указать толщину 3-мерного линейного графика"}
+
+	Obj={Mk=94 Mnemo="FigureColorSet" Hint="Установить цвет фона рисунка"}
+	Obj={Mk=95 Mnemo="AxesColorSet" Hint="Установить цвет фона поля графика"}
+	Obj={Mk=96 Mnemo="EdgeColorSet" Hint="Установить цвет рамки поля графика"}
+	Obj={Mk=97 Mnemo="GridAlphaSet" Hint="Включить сетку"}
+	Obj={Mk=98 Mnemo="GridColorSet" Hint="Установить цвет сетки"}
+	Obj={Mk=99 Mnemo="GridAlphaSet" Hint="Установить прозрачность сетки"}
+	Obj={Mk=100 Mnemo="PlotFormatSet" Hint="Установить формат графика"}
+	Obj={Mk=101 Mnemo="MarkSet" Hint="Установить маркер"}
+	Obj={Mk=102 Mnemo="MarkWidthSet" Hint="становить размер маркера (для линейного)"}
+	Obj={Mk=103 Mnemo="LineColorSet" Hint="Установить цвет"}
+	Obj={Mk=104 Mnemo="LineWidthSet" Hint="Установить толщину"}
+
+	Obj={Mk=105 Mnemo="PlotSaveJpeg" Hint="Сохранить графика в файле формата jpeg"}
+	Obj={Mk=106 Mnemo="PlotSavePng" Hint="Сохранить графика в файле формата png"}
+	Obj={Mk=107 Mnemo="PlotSaveSvg" Hint="Сохранить графика в файле формата svg"}
+
 	Obj=CommonMkList
 	}
 }
@@ -7210,6 +7283,7 @@ MnemoTable.Set=
 
 	>{Mnemo="MkList" Atr=-21 Hint="Атрибут ссылки на таблицу мнемоник милликоманд"}
 	>{Mnemo="FUType" Atr=-22 Hint="Атрибут типа ФУ"}
+	>{Mnemo="FUTypeList" Atr=-23 Hint="Атрибут списка МК для типа ФУ"}
 	>{Mnemo="Hint" Atr=-42 Hint="Атрибут всплывающий подсказки"}
 
 	>{Mnemo="Exeption" Atr=-40 Hint="Исключение"}

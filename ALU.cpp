@@ -100,7 +100,12 @@ void ALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 	bool LoadDelFlag = false; // Флаг удаления нагрузки со временными данными
 	if (MK == ProgExecMk || MK == CalcMk) // выполнение программы
 	{
-		ProgExec(Load);
+//		ExecCounter.push_back(ExecRepeat);
+//		ExecRepeat = 1;
+//		for (; ExecCounter.back() > 0; ExecCounter.back()--)
+			ProgExec(Load);
+//		ExecCounter.pop_back();
+
 		accum = Stack.back().accum; // Записать в выходной аккумулятор
 		accumType = Stack.back().accumType; // Записать в выходной аккумулятор
 		accumStr = Stack.back().accumStr; // Записать в выходной аккумулятор
@@ -217,9 +222,9 @@ void ALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 
 		switch (MK)
 		{
-			case E_MK::Remainder:
-				
-				break;
+		case E_MK::Remainder:
+
+			break;
 		case 500: // MkExtSet Установить внешнюю МК
 			MKExt = Load.toInt();
 			break;
@@ -251,7 +256,7 @@ void ALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 			break;
 
 		case 513: // VectStoreExtend Добавить вектор из нагрузки в конец вектора из хранилища
-		{	
+		{
 			int t = Load.toVect()->size();
 			if (!Load.isVect() && VectStore.size()) break;
 			VectStore.back()->resize(t + Load.toVect()->size());
@@ -266,31 +271,33 @@ void ALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 			break;
 		case 516: // VectStoreOutMk Выдать МК с вектором из хранилища
 			if (!VectStore.size()) break;
-			MkExec(Load, { CLoadVect, VectStore.back()}, Receiver);
+			MkExec(Load, { CLoadVect, VectStore.back() }, Receiver);
 			break;
 		case 517: // VectStorePop Вытолкнуть вектор из хранилища
 			if (!VectStore.size()) break;
 			Load.Write(VectStore.back());
-//			delete VectStore.back();
+			//			delete VectStore.back();
 			VectStore.pop_back();
 			break;
 		case 518: // VectStorePopMk Выдать МК с вектором и вытолкнуть его из хранилища
 			if (!VectStore.size()) break;
 			MkExec(Load, { CLoadVect, VectStore.back() }, Receiver);
-//			delete VectStore.back();
+			//			delete VectStore.back();
 			VectStore.pop_back();
 			break;
 
 		case 520: //ForNoBreak Вычислить предикат и завершить программу при True
 		case 521: // ForYesBreak Вычислить предикат и завершить программу при False
-		{if (!Load.isIC()) break;
+		{
+			if (!Load.isIC()) break;
 			Stack.push_back(Stack.back());
 			ProgExec(Load);
 			bool t = Stack.back().accum;
 			t = MK == 520 ? t : !t;
 			Stack.pop_back();
-			if(t) ProgStop += 2;
-			break; }
+			if (t) ProgStop += 2;
+			break;
+		}
 		case 0: // Reset
 			srand(time(NULL)); // Сброс генератора случайных чисел
 			Stack.clear();
@@ -298,29 +305,29 @@ void ALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 			Stack.back().accumType = Cdouble;
 			Stack.back().accum = 0;
 			Anses.push_back(0); // Настроить Ans на персвый элемент стека АЛУ
-			
+
 			Accum = { Cdouble,&accum }; // Установить снандартный указатель на АЛУ и аккумулятор на самого себя
 			Alu = this;
 			ALUCreating = false;
 			break;
 
-		case 530: // ExecCounterSet Установить счетчик итераций выполнения подпрограммы
-			ExecCounter.push_back(Load.toInt(1));
-			break;
+//		case 530: // ExecCounterSet Установить счетчик итераций выполнения подпрограммы
+//			ExecRepeat=Load.toInt(1);
+//			break;
 		case 531: // ExecCounterAdd Прибавить к счетчику итераций
-			ExecCounter.back() += Load.toInt();
+			ExecRepeat+= Load.toInt();
 			break;
 		case 532: //ExecCounterSub Вычесть из счетчика итераций
-			ExecCounter.back() -= Load.toInt();
+			ExecRepeat -= Load.toInt();
 			break;
 		case 533: // ExecCounterMul Умножить счетчик итераций
-			ExecCounter.back() *= Load.toInt();
+			ExecRepeat *= Load.toInt();
 			break;
 		case 534: // ExecCounterDiv Целочисленно разделить счетчик итераций
-			ExecCounter.back() /= Load.toInt();
+			ExecRepeat /= Load.toInt();
 			break;
 		case 535: // ReceiverSet Установить примника результата
-			Receiver = (FU*) Load.Point;
+			Receiver = (FU*)Load.Point;
 			break;
 
 		case 2: // Out Выдать значение аккумулятора
@@ -328,17 +335,17 @@ void ALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 
 		case 506: // AnsOut Выдать Ans
 		case 507: // AnsOutMk Выдать МК с Ans
-			{
+		{
 			ALUContext* ta = (MK == 2 || MK == 3) ? &Stack.back() : &Stack[Anses.back()];
 			if ((MK == 2 || MK == 3) && LoadPoint::isVectInd(Stack.back().accumType) || (MK == 506 || MK == 507) && LoadPoint::isVectInd(Stack[Anses.back()].accumType))
 			{
-				long int Ind =  ta->Ind;
+				long int Ind = ta->Ind;
 				if (Ind < 0) Ind = ta->accumVect->size() + Ind;
-				if (!(Ind >= 0 && Ind < ta->accumVect->size())){
+				if (!(Ind >= 0 && Ind < ta->accumVect->size())) {
 					ProgExec(OutOfRangeErrProg); // Ошибка выхода индекса за пределы диапазона
 					break;
 				}
-				else{
+				else {
 					switch (MK)
 					{
 					case 506:
@@ -354,7 +361,7 @@ void ALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 				switch (ta->accumType >> 1)
 				{
 				case DLoadVect:
-					switch (MK){
+					switch (MK) {
 					case 506:
 					case 2: Load.Write(ta->accum); break;
 					case 507:
@@ -362,7 +369,7 @@ void ALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 					}
 					break;
 				case Ddouble:
-					switch (MK){
+					switch (MK) {
 					case 506:
 					case 2:  Load.Write(ta->accum); break;
 					case 507:
@@ -372,7 +379,7 @@ void ALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 				case Dfloat:
 				{
 					float t = ta->accum;
-					switch (MK){
+					switch (MK) {
 					case 506:
 					case 2:  Load.Write(ta->accum); break;
 					case 507:
@@ -383,7 +390,7 @@ void ALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 				case Dint:
 				{
 					long int t = ta->accum;
-					switch (MK){
+					switch (MK) {
 					case 506:
 					case 2:  Load.Write(t); break;
 					case 507:
@@ -414,7 +421,7 @@ void ALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 					break;
 				}
 				case Dstring:
-					switch (MK){
+					switch (MK) {
 					case 506:
 					case 2:  Load.Write(ta->accumStr); break;
 					case 507:
@@ -422,34 +429,34 @@ void ALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 					}
 					break;
 				}
-			break; 
+			break;
 		}
-/*
-		case 2: // Out Выдать значение аккумулятора
-			if (accumType >> 1 == Dstring)
-				Load.Write(Stack.back().accumStr);
-			else if (Stack.back().accumType >> 1 == DLoadArray) // Вектор
-			{
-				if (Stack.back().IndF)
-					if (!(Stack.back().Ind >= 0 && Stack.back().Ind < Stack.back().accumVect->size()))
+		/*
+				case 2: // Out Выдать значение аккумулятора
+					if (accumType >> 1 == Dstring)
+						Load.Write(Stack.back().accumStr);
+					else if (Stack.back().accumType >> 1 == DLoadArray) // Вектор
 					{
-						ProgExec(OutOfRangeErrProg); // Ошибка выхода индекса за пределы диапазона
-						break;
+						if (Stack.back().IndF)
+							if (!(Stack.back().Ind >= 0 && Stack.back().Ind < Stack.back().accumVect->size()))
+							{
+								ProgExec(OutOfRangeErrProg); // Ошибка выхода индекса за пределы диапазона
+								break;
+							}
+							else
+								Load.WriteFromLoad(Stack.back().accumVect->at(Stack.back().Ind));
+						if (Load.Type == TLoadArray || Load.Type == Tvoid)
+						{
+							Load.Write(Stack.back().accumVect);
+							Stack.back().Ind += Stack.back().IndAutoInc;
+						}
+						else
+							;// Сообщение о несоответствии типов
 					}
 					else
-						Load.WriteFromLoad(Stack.back().accumVect->at(Stack.back().Ind));
-				if (Load.Type == TLoadArray || Load.Type == Tvoid)
-				{
-					Load.Write(Stack.back().accumVect);
-					Stack.back().Ind += Stack.back().IndAutoInc;
-				}
-				else
-					;// Сообщение о несоответствии типов
-			}
-			else
-				Load.Write(Stack.back().accum);
-			break;
-*/
+						Load.Write(Stack.back().accum);
+					break;
+		*/
 		case E_MK::PUSH: //  Push Сделать еще один уровень аккумулятора
 			Stack.push_back({});
 			ProgFU(E_MK::SET, Load);
@@ -457,15 +464,15 @@ void ALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		case 7: //PushExec Создать новый уровень аккумулятора и выполнить программу 
 		case 8: // PushCycleExec Создать новый уровень аккумулятора и выполнить циклическую программу 
 		case 9: // PushPostCycleExec Создать новый уровень аккумулятора и выполнить программу с постциклом
-			{
+		{
 			Stack.push_back(Stack.back());
-//			int t = 0;
-//			ProgFU(E_MK::SET, { Cint, &t });
-			switch (MK){
+			//			int t = 0;
+			//			ProgFU(E_MK::SET, { Cint, &t });
+			switch (MK) {
 			case 7: ProgExec(Load); break;
 			case 8: ProgExec(Load, 1); break;
 			case 9: ProgExec(Load, 2); break;
-			}			
+			}
 			// Добавить удаление вектора-аккумулятора
 			Stack.pop_back();
 			if (Anses.back() >= Stack.size()) // Удалить Ans-ы
@@ -529,15 +536,15 @@ void ALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 				if (LoadPoint::isVect(accumType))
 					t.Point = &Stack.back().accumVect;
 			t.Type = t.Type | 1; // Установить константу для того, чтобы клонировать
-			t=t.Clone();
+			t = t.Clone();
 			if (MK == 13 || MK == 14)
 				t.Type -= 1; // Установить тип переменной
 			if (MK == 13 || MK == 18)
 				Load.WriteFromLoad(t);
 			else
-				MkExec(Load,t, Receiver);
+				MkExec(Load, t, Receiver);
 		}
-			break;
+		break;
 		case 20: // VectToIndSet Установить ссылку на вектор, при этом прежнее значение аккумулятора становится индексом вектора
 			if (!Load.isVect() || !LoadPoint::isDigit(Stack.back().accumType)) break;
 			Stack.back().accumVect = (LoadVect_type)Load.Point;
@@ -563,13 +570,15 @@ void ALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		case 610: // VectIndOkExec Выполнить при удачной тестировании диапазона индекса вектора
 		case 611: // VectIndErrExec Выполнить при неудачной тестировании диапазона индекса вектора
 		{
-			if(!Load.isProg()) break;
+			if (!Load.isProg()) break;
 			if (!LoadPoint::isVectInd(Stack.back().accumType)) break;
 			register int N = Stack.back().accumVect->size();
 			if (N <= Stack.back().Ind || N < -Stack.back().Ind || Stack.back().accumVect->at(N * (Stack.back().Ind < 0) + Stack.back().Ind).Point == nullptr) // Ошибка индекса
-				{if (MK == 611)	ProgExec(Load);}
+			{
+				if (MK == 611)	ProgExec(Load);
+			}
 			else if (MK == 610)
-					ProgExec(Load);
+				ProgExec(Load);
 			break;
 		}
 
@@ -717,16 +726,19 @@ void ALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 			break;
 
 		case E_MK::SUM_VECT:
-			if(!Load.isVect())
-				{ProgExec(TypeMismatchErrProg); ProgExec(ErrProg);}
+			if (!Load.isVect())
+			{
+				ProgExec(TypeMismatchErrProg); ProgExec(ErrProg);
+			}
 			else
 			{
 				double s = 0;
 				unsigned int Type = 0;
-				for (auto& i : *((LoadVect_type)Load.Point)){
-					if(!i.isDigitBool()){
+				for (auto& i : *((LoadVect_type)Load.Point)) {
+					if (!i.isDigitBool()) {
 						ProgExec(TypeMismatchErrProg);	ProgExec(ErrProg);
-						break;}
+						break;
+					}
 					s += i.toDouble();
 					Type = max(i.Type, Type);
 				}
@@ -736,16 +748,19 @@ void ALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 			break;
 		case E_MK::MAX_VECT:
 			if (!Load.isVect())
-				{ProgExec(TypeMismatchErrProg); ProgExec(ErrProg);}
+			{
+				ProgExec(TypeMismatchErrProg); ProgExec(ErrProg);
+			}
 			else
 			{
 				double Max = 0;
 				unsigned int Type = 0;
-				for (auto& i : *((LoadVect_type)Load.Point)){
+				for (auto& i : *((LoadVect_type)Load.Point)) {
 					if (!i.isDigitBool()) {
 						ProgExec(TypeMismatchErrProg);	ProgExec(ErrProg);
-						break;}
-					Max =max(Max,i.toDouble());
+						break;
+					}
+					Max = max(Max, i.toDouble());
 					Type = max(i.Type, Type);
 				}
 				Stack.back().accum = Max;
@@ -755,15 +770,18 @@ void ALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 			break;
 		case E_MK::MIN_VECT:
 			if (!Load.isVect())
-				{ProgExec(TypeMismatchErrProg); ProgExec(ErrProg);}
+			{
+				ProgExec(TypeMismatchErrProg); ProgExec(ErrProg);
+			}
 			else
 			{
 				double Min = 0;
 				unsigned int Type = 0;
-				for (auto& i : *((LoadVect_type)Load.Point)){
+				for (auto& i : *((LoadVect_type)Load.Point)) {
 					if (!i.isDigitBool()) {
 						ProgExec(TypeMismatchErrProg);	ProgExec(ErrProg);
-						break;}
+						break;
+					}
 					Min = min(Min, i.toDouble());
 					Type = max(i.Type, Type);
 				}
@@ -842,12 +860,12 @@ void ALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 			break;
 		}
 
-			// Векторные операции		
+		// Векторные операции		
 		case 269: //IndAutoIncSet Установить величину автоинкрементации индекса вектора
 			Stack.back().IndAutoInc = Load.toInt();
 			break;
 		case 270: //IndSet Установить индекс вектора (nil в нагрузке вызывает сброс индекса, т.е. по команде Out выдается вектор, а не элемент)
-			if (Load.Point == nullptr)	
+			if (Load.Point == nullptr)
 			{
 				Stack.back().IndF = false;
 				Stack.back().Ind = 0;
@@ -878,33 +896,33 @@ void ALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		case 274: // VectValByIndSet Установить значение аккумулятора по индексу в нагрузке
 		{
 			long int i = Load.toInt();
-		if (Stack.size() < 1 || 1 >= Stack.back().accumVect->size() || i < 0)
-		{
-			ProgExec(ErrProg);
-			ProgExec(OutOfRangeErrProg);
-			ProgStopAll = true;
-			break;
-		}
-		ProgFU(E_MK::SET, Stack.back().accumVect->at(i));
+			if (Stack.size() < 1 || 1 >= Stack.back().accumVect->size() || i < 0)
+			{
+				ProgExec(ErrProg);
+				ProgExec(OutOfRangeErrProg);
+				ProgStopAll = true;
+				break;
+			}
+			ProgFU(E_MK::SET, Stack.back().accumVect->at(i));
 		}
 		case 275: // ConfineAppend Добавить элемент в предпредпредыдущий аккумулятор из векторa предыдущего аккумулятора по индексу из текущего аккумулятора (для конфайна)
 		{
 			long int i = Load.toInt();
-		if (Stack.size() < 3 || !LoadPoint::isVect((Stack.end() - 3)->accumType))
-		{
-			ProgExec(ErrProg);
-			ProgExec(VectErrProg);
-			ProgStopAll = true;
-			break;
-		}
-		if (i < 0 || i >= (Stack.end() - 3)->accumVect->size())
-		{
-			ProgExec(ErrProg);
-			ProgExec(OutOfRangeErrProg);
-			ProgStopAll = true;
-			break;
-		}
-		(Stack.end() - 3)->accumVect->push_back((Stack.end() - 2)->accumVect->at((long int)Stack.back().accum).Clone());
+			if (Stack.size() < 3 || !LoadPoint::isVect((Stack.end() - 3)->accumType))
+			{
+				ProgExec(ErrProg);
+				ProgExec(VectErrProg);
+				ProgStopAll = true;
+				break;
+			}
+			if (i < 0 || i >= (Stack.end() - 3)->accumVect->size())
+			{
+				ProgExec(ErrProg);
+				ProgExec(OutOfRangeErrProg);
+				ProgStopAll = true;
+				break;
+			}
+			(Stack.end() - 3)->accumVect->push_back((Stack.end() - 2)->accumVect->at((long int)Stack.back().accum).Clone());
 		}
 		case 276: // PrevIndSet Установить индекс у предыдущего аккумулятора
 			if (!Load.isDigitBool() || Stack.size() < 2)
@@ -945,6 +963,11 @@ void ALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		case 290: // Append Добавить элемент в вектор
 			if (Load.Point != nullptr)
 				append(Load);
+			else {
+
+				append({ Cdouble, &Stack.back().accum });
+				cout << Stack.back().accum << endl;
+			}
 			break;
 		case 281: // VectDel Удалить вектор
 			Stack.back().accumVect->resize(0); // Добавить удаление каждого элемента вектора!!!
@@ -1027,6 +1050,12 @@ void ALU::VectOperation(long int MK, LoadPoint Load) // Реализацая в�
 	if (MK == E_MK::SUM && Load.isVect()) // Конкатенация векторов
 	{
 		concat(Load);
+		return;
+	}
+
+	if (MK == E_MK::RANDOM && !Load.isVect()) // Конкатенация векторов
+	{
+		fu_random(Load);
 		return;
 	}
 
@@ -2577,17 +2606,28 @@ void	ALU::fu_exp(LoadPoint Load)
 	}
 }
 
-
 void	ALU::fu_random(LoadPoint Load)
 {
 	//Enver//
 	if (Load.Point == nullptr)
 	{
 		if (Load.isDigitBool(Stack.back().accumType))
-			Stack.back().accum = rand();
+			if (!LoadPoint::isVect(Stack.back().accumType))
+				Stack.back().accum = rand();
+			else {
+				Stack.back().accumVect->push_back({ Cdouble,new double });
+				*(double*)Stack.back().accumVect->back().Point=rand();
+			}
+				
 	}
 	else
-		Stack.back().accum = rand() % Load.toInt();
+		if (!LoadPoint::isVect(Stack.back().accumType))
+			Stack.back().accum = rand() % Load.toInt();
+		else {
+			Stack.back().accumVect->push_back({ Cdouble,new double });
+			*(double*)Stack.back().accumVect->back().Point = rand() % Load.toInt();
+		}
+//	cout<<"Rand:"<< Stack.back().accum<<endl;
 }
 
 void	ALU::getCos(LoadPoint Load)
@@ -3022,7 +3062,7 @@ FU* ALU::TypeCopy() // Создать ФУ такого же типа (не ко
 {
 	return new ALU(Bus, nullptr);
 }
-
+/*
 void ALU::ProgExec(void* Uk, unsigned int CycleMode, FU* Bus, vector<ip>::iterator* Start) // Исполнение программы из ИК
 {
 	if(!ExecCounter.size())
@@ -3045,3 +3085,4 @@ void ALU::ProgExec(LoadPoint Uk, unsigned int CycleMode, FU* Bus, vector<ip>::it
 		ExecCounter.pop_back();
 	}
 }
+*/

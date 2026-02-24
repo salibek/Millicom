@@ -1,0 +1,52 @@
+CapsManager.IndexVectCreate=20000
+CapsManager.IpIcIdOutMk=MainBus.IpIcIdSet
+CapsManager.IpIcIdOutMk=VariableManager.IpIcIdSet
+CapsManager.IpIcIdOutMk=ListSyntez.IpIcIdSet
+MainBus.ModeSet=1
+MainBus.FUTypeCorrectSet=-96
+NewFU={Mnemo="Lex" FUType=FULexNew}
+NewFU={Mnemo="Console" FUType=FUConsNew}
+NewFU={Mnemo="Start" FUType=FUListNew}
+NewFU={Mnemo="Assign" FUType=FUListNew}
+NewFU={Mnemo="Expr" FUType=FUListNew}
+NewFU={Mnemo="LeftOperand" FUType=FUListNew}
+NewFU={Mnemo="Operator" FUType=FUListNew}
+NewFU={Mnemo="RightOperand" FUType=FUListNew}
+NewFU={Mnemo="End" FUType=FUListNew}
+MainBus.PartialResetSet
+MainBus.ModeSet=2
+
+Start.Set=
+>{Mnemo Console.OutLn="? id" Lex.ReceiverMkSet=Assign.FindAnd}
+>{0 Lex.Stop Console.OutLn="Expected identifier"}
+Assign.Set=
+>{Mnemo="=" Console.OutLn="? =" Lex.ReceiverMkSet=Expr.FindAnd}
+>{0 Lex.Stop Console.OutLn="Expected '='"}
+
+Expr.Set=
+>{Mnemo="(" Console.OutLn="? (" Lex.ReceiverMkSet=Expr.FindAnd}
+>{Const Console.OutLn="? const" Lex.ReceiverMkSet=LeftOperand.FindAnd}
+>{Mnemo Console.OutLn="? var" Lex.ReceiverMkSet=LeftOperand.FindAnd}
+>{0 Lex.Stop Console.OutLn="Expected expression"}
+LeftOperand.Set=
+>{Mnemo=")" Console.OutLn="? )" Lex.ReceiverMkSet=End.FindAnd}
+>{Mnemo="+" Console.OutLn="? +" Lex.ReceiverMkSet=Operator.FindAnd}
+>{Mnemo="-" Console.OutLn="? -" Lex.ReceiverMkSet=Operator.FindAnd}
+>{Mnemo="*" Console.OutLn="? *" Lex.ReceiverMkSet=Operator.FindAnd}
+>{Mnemo="/" Console.OutLn="? /" Lex.ReceiverMkSet=Operator.FindAnd}
+>{0 Lex.Stop Console.OutLn="Expected operator or closing ')' "}
+
+Operator.Set=
+>{Const Console.OutLn="? right const" Lex.ReceiverMkSet=RightOperand.FindAnd}
+>{Mnemo Console.OutLn="? right var" Lex.ReceiverMkSet=RightOperand.FindAnd}
+>{0 Lex.Stop Console.OutLn="Expected right operand"}
+RightOperand.Set=
+>{Mnemo=")" Console.OutLn="? )" Lex.ReceiverMkSet=End.FindAnd}
+>{0 Lex.Stop Console.OutLn="Expected ')' after expression"}
+End.Set=
+>{Console.OutLn="? parsing complete" Lex.Stop}
+
+Lex.Lexing="x = ( 1 + 2 ) * 3"
+Lex.FinMkAdd=End.FindAnd
+Lex.FinMkProgExec={Console.OutLn="Correct"}
+Lex.NoFinMkProgExec={Console.OutLn="Wrong syntax"}

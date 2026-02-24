@@ -1661,6 +1661,9 @@ void FU::CommonMk(long int Mk, LoadPoint Load, FU* Sender)
 	}
 	switch (Mk)
 	{
+	case 936: //ExecCouterSet Установить количество повторений программы
+		ExecRepeat = Load.toInt(1);
+		break;
 	case ActiveMk: // ActiveSet Установить активность ФУ (true по умолчанию)
 		Active = Load.toBool(true);
 		break;
@@ -1885,86 +1888,98 @@ void FU::CommonMk(long int Mk, LoadPoint Load, FU* Sender)
 // CycleType тип цикла: 0 - без цикла, 1 - цикл, 2 - цикл с постусловием
 void FU::ProgExec(void* UK, unsigned int CycleMode, FU* ProgBus, vector<ip>::iterator* Start) // Исполнение программы из ИК
 {
-	if (UK == nullptr) return;
+
+	if (UK == nullptr)
+		if (Prog != nullptr)
+			UK = Prog;
+		else
+			return;
+
 	vector<ip>* Uk = (IC_type)UK;
 	if (ProgBus == nullptr) ProgBus = Bus;
 	bool RepeatF = false; // Флаг циклического повторения программы в ИК
-	do
+	ExecCounter.push_back(ExecRepeat);
+	ExecRepeat = 1;
+	for (; ExecCounter.back() > 0; ExecCounter.back()--)
 	{
-		ProgStop = 0; // Останов программы (содержит количество уровней, из которых необходимо выйти
-		RepeatF = false; // Флаг необходимости перехода на новый цикл выборки МК в ИК
-		ProgStopAll = false; // Флаг остановки всей программы
-		CycleStop = 0; // Счетчик выходов из циклов (если отрицательная величина, то Продолжение цикла)
-		for (auto i = Start == nullptr ? Uk->begin() : *Start; i != Uk->end(); i++)
+		do
 		{
-			if (i->atr == GotoAtr) // Переход на другую ИК
+			ProgStop = 0; // Останов программы (содержит количество уровней, из которых необходимо выйти
+			RepeatF = false; // Флаг необходимости перехода на новый цикл выборки МК в ИК
+			ProgStopAll = false; // Флаг остановки всей программы
+			CycleStop = 0; // Счетчик выходов из циклов (если отрицательная величина, то Продолжение цикла)
+			for (auto i = Start == nullptr ? Uk->begin() : *Start; i != Uk->end(); i++)
 			{
-				ProgExec(i->Load, CycleMode, ProgBus, Start);
-				return;
-			}
-			if (i->atr >= FUMkRange)
-				ProgBus->ProgFU(i->atr, i->Load, this); // Если диапазон МК не принадлежит ФУ (выдаем на Bus)
-			else // МК для данного ФУ
-			{
-				if (i->atr == YesContinueAtr || i->atr == NoContinueAtr)
+				if (i->atr == GotoAtr) // Переход на другую ИК
 				{
-					if (CycleMode == 2) // Проверка цикла с постусловием (пропускаем первую проверку)
+					ProgExec(i->Load, CycleMode, ProgBus, Start);
+					return;
+				}
+				if (i->atr >= FUMkRange)
+					ProgBus->ProgFU(i->atr, i->Load, this); // Если диапазон МК не принадлежит ФУ (выдаем на Bus)
+				else // МК для данного ФУ
+				{
+					if (i->atr == YesContinueAtr || i->atr == NoContinueAtr)
 					{
-						CycleMode = 1;
+						if (CycleMode == 2) // Проверка цикла с постусловием (пропускаем первую проверку)
+						{
+							CycleMode = 1;
+							continue;
+						}
+						if (i->Load.isProg() && Alu != nullptr) // Запуск вычисления АЛВ
+
+							// Перейти к следующей итерации цикла continue
+							if (i->Load.isProg())
+							{
+								if (Alu == nullptr)
+								{
+									Alu = (FU*)new ALU(this);
+									((FU*)Alu)->Bus = Bus;
+									ALUCreating = true;
+									AccumCreating = false;
+									if (Accum.Point != nullptr && AccumCreating)
+										Accum.Clear();
+									AccumCreating = false;
+									Accum = { Cdouble,&((ALU*)Alu)->accum };
+								}
+								((FU*)Alu)->ProgExec(i->Load);
+							}
+						if (i->atr == YesContinueAtr && !Accum.toBool() || i->atr == NoContinueAtr && Accum.toBool())
+						{
+							CycleMode = 0; // Выход из цикла
+							ProgStop += 1; // Выход из цикла
+							break;
+						} // Выход из цикла
 						continue;
 					}
-					if (i->Load.isProg() && Alu != nullptr) // Запуск вычисления АЛВ
+					if (i->atr == RepeatAtr) { // Запустить программу заново
+						RepeatF = true; break;
+					}
+					ProgFU(i->atr, i->Load, this); // Выполнение команды
+				}
 
-						// Перейти к следующей итерации цикла continue
-						if (i->Load.isProg())
+				if (CycleStop != 0) // Остановка циклов
+					if (!CycleMode) // Если не в режиме цикла, то просто выходим из уровня
+						return;
+					else {
+						if (CycleStop > 0)
 						{
-							if (Alu == nullptr)
-							{
-								Alu = (FU*)new ALU(this);
-								((FU*)Alu)->Bus = Bus;
-								ALUCreating = true;
-								AccumCreating = false;
-								if (Accum.Point != nullptr && AccumCreating)
-									Accum.Clear();
-								AccumCreating = false;
-								Accum = { Cdouble,&((ALU*)Alu)->accum };
-							}
-							((FU*)Alu)->ProgExec(i->Load);
+							CycleStop--; // уменьшение счетчика выходов из цикла
+							if (!CycleStop) return;
 						}
-					if (i->atr == YesContinueAtr && !Accum.toBool() || i->atr == NoContinueAtr && Accum.toBool())
-					{
-						CycleMode = 0; // Выход из цикла
-						ProgStop += 1; // Выход из цикла
-						break;
-					} // Выход из цикла
-					continue;
-				}
-				if (i->atr == RepeatAtr) { // Запустить программу заново
-					RepeatF = true; break;
-				}
-				ProgFU(i->atr, i->Load, this); // Выполнение команды
+						else
+						{
+							CycleStop++; // уменьшение счетчика выходов из цикла
+							if (CycleStop)
+								return;
+						}
+					}
+				if (ProgStop > 0) { ProgStop--; return; }
+				if (ProgStopAll) { return; } // Внеочередной выход из подпрограммы
 			}
-
-			if (CycleStop != 0) // Остановка циклов
-				if (!CycleMode) // Если не в режиме цикла, то просто выходим из уровня
-					return;
-				else {
-					if (CycleStop > 0)
-					{
-						CycleStop--; // уменьшение счетчика выходов из цикла
-						if(!CycleStop) return;
-					}
-					else
-					{
-						CycleStop++; // уменьшение счетчика выходов из цикла
-						if (CycleStop) 
-							return;
-					}
-				}
-			if (ProgStop > 0) { ProgStop--; return; }
-			if (ProgStopAll) { return; } // Внеочередной выход из подпрограммы
-		}
-	} while (RepeatF || CycleMode > 0);
+		} while (RepeatF || CycleMode > 0);
+	}
+	ExecCounter.pop_back();
 }
 
 void FU::ProgNExec(vector<void *> Uk) // Исполнение нескольких программ из ИК
@@ -1976,8 +1991,15 @@ void FU::ProgNExec(vector<void *> Uk) // Исполнение нескольки
 // Запуск программы по указателю из нарузки ИП
 void FU::ProgExec(LoadPoint Uk, unsigned int CycleMode, FU* Bus, vector<ip>::iterator* Start) // Исполнение программы из ИК
 {
+	if (Uk.isEmpty())
+		ProgExec(Prog, CycleMode, Bus, Start);
 	if (Uk.isIC())
 		ProgExec(Uk.Point, CycleMode, Bus, Start);
+	else if (Uk.isDigit())
+	{
+		ExecRepeat = Uk.toInt(1);
+		ProgExec(Prog, CycleMode, Bus, Start);
+	}
 }
 
 void FU::MkExec(long int MK, LoadPoint Load, void* Receiver, bool Ext) // Выдача МК с нагрузкой

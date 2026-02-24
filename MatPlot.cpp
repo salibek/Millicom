@@ -426,9 +426,11 @@ void MatPlot::ProgFU(long int MK, LoadPoint Load, FU* Sender) {
 	case 79: // HistAlphaSet ���������� ������������ �����������
 		histAlpha = Load.toDouble();
 		break;
-	case 80: // NumColsSet ���������� ���������� ������ �����������
-		numCols = Load.toInt();
-		break;
+	case 80: // Show Вывод графика
+		{
+		plt::show();
+		}
+	break;
 	case 81: // HistSortSet ����������� �������� �����������
 		histSort = Load.toBool();
 		break;
@@ -436,14 +438,18 @@ void MatPlot::ProgFU(long int MK, LoadPoint Load, FU* Sender) {
 		scatterSize = Load.toDouble();
 		break;
 	case 83: //LineChart2D  Вывести сетку 2-мерного графика c линейными координатами
-		ax = plt::chart2D(111);
+	{
+		auto ax = plt::chart2D(111);
 		break;
+	}
 	case 84: //LineChartPolar  Вывести сетку 2-мерного графика с полярными координатами
-		ax = plt::chart_polar(111);
+	{
+		auto ax = plt::chart_polar(111);
 		break;
+	}
 	case 85: //LineChart3D Вывести сетку 3-мерного графика 
 	{
-		ax = plt::chart();
+		auto ax = plt::chart();
 		plt::Clear3DChart(ax);
 	}
 		break;
@@ -498,12 +504,26 @@ void MatPlot::ProgFU(long int MK, LoadPoint Load, FU* Sender) {
 	case 104: // LineWidthSet ���������� ����
 		Format0[3] = Load.toStr();
 		break;
-
-	default:
-		CommonMk(MK, Load, Sender);
-		break;
+	case 105: // Сохранение графика в файле формата jpeg
+	{
+		filename = Load.toStr(filename);
+		plt::save(filename, "jpeg");
 	}
+	break;
+	case 106: // Сохранение графика в файле формата png
+	{
+		filename = Load.toStr(filename);
+		plt::save(filename, "png");
+	}
+	break;
+	case 107: // Сохранение графика в файле формата svg
+	{
+		filename = Load.toStr(filename);
+		plt::save(filename, "svg");
+	}
+	break;
 #endif // MatPlotInclude
+	
 }
 
 FU* MatPlot::Copy() // ��������� ����������� ��

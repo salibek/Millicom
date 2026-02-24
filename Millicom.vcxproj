@@ -78,7 +78,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Users\salib\AppData\Local\Programs\Python\Python310\include;C:\Users\salib\AppData\Local\Programs\Python\Python310\Lib\site-packages\numpy\_core\include\numpy;C:\Users\salib\AppData\Local\Programs\Python\Python310\Lib\site-packages\numpy;C:\Users\salib\AppData\Local\Programs\Python\Python310\Lib\site-packages\numpy\_core\include\;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Users\salib\AppData\Local\Programs\Python\Python310\Lib\site-packages\numpy\core\include\numpy; C:\Users\salib\AppData\Local\Programs\Python\Python310\Lib\site-packages\numpy\core\include;C:\Users\salib\AppData\Local\Programs\Python\Python310\include;C:\Users\salib\AppData\Local\Programs\Python\Python310\Lib\site-packages\numpy\_core\include\numpy;C:\Users\salib\AppData\Local\Programs\Python\Python310\Lib\site-packages\numpy;C:\Users\salib\AppData\Local\Programs\Python\Python310\Lib\site-packages\numpy\_core\include\;C:\Users\salib\AppData\Local\Programs\Python\Python310\Lib\site-packages\;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Users\salib\AppData\Local\Programs\Python\Python310\libs;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

@@ -1,0 +1,61 @@
+// - обозначение переведенных в комментарии старых ФУ
+\* date *\ //- последняя дата изменения или добавления строк и ФУ
+
+NewFU={Mnemo="Main_Bus" MkBegRange=1000 FUType=FUBusNew} // Описание Bus
+
+\\ Для создания индексного файла сначала надо запустить программу !!!!
+ CapsManager.IndexVectCreate=20000
+ CapsManager.IpIcIdOutMk=MainBus.IpIcIdSet
+ CapsManager.IpIcIdOutMk=VariableManager.IpIcIdSet
+ CapsManager.IpIcIdOutMk=ListSyntez.IpIcIdSet
+ MainBus.ModeSet=1
+\\ -------------------------------------- \\
+MainBus.FUTypeCorrectSet=-96 // Корректировка номера типа ФУ для переноса на новую ОА-платформу
+
+NewFU={Mnemo="Console" FUType=FUConsNew Hint="Консоль для вывода логов"}
+NewFU={Mnemo="StreamManager" FUType=FUStreamManager}
+NewFU={Mnemo="ALUG" FUType=FUALUNew}
+NewFU={Mnemo="IntAlu" FUType=FUIntAluNew}
+NewFU={Mnemo="IntAlu2" FUType=FUIntAluNew}
+NewFU={Mnemo="For_j" FUType=FUIntAluNew}
+NewFU={Mnemo="For_i" FUType=FUIntAluNew}
+
+MainBus.PartialResetSet \\ Запомнить число созданных ФУ
+MainBus.ModeSet=2
+
+ALUG.VectNew
+ALUG.ExecCounterSet=8
+ALUG.ProgExec={ALUG.Random=100}
+
+ALUG.OutMk=Console.OutLn
+
+Levels=4 // Количество уровней для суммирования
+IntAlu.Set=2
+IntAlu.Pow=Levels
+IntAlu.Sub // Количество АЛУ в сетке
+IntAlu.OutMk=StreamManager.CounterSet
+StreamManager.FieldCreate=FUStreamIntALU //Создание поля АЛУ
+IntAlu.Sub
+IntAlu.Div=2 // Количество итераций
+IntAlu.OutMk=StreamManager.ExecCounterSet
+IntAlu.Set=Levels
+IntAlu.Sub=2
+IntAlu2.Set=2
+IntAlu.OutMk=IntAlu2.Pow // Количество ФУ на первом уровне
+StreamManager.IndSet=0
+IntAlu2.OutMk=StreamManager.Ind2Set
+
+// Генерация вычислительной сетки
+StreamManager.IndGroupSet=0
+StreamManager.MkSet=FUStreamIntALU.ContextOutMk
+StreamManager.Mk2Set=FUStreamIntALU.ReceiverAdd
+StreamManager.ProgExec={
+  Console.OutLn="*"
+  FUStreamManager.MkExec=FUStreamManager.Mk2Exec
+  FUStreamManager.IndAdd
+  FUStreamManager.MkExec=FUStreamManager.Mk2Exec
+  FUStreamManager.IndAdd
+  FUStreamManager.Ind2Add
+}
+
+StreamManager.MkSet=FUStreamIntALU.Add

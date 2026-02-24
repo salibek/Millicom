@@ -224,8 +224,8 @@ namespace matplotlibcpp {
                 Py_DECREF(pyplotname);
                 if (!pymod) { throw std::runtime_error("Error loading module matplotlib.pyplot!"); }
 
-
-
+               
+                
 
 
                 s_python_colormap = PyImport_Import(cmname);
@@ -1316,7 +1316,7 @@ namespace matplotlibcpp {
         // this function is called because I'm not sure that we can assume "matplotlib 
         // installed" implies "mpl_toolkits installed" on all platforms, and we don't 
         // want to require it for people who don't need 3d plots.
-
+        
 
         assert(x.size() == y.size());
         assert(y.size() == z.size());
@@ -2816,20 +2816,27 @@ namespace matplotlibcpp {
         Py_DECREF(res);
     }
 
-    inline void save(const std::string& filename, const std::string& format)
+    inline void save(const std::string& filename, const int dpi = 0)
     {
-        detail::_interpreter::get();  // Инициализация Python-интерпретатора
+        detail::_interpreter::get();
 
-        std::string full_filename = filename + "." + format;
-        PyObject* pyfilename = PyUnicode_FromString(full_filename.c_str());
+        PyObject* pyfilename = PyString_FromString(filename.c_str());
 
         PyObject* args = PyTuple_New(1);
-        PyTuple_SetItem(args, 0, pyfilename);  // Передача владения, не делаем Py_DECREF(pyfilename)
+        PyTuple_SetItem(args, 0, pyfilename);
 
-        PyObject* res = PyObject_CallObject(detail::_interpreter::get().s_python_function_save, args);
+        PyObject* kwargs = PyDict_New();
+
+        if (dpi > 0)
+        {
+            PyDict_SetItemString(kwargs, "dpi", PyLong_FromLong(dpi));
+        }
+
+        PyObject* res = PyObject_Call(detail::_interpreter::get().s_python_function_save, args, kwargs);
         if (!res) throw std::runtime_error("Call to save() failed.");
 
         Py_DECREF(args);
+        Py_DECREF(kwargs);
         Py_DECREF(res);
     }
 

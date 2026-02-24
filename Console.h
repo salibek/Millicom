@@ -37,6 +37,11 @@ private:
 	string inStr; // Последняя введенная строка
 	void* InputFormatErrProg = nullptr; // Программа ошибки формата входных данных
 	int VectCol = 0; // Количество колонок при выводе вектора
+
+	string Template = ""; // Строка шаблона для вывода
+	vector<LoadPoint> Operands; // Вектор указателей на операнды
+	int NOp = 0; // Идекс текущего операнда
+	int OpCount = 0; // Счетчик пришедших операндов
 public:
 	void ProgFU(long int MK, LoadPoint Load, FU* Sender = nullptr) override;
 	FU* Copy() override; // Программа копирования ФУ
