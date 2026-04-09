@@ -5,26 +5,6 @@
 #include <string>
 #include <map>
 
-struct FormatSpec
-{
-	char fill = ' ';
-	char align = '>';     
-	int width = 0;
-	int precision = -1;
-	bool alt = false;
-	char altType = ' ';   
-	bool zeroes = false;
-	int zeroesCount = 0;
-};
-
-struct FormatToken
-{
-	bool isIndex = false;
-	string text;
-	int index = -1;
-	FormatSpec spec;
-};
-
 class MkRef { // Парочка Мк и ссылка для записи результата
 public:
 	long int Mk = -1;
@@ -59,15 +39,9 @@ private:
 	int VectCol = 0; // Количество колонок при выводе вектора
 
 	string Template = ""; // Строка шаблона для вывода
-	vector<FormatToken> Tokens; // Вектор токенов шаблона
 	vector<LoadPoint> Operands; // Вектор указателей на операнды
 	int NOp = 0; // Идекс текущего операнда
 	int OpCount = 0; // Счетчик пришедших операндов
-	string Buffer; // Буффер для вывода
-	void ParseTemplate(); // Функция парсинга строки
-	string FormatValue(LoadPoint& lp, FormatSpec& spec); // Функция форматирования операнда
-	void ExecuteTemplate(); // Функция сборки строки
-	void ReportError(const string& where, const string& msg);
 public:
 	void ProgFU(long int MK, LoadPoint Load, FU* Sender = nullptr) override;
 	FU* Copy() override; // Программа копирования ФУ

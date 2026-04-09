@@ -17,6 +17,7 @@ using namespace std;
 
 const int fuTypeCorrect = -96; // Коррекция индексов типов ФУ для старой среды
 
+
 // Типы переменных
 const unsigned int Tvoid = 0, Tbool = 2, Tchar = 4, Tint = 6, Tfloat = 8, Tdouble = 10,  Tstring = 12, TIP = 14, TIC = 16;
 const unsigned int TPPoint = 18, TGraph = 20, TFU = 22, TLoad = 24, Tmk = 26, TLoadVect = 28, TLoadVectInd = 30, TICInd = 32, THashList=34;

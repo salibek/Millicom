@@ -9,103 +9,82 @@
 #include <regex>
 #include <iomanip>
 
-void Console::ReportError(const string& where, const string& msg) {
-	cerr << "[Console::" << where << "] " << msg << endl;
-}
-
 void Console::ParseTemplate() {
-	Tokens.clear();
+	Tokens.clear(); //Очистка старых токенов
 	string textBuff;
 
-	for (int i = 0; i < (int)Template.size(); ++i) {
+	for (int i = 0; i < Template.size(); ++i) {
 		if (Template[i] != '{') {
-			textBuff += Template[i];
+			textBuff += Template[i]; //Если обычный текст то просто записываем его
 			continue;
 		}
 
 		if (!textBuff.empty()) {
-			Tokens.push_back({ false, textBuff, -1, {} });
+			Tokens.push_back({ false, textBuff, -1, {} }); //Сохраняем накопленный текст
 			textBuff.clear();
 		}
 
-		++i; 
-
-		if (i >= (int)Template.size()) {
-			ReportError("ParseTemplate", "'{' is not closed at the of the template");
-			break;
-		}
+		++i; //Пропускаем {
 
 		FormatToken token;
 		token.isIndex = true;
 
 		string num;
-		while (i < (int)Template.size() && isdigit(Template[i])) {
-			num += Template[i];
+
+		while (i < Template.size() && isdigit(Template[i])) {
+			num += Template[i]; //Считываем индекс
 			++i;
 		}
 
-		if (num.empty()) {
-			ReportError("ParseTemplate", "no index after '{'  in pose " + to_string(i));
-		}
-		else {
-			token.index = stoi(num);
+		if (!num.empty()) {
+			token.index = stoi(num); //Индекс в число
 		}
 
-		if (i < (int)Template.size() && Template[i] == ':') {
+		if (Template[i] == ':') { //Проверяем спецификатор
 			++i;
 
-			while (i < (int)Template.size() && Template[i] != '}') {
+			while (i < Template.size() && Template[i] != '}') { //Считыаем до }
 				char c = Template[i];
 
-				if (c == '0') {
+				if (c == '0') { //Заполнение нолями
 					token.spec.zeroes = true;
 				}
-				else if (isdigit(c)) {
+
+				else if (isdigit(c)) { //Ширина
 					token.spec.width = token.spec.width * 10 + (c - '0');
 				}
-				else if (c == '.') {
+
+				else if (c == '.') { //Точность 
 					++i;
 					string p;
-					while (i < (int)Template.size() && isdigit(Template[i])) {
+					while (isdigit(Template[i])) {
 						p += Template[i];
 						++i;
 					}
-					if (p.empty())
-						ReportError("ParseTemplate", "no precision after'.'");
-					else
-						token.spec.precision = stoi(p);
-					continue;
+
+					token.spec.precision = stoi(p);
+					i--;
 				}
-				else if (c == '<' || c == '>' || c == '^') {
+				else if (c == '<' || c == '>' || c == '^') { //Вырвавнивание
 					token.spec.align = c;
 				}
-				else if (c == '#') {
+				else if (c == '#') { // Система счисления
 					token.spec.alt = true;
 				}
 				else if (c == 'x' || c == 'o' || c == 'b') {
 					token.spec.altType = c;
 				}
-				else {
-                    ReportError("ParseTemplate", string("unknown specificator '") + c + "'");
-                }
+
 				++i;
 			}
 		}
 
-		if (i >= (int)Template.size() || Template[i] != '}') {
-			ReportError("ParseTemplate", "no '}' for index " + to_string(token.index));
-		}
-		else {
-			++i;
-		}
-
-		--i;
-
 		Tokens.push_back(token);
 	}
 
-	if (!textBuff.empty())
-		Tokens.push_back({ false, textBuff, -1, {} });
+	if (!textBuff.empty()) {
+		Tokens.push_back({ false, textBuff, -1, {} }); //Сохраянем остаток текста
+	}
 }
 
 string Console::FormatValue(LoadPoint& lp, FormatSpec& spec) {
@@ -162,23 +141,13 @@ void Console::ExecuteTemplate() {
 	for (auto& t : Tokens) {
 		if (!t.isIndex) {
 			Buffer += t.text;
-			continue;
 		}
-
-		if (t.index < 0 || t.index >= (int)Operands.size()) {
-			ReportError("ExecuteTemplate", "index {" + to_string(t.index) + "} out of range (total operands: " + to_string(Operands.size()) + ")");
-			continue;
+		else {
+			Buffer += FormatValue(Operands[t.index], t.spec);
 		}
-
-		if (Operands[t.index].Point == nullptr) {
-			ReportError("ExecuteTemplate", "operand {" + to_string(t.index) + "} havent set (Point == nullptr)");
-			continue;
-		}
-
-		Buffer += FormatValue(Operands[t.index], t.spec);
 	}
 
-	cout << Buffer;;
+	cout << Buffer;
 }
 
 void Console::ProgFU(long int MK, LoadPoint Load, FU* Sender)
@@ -482,363 +451,49 @@ void Console::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		// Изменение размера вектора ссылок на операнды
 		ParseTemplate(); //Распарсить шаблон
 
-		int maxIndex = -1;
-		for (auto& t : Tokens) {
-			if (t.isIndex)
-				maxIndex = max(maxIndex, t.index);
+		int maxIndex = 0;
+
+		for (auto& t : Tokens) { //Определяем максимальный индекс
+			if (t.isIndex) maxIndex = max(maxIndex, t.index);
 		}
 
-		if (maxIndex >= 0) {
-			Operands.resize(maxIndex + 1);
-		}
-		else {
-			Operands.clear();
-		}
+		Operands.resize(maxIndex + 1);// добавляем память под операнды
 
 		OpCount = 0;
 		break;
 	}
 
 	case 295: // OpAdd Добавить очередной операнд
-		if (OpCount >= (int)Operands.size()) {
-			ReportError("OpAdd", "more operands then expected (expected " + to_string(Operands.size()) + ", received " + to_string(OpCount + 1) + ")");
-			break;
+		Operands[OpCount++] = Load;
+		if (OpCount == Operands.size())
+		{
+			ExecuteTemplate(); //Собрать строку
 		}
-		if (OpCount < static_cast<int>(Operands.size())) {
-			Operands[OpCount++] = Load;
-			if (OpCount == (int)Operands.size()) {
-				ExecuteTemplate();
-				OpCount = 0; // сброс для повторного использования
-				for (auto& op : Operands)
-					op = { 0, nullptr };
-			}
-		}
+//		Load.print();
 		break;
 
 	case 300: // Op00Set Установить операдн с индексом 0
-	{
-		int idx = static_cast<int>(MK) - 300;
-		if (idx + 1 >= (int)Operands.size()) {
-			ReportError("Op00Set", "index 0 out of range (total operands: "
-				+ to_string(Operands.size()) + ")");
-			break;
-		}
-		Operands[idx] = Load;
-
-		// Проверяем что все операнды установлены
-		{
-			bool allSet = true;
-			for (auto& op : Operands)
-				if (op.Point == nullptr) { allSet = false; break; }
-			if (allSet)
-				ExecuteTemplate();
-		}
-		break;
-	}
 	case 301: // Op01Set Установить операдн с индексом 1
-	{
-		int idx = static_cast<int>(MK) - 300;
-		if (idx + 1 >= (int)Operands.size()) {
-			ReportError("Op00Set", "index 1 out of range (total operands: "
-				+ to_string(Operands.size()) + ")");
-			break;
-		}
-		Operands[idx] = Load;
-
-		// Проверяем что все операнды установлены
-		{
-			bool allSet = true;
-			for (auto& op : Operands)
-				if (op.Point == nullptr) { allSet = false; break; }
-			if (allSet)
-				ExecuteTemplate();
-		}
-		break;
-	}
 	case 302: // Op02Set Установить операдн с индексом 2
-	{
-		int idx = static_cast<int>(MK) - 300;
-		if (idx + 1 >= (int)Operands.size()) {
-			ReportError("Op00Set", "index 2 out of range (total operands: "
-				+ to_string(Operands.size()) + ")");
-			break;
-		}
-		Operands[idx] = Load;
-
-		// Проверяем что все операнды установлены
-		{
-			bool allSet = true;
-			for (auto& op : Operands)
-				if (op.Point == nullptr) { allSet = false; break; }
-			if (allSet)
-				ExecuteTemplate();
-		}
-		break;
-	}
 	case 303: // Op03Set Установить операдн с индексом 3
-	{
-		int idx = static_cast<int>(MK) - 300;
-		if (idx + 1 >= (int)Operands.size()) {
-			ReportError("Op00Set", "index 3 out of range (total operands: "
-				+ to_string(Operands.size()) + ")");
-			break;
-		}
-		Operands[idx] = Load;
-
-		// Проверяем что все операнды установлены
-		{
-			bool allSet = true;
-			for (auto& op : Operands)
-				if (op.Point == nullptr) { allSet = false; break; }
-			if (allSet)
-				ExecuteTemplate();
-		}
-		break;
-	}
 	case 304: // Op04Set Установить операдн с индексом 4
-	{
-		int idx = static_cast<int>(MK) - 300;
-		if (idx + 1 >= (int)Operands.size()) {
-			ReportError("Op00Set", "index 4 out of range (total operands: "
-				+ to_string(Operands.size()) + ")");
-			break;
-		}
-		Operands[idx] = Load;
-
-		// Проверяем что все операнды установлены
-		{
-			bool allSet = true;
-			for (auto& op : Operands)
-				if (op.Point == nullptr) { allSet = false; break; }
-			if (allSet)
-				ExecuteTemplate();
-		}
-		break;
-	}
 	case 305: // Op05Set Установить операдн с индексом 5
-	{
-		int idx = static_cast<int>(MK) - 300;
-		if (idx + 1 >= (int)Operands.size()) {
-			ReportError("Op00Set", "index 5 out of range (total operands: "
-				+ to_string(Operands.size()) + ")");
-			break;
-		}
-		Operands[idx] = Load;
-
-		// Проверяем что все операнды установлены
-		{
-			bool allSet = true;
-			for (auto& op : Operands)
-				if (op.Point == nullptr) { allSet = false; break; }
-			if (allSet)
-				ExecuteTemplate();
-		}
-		break;
-	}
 	case 306: // Op06Set Установить операдн с индексом 6
-	{
-		int idx = static_cast<int>(MK) - 300;
-		if (idx + 1 >= (int)Operands.size()) {
-			ReportError("Op00Set", "index 6 out of range (total operands: "
-				+ to_string(Operands.size()) + ")");
-			break;
-		}
-		Operands[idx] = Load;
-
-		// Проверяем что все операнды установлены
-		{
-			bool allSet = true;
-			for (auto& op : Operands)
-				if (op.Point == nullptr) { allSet = false; break; }
-			if (allSet)
-				ExecuteTemplate();
-		}
-		break;
-	}
 	case 307: // Op07Set Установить операдн с индексом 7
-	{
-		int idx = static_cast<int>(MK) - 300;
-		if (idx + 1 >= (int)Operands.size()) {
-			ReportError("Op00Set", "index 7 out of range (total operands: "
-				+ to_string(Operands.size()) + ")");
-			break;
-		}
-		Operands[idx] = Load;
-
-		// Проверяем что все операнды установлены
-		{
-			bool allSet = true;
-			for (auto& op : Operands)
-				if (op.Point == nullptr) { allSet = false; break; }
-			if (allSet)
-				ExecuteTemplate();
-		}
-		break;
-	}
 	case 308: // Op08Set Установить операдн с индексом 8
-	{
-		int idx = static_cast<int>(MK) - 300;
-		if (idx + 1 >= (int)Operands.size()) {
-			ReportError("Op00Set", "index 8 out of range (total operands: "
-				+ to_string(Operands.size()) + ")");
-			break;
-		}
-		Operands[idx] = Load;
-
-		// Проверяем что все операнды установлены
-		{
-			bool allSet = true;
-			for (auto& op : Operands)
-				if (op.Point == nullptr) { allSet = false; break; }
-			if (allSet)
-				ExecuteTemplate();
-		}
-		break;
-	}
 	case 309: // Op09Set Установить операдн с индексом 9
-	{
-		int idx = static_cast<int>(MK) - 300;
-		if (idx + 1 >= (int)Operands.size()) {
-			ReportError("Op00Set", "index 0 out of range (total operands: "
-				+ to_string(Operands.size()) + ")");
-			break;
-		}
-		Operands[idx] = Load;
-
-		// Проверяем что все операнды установлены
-		{
-			bool allSet = true;
-			for (auto& op : Operands)
-				if (op.Point == nullptr) { allSet = false; break; }
-			if (allSet)
-				ExecuteTemplate();
-		}
-		break;
-	}
 	case 310: // Op10Set Установить операдн с индексом 10
-	{
-		int idx = static_cast<int>(MK) - 300;
-		if (idx + 1 >= (int)Operands.size()) {
-			ReportError("Op00Set", "index 10 out of range (total operands: "
-				+ to_string(Operands.size()) + ")");
-			break;
-		}
-		Operands[idx] = Load;
-
-		// Проверяем что все операнды установлены
-		{
-			bool allSet = true;
-			for (auto& op : Operands)
-				if (op.Point == nullptr) { allSet = false; break; }
-			if (allSet)
-				ExecuteTemplate();
-		}
-		break;
-	}
 	case 311: // Op11Set Установить операдн с индексом 11
-	{
-		int idx = static_cast<int>(MK) - 300;
-		if (idx + 1 >= (int)Operands.size()) {
-			ReportError("Op00Set", "index 11 out of range (total operands: "
-				+ to_string(Operands.size()) + ")");
-			break;
-		}
-		Operands[idx] = Load;
-
-		// Проверяем что все операнды установлены
-		{
-			bool allSet = true;
-			for (auto& op : Operands)
-				if (op.Point == nullptr) { allSet = false; break; }
-			if (allSet)
-				ExecuteTemplate();
-		}
-		break;
-	}
 	case 312: // Op12Set Установить операдн с индексом 12
-	{
-		int idx = static_cast<int>(MK) - 300;
-		if (idx + 1 >= (int)Operands.size()) {
-			ReportError("Op00Set", "index 12 out of range (total operands: "
-				+ to_string(Operands.size()) + ")");
-			break;
-		}
-		Operands[idx] = Load;
-
-		// Проверяем что все операнды установлены
-		{
-			bool allSet = true;
-			for (auto& op : Operands)
-				if (op.Point == nullptr) { allSet = false; break; }
-			if (allSet)
-				ExecuteTemplate();
-		}
-		break;
-	}
 	case 313: // Oз13Set Установить операдн с индексом 13
-	{
-		int idx = static_cast<int>(MK) - 300;
-		if (idx + 1 >= (int)Operands.size()) {
-			ReportError("Op00Set", "index 13 out of range (total operands: "
-				+ to_string(Operands.size()) + ")");
-			break;
-		}
-		Operands[idx] = Load;
-
-		// Проверяем что все операнды установлены
-		{
-			bool allSet = true;
-			for (auto& op : Operands)
-				if (op.Point == nullptr) { allSet = false; break; }
-			if (allSet)
-				ExecuteTemplate();
-		}
-		break;
-	}
 	case 314: // Op14Set Установить операдн с индексом 14
-	{
-		int idx = static_cast<int>(MK) - 300;
-		if (idx + 1 >= (int)Operands.size()) {
-			ReportError("Op00Set", "index 14 out of range (total operands: "
-				+ to_string(Operands.size()) + ")");
-			break;
-		}
-		Operands[idx] = Load;
-
-		// Проверяем что все операнды установлены
-		{
-			bool allSet = true;
-			for (auto& op : Operands)
-				if (op.Point == nullptr) { allSet = false; break; }
-			if (allSet)
-				ExecuteTemplate();
-		}
-		break;
-	}
 	case 315: // Op15Set Установить операдн с индексом 15
-	{
-		int idx = static_cast<int>(MK) - 300;
-
-		if (Operands.empty()) {
-			ReportError("Op__Set", "template havent setted, operand " + to_string(idx) + " ignoring");
-			break;
-		}
-		if (idx >= (int)Operands.size()) {
-			ReportError("Op__Set", "index " + to_string(idx) + " out of range (total operands: " + to_string(Operands.size()) + ")");
-			break;
-		}
-		if (idx < static_cast<int>(Operands.size())) {
-			Operands[idx] = Load;
-
-			bool allSet = true;
-			for (auto& op : Operands) {
-				if (op.Point == nullptr) { allSet = false; break; }
-			}
-			if (allSet)
-				ExecuteTemplate();
-		}
+		Operands[MK - 300] = Load;
+		// Проверка, что все операдны пришли...
+		// Если все пришли, то вывод строки
+		//Operands.print();
+		//LoadPoint Load Нужно запомнить указатель не операнд для вывода
 		break;
-	}
 	default:
 		CommonMk(MK, Load);
 		break;

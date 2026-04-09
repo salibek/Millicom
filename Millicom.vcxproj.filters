@@ -108,6 +108,9 @@
     <ClCompile Include="JSON-OAConeverter.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="GraphDislay.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ALU.h">
@@ -201,6 +204,9 @@
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="JSON-OAConeverter.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphDisplay.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

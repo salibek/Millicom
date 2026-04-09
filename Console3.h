@@ -67,7 +67,6 @@ private:
 	void ParseTemplate(); // Функция парсинга строки
 	string FormatValue(LoadPoint& lp, FormatSpec& spec); // Функция форматирования операнда
 	void ExecuteTemplate(); // Функция сборки строки
-	void ReportError(const string& where, const string& msg);
 public:
 	void ProgFU(long int MK, LoadPoint Load, FU* Sender = nullptr) override;
 	FU* Copy() override; // Программа копирования ФУ

@@ -152,6 +152,7 @@
     <ClCompile Include="ALU.cpp" />
     <ClCompile Include="CellularAutomata.cpp" />
     <ClCompile Include="Consts.cpp" />
+    <ClCompile Include="GraphDislay.cpp" />
     <ClCompile Include="IntAlu.cpp" />
     <ClCompile Include="Bus.cpp" />
     <ClCompile Include="Console.cpp" />
@@ -184,6 +185,7 @@
   <ItemGroup>
     <ClInclude Include="ALU.h" />
     <ClInclude Include="CellularAutomata.h" />
+    <ClInclude Include="GraphDisplay.h" />
     <ClInclude Include="IntAlu.h" />
     <ClInclude Include="Bus.h" />
     <ClInclude Include="Console.h" />

@@ -92,9 +92,10 @@ int main(int argc, char* argv[])
 //	STR = "Compil.ind";
 //	STR = "SumVect.ind";
 //	STR = "Lexer.ind";
-	STR = "Syntaxis.ind";
+//	STR = "Syntaxis.ind";
 //	STR = "JSON-List.ind";
 //	STR = "SumParallel.ind";
+	STR = "ConsoleFormat.ind";
 
 	Bus.ProgFU(10, {Cstring, &STR}); //Запуск индексного файла
 

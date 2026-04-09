@@ -32,6 +32,7 @@ FU* StreamFloatALUManagerIni(FU* BusContext, FU* TEmpl);
 FU* StreamIntALUIni(FU* BusContext, FU* TEmpl);
 FU* StreamIntALUManagerIni(FU* BusContext, FU* TEmpl);
 FU* MatPlotIni(FU* BusContext, FU* TEmpl);
+FU* GraphDisplayIni(FU* BusContext, FU* TEmpl);
 
 const int NFUTypes = 27;
 
@@ -44,8 +45,8 @@ private:
 		ListIni, GraphTrasfIni, IntAluIni, InOutIni, AutomatManagerIni, NeuroIni,
 		NetManagerIni,SchedulerIni,EventserIni, MeanShiftIni, StreamFloatALUIni, GaussIni, ALUIni,
 		CellularAutomatIni, CellularAutomatManagerIni, RouterIni, GatewayIni, StreamFloatALUManagerIni,
-		StreamIntALUIni, MatPlotIni };
-	 bool FErr = false; // Флаг ошибки создани ФУ
+		StreamIntALUIni, MatPlotIni, GraphDisplayIni };
+	 bool FErr = false; // Флаг ошибки созданя ФУ
 public:
 	int GetFuTypeCount() // Выдать количество типов ФУ
 	{

@@ -25,9 +25,9 @@
 #include "StreamManager.h"
 #include "StreamIntALU.h"
 #include "MatPlot.h"
+#include "GraphDisplay.h"
 
 using namespace std;
-
 
 
 int SizeOfFUType(unsigned int Type) // Объём данных, занимаемый ФУ определенного типа
@@ -56,6 +56,11 @@ int SizeOfFUType(unsigned int Type) // Объём данных, занимаемый ФУ определенного
 	case 20: return sizeof(CellularAutomatManager);
 	case 21: return sizeof(Router);
 	case 22: return sizeof(Gateway);
+	case 23: return sizeof(StreamFloatALU);
+	case 24: return sizeof(StreamManager);
+	case 25: return sizeof(StreamIntALU);
+	case 26: return sizeof(MatPlot);
+	case 27: return sizeof(GraphDisplay);
 	}
 }
 
@@ -183,4 +188,9 @@ FU* StreamIntALUIni(FU* BusContext, FU* TEmpl)
 FU* MatPlotIni(FU* BusContext, FU* TEmpl)
 {
 	return (FU*) new MatPlot(BusContext, TEmpl);
+}
+
+FU* GraphDisplayIni(FU* BusContext, FU* TEmpl)
+{
+	return (FU*) new GraphDisplay(BusContext, TEmpl);
 }
