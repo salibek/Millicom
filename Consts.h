@@ -15,12 +15,16 @@
 
 using namespace std;
 
+//void LpPrint(LoadPoint); // Процедура печати нагрузки
+
 const int fuTypeCorrect = -96; // Коррекция индексов типов ФУ для старой среды
+
+class LoadMnemoToStr;// Преобразователь нагрузки в мнемонику с использованием таблицы лесем
 
 
 // Типы переменных
 const unsigned int Tvoid = 0, Tbool = 2, Tchar = 4, Tint = 6, Tfloat = 8, Tdouble = 10,  Tstring = 12, TIP = 14, TIC = 16;
-const unsigned int TPPoint = 18, TGraph = 20, TFU = 22, TLoad = 24, Tmk = 26, TLoadVect = 28, TLoadVectInd = 30, TICInd = 32, THashList=34;
+const unsigned int TPPoint = 18, TGraph = 20, TFU = 22, TLoad = 24, TMk = 26, TLoadVect = 28, TLoadVectInd = 30, TICInd = 32, THashList=34, TAtr=36;
 const unsigned int TCalc = 100, TProg=102; // Cсылка на Арифметический ОА-граф, программу
 const unsigned int TvoidArray = 1000, TboolArray = 1002, TCharArray=1004, TintArray = 1006, TfloatArray = 1008, TdoubleArray = 1010, TstringArray = 1012;
 const unsigned int TIPArray = 1014, TICArray = 1016, TPPointArray = 1018, TGrapgArray = 1020, TFUArray = 1022, TLoadArray = 1024;
@@ -28,7 +32,7 @@ const unsigned int TboolArray2 = 2002, TcharArray2 = 2004, TintArray2 = 2006, Tf
 const unsigned int TIPArray2 = 2014, TICArray2 = 2016, TPPointArray2 = 2018, TGrapgArray2 = 2020, TFUArray2 = 2022, TLoadArray2 = 2024;
 // Типы констант
 const unsigned int Cvoid = 1, Cbool = 3, Cchar = 5, Cint = 7, Cfloat = 9, Cdouble = 11, Cstring = 13, CIP = 15, CIC = 17;
-const unsigned int CPPoint = 19, CGraph = 21, CFU = 23, CLoad = 25, Cmk=27, CLoadVect = 29, CLoadVectInd = 31, CICInd = 33, CHashList = 35;
+const unsigned int CPPoint = 19, CGraph = 21, CFU = 23, CLoad = 25, CMk=27, CLoadVect = 29, CLoadVectInd = 31, CICInd = 33, CHashList = 35, CAtr=37;
 const unsigned int CCalc = 101, CProg=103; // Cсылка на Арифметический ОА-граф, программу
 const unsigned int CvoidArray = 1001, CboolArray=1003, CcharArray = 1005, CintArray = 1007, CfloatArray = 1009, CdoubleArray = 1011, CstringArray = 1013;
 const unsigned int CIPArray = 1015, CICArray = 1017, CPPointArray = 1019, CGrapgArray = 1021, CFUArray = 1023, CLoadArray = 1025;
@@ -36,7 +40,7 @@ const unsigned int CvoidArray2 = 2001, CboolArray2 = 2003, CcharArray2 = 2005, C
 const unsigned int CIPArray2 = 2015, CICArray2 = 2017, CPPointArray2 = 2019, CGrapgArray2 = 2021, CFUArray2 = 2023, CLoadArray2 = 2025;
 // Общие типы данных (остаток от целочисленного деления на 2 типа переменной или константы)
 const unsigned int Dvoid=0, Dbool = 1, Dchar = 2, Dint = 3, Dfloat = 4, Ddouble = 5, Dstring = 6, DIP = 7,  DIC = 8;
-const unsigned int DPPoint = 9, DGraph = 10, DFU = 11, DLoad = 12, DMk=13, DLoadVect = 14, DLoadVectInd = 15, DICInd = 16, DHashList = 17;
+const unsigned int DPPoint = 9, DGraph = 10, DFU = 11, DLoad = 12, DMk=13, DLoadVect = 14, DLoadVectInd = 15, DICInd = 16, DHashList = 17, DAtr=18;
 const unsigned int DCalc = 50, DProg=51; // Cсылка на Арифметический ОА-граф, программу
 const unsigned int DVoidArray = 500, DboolArray = 501, DcharArray = 502, DintArray = 503, DfloatArray = 504, DdoubleArray = 505, DstringArray = 506;
 const unsigned int DIPArray = 507, DICArray = 508, DPPointArray = 509, DGrapgArray = 510, DFUArray = 511, DLoadArray = 512;
@@ -48,35 +52,44 @@ const int FUBus = 0, FUCons = 1, FUStrGen = 2, FULex = 3, FUList = 4, FUFind = 5
 const int FUStreamIntALU = 25, FUStreamFloatALU = 12;
 
 // Общие атрибуты
-const int ProgAtr = -100, Atr = -60, SubObj = -6, GotoAtr=-99;
-const int ListLine = -80, ListSub = -90; // Атрибуты линии списка и подсписка
-// Общие МК
-const int ProgMk=958, ProgCycleMk = 959, ProgPostCycleMk = 960;
-const int YesMk = 961, YesCycleMk = 962, YesPostCycleMk = 963, YesBreakMk =967;
-const int NoMk = 964, NoCycleMk = 965, NoPostCycleMk = 966, NoBreakMk =968;
-const int CalcMk = 927; // Милликоманда вычисления АЛВ
-const int BreakMk = 934, NextMk = 935; // МК прерывания программы и продолжения цикла
-const int RepeatMk=911; // Начать выполнение ИК заново
-const int YesContinueMk = 969, NoContinueMk = 970;
-const int ProgExecMk = 990; // МК выполнения программы
-const int FUIndSetMk = 933; // МК установки индекса ФУ
-const int ContextOutMkMk = 999; // МК выдачи МК с контекстом ФУ
-const int ContextOutMk = 995; // МК выдачи контекста ФУ
-const int SchedulerSetMk = 918; // МК установка планировщика вычислений
-const int MkGlobalRangeSet = 949; // Установить глобальный адрес МК для ФУ
-const int MkGlobalRangeOutMk = 948; // Выдать глобальный адрес МК для ФУ
-const int MkGlobalRangeOutMkMK = 947; // Выдать МК с глобальным адресом МК для ФУ
-const int EventserCurrentTimeOutMk = 50; // Мк для контроллера событий, чтобы выдать текущее модельное время
-const int EventserFUSetMk = 10; // МК контроллера событий для установки контекста ФУ для описания события
-const int EventTimeSetMk = 11; // МК контроллера событий для установки времени события, инициированного планировщиком вычислительного процесса
-const int AwaitMkSetMk = 15; //  МК контроллера событий для установки времени прихода удаленной МК
-const int ActiveMk = 902; // МК установки флага активности ФУ
-const int FUMkRangeSetMk = 946; // Устаровить интервал индексов МК
-const int ParentSetMk = 945; // Устаровить интервал индексов МК
-const int ParentOutMk = 944; // Выдать ссылку на родителя
-const int ParentOutMkMk = 943; // Выдать МК со ссылкой на родителя
+const long ProgAtr = -100, Atr = -8, SubObj = -6, SubIC=-99;
+const long ListLine = -80, ListSub = -90; // Атрибуты линии списка и подсписка
+const long MnemoAtr = -2, FUAtr = -62, MkAtr = -24, MkListAtr = -21; // Атрибуты мнемоники, ФУ, милликоманды, списка милликоманд
+const long SeparatAtr = -4, FUTypeAtr = -22, HintAtr = -42; // Атрибуты разделителя, типа ФУ, всплывающей подсказки
+const long FindAndLineMk = 223; // МК поиска ИП в линии списка
+const long ListSubDownMk = 255, ListSubUpMk = 250; // Мк перехода вниз и вверх по иерархическому списку
+const long ListLoadOutMk = 407; // МК выдачи результата поиска в списке
+const long FUMkBegRangeAtr=-20; // Атрибут начала диапазона МК для ФУ
 
-bool isIPinIC(void* iP, void* iC); //проверка, что ИК входит в ИП
+// Общие МК
+const long ProgMk=958, ProgCycleMk = 959, ProgPostCycleMk = 960;
+const long YesMk = 961, YesCycleMk = 962, YesPostCycleMk = 963, YesBreakMk =967;
+const long NoMk = 964, NoCycleMk = 965, NoPostCycleMk = 966, NoBreakMk =968;
+const long CalcMk = 927; // Милликоманда вычисления АЛВ
+const long BreakMk = 934, NextMk = 935; // МК прерывания программы и продолжения цикла
+const long RepeatMk=911; // Начать выполнение ИК заново
+const long YesContinueMk = 969, NoContinueMk = 970;
+const long ProgExecMk = 990; // МК выполнения программы
+const long FUIndSetMk = 933; // МК установки индекса ФУ
+const long ContextOutMkMk = 999; // МК выдачи МК с контекстом ФУ
+const long ContextOutMk = 995; // МК выдачи контекста ФУ
+const long SchedulerSetMk = 918; // МК установка планировщика вычислений
+const long MkGlobalRangeSet = 949; // Установить глобальный адрес МК для ФУ
+const long MkGlobalRangeOutMk = 948; // Выдать глобальный адрес МК для ФУ
+const long MkGlobalRangeOutMkMK = 947; // Выдать МК с глобальным адресом МК для ФУ
+const long EventserCurrentTimeOutMk = 50; // Мк для контроллера событий, чтобы выдать текущее модельное время
+const long EventserFUSetMk = 10; // МК контроллера событий для установки контекста ФУ для описания события
+const long EventTimeSetMk = 11; // МК контроллера событий для установки времени события, инициированного планировщиком вычислительного процесса
+const long AwaitMkSetMk = 15; //  МК контроллера событий для установки времени прихода удаленной МК
+const long ActiveMk = 902; // МК установки флага активности ФУ
+const long FUMkRangeSetMk = 946; // Устаровить интервал индексов МК
+const long ParentSetMk = 945; // Устаровить интервал индексов МК
+const long ParentOutMk = 944; // Выдать ссылку на родителя
+const long ParentOutMkMk = 943; // Выдать МК со ссылкой на родителя
+
+const long ListFindAndMk=229, ListFindAndLineMk=223; // МК поиска лексемы и поиска атрибута в строке списка
+
+bool isIPinIC(void* iP, void* iC); //проверка, что ИК вхоит в ИП
 
 class FU; // ФУ
 class LoadPoint; // Указатель на нагрзуку
@@ -88,14 +101,15 @@ typedef  vector<LoadPoint>* LoadVect_type;
 
 class LoadPoint
 {
+public:
 	void VectorPrint(unsigned int Type, void* P, map<long int, string > AtrMnemo, string offset, string Sep, string End, string ArrayBracketStart, string ArrayBracketFin); // Печать вектора
 	void MatrixPrint(unsigned int Type, void* P, map<long int, string > AtrMnemo, string offset, string Sep, string End, string ArrayBracketStart, string ArrayBracketFin); // Пачать матрицы
-public:
 	unsigned int Type = 0; // Неизвестный тип
 	void *Point=nullptr; // Указатель на локацию данных
 	long int Ind = -1; // Индекс поля в ИК или векторе  Для ИК по модулю 3. 0 - адрес ИП, 1- адрес Атрибута, 2 - адрес нагрузки
 	unsigned int getType(); // Выдать тип нагрузки
 	long int DataSize(); // Выдать размер данных в нагрузке
+	bool isNil() { return Point == nullptr; }; // Нулевой указатель?
 	bool isDigit(); // Число?
 	static bool isDigit(unsigned int type) { unsigned int t = type; return t >> 1 == Dint || t >> 1 == Dchar || t >> 1 == Dfloat || t >> 1 == Ddouble; }; // 
 	bool isDigitBool(); // Число или булеан?
@@ -105,7 +119,7 @@ public:
 	static bool isBool(unsigned int type) { unsigned int t = type; return type >> 1 == Dbool; }; // Число или булеан?
 
 	bool isInt(); // Целое число?
-	static bool isInt(int type) { unsigned int t = type; return type >> 1 == Dint; }; // Целое число?
+	static bool isInt(int type) { unsigned int t = type; return type >> 1 == Dint || type >> 1 == DMk || type >> 1 == DAtr; }; // Целое число?
 	bool isIntBool(); // булеан или целое число?
 	static bool isIntBool(int type) { unsigned int t = type; return type >> 1 == Dint || type >> 1 == Dbool; }; // Число или булеан?
 	bool isFloatDouble(); // булеан?
@@ -116,6 +130,7 @@ public:
 	static bool isDouble(int type) { unsigned int t = type; return type >> 1 == Ddouble; };
 	static bool isDoubleInt(int type) { return type >> 1 == Ddouble || type>>1==Ddouble; }; // Число или булеан?
 	bool isIC(); // Определить указывает ли ссылка на ИК
+	bool isEmptyIC(); // Определить указывает ли ссылка на пустую ИК
 	bool isIP(); // Определить указывает ли ссылка на ИП
 	bool isCalc(); // Определить указывает ли ссылка на ИК с АЛВ
 	bool isProg(); // Определить указывает ли ссылка на ИК с программой
@@ -131,6 +146,10 @@ public:
 	static bool isChar(unsigned int type) {return type >> 1 == Dchar; }; // символ?
 	bool isMk();// Милликоманда?
 	static bool isMk(unsigned int type) { return type >> 1 == DMk; }; // Милликоманда?
+	bool isAtr();// Милликоманда или атрибут?
+	static bool isAtr(unsigned int type) { return type >> 1 == DMk; }; // Милликоманда?
+	bool isAtrMk();// Милликоманда или атрибут?
+	static bool isAtrMk(unsigned int type) { return type >> 1 == DMk || type >> 1 == DAtr; }; // Атрибут или МК?
 	bool isVectInd() { return Type >> 1 == DLoadVectInd; }; // Индексированный элемент вектора нагрузок
 	static bool isVectInd(int type) { unsigned int t = type; return t >> 1 == DLoadVectInd; }; //Индексированный элемент вектора нагрузок
 	bool isICInd() { return Type >> 1 == DICInd; }; // Индексированный элемент ИК
@@ -145,7 +164,8 @@ public:
 	static bool isVect(unsigned int type) { return (type >> 1) == DLoadVect; }; // Вектор ли нагрузка
 	bool isConst() { return Type % 2; }; // Определить является ли ссылка константой
 	bool isFU() { return Type == TFU || Type == CFU; };// Определить указатель на ФУ
-	bool isScalar() { return  Type >> 1 == Dint || Type >> 1 == Dbool || Type>>1 == Ddouble || Type >> 1 == Dfloat || Type >> 1 == Dstring ; }; // Является ли переменная по указателю скаляром?
+	bool isScalar() { return  Type >> 1 == Dint || Type >> 1 == Dbool || Type>>1 == Ddouble || 
+		Type >> 1 == Dfloat || Type >> 1 == Dstring || Type>>1 == DMk || Type>>1==DAtr; }; // Является ли переменная по указателю скаляром?
 	int Write(long int x); // return 0 - корректная запись, 1 - несоотвествие типов
 	int Write(int x); // return 0 - корректная запись, 1 - несоотвествие типов
 	int Write(size_t x);
@@ -298,9 +318,10 @@ public:
 
 class FU {  // Ядро функционального устройства
 public:
-	virtual void ProgFU(long int MK, LoadPoint Load, FU* Sender) {}; // Реализация логики работы ФУ
+	virtual void ProgFU(long int MK, LoadPoint Load, FU* Sender=nullptr) {}; // Реализация логики работы ФУ
 	vector<int> ExecCounter; // Стек счетчиков повторений подпрограммы в ИК
 	long int ExecRepeat = 1; // Текущее количество повторений подпрограммы
+	bool ProgsBlock = false; // Флаг блокировки выполнения программ для ФУ
 	void Scheduling(bool SchedulerFlag); // Запуск МК после разрешенрия планировщика
 	void MkAwait(long int MK, LoadPoint Load, FU* Sender, double Delay); // Постановка МК для ожидания прихода
 	int FUtype = 0; // Тип ФУ
@@ -313,6 +334,7 @@ public:
 	FU* Parent = nullptr; // Ссылка на родительский ФУ
 	long int FUInd = -1, FUInd2=-1; // Индексы ФУ
 	long int  FUMkGlobalAdr = 0; // Глобальный адрес ФУ
+	long int MkRedirect = -1; // МК для переадресации (после переадресации сбрасывается)
 
 	FUModeling *Modeling=nullptr; // Моделирование
 
@@ -372,7 +394,8 @@ LoadPoint LoadNew(double t); //Создание нагрузки от перен
 LoadPoint LoadNew(bool t); //Создание нагрузки от перененной
 LoadPoint LoadNew(string t); //Создание нагрузки от перененной
 LoadPoint LoadNew(float t); //Создание нагрузки от перененной
-//void GraphDel(void* Uk, LocatTable* Table = nullptr); // Удаление ОА-графа
+//void GraphDel(void* Uk) {}; // Удаление ОА-графа (не реализовано)
+//void GraphDel(LoadPoint PL) {}; // Удаление ОА-графа (не реализовано)
 void ICDel(void* Uk);// Удаление ИК
 void ICDel(LoadPoint &Uk);// Удаление ИК
 
@@ -389,10 +412,43 @@ vector<ip>::iterator IPSearch(void* ic, ip IP); // Поиск ИП в ИК (во
 vector<ip>::iterator IPSearch(void* ic, LoadPoint IP); // Поиск ИП в ИК (возвращается указатель на персую найденную ИП
 bool AtrProgExec(vector<ip>* Prog, long int Atr, FU* Bus=nullptr, bool AfterContinue = false); // Найти в ИК ИП с атрибутом Atr и выполнить программу либо по адр. в нагрузке, либо после найденной ИП
 //void AddOrReplIPAtr(vector<ip>* UK, ip* IP); // 
-ip* AtrFind(void* IC, long int Atr); // Поиск в ИК ИП с заданным атрибутом. На выходе указатель на ИП или NULLL
+ip* AtrSearchIP(void* IC, long int Atr); // Поиск в ИК ИП с заданным атрибутом. На выходе указатель на ИП или NULLL
 bool AtrSearch(void* uk, long int Atr); // Поиск атриубута в ИК
 int AtrCounter(void* uk, long int Atr); // Подсчет количества ИП с заданнным атриубутом в ИК
 
 void IPAdd(void* IC, ip IP); // Добавить ИП в конец ИК
 void IPAdd(LoadPoint IC, ip IP); // Добавить ИП в конец ИК
 void* MakeLoadFromDouble(double x, unsigned int Type); // Создать нагрузку из типа double
+
+class LoadMnemoToStr  { // Преобразователь нагрузки в мнемонику с использованием таблицы лесем
+public:
+	FU* MnemoList = nullptr;    // Ссылка на ФУ списка лексем
+	bool MnemoListExt = false; // Флаг внешнего ФУ списка лексем (при сбросе списка внешнее ФУ не уничтожается
+	long _ListFindAndMk = ListFindAndMk, _ListFindAndLineMk = ListFindAndLineMk; // МК поиска лексемы и поиска атрибута в строке списка
+	long _MnemoAtr = MnemoAtr, _FUAtr = FUAtr, _MkListAtr = MkListAtr, _AtrAtr=Atr; // Атрибуты мнемоники, ФУ и милликоманды
+	long _FindAndLineMk = FindAndLineMk; // МК поиска ИП в линии списка
+	long _ListSubDownMk = ListSubDownMk; // Выдать нагрузку найденной МК
+	long _ListSubUpMk = ListSubUpMk; // Выдать нагрузку найденной МК
+	long _ListLoadOutMk = ListLoadOutMk; // МК выдачи результата поиска в списке
+	long _FUMkBegRangeAtr = FUMkBegRangeAtr; // Атрибут начала диапазона МК для ФУ
+
+	long MkRange = 1000; // Величина диапазона адресов для ФУ
+	long _MkAtr = MkAtr;     //  Атрибут милликоманды
+public:
+	string LoadConv(LoadPoint Load); // Перевод в текст нагрузки
+	string AtrConv(long Atr);          //  Перевод в текст Атрибута
+	LoadMnemoToStr() {};
+	LoadMnemoToStr(LoadPoint Load) {
+		if (Load.isFU())
+			MnemoList = (FU*)Load.Point;
+	};
+	void ListFindAndMkSet(long Mk) { _ListFindAndMk = Mk; };
+	void ListFindAndLineMkSet(long Mk) {_ListFindAndLineMk = Mk; };
+	void NmemoAtrSet(long Mk) { _MnemoAtr = Mk; };
+	void MkListAtrSet(long Mk) { _MkListAtr = Mk; };
+	void ListSubDownMkSet(long Mk) { _ListSubDownMk = Mk; };
+	void ListSubUpMkSet(long Mk) { _ListSubUpMk = Mk; };
+	void ListLoadOutMkSet(long Mk) { _ListLoadOutMk = Mk; };
+	void FUMkBegRangeAtrSet(long Mk) { _FUMkBegRangeAtr = Mk; };
+	void ListSet(LoadPoint Load); // Установить ссылку на список или ФУ списка
+};

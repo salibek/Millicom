@@ -13,8 +13,6 @@
 #include "ALU.h"
 #include "StreamFloatALU.h"
 
-
-
 using namespace std;
 
 int main(int argc, char* argv[])
@@ -95,7 +93,10 @@ int main(int argc, char* argv[])
 //	STR = "Syntaxis.ind";
 //	STR = "JSON-List.ind";
 //	STR = "SumParallel.ind";
-	STR = "ConsoleFormat.ind";
+//	STR = "ConsoleFormat.ind";
+//	STR = "MatPlot3Test.ind";
+//	STR = "ListDeep.ind";
+	STR = "CompileCC.ind";
 
 	Bus.ProgFU(10, {Cstring, &STR}); //Запуск индексного файла
 
