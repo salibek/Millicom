@@ -173,6 +173,11 @@ void List::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 			else if (Searcher.Obj.isIP())
 				MkExec(Load, ((ip*)(Searcher.Obj.Point))->Load);
 		break;
+	case 39: // ReceivedIpLoadOutMk Выдать МК с нагрузкой найденной ИП во входном объекте
+		if (Load.isInt())
+			if (Searcher.IPRezPoint!=nullptr)
+				MkExec(Load, Searcher.IPRezPoint->Load);
+		break;
 	case 37: // LineCountOut Выдать количество линий в списке
 		if (ListHead.back() == nullptr)
 			Load.Write(0);
@@ -1229,7 +1234,7 @@ void List::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		if (Searcher.IPRezPoint != nullptr)
 			Load.Write(Searcher.IPRezPoint);
 		break;
-	case 416: // IpReceaverdOutMk Выдать МК с найденной ИП
+	case 416: // IpReceiverdOutMk Выдать МК с найденной ИП
 		if (Searcher.IPRezPoint != nullptr)
 			MkExec(Load,{CIP, Searcher.IPRezPoint});
 		break;

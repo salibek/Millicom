@@ -1,2 +1,2 @@
-NewFU={Mnemo="FU" FUType=FUCons}
-Cons.OutLn="Hellow!"
+NewFU={Mnemo="Console" FUType=1}
+Console.OutLn="Hellow!"

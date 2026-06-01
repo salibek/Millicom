@@ -1,6 +1,9 @@
 16 1
-C:\Users\salib\YandexDisk\MillicomNew\millicom\ListDeep.oap 
+C:\Users\salib\YandexDisk\MillicomNew\millicom\NewOAProg.oap 
 C:\Users\salib\YandexDisk\MillicomNew\millicom\CompileCC.oap 
+C:\Users\salib\YandexDisk\MillicomNew\millicom\NewProg.oap 
+C:\Users\salib\YandexDisk\MillicomNew\millicom\ListDeep.oap 
+C:\Users\salib\YandexDisk\MillicomNew\millicom\CompileCC.ind 
 C:\Users\salib\YandexDisk\MillicomNew\millicom\CompileCC rez.oap 
 C:\Users\salib\YandexDisk\MillicomNew\millicom\GraphDislay.oap 
 C:\Users\Salibek\Yandex.Disk\MillicomNew\millicom\ListDeep.oap 
@@ -12,6 +15,3 @@ C:\Users\salib\YandexDisk\MillicomNew\millicom\Compil.oap
 C:\Users\salib\YandexDisk\MillicomNew\millicom\Гляк для лексера.oap 
 C:\Users\salib\YandexDisk\MillicomNew\millicom\SumParallel.oap 
 C:\Users\salib\YandexDisk\MillicomNew\Millicom\Bag3.oap 
-C:\Users\salib\YandexDisk\MillicomNew\millicom\JSON-List.oap 
-C:\Users\salib\YandexDisk\MillicomNew\millicom\Syntaxis.oap 
-C:\Users\salib\YandexDisk\MillicomNew\millicom\Lexer.oap 

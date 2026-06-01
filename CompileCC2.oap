@@ -1,4 +1,4 @@
-// - обозначение переведенных в комментарии старых ФУ
+// - обозначение переведенных в комментарии=true  старых ФУ
 \* date *\ //- последняя дата изменения или добавления строк и ФУ
 
 NewFU={Mnemo="Main_Bus" MkBegRange=1000 FUType=FUBusNew} // Описание Bus
@@ -162,7 +162,7 @@ ConsMkList!
 ListMkList!
 BusMkList!
 
-\**\ServiseMk.Set= \\Сервисные МК 
+ServiseMk.Set= \\Сервисные МК 
 >{NewFUAtr Console.OutLn="CreateNewFU" OAList.LastLoadOutMk=CreateNewFU.FindOr
 	OAList.LastLoadOutMk=Main_Bus.DelIc
 	OAList.LastDelMk
@@ -173,15 +173,12 @@ CreateNewFU.MultiLineModeSet=1
 >{Mnemo  Console.OutLn="Mnemo NewFU"
 	FUListNew.IpReceivedOutMk=MnemoTable.LineCopyAdd}
 >{FUTemplate FUListNew.ReceivedLoadOutMk=Main_Bus.MakeFU}
->{FUType Console.OutLn="FUType NewFU" FUListNew.ReceivedIpLoadOutMk=Main_Bus.MakeFU FUListNew.ReceivedOutMk=Console.OutLn
+>{FUType Console.OutLn="FUType NewFU" FUListNew.ReceivedLoadOutMk=Main_Bus.MakeFU
 	MnemoTable.LastAttach={MkBegRange}
-	FUListNew.IpReceivedOutMk=MnemoTable.FindAnd
-	Main_Bus.LastFUMkRangeOutMk=MnemoTable.LastLoadCopySet
-//	FUListNew.LoadReceivedOutMk=Main_Bus.LastFUNameSet
-//	FUListNew.IpReceivedOutMk=Console.OutLn	
+	Main_Bus.LastFUMkRangeOutMk=MnemoTable.LastLoadSet
+	\\FUListNew.LoadReceivedOutMk=Main_Bus.LastFUNameSet
 	FUListNew.IpReceivedOutMk=MnemoTable.FindAnd
 	MnemoTable.FindAndLine={MkList}
-	MnemoTable.IpOutMk=Console.OutLn
 	MnemoTable.IpOutMk=MnemoTable.LastAttach
 }
 >{Hint Console.OutLn="Hint" FUListNew.IpReceivedOutMk=MnemoTable.LastAttach}
@@ -206,7 +203,6 @@ OAList.LineCopyAdd \\ Начальная ИК для синтезируемого ОА графа
 >RootFU{MkBegRange Lex.ReceiverMkSet=FUAfter.FindAnd Root.ReceivedLoadOutMk=MkCalc.Set Console.OutLn="RootFU"}
 >{Mnemo Lex.ReceiverMkSet=MnemoAnalysis.FindAnd Root.ReceivedOutMk=MnemoTable.LineCopyAdd Console.OutLn="RootRootMnemo"}
 >{Var IC Lex.ReceiverMkSet=DelMnemoIcWait.FindAnd Console.OutLn="RoorRoot Var IC to del"}
-//>{FUType}
 >{0 Console.OutLn="Error RR" Lex.Stop FUListNew.ReceivedOutMk=Console.OutLn}
 
 \**\Root.Set=
@@ -215,7 +211,7 @@ OAList.LineCopyAdd \\ Начальная ИК для синтезируемого ОА графа
 >RootFU
 >EndRoot
 >{MkExtend=CreateNewFU.FindOr Lex.Stop Console.OutLn="The command 'CreateNewFU' is avalible only on root level of program"}
->{Sep="}" MnemoTable.ProgsBlock=True Lex.ReceiverMkSet=Root.FindAnd Stack.LastOutMk=ICBrackAnalysis.FindAnd MnemoTable.ProgsBlock=False}
+>{Sep="}" Stack.LastOutMk=ICBrackAnalysis.FindAnd}
 >{0 Lex.Stop Console.OutLn="Error R" FUListNew.ReceivedOutMk=Console.OutLn}
 RootMk! RootSep! RootFU! EndRoot!
 
@@ -261,7 +257,6 @@ OAList.OutMk=Console.OutLn
 	MnemoTable.LastAttach={IC}
 	OAList.LineCopyAdd OAList.LastOutMk=MnemoTable.LastLoadSet
 	Main_Bus.FuSwapNext=Root.Reset
-	Console.OutLn="FU swap"
 	Stack.LineCopyAdd={Sep="{"}
 }
 >{Sep="=" Lex.ReceiverMkSet=VarIniWait.FindAnd Console.OutLn="MnemoAnalysis ="}
@@ -358,7 +353,7 @@ OAList.OutMk=Console.OutLn
 	Stack.EmptyExec={Main_Bus.FuSwapNext=Root.Reset Console.OutLn="FU Swap!!!"}
 	Stack.LineCopyAdd={Sep="{"} Stack.OutMk=Console.OutLn
 }
->{Mnemo Lex.ReceiverMkSet=MnemoLoad.FindAnd Console.OutLn="EqualAfter mnemo" FUListNew.ReceivedOutMk=Console.OutLn MnemoTable.OutMk=Console.OutLn}
+>{Mnemo Lex.ReceiverMkSet=MnemoLoad.FindAnd Console.OutLn="EqualAfter mnemo"}
 >{Sep=">" Lex.ReceiverMkSet= Console.OutLn="EqualAfter >"}
 >{0 Console.OutLn="Ip load is expected" Lex.Stop EqualAfter.ReceivedOutMk=Console.OutLn}
 
@@ -377,7 +372,7 @@ OAList.OutMk=Console.OutLn
 	OAList.LineCopyAddPrevLoadSet OAList.LastOutMk=MnemoTable.LastLoadSet
 	Stack.LineCopyAdd={Sep="{"}
 }
->{0 Lex.Stop Console.OutLn="Wrong mnemonic description"}
+>{0 Lex.Stop Console.OutLn="Wrong mnemonic desription"}
 
 LoadVar.Set=
 >{Const ConstInt Var MkExtend Atr Mnemo Lex.ReceiverMkSet=BrackLoadVar.FindAnd  Console.OutLn="LoadVar Const"}
@@ -395,7 +390,7 @@ BrackLoadVar.Set=
 >{Sep="}" Lex.ReceiverMkSet=Root.FindAnd
 	EqualAfter.ReceivedLoadOutMk=OAList.LastLoadCopySet
 	Console.OutLn="EqVar }"
-	FUListNew.ReceivedOutMk=Root.FindAnd
+	FUListNew.ReceivedOutMk=Root.FindAnd=temp(0)! 
 }
 >{Sep="+" Sep="-" Sep="*" Sep="/" Sep="//" Lex.ReceiverPush=ALEStart.FindAnd Lex.PrevOutMk}
 >{0 Console.OutLn="EqVar else" Lex.ReceiverMkSet=Root.FindAnd EqualAfter.ReceivedLoadOutMk=OAList.LastLoadSet OAList.OutMk=Console.OutLn EqualAfter.ReceivedOutMk=EqVarTypeSet.FindAnd
@@ -415,26 +410,29 @@ Lex.ReceiverMkSet=Root.FindAnd \\ Настроить начальное состояние распознающего ав
 
 Main_Bus.FuSwapNext=Root.Reset // Поменять местами Root и RootRoot
 
-Str_Gen.ReceiverMkSet=Lex.Lexing
+\\Str_Gen.ReceiverMkSet=Lex.Lexing \\ Установить передачу с генератора строк на лексер
+\\Str_Gen.ReceiverMkSet=Console.OutLn \\ Установить передачу с генератора строк на лексер
 Main_Bus.ArgIndSet=1
-Main_Bus.ArgByIndOutMk=Str_Gen.Start
-
-\\Lex.Lexing="NewFU={Mnemo=""Console"" FUType=1} Console.OutLn=""Hellow!"""
+\\Main_Bus.ArgvOutMk=Str_Gen.Start
 
 //Lex.Lexing="ListNmemo >{Cons.OutLn=10} >{Cons.OutLn=11} Cons.OutLn=ListNmemo ListNmemo!"
-//Lex.Lexing="ICname{Atr=Atr} Cons.OutLn=ICname Atr Atr=Atr"
-// {Mnemo=""List2"" FUType=5}
-//Lex.Lexing="Atr=1"
+//Lex.Lexing="ICname={Atr=Atr} Cons.OutLn=ICName{Mnemo=""List2"" FUType=VAR(5)} Atr Atr=Atr"
+Lex.Lexing="NewFU={Mnemo="Cons1" FUType=FUCons} Cons1.OutLn=1"
 //Lex.Lexing="Atr=pi"
 Lex.SendToReceiver={End} \\ Посылка лексемы-маркера конца файла
-\\MnemoTable.ContextOutMk=Console.MnemoTableSet
-\\Console.OutLn="------"
-\\OAList.OutMk=Console.OutLn
+//MnemoTable.ContextOutMk=Console.MnemoTableSet
+//Console.OutLn="------"
+OAList.OutMk=Console.OutLn
 
-\\Console.OutLn="------"
-\\Console.OutLn="Stack:"
-\\Stack.OutMk=Console.OutLn
-\\Console.OutLn="--------MnemoTable:"
-\\MnemoTable.OutMk=Console.OutLn
-Stack.FullExec={Console.OutLn="Bracket error"} \\Ошибка расстановки скобок
-Stack.EmptyExec={MnemoTable.JsonSave="MnemoTable.json" OAList.LastOutMk=Main_Bus.ProgExec} \\ Запуск программы
+//Console.OutLn="------"
+//Console.OutLn="Stack:"
+//Stack.OutMk=Console.OutLn
+//Console.OutLn="--------MnemoTable:"
+//MnemoTable.OutMk=Console.OutLn
+//MnemoTable.JsonSave="MnemoTable.json"
+OAList.LastOutMk=Console.OutLn
+Console.OutLn="Start of program"
+OAList.LastOutMk=Main_Bus.ProgExec
+Console.OutLn="End of program"
+
+
