@@ -97,6 +97,7 @@ int main(int argc, char* argv[])
 //	STR = "MatPlot3Test.ind";
 //	STR = "ListDeep.ind";
 	STR = "CompileCC.ind";
+//	STR = "MnemoTable.ind";
 
 	Bus.ProgFU(10, {Cstring, &STR}); //Запуск индексного файла
 

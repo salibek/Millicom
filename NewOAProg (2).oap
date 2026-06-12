@@ -1,0 +1,2 @@
+NewFU={Mnemo="Console" FUType=1}
+Console.OutLn=(1+2+3)

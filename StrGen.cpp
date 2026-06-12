@@ -71,13 +71,14 @@ void StrGen::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 
 			((FU*)Receiver)->ProgFU(ReceiverMK, Point, this);
 		}
-		if (work) // выдача завершающей лексемы
+/*		if (work) // выдача завершающей лексемы
 		{
 			LoadPoint Point;
 			Point.Type = 2;
 			Point.Point = &finStr;
 			((FU*)Receiver)->ProgFU(ReceiverMK, Point, this);
 		}
+*/
 		Source.close();
 		TimeLong = clock() - TimeStart;
 		ProgExec(FinProg);// Выполнить завершающую программу
@@ -120,7 +121,7 @@ void StrGen::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		break;
 	case 40: // LogOut
 		break;
-	case 50: // LineCountOutMk
+	case 50: // LineCountOutMk Вывести количество считанных строк
 		MkExec(Load, { Tint, &LineCount });
 		break;
 	case 51: // LastLineBufOutMk Выдать МК с последней строкой из буфера

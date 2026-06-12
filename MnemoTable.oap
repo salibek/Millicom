@@ -1,0 +1,121 @@
+// - обозначение переведенных в комментарии старых ФУ
+\* date *\ //- последняя дата изменения или добавления строк и ФУ
+
+NewFU={Mnemo="Main_Bus" MkBegRange=1000 FUType=FUBusNew} // Описание Bus
+
+\\ Для создания индексного файла сначала надо запустить программу !!!!
+ CapsManager.IndexVectCreate=20000
+ CapsManager.IpIcIdOutMk=MainBus.IpIcIdSet
+ CapsManager.IpIcIdOutMk=VariableManager.IpIcIdSet
+ CapsManager.IpIcIdOutMk=ListSyntez.IpIcIdSet
+ MainBus.ModeSet=1
+\\ -------------------------------------- \\
+MainBus.FUTypeCorrectSet=-96 // Корректировка номера типа ФУ для переноса на новую ОА-платформу
+
+NewFU={Mnemo="Console" FUType=FUConsNew Hint="Консоль для вывода логов"}
+NewFU={Mnemo="MnemoTable" FUType=FUListNew Hint="Таблица мнемоник"}
+
+MainBus.PartialResetSet \\ Запомнить число созданных ФУ
+MainBus.ModeSet=2
+
+Vect*-98 \\Атрибут вектора
+SubIC*-99 \\Атриубт подкапсулы
+Sep*-4
+Var*-14
+MkExec*-304 // МК для последующего выполнения
+MkExtend*-25 // Расширенная МК
+End*-27 \\ Конец чего-либо
+FUTemplate*-303 \\ Ссылка на эталонное ФУ для создания нового ФУ
+FU
+IC*IcPointer
+IP*-330
+ProgAtr*-331
+
+NewFUAtr \\ Флаг создания нового устройства
+\\Типы указательй на нагрзуки
+TAtrType#36
+CAtrType#37
+TMkType#26
+CMkType#27
+TIpType#14
+CIpType#15
+TIcType#16
+CIcType#17
+TIntType#6
+CIntType#7
+TBoolType#2
+CBoolType#3
+TCharType#4
+CCharType#5
+TFloatType#8
+CFloatType#9
+TDoubleType#10
+CDoubleType#11
+TStrType#12
+CStrType#13
+TFuType#22
+CFuType#23
+TLoadType#22
+CLoadType#23
+TLoadVectType#28
+CLoadVectType#29
+\\ ---------------
+
+CommonMkTable \\ Общие МК
+	>{Mnemo="ContextOut" Mk=995 Hint="Выдать указатель на контекст ФУ"}
+	>{Mnemo="ContextOutMk" Mk=999 Hint="Выдать милликоманду с указателем на контекст ФУ"}
+
+ConsMkList
+	>{Mnemo="Out" Mk=1 Hint="Печать"}
+	>{Mnemo="OutLn" Mk=2 Hint="Печатьс переводом строки"}
+	>{Mnemo="LnOut" Mk=3 Hint="Перевод строки и печать"}
+	>{Mnemo="LnOutLn" Mk=4 Hint="Перевод строки, печать и перевод строки"}
+	>{Mnemo="Ln" Mk=10 Hint="Перевод строки"}
+	>{Comment="Input" Hint="Запуск миллипрограмм" ListSub=
+		>{Mnemo="Input" Hint="Ввод данных"}
+		>{Mnemo="InputMk" Hint="Ввод данных и выдача МК с ними"}
+	}
+	>{Comment="ComonMk" Hint="Запуск миллипрограмм" ListSub=CommonMkTable}
+
+BusMkList
+	>{Mk=1 Mnemo="MakeFU" Hint="Создать ФУ (в нагрузке передаётся тип ФУ)"}
+	>{Mk=5 Mnemo="ProgExec" Hint="Выполнить последовательность МК из ИК"}
+	>{Mk=10 Mnemo="FileOldProgExec" Hint="Выполнить последовательность МК из индексного файла старого формата"}
+	>{Mk=20 Mnemo="NFUOut" Hint="Выдать количество ФУ, подключенных к шине"}
+	>{Mk=20 Mnemo="NFUOutMk" Hint="Выдать МК с количеством ФУ, подключенных к шине"}
+
+ListMkList
+	>{Mnemo="Set" Mk=1 Hint="Установить ссылку на список"}
+	>{Comment="ComonMk" Hint="Запуск миллипрограмм" ListSub=CommonMkTable}
+
+MnemoTable.Set=
+>{Mnemo="Mnemo" Atr=-2 Hint="Атрибут объекта"}
+>{Mnemo="Atr" Atr=-8 Hint="Атрибут"}
+>{Mnemo="End" Atr=End Hint="Атрибут конца чего-то"}
+>{Mnemo="ListLine" Atr=-80 Hint="Атриут линии списка"}
+>{Mnemo="Obj" Atr=-6 Hint="Атрибут объекта"}
+>{Mnemo="ListSub" Atr=ListSub Hint="Подсписок"}
+>{Mnemo="Mk" Atr=Mk Hint="Атрибут МК"}
+>{Mnemo="MkList" Atr=-21 Hint="Атрибут МК"}
+>{Mnemo="Const" Atr=Const Hint="Атрибут константы"}
+>{Mnemo="Var" Atr=Var Hint="Атрибут переменной"}
+>{Mnemo="IC" Atr=IC Hint="Атрибут переменной"}
+>{Mnemo="FUType" Atr=FUType Hint="Тип ФУ"}
+>{Mnemo="FUTypeDef" Atr=FUTypeDef Hint="Определитель типа ФУ (применяется при описании типа ФУ в таблице мнемоник)"}
+>{Mnemo="pi" Const=3.14159}
+>{Mnemo="MkBegRange" Atr=MkBegRange Hint="Начало диапазона адресов Мк для ФУ"}
+>{Mnemo="Hint" Atr=Hint Hint="Всплывающая подсказка"}
+>{Mnemo="Comment" Atr=Comment Hint="Всплывающая подсказка"}
+>{Mnemo="FUBus" FUType=0 MkList=BusMkList Hint="Типы ФУ Шина"}
+>{Mnemo="FUCons" FUType=1 MkList=ConsMkList Hint="Типы ФУ Консоль"}
+>{Mnemo="FUList" FUType=5 MkList=ListMkList Hint="Типы ФУ Консоль"}
+>{Mnemo="Cons" MkBegRange=10000 FUType=1 MkList=ConsMkList} \\!!!
+>{Mnemo="List" MkBegRange=11000 FUType=5 MkList=ListMkList} \\!!!
+>{Mnemo="Bus" MkBegRange=1000 MkList=BusMkList Hint="Главная коммуникационная шина"}
+>{Mnemo="NewFU" Atr=NewFUAtr Hint="МК создания нового ФУ (на входе ссылкна и ИК с описанием ФУ)"}
+ConsMkList!
+ListMkList!
+BusMkList!
+
+MnemoTable.ContextOutMk=Console.MnemoTableSet
+MnemoTable.OutMk=Console.OutLn

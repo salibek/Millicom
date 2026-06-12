@@ -12,6 +12,7 @@ NewFU={Mnemo="Main_Bus" MkBegRange=1000 FUType=FUBusNew} // Описание Bus
 \\ -------------------------------------- \\
 MainBus.FUTypeCorrectSet=-96 // Корректировка номера типа ФУ для переноса на новую ОА-платформу
 
+NewFU={Mnemo="ALU_Main" FUType=FUALUNew Hint="Таблица мнемоник для распечатки"}
 NewFU={Mnemo="Console" FUType=FUConsNew Hint="Консоль для вывода логов"}
 NewFU={Mnemo="Str_Gen" FUType=FUStrGenNew Hint="Генератор строк"}
 NewFU={Mnemo="Stack" FUType=FUListNew Hint="Программный стек для генераци ОА-графа"}
@@ -51,16 +52,49 @@ NewFU={Mnemo="VectNext4" FUType=FUListNew}
 NewFU={Mnemo="VectWait" FUType=FUListNew}
 NewFU={Mnemo="ConstWait" FUType=FUListNew}
 NewFU={Mnemo="LoadAfterMk" FUType=FUListNew Hint="Начальное состояние распознания АЛВ"}
+\\ АЛВ
 NewFU={Mnemo="ALEStart" FUType=FUListNew Hint="Начальное состояние распознания АЛВ"}
 NewFU={Mnemo="ICBrackAnalysis" FUType=FUListNew Hint="Анализ фигурной закрывающейся скобки"}
 NewFU={Mnemo="DelMnemoWait" FUType=FUListNew Hint="Анализ фигурной закрывающейся скобки"}
-NewFU={Mnemo="DelMnemoIcWait" FUType=FUListNew Hint="Анализ фигурной закрывающейся скобки"}
+NewFU={Mnemo="DelMnemoIcWait" FUType=FUListNew Hint="Ожидение удалени ИП"}
+NewFU={Mnemo="DelMnemoVarWait" FUType=FUListNew Hint="Ожидение удаления переменной"}
+NewFU={Mnemo="EgAleWait2" FUType=FUListNew}
+NewFU={Mnemo="VarAfter" FUType=FUListNew}
+NewFU={Mnemo="VectAfter" FUType=FUListNew}
+NewFU={Mnemo="EgVectProcess" FUType=FUListNew}
+NewFU={Mnemo="FuncAfter" FUType=FUListNew}
+NewFU={Mnemo="EqAfter" FUType=FUListNew}
+NewFU={Mnemo="EqAfter2" FUType=FUListNew}
+NewFU={Mnemo="EgVectProcess2" FUType=FUListNew}
+NewFU={Mnemo="AleEqAfter" FUType=FUListNew}
+NewFU={Mnemo="VectAfter2" FUType=FUListNew}
+NewFU={Mnemo="OperatWait" FUType=FUListNew}
+NewFU={Mnemo="OperatorsMk" FUType=FUListNew Hint="Сопоставление арифметико-логической операции и МК"}
+NewFU={Mnemo="OperatorsAccumMk" FUType=FUListNew Hint="Сопоставление аккумулирующих арифметико-логической операции и МК"}
+NewFU={Mnemo="ALEPriority" FUType=FUListNew Hint="Приоритет операций"}
+\\ Последовательные конструкции
+NewFU={Mnemo="IfAfter" FUType=FUListNew Hint="Ожидание фигурной скобки после операции if"} \* 05.03.2023 *\
+NewFU={Mnemo="ElseAfter" FUType=FUListNew Hint="Ожидание фигурной скобки после операции else"} \* 05.03.2023 *\
+NewFU={Mnemo="ElseWait" FUType=FUListNew Hint="Ожидание else после закрытия фигурной скобки конструкции if"} \* 05.03.2023 *\
+NewFU={Mnemo="ForVect" FUType=FUListNew Hint="Ожидание потока или открывающейся векторной скобки в цикле for/after"} \* 21.04.2023 *\
+NewFU={Mnemo="ForFirstArg" FUType=FUListNew Hint="Ожидание потока, выражения или двоеточия для указания конца диапазона в цикле for/after"} \* 21.04.2023 *\
+NewFU={Mnemo="ForSecArgWait" FUType=FUListNew Hint="Ожидание значения конца диапазона в цикле for/after"} \* 21.04.2023 *\
+NewFU={Mnemo="ForFirstArgAfter" FUType=FUListNew Hint="Ожидание потока или двоеточия для указания конца диапазона в цикле for/after"} \* 21.04.2023 *\
+NewFU={Mnemo="ForSecArg" FUType=FUListNew Hint="Ожидание потока, выражения или двоеточия для указания шага диапазона в цикле for/after"} \* 21.04.2023 *\
+NewFU={Mnemo="ForThirdArgWait" FUType=FUListNew Hint="Ожидание значения шага диапазона в цикле for/after"} \* 21.04.2023 *\
+NewFU={Mnemo="ForSecArgAfter" FUType=FUListNew Hint="Ожидание потока или двоеточия для указания шага диапазона в цикле for/after"} \* 21.04.2023 *\
+NewFU={Mnemo="ForThirdArg" FUType=FUListNew Hint="Ожидание потока или выражения в блоке цикла for/after"} \* 21.04.2023 *\
+NewFU={Mnemo="ForAfter" FUType=FUListNew Hint="Ожидание потока в блоке цикла for/after"} \* 21.04.2023 *\
+NewFU={Mnemo="ForElseWait" FUType=FUListNew Hint="Ожидание else в потоке в блоке цикла for/after"} \* 23.04.2023 *\
+NewFU={Mnemo="ForElseAfter" FUType=FUListNew Hint="После else в блоке цикла for/after"} \* 23.04.2023 *\
+NewFU={Mnemo="BreakAfter" FUType=FUListNew Hint="После Break/next в блоке цикла for/after"} \* 23.04.2023 *\
+
 
 MainBus.PartialResetSet \\ Запомнить число созданных ФУ
 MainBus.ModeSet=2
 
-\\Console.OutLn="CompileCC"
-
+Vect*-98 \\Атрибут вектора
+SubIC*-99 \\Атриубт подкапсулы
 Sep*-4
 Var*-14
 MkExec*-304 // МК для последующего выполнения
@@ -71,6 +105,7 @@ FU
 IC*IcPointer
 IP*-330
 ProgAtr*-331
+ALEEnd \\ Атрибут конца АЛВ
 
 NewFUAtr \\ Флаг создания нового устройства
 \\Типы указательй на нагрзуки
@@ -104,7 +139,11 @@ CLoadVectType#29
 
 Lex.UnicAtrSet=Mnemo
 Lex.UnicMkSet=MnemoTable.FindAnd
-Lex.StopProgSet={Str_Gen.Stop}
+//Lex.StopProgSet={Str_Gen.Stop
+//  Str_Gen.LineCountOutMk=Console.Out Console.OutLn=": "
+//  Str_Gen.LastLineBufOutMk=Console.OutLn
+//  Lex.LastPosMarkOutMk=Console.OutLn
+//}
 AtrCounter.Set=-1000000 \\ Инициализация счетчика атриубутов
 
 CommonMkTable \\ Общие МК
@@ -124,7 +163,7 @@ ConsMkList
 	>{Comment="ComonMk" Hint="Запуск миллипрограмм" ListSub=CommonMkTable}
 
 BusMkList
-	>{MkExtend=1 Mnemo="MakeFU" Hint="Создать ФУ (в нагрузке передаётся тип ФУ)"}
+	>{Mk=1 Mnemo="MakeFU" Hint="Создать ФУ (в нагрузке передаётся тип ФУ)"}
 	>{Mk=5 Mnemo="ProgExec" Hint="Выполнить последовательность МК из ИК"}
 	>{Mk=10 Mnemo="FileOldProgExec" Hint="Выполнить последовательность МК из индексного файла старого формата"}
 	>{Mk=20 Mnemo="NFUOut" Hint="Выдать количество ФУ, подключенных к шине"}
@@ -161,6 +200,206 @@ MnemoTable.Set=
 ConsMkList!
 ListMkList!
 BusMkList!
+
+\\ ----- ALE -----
+
+Operators{Sep="+" Sep="-" Sep="*" Sep="/" Sep="//" Sep="%" Sep="**"
+  Sep="&" Sep="&&" Sep="|" Sep="||" Sep="^" Sep="^^" Sep="->" Sep="<-"
+  Sep="<" Sep=">" Sep="<=" Sep=">=" Sep="==" Sep="!="
+}
+
+\**\OperatorsMk.Set= \\Сопоставление АЛ операции и МК для АЛУ
+  >{Sep="+" FUALUNew.Sum}
+  >{Sep="-" FUALUNew.Sub}
+  >{Sep="*" FUALUNew.Mul}
+  >{Sep="/" FUALUNew.Div}
+  >{Sep="//" FUALUNew.DivInt}
+  >{Sep="%" FUALUNew.Mod}
+  >{Sep="**" FUALUNew.Pow}
+  >{Sep="&" FUALUNew.And}
+  >{Sep="and" FUALUNew.And}
+  >{Sep="&&" FUALUNew.AndBit}
+  >{Sep="|" FUALUNew.Or}
+  >{Sep="or" FUALUNew.Or}
+  >{Sep="||" FUALUNew.OrBit}
+  >{Sep="^" FUALUNew.Xor}
+  >{Sep="xor" FUALUNew.Xor}
+  >{Sep="^^" FUALUNew.XorBit}
+  >{Sep="->" FUALUNew.MrBit}
+  >{Sep="<-" FUALUNew.MlBit}
+  >{Sep="<" FUALUNew.Smaller}
+  >{Sep=">" FUALUNew.Bigger}
+  >{Sep="<=" FUALUNew.SmallerEQ}
+  >{Sep=">=" FUALUNew.BiggerEQ}
+  >{Sep="==" FUALUNew.EQ}
+  >{Sep="!=" FUALUNew.NotEQ}
+
+\**\OperatorsAccumMk.Set= \\Сопоставление АЛ операции и МК для АЛУ
+  >{Sep="+=" FUALUNew.Sum Sep="+"}
+  >{Sep="-=" FUALUNew.Sub Sep="-"}
+  >{Sep="*=" FUALUNew.Mul Sep="*"}
+  >{Sep="/=" FUALUNew.Div Sep="/"}
+  >{Sep="//=" FUALUNew.DivInt Sep="//"}
+  >{Sep="%=" FUALUNew.Mod Sep="%"}
+  >{Sep="**=" FUALUNew.Pow Sep="**"}
+  >{Sep="&=" FUALUNew.And Sep="&"}
+  >{Sep="&&=" FUALUNew.AndBit Sep="&&"}
+  >{Sep="|=" FUALUNew.Or Sep="|"}
+  >{Sep="||=" FUALUNew.OrBit Sep="||"}
+  >{Sep="^=" FUALUNew.Xor Sep="^"}
+  >{Sep="^^=" FUALUNew.XorBit Sep="^^"}
+  >{Sep="->=" FUALUNew.MrBit Sep="->"}
+  >{Sep="<-=" FUALUNew.MlBit Sep="<-"}
+
+\**\ALEPriority.Set= \\Приоритет арифметических операций
+>{Sep="**"}
+>{Sep="*" Sep="/" Sep="//" Sep="%"}
+>{Sep="+" Sep="-"}
+>{Sep="<-" Sep="->"}
+>{Sep="==" Sep="<>" Sep="<=>" Sep="<" Sep="<=" Sep=">" Sep=">="}
+>{Sep="&"}
+>{Sep="^"}
+>{Sep="|"}
+>{Sep="&&"}
+>{Sep="||"}
+>{Sep="="} // Для сбороса приоритетов АЛ операций
+
+\**\ALEStart.Set=
+>{Var Lex.ReceiverMkSet=VarAfter.FindAnd}
+>{Mk Lex.ReceiverMkSet=EgAleWait2.FindAnd}
+>{Vect Lex.ReceiverMkSet=VectAfter.FindAnd}
+>{0 Lex.Stop Console.OutLn="Wrong ALE description"}
+
+Brackets{Sep="(" Sep="[" Sep="{" ALEEnd} \\ Открывающиеся скобки
+
+\**\VarAfter.Set=
+>{Sep="++" Lex.ReceiverMkSet=Root.FindAnd Console.OutLn="++"
+  OAList.LastAtrAttach=ALU_Main.Set ALEStart.ReceivedLoadOutMk=OAList.LastLoadSet
+  OAList.LastAtrAttach=ALU_Main.Inc
+  OAList.LastAtrAttach=ALU_Main.Out ALEStart.ReceivedLoadOutMk=OAList.LastLoadSet
+}
+>{Sep="--" Lex.ReceiverMkSet=Root.FindAnd Console.OutLn="--"
+  OAList.LastAtrAttach=ALU_Main.Set ALEStart.ReceivedLoadOutMk=OAList.LastLoadSet
+  OAList.LastAtrAttach=ALU_Main.Dec
+  OAList.LastAtrAttach=ALU_Main.Out ALEStart.ReceivedLoadOutMk=OAList.LastLoadSet
+}
+>{Sep="=" Lex.ReceiverMkSet=EqAfter.FindAnd
+  OAList.LastAtrAttach=ALU_Main.Calc
+  OAList.LineCopyAddPrevLoadSet={FUALUNew.OutAdrAppend}
+  ALEStart.ReceivedLoadOutMk=OAList.LastLoadSet
+  Stack.LineCopyAdd={ALEEnd}
+  Console.OutLn="VarAfter ="}
+>{Sep=","}
+>{0 Console.OutLn="VarAfter else"
+  FUListNew.ReceivedOutMk=OperatorsAccumMk.FindAnd
+  OperatorsAccumMk.FailExec={
+    Lex.Stop
+    Console.OutLn="ALE error"
+    Stack.OutMk=Console.OutLn
+    VarAfter.ProgStopAll
+}
+  Lex.ReceiverMkSet=AleEqAfter.FindAnd
+  OAList.LastAtrAttach=ALU_Main.Calc
+  OAList.LineCopyAddPrevLoadSet={FUALUNew.OutAdrAppend}
+  ALEStart.ReceivedLoadOutMk=OAList.LastLoadSet
+  OAList.LastAttach={FUALUNew.Set}
+  ALEStart.ReceivedLoadOutMk=OAList.LastLoadSet
+  OperatorsAccumMk.IpSecondOutMk=OAList.LastAttach
+  OAList.LineCopyAddPrevLoadSet={FUALUNew.Set}
+  Stack.LineCopyAdd={ALEEnd}
+  OperatorsAccumMk.IpLastOutMk=Stack.LineCopyAdd
+  Console.OutLn="VarAfter +="
+}
+
+\**\EqAfter.Set=
+>{Var Lex.ReceiverMkSet=EqAfter2.FindAnd Console.OutLn="EqAfter Var"
+  ALEStart.ReceivedLoadOutMk=OAList.LastLoadSet OAList.LastAtrAttach=ALU_Main.Set}
+>{Mk Lex.ReceiverMkSet=EqAfter2.FindAnd ALEStart.ReceivedLoadOutMk=ALU_Main.OutMkAppend
+  OAList.LastAtrAttach=ALU_Main.OutMkAppend ALEStart.ReceivedLoadOutMk=OAList.LastLoadSet
+  Console.OutLn="EqAfter Mk"}
+>{0 Console.OutLn="EqAfter else" OAList.LastAtrAttach=FUALUNew.Set FUListNew.ReceivedOutMk=AleEqAfter.FindAnd}
+
+\**\EqAfter2.Set=
+>{Sep="=" Lex.ReceiverMkSet=EqAfter.FindAnd Console.OutLn="EqAfter2 ="}
+>{0 Console.OutLn="EqAfter2 else" Lex.ReceiverMkSet=AleEqAfter.FindAnd FUListNew.ReceivedOutMk=AleEqAfter.FindAnd}
+
+
+\**\AleEqAfter.Set=
+>{Var Const ConstInt ConstFloat Vect Lex.ReceiverMkSet=OperatWait.FindAnd
+  FUListNew.ReceivedLoadOutMk=OAList.LastLoadSet
+  Console.OutLn="AleEqAfter Var"
+}
+>{Sep="(" Lex.ReceiverMkSet=AleEqAfter.FindAnd  Console.OutLn="AleEqAfter ("
+  Stack.LineCopyAdd={Sep="("}
+  OAList.LineCopyAddPrevLoadSet={FUALUNew.Set}
+}
+>{0 Console.OutLn="AleEqAfter else" Lex.ReceiverMkSet=AleEqAfter.FindAnd FUListNew.ReceivedOutMk=AleEqAfter.FindAnd}
+
+\**\OperatWait.Set=
+>{Sep="}"}
+>{Sep=")" Lex.ReceiverMkSet=OperatWait.FindAnd Console.OutLn="OperatWait )"
+\\  OAList.OutMk=Console.OutLn
+\\  Stack.OutMk=Console.OutLn
+  Stack.FailLineProgSet={Stack.LastDelMk Console.OutLn="Not bracket stask del" FUListNew.FindOrLast=Brackets}
+  Stack.FindOrLast=Brackets \\Удаление нескобочных знаков
+  Stack.FailLineProgSet
+  Stack.FindOrLast={Sep="("}
+  Stack.SuccessExec={Stack.LastDelMk OAList.LastPopMk}
+\\  OAList.OutMk=Console.OutLn
+\\  Stack.OutMk=Console.OutLn
+}
+>{0 Console.OutLn="OperatWait else"
+//  Stack.OutMk=Console.OutLn
+  FUListNew.ReceivedOutMk=OperatorsMk.FindAnd
+  OperatorsMk.FailExec={ \\Не оператор
+    Stack.FailLineProgSet={Stack.LastDelMk OAList.LastPopMk Console.OutLn="Not bracket stask del" FUListNew.FindOrLast={ALEEnd Sep="(" Sep="{"}}
+    Stack.FindOrLast={ALEEnd Sep="(" Sep="{"} \\Удаление нескобочных знаков
+    Stack.FailLineProgSet
+
+    Console.OutLn="ALE ALEEnd finding"
+    Stack.OutMk=Console.OutLn
+ 
+    Stack.FindAndLast={ALEEnd}
+    Stack.SuccessExec={
+      Console.OutLn="ALEEnd success"
+      FUListNew.LastDelMk
+      OperatWait.ReceivedOutMk=Lex.ReceiverPopSend
+      OperatWait.ProgStopAll
+	 OperatorsMk.ProgStopAll
+    }
+    Lex.Stop
+    Console.OutLn="ALE error"
+    Stack.OutMk=Console.OutLn
+  }
+
+  OperatWait.CycleProg={
+  Console.OutLn="ALEPriority Cycle"
+    FUListNew.ReceivedOutMk=ALEPriority.FindAnd
+    Stack.LastOutMk=ALEPriority.FindAnd
+    ALEPriority.FailExec={Console.OutLn="ALEPriority Cycle Out"
+      OperatWait.ReceivedOutMk=Stack.LineCopyAdd \\ Запомнить приоритет операции
+      OperatWait.ProgStop=1
+      }
+    Console.OutLn="ALEPriority Cycle iteration"
+    ALEPriority.EqExec={Console.OutLn="Eg priority" OperatWait.ProgStop=1}
+    ALEPriority.SmallerExec={Console.OutLn="Small priority" Stack.LastDelMk
+      Stack.FindOrLast=Brackets
+      Stack.FailExec={OAList.LastPopMk}
+    }
+    ALEPriority.BiggerExec={Console.OutLn="Big priority"
+      OAList.OutMk=Console.OutLn
+      OperatWait.ReceivedOutMk=Stack.LineCopyAdd
+      OAList.LastIpOutMk=OAList.LineCopyAddPrevLoadSet	
+      OAList.LastAtrSet=FUALUNew.Set
+      OAList.OutMk=Console.OutLn
+      OperatWait.ProgStop=1
+    }
+  }
+  Lex.ReceiverMkSet=AleEqAfter.FindAnd
+  OperatorsMk.IpSecondOutMk=OAList.LastAttach Console.OutLn="OperatorsMk success"
+}
+
+\\ ===============
 
 \**\ServiseMk.Set= \\Сервисные МК 
 >{NewFUAtr Console.OutLn="CreateNewFU" OAList.LastLoadOutMk=CreateNewFU.FindOr
@@ -204,8 +443,12 @@ OAList.LineCopyAdd \\ Начальная ИК для синтезируемого ОА графа
 }
 >RootSep{Sep="." Lex.ReceiverMkSet=MkWait.FindAnd Console.OutLn="RootDot" FUListNew.ReceivedOutMk=Console.OutLn}
 >RootFU{MkBegRange Lex.ReceiverMkSet=FUAfter.FindAnd Root.ReceivedLoadOutMk=MkCalc.Set Console.OutLn="RootFU"}
+>{Mnemo="if" Lex.ReceiverMkSet 
+  
+}
 >{Mnemo Lex.ReceiverMkSet=MnemoAnalysis.FindAnd Root.ReceivedOutMk=MnemoTable.LineCopyAdd Console.OutLn="RootRootMnemo"}
->{Var IC Lex.ReceiverMkSet=DelMnemoIcWait.FindAnd Console.OutLn="RoorRoot Var IC to del"}
+>ICDel{IC Lex.ReceiverMkSet=DelMnemoIcWait.FindAnd Console.OutLn="RoorRoot Var IC to del"}
+>VarDel{Var Lex.ReceiverMkSet=DelMnemoVarWait.FindAnd Console.OutLn="RoorRoot Var IC to del"}
 //>{FUType}
 >{0 Console.OutLn="Error RR" Lex.Stop FUListNew.ReceivedOutMk=Console.OutLn}
 
@@ -214,11 +457,13 @@ OAList.LineCopyAdd \\ Начальная ИК для синтезируемого ОА графа
 >RootSep
 >RootFU
 >EndRoot
+>ICDel
+>VarDel
 >{MkExtend=CreateNewFU.FindOr Lex.Stop Console.OutLn="The command 'CreateNewFU' is avalible only on root level of program"}
 >{Sep="}" MnemoTable.ProgsBlock=True Lex.ReceiverMkSet=Root.FindAnd Stack.LastOutMk=ICBrackAnalysis.FindAnd MnemoTable.ProgsBlock=False}
 >{0 Lex.Stop Console.OutLn="Error R" FUListNew.ReceivedOutMk=Console.OutLn}
 RootMk! RootSep! RootFU! EndRoot!
-
+ICDel! VarDel!
 
 \**\ICBrackAnalysis.Set=
 >{Sep="{" Lex.ReceiverMkSet=Root.FindAnd
@@ -323,7 +568,7 @@ OAList.OutMk=Console.OutLn
 	MnemoTable.SubUp
 	//MnemoTable.OutMk=Console.OutLn
 	}
->{0 Console.OutLn="Mk is expected" Lex.Stop}
+>{0 Lex.Stop Console.OutLn="Mk is expected :::" FUListNew.ReceivedOutMk=Console.OutLn}
 
 \**\FUAfter2.Set=
 >{Sep="." MnemoTable.SubDown=MkList Lex.ReceiverMkSet=MkWait2.FindAnd Console.OutLn="FUAfter2 ."}
@@ -340,12 +585,23 @@ OAList.OutMk=Console.OutLn
 	}
 >{0 Console.OutLn="Mk is expected" Lex.Stop}
 
+
+
 \**\EqualWait.Set=
 >{Sep="=" Lex.ReceiverMkSet=EqualAfter.FindAnd Console.OutLn="EqualWait ="}
 >{Sep="}" Lex.ReceiverMkSet=Root.FindAnd Lex.SendToReceiver}
 >{0 Lex.ReceiverMkSet=Root.FindAnd FUListNew.ReceivedOutMk=Lex.SendToReceiver}
 
 \**\EqualAfter.Set=
+>{Mnemo="ans"}
+>{Sep="(" Lex.ReceiverMkSet=Root.FindAnd Lex.ReceiverPush=AleEqAfter.FindAnd \\Переход к анализу АЛВ
+  OAList.LastAtrSet=ALU_Main.Calc
+  OAList.LineCopyAddPrevLoadSet={FUALUNew.OutMkAppend}
+  MkCalc.OutMk=OAList.LastLoadCopySet
+  OAList.LastAtrAttach=FUALUNew.Set
+  Stack.LineCopyAdd={ALEEnd}
+  AleEqAfter.FindAnd={Sep="("}
+  }
 >{Sep=">" Lex.ReceiverMkSet=ListStart.FindAnd Console.OutLn="EqualAfter >"
   Stack.EmptyExec={Main_Bus.FuSwapNext=Root.Reset Console.OutLn="FU Swap" OAList.LastIpOutMk=ServiseMk.FindAnd}
   OAList.LineCopyAddPrevLoadSet={Obj}}
@@ -369,6 +625,14 @@ OAList.OutMk=Console.OutLn
 \**\DelMnemoIcWait.Set=
 >{Sep="!" Lex.ReceiverMkSet=Root.FindAnd MnemoTable.LineOutMk=Console.OutLn MnemoTable.LinePopMk Console.OutLn="DelIcMnemoWait !"}
 >{0 Lex.ReceiverMkSet=Root.FindAnd Console.OutLn="DelIcMnemoWait else" FUListNew.ReceivedOutMk=Root.FindAnd}
+
+\**\DelMnemoVarWait.Set=
+>{Sep="!" Lex.ReceiverMkSet=Root.FindAnd MnemoTable.LineOutMk=Console.OutLn MnemoTable.LinePopMk Console.OutLn="DelIcMnemoWait !"}
+>{0  Console.OutLn="DelVarMnemoWait else"
+  Lex.ReceiverMkSet=Root.FindAnd
+  Lex.ReceiverPush=ALEStart.FindAnd Root.ReceivedOutMk=ALEStart.FindAnd
+  FUListNew.ReceivedOutMk=Lex.SendToReceiver
+}
 
 \**\MnemoLoad.Set=
 >{Sep="(" Lex.ReceiverMkSet=LoadVar.FindAnd Console.OutLn="MnemoLoad ("}
@@ -397,9 +661,26 @@ BrackLoadVar.Set=
 	Console.OutLn="EqVar }"
 	FUListNew.ReceivedOutMk=Root.FindAnd
 }
->{Sep="+" Sep="-" Sep="*" Sep="/" Sep="//" Lex.ReceiverPush=ALEStart.FindAnd Lex.PrevOutMk}
->{0 Console.OutLn="EqVar else" Lex.ReceiverMkSet=Root.FindAnd EqualAfter.ReceivedLoadOutMk=OAList.LastLoadSet OAList.OutMk=Console.OutLn EqualAfter.ReceivedOutMk=EqVarTypeSet.FindAnd
-  FUListNew.ReceivedOutMk=Console.OutLn EqVar.ReceivedOutMk=Root.FindAnd}
+\\>{Sep="+" Sep="-" Sep="*" Sep="/" Sep="//" Lex.ReceiverPush=ALEStart.FindAnd Lex.PrevOutMk}
+>{0 
+  EqVar.ReceivedOutMk=ALEPriority.FindAnd
+EqVar.ReceivedOutMk=Console.OutLn
+  ALEPriority.FailExec={
+    Console.OutLn="EqVar else" Lex.ReceiverMkSet=Root.FindAnd EqualAfter.ReceivedLoadOutMk=OAList.LastLoadSet
+    Console.OutLn="EqVar not ALE"
+  OAList.OutMk=Console.OutLn EqualAfter.ReceivedOutMk=EqVarTypeSet.FindAnd
+    EqVar.ReceivedOutMk=Console.OutLn EqVar.ReceivedOutMk=Root.FindAnd EqVar.ProgStop=1
+  }
+  Console.OutLn="EqVar ALE"
+  Lex.ReceiverMkSet=Root.FindAnd Lex.ReceiverPush=AleEqAfter.FindAnd \\Переход к анализу АЛВ
+  OAList.LastAtrSet=ALU_Main.Calc
+  OAList.LineCopyAddPrevLoadSet={FUALUNew.OutMkAppend}
+  MkCalc.OutMk=OAList.LastLoadCopySet
+  OAList.LastAtrAttach=FUALUNew.Set
+  Stack.LineCopyAdd={ALEEnd}
+  EqualAfter.ReceivedOutMk=AleEqAfter.FindAnd
+  EqVar.ReceivedOutMk=Lex.SendToReceiver
+  }
 
 EqVarTypeSet.Set= // Список для простановки типа нагрузки
 >{Mk OAList.LastLoadTypeSet=CAtrType}
@@ -428,8 +709,8 @@ Main_Bus.ArgByIndOutMk=Str_Gen.Start
 //Lex.Lexing="Atr=pi"
 Lex.SendToReceiver={End} \\ Посылка лексемы-маркера конца файла
 \\MnemoTable.ContextOutMk=Console.MnemoTableSet
-\\Console.OutLn="------"
-\\OAList.OutMk=Console.OutLn
+Console.OutLn="---OAList---"
+OAList.OutMk=Console.OutLn
 
 \\Console.OutLn="------"
 \\Console.OutLn="Stack:"

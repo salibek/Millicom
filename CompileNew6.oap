@@ -4330,9 +4330,14 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
   Obj={Mnemo="CompilyatorProgExec" Mk=107 Hint="Выполнить программу, если режим компилятора"}
   Obj={Mnemo="FUTypeCorrectSet" Mk=155 Hint="Установить коррекцию номера типа ФУ (для переноса ОА-программы на другую ОА-платформу)"}
 
-  Obj={Mnemo="FuNextSwap" Mk=160 Hint="Поменять местами указанный и следующий ФУ (на входе начало диапазона МК для первого ФУ)"}
+  Obj={Mnemo="FuSwapNext" Mk=160 Hint="Поменять местами указанный и следующий ФУ (на входе начало диапазона МК для первого ФУ)"}
   Obj={Mnemo="FuSwapSet" Mk=161 Hint="Установить первой ФУ для обмена (на входе начало диапазона МК для второго ФУ)"}
   Obj={Mnemo="FuSwap" Mk=162 Hint="Поменять местами два ФУ"}
+
+  Obj={Mnemo="Del" Mk=250 Hint="Удаление переменной или константы"}
+  Obj={Mnemo="DelIc" Mk=251 Hint="Удаление ИК"}
+  Obj={Mnemo="DelGraph" Mk=252 Hint="Удаление ОА дерева/графа"}
+
   Obj={Mnemo="FU index" Hint="Работа с индексами управляемых ФУ" Comment
   	Obj={Mnemo="FuContextOut" Mk=45 Hint="Выдать контекст ФУ по его МК"}
   	Obj={Mnemo="FuContextOutMk" Mk=46 Hint="Выдать МК с контекстом ФУ по его МК"}
@@ -4635,7 +4640,7 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
     Obj={Mk=167 Mnemo="LineIpCut" Hint="Удалить последние ИП из текущей линии (в нагрузке количество удаляемых ИП, по умолчанию 1)"}
     Obj={Mk=168 Mnemo="LineVarIpCut" Hint="Удалить последние ИП вместе с переменными из текущей линии (в нагрузке количество удаляемых ИП, по умолчанию 1)"}
 
-    Obj={Mk=174 Mnemo="LastLoadConstVarTypeSet" Hint="Установить тип константа/переменная для последней нагрузки (по умолчанию переменная)"}
+//    Obj={Mk=174 Mnemo="LastLoadConstVarTypeSet" Hint="Установить тип константа/переменная для последней нагрузки (по умолчанию переменная)"}
     Obj={Mk=170 Mnemo="LastAttach" Hint="Конкатенация ИК к последней линии списка"}
     Obj={Mk=171 Mnemo="LastTreeCopyAttach" Hint="Конкатенация копии ИК к последней линии списка и копирование ОА-графа"}
 //    Obj={Mk=171 Mnemo="LastCopyAttach" Hint="Конкатенация копии ИК к последней линии списка"}
@@ -4800,6 +4805,7 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 
   Obj={Mk=35 Mnemo="ReceivedLoadOut" Hint="Выдать нагрузку входного объекта для поиска"}
   Obj={Mk=36 Mnemo="ReceivedLoadOutMk" Hint="Выдать МК с нагрузкой входного объекта для поиска"}
+  Obj={Mk=39 Mnemo="ReceivedIpLoadOutMk" Hint="Выдать МК с нагрузкой найденной ИП во входном объекте"}
 
   Obj={Mk=37 Mnemo="LineCountOut" Hint="Выдать количество линий в списке"}
   Obj={Mk=38 Mnemo="LineCountOutMK" Hint="Выдать Мк с количеством линий в списке"}
@@ -6498,6 +6504,7 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 	{
 	Obj={Mk=1 Mnemo="Set" Hint="Установить указатель на ОА граф"}
 	Obj={Mk=5 Mnemo="ExtendSet" Hint="Установить флаг разворачивания всех ветвей иерархческого списка"}
+	Obj={Mk=10 Mnemo="MnemoTableSet" Hint="Установить указатель на ФУ списка лексем"}
 
 	Obj=CommonMkList
 	}

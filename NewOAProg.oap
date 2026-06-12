@@ -1,2 +1,4 @@
 NewFU={Mnemo="Console" FUType=1}
-Console.OutLn="Hellow!"
+x=0
+Console.OutLn=2+2
+Console.OutLn=ans

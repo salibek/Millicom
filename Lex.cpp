@@ -65,8 +65,8 @@
 			Receiver.pop_back();
 		}
 			break;
-		case 1: // ReceiverPopCend Вытолкнуть Мк премника из стека и выдать Лексему (при нулевой нагрузке выдается текущая лексема)
-			if (!ReceiverMK.size()) break;
+		case 1: // ReceiverPopSend Вытолкнуть Мк премника из стека и выдать Лексему (при нулевой нагрузке выдается текущая лексема)
+			if (ReceiverMK.size()<2) break;
 			ReceiverMK.pop_back();
 			Receiver.pop_back();
 			if (Load.Point == nullptr)
@@ -301,7 +301,7 @@
 				ProgExec(Load);
 			break;
 
-		case 94: // LexStrOut Выдать строку с последней распознанной лексемой
+		case 94: // LexStrOut Выдать с последней распознанной лексемой
 			Load.Write(LexAccum);
 			break;
 		case 95: // LexStrOutMk Выдать МК со строкой с последней распознанной лексемой
@@ -317,13 +317,37 @@
 			break;
 		case 99: // Stop Остановить лексический анализ (Эту МК необходимо выполнить при перезапуске лексичекого анализа)
 			Work = false;
+			StopPos = distance(str.begin(), i);
 			ProgExec(StopProg); // выполнить программу по останову лексического анализа
 			S = 0;
 			LexBuf[0].atr = SeperatAtr;
 			ProgLevel = 0; // Счетчик табуляций
 			break;
+
+		case 111: // LastPosOut Выдать позицию последней распознной лексемы
+			Load.Write(StopPos);
+			break;
+		case 112: // LastPosOutMk Выдать МК с позицией последней распознной лексемы
+			MkExec(Load, { Cint, &StopPos });
+			break;
+		case 113: //LastPosMarkOut Выдать маркер позиции последней распознной лексемы
+		case 114: // LastPosMarkOutMk Выдать МК с маркером позиции последней распознной лексемы
+		{
+			string mark;
+			for (int i = 0; i < StopPos; i++, mark += " ");
+			mark += StopMark;
+			if(MK==113)
+				Load.Write(StopPos);
+			else
+				MkExec(Load, { Cstring, &mark });
+			break;
+		}
+		case 115: //StopMarkSet Установить маркер обозначения останова лексического анализа
+			StopMark = Load.toStr();
+			break;
+
 		case 100: // Lexing
-		{	string str = Load.toStr()+" ";
+		{	str = Load.toStr()+" ";
 			str += EOL; // Дабавить символы конца строки
 			S = 0; // --- установка начального состояния автомата
 			if (Load.Type >> 1 == Dstring && Load.toStr() == "")
@@ -334,6 +358,7 @@
 				LexOut();
 			}
 			Work = true;
+			ErrCode = 0;
 			if (TabMode) {
 				long int tabCounter = 0;
 				while (str[tabCounter] == '\t')
@@ -365,7 +390,8 @@
 				if (tabCounter) // Убрать символы табуляции
 					str = str.substr(tabCounter, string::npos);
 			}
-			for (auto i = str.begin(); i != str.end() && Work; i++)
+			i = str.begin();
+			for (; i != str.end() && Work; i++)
 				switch (S) //LEXER
 				{
 				// Стартовое состояние
@@ -408,7 +434,7 @@
 						//Debug(*i, S, LexAccum); // --- отладка
 						break;
 					}
-					if (*i == '/') // символ (/); 0 -> 5
+					if (*i == '\\') // символ (/); 0 -> 5
 					{
 						LexAccum = *i; //запись в буферную переменную
 						S = 5; //переход в состояние 5
@@ -432,7 +458,7 @@
 						ib = (ib + 1) % SizeBuf;
 						LexBuf[ib].Load.Clear();
 						string* tstr=new string;
-						if (SepUk3 != Seps.end() && SepUk3->size()==3)
+						if (SepUk3 != Seps.end() && SepUk3->size()==3) 
 						{
 							*tstr = *SepUk3;
 							i += 2;
@@ -483,7 +509,8 @@
 						break;
 					}
 					Work = false; //установка флага рабочего режима лексера на false
-					if (ErrProg != nullptr) ProgExec(ErrProg, 0, Bus, nullptr); //обработка ошибки
+					ErrCode = 1; 
+					//if (ErrProg != nullptr) ProgExec(ErrProg, 0, Bus, nullptr); //обработка ошибки
 					break;
 				}
 				// Обработка целой части
@@ -519,7 +546,8 @@
 						break;
 					}
 					Work = false; //установка флага рабочего режима лексера на false
-					ProgExec(ErrProg, 0, Bus, nullptr); //обработчик ошибок
+					ErrCode = 2;
+					//ProgExec(ErrProg, 0, Bus, nullptr); //обработчик ошибок
 					break;
 				// Обработка дробной части
 				case 2:
@@ -547,7 +575,8 @@
 						break;
 					}
 					Work = false;  //установка флага рабочего режима лексера на false
-					ProgExec(ErrProg, 0, Bus, nullptr); //обработчик ошибок
+					ErrCode = 3;
+					//ProgExec(ErrProg, 0, Bus, nullptr); //обработчик ошибок
 					break;
 				//Обработка мнемоники
 				case 3:
@@ -590,10 +619,11 @@
 						break;
 					}
 					Work = false;  //установка флага рабочего режима лексера на false
+					ErrCode = 4;
 					ProgExec(ErrProg, 0, Bus, nullptr); //обработчик ошибок
 					break;
 				//Обработка кавычек
-				case 4:
+				case 4: // Строковая константа
 					if (*i != '"' && *i != '\\') //любой символ кроме кавычки и \; 4 -> 4
 					{
 						LexAccum += *i;  //добавление символа в буферную переменную
@@ -621,11 +651,12 @@
 								break;
 							}
 					Work = false;  //установка флага рабочего режима лексера на false
-					ProgExec(ErrProg, 0, Bus, nullptr); //обработчик ошибок
+					ErrCode = 5;
+					//ProgExec(ErrProg, 0, Bus, nullptr); //обработчик ошибок
 					break;
 				//Обработка строчного комментария
 				case 5:
-					if (*i == '/') //символ (/); 5 -> 11
+					if (*i == '\\') //символ (/); 5 -> 11
 					{
 						LexAccum += *i; //добавление символа в буферную переменную
 						S = 11; //переход в состояние 11
@@ -1100,6 +1131,11 @@
 				default:
 					break;
 				}
+//			if (!Work) {
+//				StopPos = distance(str.begin(),i); // Запомнить позицию в строке, где произошла ошибка
+//				ProgExec(StopProg); // выполнить программу по останову лексического анализа
+//			}
+
 		}
 		ProgExec(FinProg); // Выполнить 
 		break;

@@ -93,6 +93,7 @@ void	ALU::error_msg(int error_code)
 
 void ALU::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 {
+
 	MK %= FUMkRange;
 	if (MK == 1) MK = E_MK::SET; // Заменить МК установки аккумулятора
 	ProgExec(PrefixProg); // Выполнить префиксную программу
