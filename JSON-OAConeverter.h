@@ -19,6 +19,7 @@ private:
 	void Recurs(LoadPoint Load, ofstream& F, string Tab=""); // Рекурсивная часть перевода в JSON 
 	Search Searcher; // Устройство поиска
 public:
+	long HieRange = -1, LowRange = -1; // Начало и конец диапазона вывода таблицы
 	void ProgFU(long int MK, LoadPoint Load, FU* Sender = nullptr);
 	void FOutNameSet(string Fname) { FOutName = Fname; };
 	void FInNameSet(string Fname) { FInName = Fname; };

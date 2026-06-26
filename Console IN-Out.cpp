@@ -1,0 +1,1019 @@
+// ФУ Консоль
+#include "stdafx.h"
+#include "Console.h"
+#include <iostream>
+#include <string>
+#include <sstream>
+#include <fstream>
+#include <cstdio>
+#include <regex>
+#include <iomanip>
+
+void Console::ReportError(const string& where, const string& msg) {
+	cerr << "[Console::" << where << "] " << msg << endl;
+}
+
+void Console::ParseTemplate() {
+	Tokens.clear();
+	string textBuff;
+
+	for (int i = 0; i < (int)Template.size(); ++i) {
+		if (Template[i] != '{') {
+			textBuff += Template[i];
+			continue;
+		}
+
+		if (!textBuff.empty()) {
+			Tokens.push_back({ false, textBuff, -1, {} });
+			textBuff.clear();
+		}
+
+		++i; 
+
+		if (i >= (int)Template.size()) {
+			ReportError("ParseTemplate", "'{' is not closed at the of the template");
+			break;
+		}
+
+		FormatToken token;
+		token.isIndex = true;
+
+		string num;
+		while (i < (int)Template.size() && isdigit(Template[i])) {
+			num += Template[i];
+			++i;
+		}
+
+		if (num.empty()) {
+			token.index = -1; // будет назначен автоматически позже
+		}
+		else {
+			token.index = stoi(num);
+		}
+
+		if (i < (int)Template.size() && Template[i] == ':') {
+			++i;
+
+			while (i < (int)Template.size() && Template[i] != '}') {
+				char c = Template[i];
+
+				if (c == '0') {
+					token.spec.zeroes = true;
+				}
+				else if (isdigit(c)) {
+					token.spec.width = token.spec.width * 10 + (c - '0');
+				}
+				else if (c == '.') {
+					++i;
+					string p;
+					while (i < (int)Template.size() && isdigit(Template[i])) {
+						p += Template[i];
+						++i;
+					}
+					if (p.empty())
+						ReportError("ParseTemplate", "no precision after'.'");
+					else
+						token.spec.precision = stoi(p);
+					continue;
+				}
+				else if (c == '<' || c == '>' || c == '^') {
+					token.spec.align = c;
+				}
+				else if (c == '#') {
+					token.spec.alt = true;
+				}
+				else if (c == 'x' || c == 'o' || c == 'b') {
+					token.spec.altType = c;
+				}
+				else {
+                    ReportError("ParseTemplate", string("unknown specificator '") + c + "'");
+                }
+				++i;
+			}
+		}
+
+		if (i >= (int)Template.size() || Template[i] != '}') {
+			ReportError("ParseTemplate", "no '}' for index " + to_string(token.index));
+		}
+		else {
+			++i;
+		}
+
+		--i;
+
+		Tokens.push_back(token);
+	}
+
+	int autoIdx = 0;
+	for (auto& t : Tokens) {
+		if (t.isIndex && t.index == -1)
+			t.index = autoIdx++;
+	}
+
+	if (!textBuff.empty())
+		Tokens.push_back({ false, textBuff, -1, {} });
+}
+
+string Console::FormatValue(LoadPoint& lp, FormatSpec& spec) {
+	string result = lp.toStr();
+
+	if (spec.alt) { //Альтернативные системы счисления
+		long int v = lp.toInt();
+
+		if (spec.altType == 'x') {
+			stringstream ss;
+			ss << hex << v;
+			result = ss.str();
+		}
+
+		else if (spec.altType == 'o') {
+			stringstream ss;
+			ss << oct << v;
+			result = ss.str();
+		}
+
+		else if (spec.altType == 'b') {
+			result = "";
+
+			while (v) {
+				result = char('0' + (v % 2)) + result;
+				v /= 2;
+			}
+		}
+	}
+
+	if (spec.precision >= 0) { //Точность для float/double
+		double v = lp.toDouble();
+		stringstream ss;
+		ss << fixed << setprecision(spec.precision) << v;
+		result = ss.str();
+	}
+
+	if (spec.width > result.size()) { //Выравнивание и строка заполнения
+		int pad = spec.width - result.size();
+		string fill(pad, spec.zeroes ? '0' : ' ');
+
+		if (spec.align == '<') 
+			result = result + fill;
+		else
+			result = fill + result;
+	}
+
+	return result;
+}
+
+void Console::ExecuteTemplate() {
+	Buffer.clear();
+
+	for (auto& t : Tokens) {
+		if (!t.isIndex) {
+			Buffer += t.text;
+			continue;
+		}
+
+		if (t.index < 0 || t.index >= (int)Operands.size()) {
+			ReportError("ExecuteTemplate", "index {" + to_string(t.index) + "} out of range (total operands: " + to_string(Operands.size()) + ")");
+			continue;
+		}
+
+		if (Operands[t.index].Point == nullptr) {
+			ReportError("ExecuteTemplate", "operand {" + to_string(t.index) + "} havent set (Point == nullptr)");
+			continue;
+		}
+
+		Buffer += FormatValue(Operands[t.index], t.spec);
+	}
+
+	cout << Buffer;;
+}
+
+void Console::ProgFU(long int MK, LoadPoint Load, FU* Sender)
+{
+	MK %= FUMkRange; // Оставить только свои МК
+	switch (MK)
+	{
+	case 0: // Reset
+		AtrMnemo.clear();
+		break;
+	case 1: // Out Вывод
+	case 2: // OutLn Вывод и перевод строки
+	case 3: // LnOut Перевод строки и вывод
+	case 4: // LnOutLn Перевод строки, вывод и снова перевод строки
+		cout << prefix;
+		if (MK == 3 || MK == 4) cout << endl;
+		if (Load.Point != nullptr)
+			Load.print(AtrMnemo,"",Sep,End, quote, ArrayBracketStart,ArrayBracketFin, VectCol);
+		if (MK == 2 || MK == 4) cout << endl;
+		break;
+	case 5: // LoadInfoOut Вывести сведения о нагрузке
+		cout << "LoadInfo : Type " << Load.Type << " Ind " << Load.Ind;
+		if (Load.Point == nullptr) cout << " Point=null";
+		else cout << Load.Type % 2 ? " Const" : "Var";
+		cout << endl;
+		break;
+	case 10: // Ln Перевод строки
+		cout << endl;
+		break;
+	case 15: //SepSet Установить строку-разделитель
+		Sep = Load.toStr();
+		break;
+	case 16: //EndSet Установить строку в конце вывода
+		End = Load.toStr();
+		break;
+	case 17: // ArrayBracketStartSet Установить строку, обозначающую открывающуюся скобку при вывод вектора
+		ArrayBracketStart = Load.toStr();
+		break;
+	case 18: // ArrayBracketStartSet Установить строку, обозначающую закрывающуюся скобку при вывод вектора
+		ArrayBracketFin = Load.toStr();
+		break;
+	case 19: // QuoteSet Установить символ кавычек при воводе строки или символа
+		quote = Load.toStr();
+		break;
+	case 20: // PrefixSet Установить префикс перед выводом
+		if ((Load.Type) >> 1 == Dstring)
+			prefix = *(string*)Load.Point;
+		break;
+	case 21: // VectColSet Установить количество колонок при выводе вектора
+		VectCol = Load.toInt();
+		break;
+	case 25: // FileNameSet
+		filename = Load.toStr();
+		break;
+	case 30: // OutFileSet Установить файл для вывода
+		if(Load.Point==nullptr)
+			ostream& out = cout;
+		else
+			freopen_s(&streamOut, Load.toStr().c_str(), "w", stdout);
+		break;
+
+	case 31: // StdOutFileAppend Установить файл для дополнения
+		if (Load.Point == nullptr)
+			ostream& out = cout;
+		else
+			freopen_s(&streamOut, Load.toStr().c_str(), "a", stdout);
+		break;
+
+	case 35: // StdInFileSet Установить файл для ввода
+		if (Load.Point == nullptr)
+//			std::istream& in == cin;
+			;
+		else
+			freopen_s(&streamIn, Load.toStr().c_str(), "r", stdin);
+		break;
+	case 40: // AtrMnemoAdd Добавить мнемоники атрибутов
+		if (Load.Type >> 1 == DIP)
+			AtrMnemo[((ip*)Load.Point)->atr] = ((ip*)Load.Point)->Load.toStr();
+		else if (Load.isIC())
+			for (auto& i : *(IC_type)Load.Point)
+				AtrMnemo[i.atr] = i.Load.toStr();
+		break;
+	case 41: // AtrMnemoClear Очистить мнемоники атрибутов
+		AtrMnemo.clear();
+		break;
+
+	case 44: // TrueValSet
+		TrueVar.clear();
+		if(Load.Point!=nullptr)
+			TrueVar.push_back(Load.toStr());
+		break;
+	case 45: // TrueValAdd
+		if (Load.Point != nullptr)
+			TrueVar.push_back(Load.toStr());
+		break;
+	case 46: // TrueValSet
+		FalseVar.clear();
+		if (Load.Point != nullptr)
+			FalseVar.push_back(Load.toStr());
+		break;
+	case 47: // TrueValAdd
+		if (Load.Point != nullptr)
+			FalseVar.push_back(Load.toStr());
+		break;
+
+	case 50: //VectIn ввод вектора 
+		break;
+	case 55: //MatrIn ввод матрицы	
+		break;
+	case 60: //VarClear Очистить буфер адресов для результата ввода
+		VarOutBuf.clear();
+		break;
+	case 61: //VarSet Записать адрес переменной для записи результата ввода
+		VarOutBuf.clear();
+		VarOutBuf.push_back({ -1, Load });
+		break;
+	case 62: //VarAdd Добавить адрес переменной для записи результата ввода
+		VarOutBuf.push_back({-1, Load});
+		break;
+	case 70: //TemplSet Установить шаблон для вывода
+		Template = Load.toStr();
+		break;
+	case 80: //VarOut – выдать адрес переменной
+		Load.Write(Var);
+		break;
+	case 85: // VarOutMk
+		MkExec(Load, Var);
+		break;
+	case 86: // InStrOut Выдать последнюю введенную строку
+		Load.Write(inStr);
+		break;
+	case 87: // InStrOutMk  Выдать МК с последней введенной строкой
+		MkExec(Load, {Cstring, &inStr});
+		break;
+	case 90: // TrueFalseClear Очистить буфер наименований true и false
+		False.clear();
+		break;
+	case 91: // TrueAdd
+		True.insert(Load.toStr());
+		break;
+	case 92: // FalseAdd
+		False.insert(Load.toStr());
+		break;
+	case 94: // InputErrProgSet Установить программу обработки ошибки неправильного формата входных данных
+		InputFormatErrProg = Load.Point;
+	case 100:
+	{
+		getline(cin, inStr);
+		Var.Clear();
+
+		regex regular_float("[-+]?\\d+\\.\\d+");
+		regex regular_int("[-+]?[\\d]+");
+		regex regular_true("[Tt][Rr][Uu][Ee]");
+		regex regular_false("[Ff][Aa][Ll][Ss][Ee]");
+		regex regular_array("^\\[\\[.*\\]\\]$|^\\[[\\d,\\s-]+\\]$");
+		regex regular_vector("^\\{(.+)\\}$");
+
+		// 1. Определяем тип введённого
+		if (regex_match(inStr, regular_float)) {
+			double res = stod(inStr);
+			Var = { Cdouble, new double(res) };
+		}
+		else if (regex_match(inStr, regular_int)) {
+			long int res = stol(inStr);
+			Var = { Cint, new long int(res) };
+		}
+		else if (regex_match(inStr, regular_true)) {
+			Var = { Cbool, new bool(true) };
+		}
+		else if (regex_match(inStr, regular_false)) {
+			Var = { Cbool, new bool(false) };
+		}
+		else if (regex_match(inStr, regular_vector)) {
+			regex num_re("[-+]?\\d+\\.?\\d*");
+			regex rfloat("[-+]?\\d+\\.\\d+");
+			regex rint("[-+]?\\d+");
+			regex rtrue("[Tt][Rr][Uu][Ee]");
+			regex rfalse("[Ff][Aa][Ll][Ss][Ee]");
+
+			vector<LoadPoint>* vect = new vector<LoadPoint>();
+			string inner = inStr.substr(1, inStr.size() - 2);
+			stringstream ss(inner);
+			string token;
+			while (getline(ss, token, ',')) {
+				token.erase(0, token.find_first_not_of(" "));
+				token.erase(token.find_last_not_of(" ") + 1);
+				if (regex_match(token, rfloat))
+					vect->push_back({ Cdouble, new double(stod(token)) });
+				else if (regex_match(token, rint))
+					vect->push_back({ Cint, new long int(stol(token)) });
+				else if (regex_match(token, rtrue))
+					vect->push_back({ Cbool, new bool(true) });
+				else if (regex_match(token, rfalse))
+					vect->push_back({ Cbool, new bool(false) });
+				else
+					vect->push_back({ Cstring, new string(token) });
+			}
+			Var = { CLoadVect, vect };
+		}
+		else if (regex_match(inStr, regular_array)) {
+			regex row_re("\\[([\\d,\\s-]+)\\]");
+			regex num_re("[-+]?\\d+");
+			bool isMatrix = (inStr[1] == '[');
+
+			if (isMatrix) {
+				vector<vector<long int>> matrix;
+				for (sregex_iterator rowIt(inStr.begin(), inStr.end(), row_re);
+					rowIt != sregex_iterator(); ++rowIt) {
+					string rowStr = (*rowIt)[1].str();
+					vector<long int> row;
+					for (sregex_iterator numIt(rowStr.begin(), rowStr.end(), num_re);
+						numIt != sregex_iterator(); ++numIt)
+						row.push_back(stol((*numIt).str()));
+					matrix.push_back(row);
+				}
+				int rows = matrix.size();
+				int cols = rows > 0 ? matrix[0].size() : 0;
+				long int* arr = new long int[rows * cols + 3];
+				arr[0] = rows; arr[1] = cols;
+				int idx = 2;
+				for (auto& row : matrix)
+					for (auto val : row)
+						arr[idx++] = val;
+				arr[idx] = -1;
+				Var = { CintArray, arr };
+			}
+			else {
+				vector<long int> nums;
+				for (sregex_iterator it(inStr.begin(), inStr.end(), num_re);
+					it != sregex_iterator(); ++it)
+					nums.push_back(stol((*it).str()));
+				long int* arr = new long int[nums.size() + 1];
+				for (int i = 0; i < (int)nums.size(); i++)
+					arr[i] = nums[i];
+				arr[nums.size()] = -1;
+				Var = { CintArray, arr };
+			}
+		}
+		else {
+			Var = { Cstring, new string(inStr) };
+		}
+
+		// 2. Проверяем совместимость типов и записываем
+		LoadPoint& dst = (!VarOutBuf.empty() && VarOutBuf[0].Ref.Point != nullptr)
+			? VarOutBuf[0].Ref : Load;
+
+		if (dst.Point != nullptr) {
+			unsigned int dstType = dst.Type >> 1;
+			unsigned int varType = Var.Type >> 1;
+
+			bool typeOk = false;
+			if (dstType == Dint && varType == Dint) typeOk = true;
+			else if (dstType == Ddouble && (varType == Ddouble || varType == Dint)) typeOk = true;
+			else if (dstType == Dfloat && (varType == Ddouble || varType == Dint)) typeOk = true;
+			else if (dstType == Dbool && varType == Dbool) typeOk = true;
+			else if (dstType == Dstring && varType == Dstring) typeOk = true;
+			else if (dstType == Dchar && varType == Dchar) typeOk = true;
+			else if (dstType == DintArray && varType == DintArray) typeOk = true;
+			else if (dstType == DLoadVect && varType == DLoadVect) typeOk = true;
+
+			if (!typeOk) {
+				auto typeName = [](unsigned int t) -> string {
+					switch (t) {
+					case Dint:      return "int";
+					case Ddouble:   return "double";
+					case Dfloat:    return "float";
+					case Dbool:     return "bool";
+					case Dstring:   return "string";
+					case Dchar:     return "char";
+					case DintArray: return "array";
+					case DLoadVect: return "vector";
+					default:        return "unknown type";
+					}
+					};
+				cerr << "[Console::Input] Error: waiting "
+					<< typeName(dstType) << ", but "
+					<< typeName(varType) << endl;
+
+				if (WrongFormatProg != nullptr)
+					ProgExec(WrongFormatProg);
+
+				break;
+			}
+
+			// Записываем
+			if (varType == DintArray)
+				*(long int**)dst.Point = (long int*)Var.Point;
+			else if (varType == DLoadVect)
+				*(vector<LoadPoint>**)dst.Point = (vector<LoadPoint>*)Var.Point;
+			else if (dstType == Ddouble && varType == Dint) {
+				double val = (double)Var.toInt();
+				*(double*)dst.Point = val;
+			}
+			else
+				dst.WriteFromLoad(Var);
+		}
+		break;
+	}
+	case 101: // InputMk Ввод данных и выдача МК с ними
+	{
+		ProgFU(100, Load, Sender);
+		if (Load.Point != nullptr)
+			MkExec(Load, Var);
+		break;
+		/*
+		std::cmatch results;
+		regex regular_str("[\\D\\s]+");
+		regex regular_int("([\\d]+)");
+		regex regular_float("\\d+\\.\\d+");
+		regex regular_true("[Tt][Rr][Uu][Ee]");
+		regex regular_false("[Ff][Aa][Ll][Ss][Ee]");
+		regex regular_vector("^\\[(\\d+,?\\s?)+\\]$"); //интовый вектор
+		regex regular_matrix("^\\[(\\d+[,;]?\\s?)+\\]$"); //интовая матрица
+		regex regular_char("\\w{1}");
+
+
+
+
+
+		getline(cin, inStr);
+		Var.Clear(); // Очистить предыдущее значение
+	//	if (MK == 101 && Load.Point != nullptr) // Выдать МК
+		{
+			if (std::regex_match(inStr.c_str(), regular_float)) {
+
+
+				//cout << "its float";
+				double res = stof(inStr);
+				Var = { Cdouble,new double(res) };
+			}
+			else  if (std::regex_match(inStr.c_str(), regular_int)) {
+
+				//cout << "its int";
+				long int res = stoi(inStr);
+				Var = { Cint,new long int(res) };
+			}
+			else if (std::regex_match(inStr.c_str(), regular_true)) {
+
+				Var = { Cbool, new bool(true) };
+
+			}
+			else if (std::regex_match(inStr.c_str(), regular_false)) {
+
+				Var = { Cbool, new bool(false) };
+
+			}
+			else if (std::regex_match(inStr.c_str(), regular_char)) {
+
+				//cout << "its char";
+				char res;
+				res = inStr[0];
+				Var = { Cchar,new char(res) };
+			}
+			else if (std::regex_match(inStr.c_str(), regular_str)) {
+
+				///cout << "its string";
+				Var = { Cstring,new string(inStr) };
+			}
+			else if (std::regex_match(inStr.c_str(), regular_vector)) {
+
+				long int res;
+				long int counter = -1;
+				long int* intbufArray = new long int[256];
+				vector<LoadPoint> Ar;
+				long int i = 0;
+				for (sregex_iterator it = sregex_iterator(inStr.begin(), inStr.end(), regular_int);
+					it != sregex_iterator(); it++) {
+					smatch match = *it;
+					counter++;
+					res = stoi(match.str(0));
+					intbufArray[i] = res;
+					i++;
+				}
+				long int* intArray = new long int[counter];
+
+				for (int i = 0; i < counter; i++) {
+					intArray[i] = intbufArray[i];
+				}
+				delete[] intbufArray;
+				//delete[] intArray;
+
+				Var = { CintArray, new long int* (intArray) };
+			}
+			// Распознание вектора
+			/*
+			else if (std::regex_match(inStr.c_str(), regular_vector)) {
+				int res1;
+				float res2;
+				std::vector <LoadPoint> Ar;
+				for (sregex_iterator it = sregex_iterator(inStr.begin(), inStr.end(), regular_number);
+					it != sregex_iterator(); it++) {
+					smatch match = *it;
+					if (std::regex_match(match.str(0).c_str(), regular_float)) {
+						res2 = stof(match.str(0));
+						Ar.push_back(res2);
+					}
+					else if (std::regex_match(match.str(0).c_str(), regular_int)) {
+						res1 = stoi(match.str(0));
+						Ar.push_back(res1);
+					}
+				}
+
+			}
+			
+			else if (std::regex_match(inStr.c_str(), regular_matrix)) {
+
+				cout << "its matrix";
+
+			}
+
+			// Опеределяем тип введенных данных
+			// Преобразуем в соответсвующий тип и записываем в Var
+			// Var={Тип, new Соотвествующий тип данных} Типы данных Cbool, Cint, Cchar, Cdouble, Cstring, CLoadVect
+			  // Регулятка - определить тип Var={Cbool, new bool(true)}
+			if (MK == 101) // Выдать МК
+				MkExec(Load, Var);
+			else // Записать в переменную
+				Load.WriteFromLoad(Var);
+			break;
+		}
+		// Выдать по списку заранее установленных адресов и МК в VarOutBuf
+//		for (auto& i : VarOutBuf)
+//		{
+//			// Выдача результата ввода на VarOutBuf
+//		}
+		break;*/
+	}
+	case 105: //InputBool Ввод буленова значения
+	case 106: //InputBoolMk Ввод буленова значения и выдача МК с ним
+	//	if(неправильный формат)
+		if(false)
+			ProgExec(InputFormatErrProg);
+		else
+			if (MK == 106) // Выдать МК
+				MkExec(Load, Var);
+			else // Записать в переменную
+				Load.WriteFromLoad(Var);
+		break;
+	case 110: //InputInt
+	case 111: //InputIntMk
+		break;
+// ......
+
+
+	case 200: // NoVarToOutProgSet Установить подрограмму реакции на ошибку "Нет переменной для ввода"
+		NoVarToOutProg = Load.Point;
+		break;
+	case 201: // WrongFormatProgSet Установить подрограмму реакции на ошибку "Неправильный формат входных данных"
+		WrongFormatProg = Load.Point;
+		break;
+
+	case 290: //TemplSet Установить шаблон для вывода
+	{
+		Template = Load.toStr();
+		// Подсчет количества операндов (чтобы понять, сколько операндов ожидать
+		// Operands.resize();
+		// Установка счетчика операндов
+		// Изменение размера вектора ссылок на операнды
+		ParseTemplate(); //Распарсить шаблон
+
+		int maxIndex = -1;
+		for (auto& t : Tokens) {
+			if (t.isIndex)
+				maxIndex = max(maxIndex, t.index);
+		}
+
+		if (maxIndex >= 0) {
+			Operands.resize(maxIndex + 1);
+		}
+		else {
+			Operands.clear();
+		}
+
+		OpCount = 0;
+		break;
+	}
+
+	case 295: // OpAdd Добавить очередной операнд
+		if (OpCount >= (int)Operands.size()) {
+			ReportError("OpAdd", "more operands then expected (expected " + to_string(Operands.size()) + ", received " + to_string(OpCount + 1) + ")");
+			break;
+		}
+		if (OpCount < static_cast<int>(Operands.size())) {
+			Operands[OpCount++] = Load;
+			if (OpCount == (int)Operands.size()) {
+				ExecuteTemplate();
+				OpCount = 0; // сброс для повторного использования
+				for (auto& op : Operands)
+					op = { 0, nullptr };
+			}
+		}
+		break;
+
+	case 300: // Op00Set Установить операдн с индексом 0
+	{
+		int idx = static_cast<int>(MK) - 300;
+		if (idx >= (int)Operands.size()) {
+			ReportError("Op00Set", "index 0 out of range (total operands: "
+				+ to_string(Operands.size()) + ")");
+			break;
+		}
+		Operands[idx] = Load;
+
+		// Проверяем что все операнды установлены
+		{
+			bool allSet = true;
+			for (auto& op : Operands)
+				if (op.Point == nullptr) { allSet = false; break; }
+			if (allSet)
+				ExecuteTemplate();
+		}
+		break;
+	}
+	case 301: // Op01Set Установить операдн с индексом 1
+	{
+		int idx = static_cast<int>(MK) - 300;
+		if (idx >= (int)Operands.size()) {
+			ReportError("Op00Set", "index 1 out of range (total operands: "
+				+ to_string(Operands.size()) + ")");
+			break;
+		}
+		Operands[idx] = Load;
+
+		// Проверяем что все операнды установлены
+		{
+			bool allSet = true;
+			for (auto& op : Operands)
+				if (op.Point == nullptr) { allSet = false; break; }
+			if (allSet)
+				ExecuteTemplate();
+		}
+		break;
+	}
+	case 302: // Op02Set Установить операдн с индексом 2
+	{
+		int idx = static_cast<int>(MK) - 300;
+		if (idx >= (int)Operands.size()) {
+			ReportError("Op00Set", "index 2 out of range (total operands: "
+				+ to_string(Operands.size()) + ")");
+			break;
+		}
+		Operands[idx] = Load;
+
+		// Проверяем что все операнды установлены
+		{
+			bool allSet = true;
+			for (auto& op : Operands)
+				if (op.Point == nullptr) { allSet = false; break; }
+			if (allSet)
+				ExecuteTemplate();
+		}
+		break;
+	}
+	case 303: // Op03Set Установить операдн с индексом 3
+	{
+		int idx = static_cast<int>(MK) - 300;
+		if (idx >= (int)Operands.size()) {
+			ReportError("Op00Set", "index 3 out of range (total operands: "
+				+ to_string(Operands.size()) + ")");
+			break;
+		}
+		Operands[idx] = Load;
+
+		// Проверяем что все операнды установлены
+		{
+			bool allSet = true;
+			for (auto& op : Operands)
+				if (op.Point == nullptr) { allSet = false; break; }
+			if (allSet)
+				ExecuteTemplate();
+		}
+		break;
+	}
+	case 304: // Op04Set Установить операдн с индексом 4
+	{
+		int idx = static_cast<int>(MK) - 300;
+		if (idx >= (int)Operands.size()) {
+			ReportError("Op00Set", "index 4 out of range (total operands: "
+				+ to_string(Operands.size()) + ")");
+			break;
+		}
+		Operands[idx] = Load;
+
+		// Проверяем что все операнды установлены
+		{
+			bool allSet = true;
+			for (auto& op : Operands)
+				if (op.Point == nullptr) { allSet = false; break; }
+			if (allSet)
+				ExecuteTemplate();
+		}
+		break;
+	}
+	case 305: // Op05Set Установить операдн с индексом 5
+	{
+		int idx = static_cast<int>(MK) - 300;
+		if (idx >= (int)Operands.size()) {
+			ReportError("Op00Set", "index 5 out of range (total operands: "
+				+ to_string(Operands.size()) + ")");
+			break;
+		}
+		Operands[idx] = Load;
+
+		// Проверяем что все операнды установлены
+		{
+			bool allSet = true;
+			for (auto& op : Operands)
+				if (op.Point == nullptr) { allSet = false; break; }
+			if (allSet)
+				ExecuteTemplate();
+		}
+		break;
+	}
+	case 306: // Op06Set Установить операдн с индексом 6
+	{
+		int idx = static_cast<int>(MK) - 300;
+		if (idx >= (int)Operands.size()) {
+			ReportError("Op00Set", "index 6 out of range (total operands: "
+				+ to_string(Operands.size()) + ")");
+			break;
+		}
+		Operands[idx] = Load;
+
+		// Проверяем что все операнды установлены
+		{
+			bool allSet = true;
+			for (auto& op : Operands)
+				if (op.Point == nullptr) { allSet = false; break; }
+			if (allSet)
+				ExecuteTemplate();
+		}
+		break;
+	}
+	case 307: // Op07Set Установить операдн с индексом 7
+	{
+		int idx = static_cast<int>(MK) - 300;
+		if (idx >= (int)Operands.size()) {
+			ReportError("Op00Set", "index 7 out of range (total operands: "
+				+ to_string(Operands.size()) + ")");
+			break;
+		}
+		Operands[idx] = Load;
+
+		// Проверяем что все операнды установлены
+		{
+			bool allSet = true;
+			for (auto& op : Operands)
+				if (op.Point == nullptr) { allSet = false; break; }
+			if (allSet)
+				ExecuteTemplate();
+		}
+		break;
+	}
+	case 308: // Op08Set Установить операдн с индексом 8
+	{
+		int idx = static_cast<int>(MK) - 300;
+		if (idx >= (int)Operands.size()) {
+			ReportError("Op00Set", "index 8 out of range (total operands: "
+				+ to_string(Operands.size()) + ")");
+			break;
+		}
+		Operands[idx] = Load;
+
+		// Проверяем что все операнды установлены
+		{
+			bool allSet = true;
+			for (auto& op : Operands)
+				if (op.Point == nullptr) { allSet = false; break; }
+			if (allSet)
+				ExecuteTemplate();
+		}
+		break;
+	}
+	case 309: // Op09Set Установить операдн с индексом 9
+	{
+		int idx = static_cast<int>(MK) - 300;
+		if (idx >= (int)Operands.size()) {
+			ReportError("Op00Set", "index 0 out of range (total operands: "
+				+ to_string(Operands.size()) + ")");
+			break;
+		}
+		Operands[idx] = Load;
+
+		// Проверяем что все операнды установлены
+		{
+			bool allSet = true;
+			for (auto& op : Operands)
+				if (op.Point == nullptr) { allSet = false; break; }
+			if (allSet)
+				ExecuteTemplate();
+		}
+		break;
+	}
+	case 310: // Op10Set Установить операдн с индексом 10
+	{
+		int idx = static_cast<int>(MK) - 300;
+		if (idx >= (int)Operands.size()) {
+			ReportError("Op00Set", "index 10 out of range (total operands: "
+				+ to_string(Operands.size()) + ")");
+			break;
+		}
+		Operands[idx] = Load;
+
+		// Проверяем что все операнды установлены
+		{
+			bool allSet = true;
+			for (auto& op : Operands)
+				if (op.Point == nullptr) { allSet = false; break; }
+			if (allSet)
+				ExecuteTemplate();
+		}
+		break;
+	}
+	case 311: // Op11Set Установить операдн с индексом 11
+	{
+		int idx = static_cast<int>(MK) - 300;
+		if (idx >= (int)Operands.size()) {
+			ReportError("Op00Set", "index 11 out of range (total operands: "
+				+ to_string(Operands.size()) + ")");
+			break;
+		}
+		Operands[idx] = Load;
+
+		// Проверяем что все операнды установлены
+		{
+			bool allSet = true;
+			for (auto& op : Operands)
+				if (op.Point == nullptr) { allSet = false; break; }
+			if (allSet)
+				ExecuteTemplate();
+		}
+		break;
+	}
+	case 312: // Op12Set Установить операдн с индексом 12
+	{
+		int idx = static_cast<int>(MK) - 300;
+		if (idx >= (int)Operands.size()) {
+			ReportError("Op00Set", "index 12 out of range (total operands: "
+				+ to_string(Operands.size()) + ")");
+			break;
+		}
+		Operands[idx] = Load;
+
+		// Проверяем что все операнды установлены
+		{
+			bool allSet = true;
+			for (auto& op : Operands)
+				if (op.Point == nullptr) { allSet = false; break; }
+			if (allSet)
+				ExecuteTemplate();
+		}
+		break;
+	}
+	case 313: // Oз13Set Установить операдн с индексом 13
+	{
+		int idx = static_cast<int>(MK) - 300;
+		if (idx >= (int)Operands.size()) {
+			ReportError("Op00Set", "index 13 out of range (total operands: "
+				+ to_string(Operands.size()) + ")");
+			break;
+		}
+		Operands[idx] = Load;
+
+		// Проверяем что все операнды установлены
+		{
+			bool allSet = true;
+			for (auto& op : Operands)
+				if (op.Point == nullptr) { allSet = false; break; }
+			if (allSet)
+				ExecuteTemplate();
+		}
+		break;
+	}
+	case 314: // Op14Set Установить операдн с индексом 14
+	{
+		int idx = static_cast<int>(MK) - 300;
+		if (idx >= (int)Operands.size()) {
+			ReportError("Op00Set", "index 14 out of range (total operands: "
+				+ to_string(Operands.size()) + ")");
+			break;
+		}
+		Operands[idx] = Load;
+
+		// Проверяем что все операнды установлены
+		{
+			bool allSet = true;
+			for (auto& op : Operands)
+				if (op.Point == nullptr) { allSet = false; break; }
+			if (allSet)
+				ExecuteTemplate();
+		}
+		break;
+	}
+	case 315: // Op15Set Установить операдн с индексом 15
+	{
+		int idx = static_cast<int>(MK) - 300;
+
+		if (Operands.empty()) {
+			ReportError("Op__Set", "template havent setted, operand " + to_string(idx) + " ignoring");
+			break;
+		}
+		if (idx >= (int)Operands.size()) {
+			ReportError("Op__Set", "index " + to_string(idx) + " out of range (total operands: " + to_string(Operands.size()) + ")");
+			break;
+		}
+		if (idx < static_cast<int>(Operands.size())) {
+			Operands[idx] = Load;
+
+			bool allSet = true;
+			for (auto& op : Operands) {
+				if (op.Point == nullptr) { allSet = false; break; }
+			}
+			if (allSet)
+				ExecuteTemplate();
+		}
+		break;
+	}
+	default:
+		CommonMk(MK, Load);
+		break;
+	}
+}
+
+FU* Console::Copy() // Программа копирования ФУ
+{
+	return new Console(Bus, this);
+}
+
+FU* Console::TypeCopy() // Создать ФУ такого же типа (не копируя контекст
+{
+	return new Console(Bus, nullptr);
+}

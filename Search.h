@@ -8,7 +8,7 @@ class Search
 {
 private:
 	bool null_check();// Проверка на нуль (false, если всё в порядке)
-	void MkAtrExec();
+	bool MkAtrExec(IC_type IC);
 public:
 	~Search() { if (Alu != nullptr) delete Alu; };
 //	vector<ip>* Template; // Шаблон для поиска

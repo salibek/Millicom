@@ -35,29 +35,36 @@ bool Search::null_check()// Проверка на нуль (false, если всё в порядке)
 }
 
 // Доработать, чтобы программа выдавалась с помощью ProgExec !!!!!!!!!!!!
-void  Search::MkAtrExec() // Выполнить Милликоманды из ИК-шаблона
+bool  Search::MkAtrExec(IC_type IC) // Выполнить Милликоманды из ИК-шаблона
 {
-
-	if (Template.Point == nullptr || Template.Type>>1!=DIC) return;
+	if (Template.Point == nullptr || Template.Type>>1!=DIC) return false;
 	MainFU->ProgStopAll = false;
 	MainFU->ProgStop = 0;
 	MainFU->CycleStop = 0;
 
+//	auto i = ((IC_type)Template.Point)->begin();
+	auto i = IC->begin();
 	if (MkMode)
 	{
-		auto i = ((IC_type)Template.Point)->begin();
-		for (; i < ((IC_type)Template.Point)->end(); i++)
-			if (i->atr > 0 || i->Load.Type>>1==DMk) break;
-		if (i != ((IC_type)Template.Point)->end())
+		for (; i < IC->end(); i++)
+			if (i->atr > 0 || i->Load.Type >> 1 == DMk) break;
+			else if (i->atr == SubIC && i->Load.isIC())
+				if(MkAtrExec( (IC_type)(i->Load.Point) ))
+					return true;
+		if (i != IC->end()) {
 			MainFU->ProgExec(Template, 0, nullptr, &i);
+			return true;
+		}
+		return false;
 	}
 	else
-		for (auto i = ((IC_type)Template.Point)->begin(); i < ((IC_type)Template.Point)->end(); i++)
-			if (i->atr == SubIC) // Подкапсула
-				MkAtrExec();
+		for (; i < IC->end(); i++)
+			if (i->atr == SubIC && i->Load.isIC()) // Подкапсула
+				MkAtrExec((IC_type)(i->Load.Point));
 			else
-			if (MkAtr.count(i->atr))
-				MainFU->MkExec(i->atr, i->Load);
+				if (MkAtr.count(i->atr))
+					MainFU->MkExec(i->atr, i->Load);
+	return true;
 }
 
 bool Search::FindIPObj(LoadPoint Templ, LoadPoint obj, bool XOR) // Поиск, если obj является ИП (Для Or And)
@@ -128,7 +135,7 @@ bool Search::FindOr(LoadPoint obj)
 		{
 			MainFU->ProgExec(SuccessProg);
 			AtrProgExec((IC_type)Template.Point, Prog_atr, MainFU->Bus, true);
-			MkAtrExec();
+			MkAtrExec((IC_type)Template.Point);
 			MainFU->ProgExec(SuccessAfterProg);
 			return true;
 		}
@@ -169,7 +176,7 @@ bool Search::FindOr(LoadPoint obj)
 			}
 			MainFU->ProgExec(SuccessProg);
 			AtrProgExec((IC_type)Template.Point, Prog_atr, MainFU->Bus, true);
-			MkAtrExec();
+			MkAtrExec((IC_type)Template.Point);
 			MainFU->ProgExec(SuccessAfterProg);
 			return true;
 	}
@@ -188,7 +195,7 @@ bool Search::FindXor(LoadPoint obj)
 		{
 			MainFU->ProgExec(SuccessProg);
 			AtrProgExec((IC_type)Template.Point, Prog_atr, MainFU->Bus, true);
-			MkAtrExec();
+			MkAtrExec((IC_type)Template.Point);
 			MainFU->ProgExec(SuccessAfterProg);
 			return true;
 		}
@@ -242,7 +249,7 @@ bool Search::FindXor(LoadPoint obj)
 		}
 		MainFU->ProgExec(SuccessProg);
 		AtrProgExec((IC_type)Template.Point, Prog_atr, MainFU->Bus, true);
-		MkAtrExec();
+		MkAtrExec((IC_type)Template.Point);
 		MainFU->ProgExec(SuccessAfterProg);
 		return true;
 	}
@@ -273,7 +280,7 @@ bool Search::FindAnd(LoadPoint obj) // Поиск
 			MainFU->ProgExec(SuccessProg);
 
 			AtrProgExec((IC_type)Template.Point, Prog_atr, MainFU->Bus, true);
-			MkAtrExec();
+			MkAtrExec((IC_type)Template.Point);
 			MainFU->ProgExec(SuccessAfterProg);
 		//	IP_Num = ;
 			return true;
@@ -348,7 +355,7 @@ bool Search::FindAnd(LoadPoint obj) // Поиск
 		}
 		MainFU->ProgExec(SuccessProg);
 		AtrProgExec((IC_type)Template.Point, Prog_atr, MainFU->Bus);
-		MkAtrExec();
+		MkAtrExec((IC_type)Template.Point);
 		MainFU->ProgExec(SuccessAfterProg);
 		return true;
 	}
@@ -377,7 +384,7 @@ bool Search::FindAndSource(LoadPoint obj) // Поиск
 		{
 			MainFU->ProgExec(SuccessProg);
 			AtrProgExec((IC_type)Template.Point, Prog_atr, MainFU->Bus, true);
-			MkAtrExec();
+			MkAtrExec((IC_type)Template.Point);
 			MainFU->ProgExec(SuccessAfterProg);
 			return true;
 		}
@@ -390,7 +397,7 @@ bool Search::FindAndSource(LoadPoint obj) // Поиск
 			swap(IPTemplRezPoint,IPRezPoint);
 			MainFU->ProgExec(SuccessProg, 0, MainFU->Bus);
 			AtrProgExec((IC_type)Template.Point, Prog_atr, MainFU->Bus, true);
-			MkAtrExec();
+			MkAtrExec((IC_type)Template.Point);
 			MainFU->ProgExec(SuccessAfterProg);
 			return true;
 		}
@@ -449,7 +456,7 @@ bool Search::FindAndSource(LoadPoint obj) // Поиск
 		}
 		MainFU->ProgExec(SuccessProg, 0, MainFU->Bus);
 		AtrProgExec((IC_type)Template.Point, Prog_atr, MainFU->Bus, true);
-		MkAtrExec();
+		MkAtrExec((IC_type)Template.Point);
 		MainFU->ProgExec(SuccessAfterProg);
 		return true;
 	}

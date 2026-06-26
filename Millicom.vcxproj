@@ -78,8 +78,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Users\salib\AppData\Local\Programs\Python\Python310\Lib\site-packages\numpy\core\include\numpy; C:\Users\salib\AppData\Local\Programs\Python\Python310\Lib\site-packages\numpy\core\include;C:\Users\salib\AppData\Local\Programs\Python\Python310\include;C:\Users\salib\AppData\Local\Programs\Python\Python310\Lib\site-packages\numpy\_core\include\numpy;C:\Users\salib\AppData\Local\Programs\Python\Python310\Lib\site-packages\numpy;C:\Users\salib\AppData\Local\Programs\Python\Python310\Lib\site-packages\numpy\_core\include\;C:\Users\salib\AppData\Local\Programs\Python\Python310\Lib\site-packages\;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\salib\AppData\Local\Programs\Python\Python310\libs;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\salib\AppData\Local\Programs\Python\Python310\Lib\site-packages\numpy\core\include\numpy;C:\Users\salib\AppData\Local\Programs\Python\Python310\Lib\site-packages\numpy\core\include;C:\Users\salib\AppData\Local\Programs\Python\Python310\include;C:\Users\salib\AppData\Local\Programs\Python\Python310\Lib\site-packages\numpy\_core\include\numpy;C:\Users\salib\AppData\Local\Programs\Python\Python310\Lib\site-packages\numpy;C:\Users\salib\AppData\Local\Programs\Python\Python310\Lib\site-packages\numpy\_core\include\;C:\Users\salib\AppData\Local\Programs\Python\Python310\Lib\site-packages\;C:\fltk\build;C:\fltk;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\salib\AppData\Local\Programs\Python\Python310\libs;C:\fltk\build\lib\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -128,7 +128,14 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>fltk_dll.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>copy "C:\fltk\build\lib\Release\fltk_dll.dll" "$(OutDir)";
+copy "C:\fltk\build\lib\Release\fltk_jpeg_dll.dll" "$(OutDir)";
+copy "C:\fltk\build\lib\Release\fltk_png_dll.dll" "$(OutDir)";
+copy "C:\fltk\build\lib\Release\fltk_z_dll.dll" "$(OutDir)";</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -152,7 +159,7 @@
     <ClCompile Include="ALU.cpp" />
     <ClCompile Include="CellularAutomata.cpp" />
     <ClCompile Include="Consts.cpp" />
-    <ClCompile Include="GraphDislay.cpp" />
+    <ClCompile Include="GraphDisplay.cpp" />
     <ClCompile Include="IntAlu.cpp" />
     <ClCompile Include="Bus.cpp" />
     <ClCompile Include="Console.cpp" />

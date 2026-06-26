@@ -1,21 +1,52 @@
 #pragma once
+
 #include "Consts.h"
 #include "List.h"
 #include <string>
 
+class Fl_Tree;
+class Fl_Tree_Item;
+class Fl_Widget;
+
+struct SearchState
+{
+	std::vector<Fl_Tree_Item*> results;
+	int currentIndex = -1;
+};
+
+struct GraphStats
+{
+	size_t vertexCount = 0;
+	size_t pairCount = 0;
+	size_t arrayCount = 0;
+	size_t maxDepth = 0;
+};
+
+
 class GraphDisplay : public FU
 {
+public:
+	IC_type GraphUk = nullptr; // РЈРєР°Р·Р°С‚РµР»СЊ РЅР° РћРђ-РіСЂР°С„
 private:
-	void* GraphUk = nullptr; // Указатель не ОА-граф
-	bool Extend = false;    // Флаг разборачивания всех узлов дерева
-	//FU* MnemoList = nullptr; //  Таблица списка описаний лексем
-	//bool MnemoListExt = false;
-	LoadMnemoToStr LoadMnemoStr; // Объект для перевода нагрузка и строку с использованием распознания мнемоник
+	bool Extend = false; // Р¤Р»Р°Рі СЂР°Р·РІРѕСЂР°С‡РёРІР°РЅРёСЏ РІСЃРµС… СѓР·Р»РѕРІ РґРµСЂРµРІР°
+	unordered_map<int, Fl_Tree_Item*> treeIcMap;
+	SearchState searchState;
+	GraphStats graphStats;
+	LoadMnemoToStr mnemoToStr; // РџСЂРµРѕР±СЂР°Р·РѕРІР°С‚РµР»СЊ РЅР°РіСЂСѓР·РєРё РІ РјРЅРµРјРѕРЅРёРєСѓ Рё РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРµРј С‚Р°Р±Р»РёС†С‹ Р»РµРєСЃРµРј 
+
 public:
 	void ProgFU(long int MK, LoadPoint Load, FU* Sender = nullptr) override;
-	~GraphDisplay() { if (LoadMnemoStr.MnemoList != nullptr && !Extend) delete (List*)LoadMnemoStr.MnemoList; };
-	FU* Copy() override; // Программа копирования ФУ
-	FU* TypeCopy() override; // Создать ФУ такого же типа (не копируя контекст
+	FU* Copy() override; // РџСЂРѕРіСЂР°РјРјР° РєРѕРїРёСЂРѕРІР°РЅРёСЏ Р¤РЈ
+	FU* TypeCopy() override; // РЎРѕР·РґР°С‚СЊ Р¤РЈ С‚Р°РєРѕРіРѕ Р¶Рµ С‚РёРїР° (РЅРµ РєРѕРїРёСЂСѓСЏ РєРѕРЅС‚РµРєСЃС‚
 	GraphDisplay(FU* BusContext, FU* Templ) : FU(BusContext) { Bus = BusContext; FUtype = 1; };
 	GraphDisplay() : FU() { GraphDisplay(nullptr, nullptr); };
+
+	string GenerateDot();
+
+	static ICVect TraverseGraph(IC_type graphUk, GraphStats& stats);
+
+private:
+	void DisplayGraphWindow();
+	Fl_Tree* CreateFlTree();
+
 };

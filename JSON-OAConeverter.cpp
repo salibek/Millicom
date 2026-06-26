@@ -1,4 +1,4 @@
-// Конфертер из JSON в OA и обратно
+ // Конфертер из JSON в OA и обратно
 
 #include "JSON-OAConeverter.h"
 
@@ -6,8 +6,11 @@ void JSON_OAConeverter::Recurs(LoadPoint Load, ofstream& F, string Tab)
 {
 	F << "\n" << Tab << "[" << Tab;
 	bool FComma = false; // Флаг занятой
+	long c = 0; // Счетчик линий
 	for (auto i : *Load.IC())
 	{
+		if (HieRange>=0 && c <= HieRange) continue;
+		if (c > LowRange) continue;
 		if (!FComma)
 			FComma = true;
 		else
@@ -38,6 +41,7 @@ void JSON_OAConeverter::Recurs(LoadPoint Load, ofstream& F, string Tab)
 		F << "}";
 	}
 	F << "\n" << Tab << "]\n";
+	c++;
 }
 /*
 void JSON_OAConeverter::Recurs(LoadPoint Load, ofstream &F, string Tab)
@@ -136,6 +140,12 @@ void JSON_OAConeverter::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 		FIn.close();
 		break;
 	}
+	case 30: // HieRangeSet
+		LowRange = Load.toInt(-1);
+		break;
+	case 31: // LowRangeSet
+		HieRange = Load.toInt(-1);
+		break;
 	default:
 		CommonMk(MK, Load, Sender);
 		break;

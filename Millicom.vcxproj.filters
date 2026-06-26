@@ -108,7 +108,7 @@
     <ClCompile Include="JSON-OAConeverter.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="GraphDislay.cpp">
+    <ClCompile Include="GraphDisplay.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>

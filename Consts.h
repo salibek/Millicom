@@ -87,6 +87,8 @@ const long ParentOutMk = 944; // Выдать ссылку на родителя
 const long ParentOutMkMk = 943; // Выдать МК со ссылкой на родителя
 
 const long ListFindAndMk=229, ListFindAndLineMk=223; // МК поиска лексемы и поиска атрибута в строке списка
+const long var = -14, VarInt=-111, VarFloat=-112, VarAtr=-113, VarBool=-114, VarStr=-115; // Переменная
+
 
 bool isIPinIC(void* iP, void* iC); //проверка, что ИК вхоит в ИП
 

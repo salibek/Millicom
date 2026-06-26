@@ -229,6 +229,8 @@ ListCheckProg // Программа проверки спискаNewFU={Mnemo="" FUType=}
   Stack.SuccessExec={Stack.LastPopMk OAList.PopMk Console.OutLn="List check > success!!!"}
 }
 
+\\ Императивные конструкции
+
 \**\IfAfter.Set=
 >{Sep="{" Lex.ReceiverMkSet=Root.FindAnd 
 Console.OutLn="IfAfter {"
@@ -547,7 +549,6 @@ Console.OutLn="ForSecArg >>"
 >{Mnemo="if" Lex.ReceiverMkSet=IfAfter.FindAnd Lex.ReceiverPush=EqAleAfter.FindAnd
 Console.OutLn="Root if"
   Stack.LineCopyAdd={IfAtr}
-//  OAList.LineCopyAdd={FUALUNew.PushExec}
   OAList.LastAttach={FUALUNew.PushExec}
   OAList.LineCopyAddPrevLoadSet={FUALUNew.Set}
 }

@@ -79,7 +79,7 @@ NewFU={Mnemo="ElseWait" FUType=FUListNew Hint="Ожидание else после закрытия фигу
 NewFU={Mnemo="ForVect" FUType=FUListNew Hint="Ожидание потока или открывающейся векторной скобки в цикле for/after"} \* 21.04.2023 *\
 NewFU={Mnemo="ForFirstArg" FUType=FUListNew Hint="Ожидание потока, выражения или двоеточия для указания конца диапазона в цикле for/after"} \* 21.04.2023 *\
 NewFU={Mnemo="ForSecArgWait" FUType=FUListNew Hint="Ожидание значения конца диапазона в цикле for/after"} \* 21.04.2023 *\
-NewFU={Mnemo="ForFlow" FUType=FUListNew Hint="Ожидание потока или двоеточия для указания конца диапазона в цикле for/after"} \* 21.04.2023 *\
+NewFU={Mnemo="ForFirstArgAfter" FUType=FUListNew Hint="Ожидание потока или двоеточия для указания конца диапазона в цикле for/after"} \* 21.04.2023 *\
 NewFU={Mnemo="ForSecArg" FUType=FUListNew Hint="Ожидание потока, выражения или двоеточия для указания шага диапазона в цикле for/after"} \* 21.04.2023 *\
 NewFU={Mnemo="ForThirdArgWait" FUType=FUListNew Hint="Ожидание значения шага диапазона в цикле for/after"} \* 21.04.2023 *\
 NewFU={Mnemo="ForSecArgAfter" FUType=FUListNew Hint="Ожидание потока или двоеточия для указания шага диапазона в цикле for/after"} \* 21.04.2023 *\
@@ -96,11 +96,6 @@ Vect*-98 \\Атрибут вектора
 SubIC*-99 \\Атриубт подкапсулы
 Sep*-4
 Var*-14
-VarInt*-111
-VarBool*-114
-VarStr*-115
-VarFloat*-112
-VarAtr=-113
 MkExec*-304 // МК для последующего выполнения
 MkExtend*-25 // Расширенная МК
 End*-27 \\ Конец чего-либо
@@ -115,7 +110,6 @@ IfAtr*-316 // Атрибут операции if
 ElseAtr*-317 // Атрибут операции else
 ForAtr*-318 // Атрибут цикла for
 ForElseAtr*-319 // Атрибут цикла for
-ForAle*-320 \\ Атрибут ссылки на АЛВ цикла for
 
 
 NewFUAtr \\ Флаг создания нового устройства
@@ -159,6 +153,7 @@ CommonMkTable \\ Общие МК
 	>{Mnemo="ProgExec" Mk=990 Hint="Выполнить программу"}
 	>{Mnemo="ProgStop" Mk=989 Hint="Прервать выполнение программ для ФУ (на входе количество уровней программ, которые нужно останавливать)"}
 	>{Mnemo="ProgStopAll" Mk=988 Hint="Прервать выполнение всех программ для ФУ"}
+
 
 ConsMkList
 	>{Mnemo="Out" Mk=1 Hint="Печать"}
@@ -519,7 +514,6 @@ FUListNew.ReceivedOutMk=Console.OutLn
   FUListNew.ReceivedOutMk=Lex.SendToReceiver
   }
 
-
 \\\\\\\\\\\\\\\\\\ if \\\\\\\\\\\\\\\\\\\\
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
@@ -553,11 +547,9 @@ Console.OutLn="ForElseAfter { >>"
 >{Const ConstInt ConstFloat Var Sep="(" Lex.ReceiverMkSet=ForFirstArg.FindAnd
 //  OAList.LastAttach={FUALUNew.AnsFix}
 //  Stack.LineCopyAdd={IfAtr}// Атрибут стека для того, чтобы автомат АЛВ не удалял АЛВ из стека
+  Stack.LineCopyAdd={ALEEnd}
   OAList.LastAtrAttach=FUALUNew.Calc
   OAList.LineCopyAddPrevLoadSet={FUALUNew.Set}
-//  Stack.LineCopyAdd={ForAle}
-//  OAList.LastOutMk=Stack.LastLoadSet \\Запомнить ссылка на АЛВ для for
-  Stack.LineCopyAdd={ALEEnd}
   Lex.ReceiverPush=AleEqAfter.FindAnd
 Console.OutLn="ForAfter  Const Var ALE"
   FUListNew.ReceivedOutMk=Lex.SendToReceiver
@@ -568,7 +560,7 @@ Console.OutLn="ForAfter  Const Var ALE"
 >{0 Lex.Stop Console.OutLn="For description error"}
 
 \**\ForVect.Set=
->{Sep="[" Lex.ReceiverMkSet=ForFlow.FindAnd Lex.ReceiverPush=AleEqAfter.FindAnd \\ Исправить!!!
+>{Sep="[" Lex.ReceiverMkSet=ForFirstArgAfter.FindAnd Lex.ReceiverPush=AleEqAfter.FindAnd
   Console.OutLn="Vect ["
   //Stack.LineCopyAdd={}
   OAList.LineCopyAdd={FUALUNew.ProgExec}
@@ -604,7 +596,8 @@ Console.OutLn="ForAfter  Const Var ALE"
 }
 
 \**\ForFirstArg.Set=
->{Sep="{"Sep=">>" Lex.ReceiverMkSet=Root.FindAnd
+\\>{Sep=">>" }
+>{Sep="{" Sep=">>" Lex.ReceiverMkSet=Root.FindAnd
 Console.OutLn="&&&&&&"
   FUListNew.LineOutMk=Console.OutLn
   OAList.LastPopMk=OAList.Receive
@@ -617,6 +610,9 @@ Console.OutLn="&&&&&&"
   Stack.LastDelMk
 
   OAList.LineCopyAddPrevLoadSet={FUALUNew.AnsFix}
+
+\\  FUListNew.FindAndLine={Sep=">>"}
+  FUListNew.SuccessExec={Console.OutLn="For >>"}
 
   OAList.LastAttach={FUALUNew.PushExec}
   OAList.LineCopyAddPrevLoadSet={FUALUNew.ProgExec}
@@ -634,13 +630,10 @@ Console.OutLn="&&&&&&"
   OAList.LastPopMk
   OAList.LastPopMk
   OAList.ReceivedOutMk=OAList.LineAdd
-//  Stack.LastDelMk \\ Удалить ссылку на АЛВ для for
-
 
 //Console.OutLn="Stack:"
 //Stack.OutMk=Console.OutLn
 }
-\\>{Sep="{" SubIC=ForFirstArgProg!}
 >{Sep=":" Lex.ReceiverMkSet=ForSecArg.FindAnd
   OAList.LastPopMk=OAList.Receive
   OAList.LastAttach={FUALUNew.Set}
@@ -663,11 +656,19 @@ Console.OutLn="&&&&&&"
   Lex.ReceiverMkSet=ForSecArg.FindAnd
   Lex.ReceiverPush=AleEqAfter.FindAnd
 }
-\\ForFirstArgProg!
 
-\**\ForFlow.Set= \\ Цикл с потоком
->{Var VarInt VarBool VarStr VarFloat VarPointer Lex.ReceiverMkSet=ForSecArg.FindAnd}
->{0 Lex.Stop Console.OutLn="Mk of variable is expected"}
+>{0 Lex.ReceiverMkSet=ForFirstArgAfter.FindAnd 
+  Lex.ReceiverPush=AleEqAfter.FindAnd
+  Console.OutLn="for/after const/var ALE"
+  ForAfter.ReceivedOutMk=Lex.SendToReceiver
+  FUListNew.ReceivedOutMk=Lex.SendToReceiver
+}
+
+\**\ForFirstArgAfter.Set=
+>{Sep=":" Lex.ReceiverMkSet=ForSecArg.FindAnd}
+>{Sep=">>" Lex.ReceiverMkSet=Root.FindAnd
+
+}
 
 \**\ForSecArgWait.Set=
 >{Const Var Lex.ReceiverMkSet=ForSecArg.FindAnd

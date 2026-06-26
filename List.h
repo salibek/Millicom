@@ -59,4 +59,5 @@ public:
 private:
 	long int DeepStartSearch = 0; // Стартовый уровень для пописка
 	JSON_OAConeverter JsonConv; // Конфертер в JSON
+
 };

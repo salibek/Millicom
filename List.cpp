@@ -1425,7 +1425,19 @@ void List::ProgFU(long int MK, LoadPoint Load, FU* Sender)
 	case 606: // MnemoTableSet Установить ссылку на таблицу мнемоник
 		JsonConv.MnemoTableSet(Load);
 		break;
-	case 607: //MillirangeSet Установить диапазон милликоманд для ФУ
+//	case 607: //MillirangeSet Установить диапазон милликоманд для ФУ
+//		break;
+	case 610: // HieOutRangeSet Установить верхнюю границу вывода списка 
+		JsonConv.HieRange = Load.toInt(-1);
+		break;
+	case 611: // LowOutRangeSet Установить нижнюю границу вывода списка 
+		JsonConv.LowRange = Load.toInt(-1);
+		break;
+	case 612: // HieOutRangeFix Установить верхнюю границу вывода списка по последней строке списка 
+		JsonConv.HieRange = ((IC_type)ListHead.back())->size() - 1;
+		break;
+	case 613: // LowOutRangeFix Установить нижнюю границу вывода списка по последней строке списка
+		JsonConv.LowRange = ((IC_type)ListHead.back())->size() - 1;
 		break;
 	default:
 		CommonMk(MK, Load, Sender);
